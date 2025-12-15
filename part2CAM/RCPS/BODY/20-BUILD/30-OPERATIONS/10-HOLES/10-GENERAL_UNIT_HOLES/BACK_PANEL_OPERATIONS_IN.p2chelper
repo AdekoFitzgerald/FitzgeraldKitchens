@@ -1,0 +1,90 @@
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(if (_EXISTPANEL BACK_PANEL_CODE)
+			(progn
+				(_FSET (_ 'lengthParametersForBackAndBottom (_CALCULATEPANELSINTERSECTIONLENGTH __WID (_ (/ BACK_PANEL_WID_VARIANCE -2) (/ BACK_PANEL_WID_VARIANCE -2) (* bottomSideStyleV2 -1) (* bottomSideStyleV2 -1)))))
+				(mapcar '_SETA '(lengthForBackAndBottom rightStartingPointBackPanelB leftStartingPointBackPanelB rightStartingPointBottomPanel leftStartingPointBottomPanel) lengthParametersForBackAndBottom)
+
+				(_FSET (_ 'lengthParametersForBackAndTop (_CALCULATEPANELSINTERSECTIONLENGTH __WID (_ (/ BACK_PANEL_WID_VARIANCE -2) (/ BACK_PANEL_WID_VARIANCE -2) (* topSideStyleV2 -1) (* topSideStyleV2 -1)))))
+				(mapcar '_SETA '(lengthForBackAndTop rightStartingPointBackPanelT leftStartingPointBackPanelT rightStartingPointTopPanel leftStartingPointTopPanel) lengthParametersForBackAndTop)
+				
+				(_FSET (_ 'lengthParametersForBackAndLeftRight (_CALCULATEPANELSINTERSECTIONLENGTH __HEI (_ (/ BACK_PANEL_HEI_VARIANCE -2) (/ BACK_PANEL_HEI_VARIANCE -2) (* bottomSideStyleV1 -1) (* topSideStyleV1 -1)))))
+				(mapcar '_SETA '(lengthForBackAndSides bottomStartingPointBackPanel topStartingPointBackPanel bottomStartingPointSidePanels topStartingPointsiPanels) lengthParametersForBackAndLeftRight)
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					; Back Panel
+					(if (_EXISTPANEL BOTTOM_PANEL_CODE)
+						(progn
+							(_FSET (_ 'backPanelPointListForBottomSide (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndBottom 0.0 (/ BACK_PANEL_THICKNESS -2) "X")
+								(_ rightStartingPointBackPanelB leftStartingPointBackPanelB T BACK_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName BACK_PANEL_CODE backPanelPointListForBottomSide (_ "Y+" nil) connectorParams)
+							
+							(_FSET (_ 'bottomPanelPointListForBackPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndBottom (- BOTTOM_PANEL_HEI (/ BACK_PANEL_THICKNESS 2)) 0.0 "Y")
+								(_ rightStartingPointBottomPanel leftStartingPointBottomPanel nil BOTTOM_PANEL_WID)
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName BOTTOM_PANEL_CODE bottomPanelPointListForBackPanel (_ nil "X+") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL TOP_PANEL_CODE)
+						(progn
+							(_FSET (_ 'backPanelPointListForTopSide (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndTop BACK_PANEL_HEI (/ BACK_PANEL_THICKNESS -2) "X")
+								(_ rightStartingPointBackPanelT leftStartingPointBackPanelT T BACK_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName BACK_PANEL_CODE backPanelPointListForTopSide (_ "Y-" nil) connectorParams)
+							
+							(_FSET (_ 'topPanelPointListForBackPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndTop (/ BACK_PANEL_THICKNESS 2) 0.0 "Y")
+								(_ rightStartingPointTopPanel leftStartingPointTopPanel nil TOP_PANEL_WID)
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName TOP_PANEL_CODE topPanelPointListForBackPanel (_ nil "X-") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'backPanelPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndSides 0.0 (/ BACK_PANEL_THICKNESS -2) "Y")
+								(_ bottomStartingPointBackPanel topStartingPointBackPanel T BACK_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName BACK_PANEL_CODE backPanelPointListForLeftSide (_ "X+" nil) connectorParams)
+							
+							(_FSET (_ 'leftPanelPointListForBackPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndSides (- LEFT_PANEL_WID (/ BACK_PANEL_THICKNESS 2)) 0.0 "Y")
+								(_  bottomStartingPointSidePanels topStartingPointsiPanels T LEFT_PANEL_HEI)
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForBackPanel (_ nil "X+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'backPanelPointListForRightSide (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndSides BACK_PANEL_WID (/ BACK_PANEL_THICKNESS -2) "Y")
+								(_ bottomStartingPointBackPanel topStartingPointBackPanel T BACK_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName BACK_PANEL_CODE backPanelPointListForRightSide (_ "X-" nil) connectorParams)
+							
+							(_FSET (_ 'rightPanelPointListForBackPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBackAndSides (/ BACK_PANEL_THICKNESS 2) 0.0 "Y")
+								(_  bottomStartingPointSidePanels topStartingPointsiPanels T RIGHT_PANEL_HEI)
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForBackPanel (_ nil "X-") connectorParams)
+						)
+					)
+					(_FSET (_ 'index (+ index 1)))
+				)				
+			)
+		)
+	)
+)
+(_NONOTCH)

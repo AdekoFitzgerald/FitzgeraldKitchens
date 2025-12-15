@@ -1,0 +1,16 @@
+(setq dummykulptip (cond ((equal gm1:layername "CAB_BODY_WALL")
+							(getUpKapakname)
+							)
+							((equal gm1:layername "CAB_BODY_TALL")
+							(getTallKapakname)
+							)
+							(T
+								(getKapakname)
+							)
+					)
+)
+(setq dummykulppay1 9.75)	;DUMMY KULP SOLA KAYDIRMA
+(setq dummykulppay2 2.80)	;DUMMY KULP ALTA KAYDIRMA
+
+(setq doorId (kapak_ciz (list "R" dummykulptip) "KD" (- unitW (+ 3.0 dummykulppay1))(- adder 0.02) (- (+ dAltKot 72.0) dummykulppay2) 0.5 0.5 nil 0.0))
+;(set_mdata (entlast) (list (cons k:animateScript "nil")))

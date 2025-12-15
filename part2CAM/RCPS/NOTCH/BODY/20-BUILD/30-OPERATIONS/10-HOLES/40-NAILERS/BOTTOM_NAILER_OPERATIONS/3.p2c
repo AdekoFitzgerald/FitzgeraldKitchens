@@ -1,0 +1,35 @@
+(if (> __NOTCHDIM2 __AD_PANELTHICK)
+	(progn
+		(_FSET (_ 'lengthParametersForBottomNailerAndNotchedLeft (_CALCULATEPANELSINTERSECTIONLENGTH BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+		(_FSET (_ 'lengthForBottomNailerAndNotchedLeft (car lengthParametersForBottomNailerAndNotchedLeft)))
+
+		(_FSET (_ 'lengthParametersForBottomNailerAndNotchedRight (_CALCULATEPANELSINTERSECTIONLENGTH BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+		(_FSET (_ 'lengthForBottomNailerAndNotchedRight (car lengthParametersForBottomNailerAndNotchedRight)))
+		
+		(_FSET (_ 'index 0))
+		(foreach operationParams OPERATION_LIST
+			(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+			(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+				(progn
+					(_FSET (_ 'notchedLeftPanelPointListForBottomNailer (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForBottomNailerAndNotchedLeft (- (+ NOTCHED_LEFT_PANEL_WID BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																	(_ (+ LEFT_PANEL_LOWER_VARIANCE BOTTOM_NAILER_DOWN_OFFSET) 0 nil (+ BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_LEFT_PANEL_CODE notchedLeftPanelPointListForBottomNailer (_ nil "X+") connectorParams)
+				)
+			)
+			(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+				(progn
+					(_FSET (_ 'notchedRightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForBottomNailerAndNotchedRight (+ (- 0 BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																	(_ (+ RIGHT_PANEL_LOWER_VARIANCE BOTTOM_NAILER_DOWN_OFFSET) 0 nil (+ BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_RIGHT_PANEL_CODE notchedRightPanelPointListForBottomPanel (_ nil "X-") connectorParams)
+				)
+			)
+			
+			(_FSET (_ 'index (+ index 1)))
+		)
+	)
+)

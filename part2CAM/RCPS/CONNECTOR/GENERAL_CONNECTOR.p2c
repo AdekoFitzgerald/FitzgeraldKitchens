@@ -1,0 +1,57 @@
+GENERAL_HOLE_DIAMETER -> "DIAMETER OF GENERAL HOLES"
+GENERAL_HOLE_DEPTH -> "DEPTH OF GENERAL HOLES"
+GENERAL_HOLE_DEF -> "DEFINITION OF GENERAL HOLES"
+;prefvars
+(_SETA 'GENERAL_HOLE_DIAMETER nil)
+(_SETA 'GENERAL_HOLE_DEPTH nil)
+(_SETA 'GENERAL_HOLE_DEF nil)
+; Standard Values, GENERAL_HOLE_DIAMETER nil, GENERAL_HOLE_DEPTH nil, GENERAL_HOLE_DEF nil
+(_FSET (_ 'WARDROBE_DEFAULT_LOADED nil))
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (< (length targetPanels) 3)
+	(progn
+		(_FSET (_ 'tPanelInfo nil))
+		(_FSET (_ 'targetPanelCouter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'targetPanelSelected (getnth targetPanelCouter targetPanels)))
+			(if (equal __CONNECTORPARENT (getnth 0 targetPanelSelected))
+				(_FSET (_ 'tPanelInfo targetPanelSelected))
+			)
+			(_FSET (_ 'targetPanelCouter (+ 1 targetPanelCouter)))
+		)
+		(if (_NOTNULL tPanelInfo)
+			(progn
+				(_SETCURMODUL (getnth 0 tPanelInfo))
+				
+				(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+				(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+				
+				(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+				(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+				
+				(cond 
+					((_ISVERTICALFACE currentFaceNormal)
+						; Type of current face is either 0 or 1 in this case
+						(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+							(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+						)
+						(_FSET (_ 'holeCodebody (_& (_ connectedFaceCode "_" GENERAL_HOLE_DEF))))
+						(_HOLE holeCodebody connectedFaceCode (_ holePosition GENERAL_HOLE_DIAMETER GENERAL_HOLE_DEPTH holeOrient))
+					)
+					((_ISHORIZONTALFACE currentFaceNormal)
+						; Type of current face is either 2, 3, 4 or 5 in this case
+						(_FSET (_ 'holeCodebody (_& (_ connectedFaceCode "_" GENERAL_HOLE_DEF))))
+						(_HOLE holeCodebody connectedFaceCode (_ holePosition GENERAL_HOLE_DIAMETER GENERAL_HOLE_DEPTH holeOrient))
+					)
+				)
+				
+				(_RESETCURMODUL)
+			)
+		)
+	)
+)
+(_NONOTCH)

@@ -1,0 +1,14 @@
+
+
+
+
+(defun lmm_exportCustomNCFilesDesiredCAMOp ( / ) 
+	(princ "Custom postu boþ doldurulmasý gerekiyor.......................................................................................................")
+)
+
+
+
+
+
+
+(princ)

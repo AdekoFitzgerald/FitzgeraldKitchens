@@ -1,0 +1,251 @@
+
+(_FSET (_ 'glassDoorLayerMAT (getDoorMatFromBlockName (getEntPro g_currentmodulent 2) GLASS_DOOR_LAYER)))
+(if (_NOTNULL glassDoorLayerMAT)
+	(progn
+		; Material of specific layers
+		(_FSET (_ 'doorLayerMAT (getDoorMatFromBlockName (getEntPro g_currentmodulent 2 ) GENERAL_DOORS_LAYER)))
+		(_FSET (_ 'doorFramesLayerMAT (getDoorMatFromBlockName (getEntPro g_currentmodulent 2 ) DOOR_FRAMES_LAYER)))
+		(_FSET (_ 'aluFrameLayerMAT (getDoorMatFromBlockName (getEntPro g_currentmodulent 2 ) ALUMINIUM_FRAME_LAYER)))
+		(_FSET (_ 'doorEdgebandsLayerMAT (getDoorMatFromBlockName (getEntPro g_currentmodulent 2 ) DOOR_EDGEBANDS_LAYER)))
+	
+		; Door grain
+		(setq currentDoorGrain (getDoorMatRotFromBlockName (getEntPro g_currentmodulent 2 ) "CAB_DOORS"))	
+		(if (equal (car (getmatgrain (getDoorMatFromBlockName (getEntPro g_currentmodulent 2 ) "CAB_DOORS"))) "yy" )
+			(cond 	
+				((equal currentDoorGrain 0.0)
+					(_FSET (_ 'currentDoorGrain 90.0))
+				)
+				((equal currentDoorGrain 90.0)
+					(_FSET (_ 'currentDoorGrain 0.0))
+				)
+			)
+		)
+		
+		(cond
+			((_NOTNULL doorLayerMAT)
+				; Classic Band, With Edgebands, No Edgebands -> With Frame GLASS
+				(if (_NOTNULL aluFrameLayerMAT)
+					(progn
+						(_FSET (_ 'doorLayerMAT aluFrameLayerMAT))
+
+						(_FSET (_ 'profileList (read (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CProfilesList) "" ))))					
+						(if (equal -1 (getEntPro g_currentmodulent 41))	; If it is right door
+							(setq profileList (convertDoorFlagsListLeftDoorToRightDoor profileList))
+						)
+						(if (apply 'OR profileList)
+							(progn
+								(_FSET (_ 'topProfileMAT (getnth 0 profileList)))
+								(_FSET (_ 'rightProfileMAT (getnth 1 profileList)))
+								(_FSET (_ 'bottomProfileMAT (getnth 2 profileList)))
+								(_FSET (_ 'leftProfileMAT (getnth 3 profileList)))
+							)
+							(progn
+								(_FSET (_ 'topProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'rightProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'bottomProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'leftProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+							)
+						)
+						(if (_NOTNULL ADD_MATERIAL_COLOR)
+							(progn
+								(if (_NOTNULL topProfileMAT) (_FSET (_ 'topProfileMAT (_& (_ topProfileMAT aluFrameLayerMAT)))))
+								(if (_NOTNULL rightProfileMAT) (_FSET (_ 'rightProfileMAT (_& (_ rightProfileMAT aluFrameLayerMAT)))))
+								(if (_NOTNULL bottomProfileMAT) (_FSET (_ 'bottomProfileMAT (_& (_ bottomProfileMAT aluFrameLayerMAT)))))
+								(if (_NOTNULL leftProfileMAT) (_FSET (_ 'leftProfileMAT (_& (_ leftProfileMAT aluFrameLayerMAT)))))
+							)
+						)	
+						; Profiles add as item four each side
+						(_ITEMMAIN topProfileMAT topProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+						(_ITEMMAIN rightProfileMAT rightProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+						(_ITEMMAIN bottomProfileMAT bottomProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+						(_ITEMMAIN leftProfileMAT leftProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+										
+						; Width of profiles are taken from database
+						(_FSET (_ 'leftProfileWID (_GETPROFILEWIDFROMDB leftProfileMAT)))
+						(_FSET (_ 'rightProfileWID (_GETPROFILEWIDFROMDB rightProfileMAT)))
+						(_FSET (_ 'topProfileWID (_GETPROFILEWIDFROMDB topProfileMAT)))
+						(_FSET (_ 'bottomProfileWID (_GETPROFILEWIDFROMDB bottomProfileMAT)))
+						
+						(_FSET (_ 'lostInHEI (+ topProfileWID bottomProfileWID)))
+						(_FSET (_ 'lostInWID (+ leftProfileWID rightProfileWID)))
+						(_FSET (_ 'frameShares (_ topProfileWID rightProfileWID bottomProfileWID leftProfileWID)))
+					)
+					(progn
+						; No aluminum frame
+						; GLASS PART
+						(_FSET (_ 'frameThickness (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CDoorFrameThick) nil)))
+						(if (null frameThickness) (_FSET (_ 'frameThickness 0.0)))
+						
+						(_FSET (_ 'lostInHEI (* frameThickness 2)))
+						(_FSET (_ 'lostInWID (* frameThickness 2)))
+						(_FSET (_ 'frameShares (_ 0.0 0.0 0.0 0.0)))
+					)
+				)
+				
+				; For hinge operations
+				(set (read (strcat (dfetch 5 g_currentModulEnt) "_FRAME")) frameShares)
+
+				(_SET (_ 'currentDoorCODE WARDROBE_PANELS_GENERAL_CODE))
+				(_SET (_ 'currentDoorRot (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+
+				(if currentDoorSource0 
+					(if (checkStrInStr "##" currentDoorSource0) ;daha iyisini yazana kadar wildcard ##
+						(setq currentDoorSource0 (strcat (parselft currentDoorSource0 "##") __MODULBODYMAT (parsergt currentDoorSource0 "##")))
+					)
+					(setq currentDoorSource0 __MODULBODYMAT)
+				)
+
+				(_PANELMAIN currentDoorCODE (list (_GENERATEPDATA currentDoorWID currentDoorHEI)  currentDoorRot currentDoorSource0 (ifnull currentDoorSource1 __PANELTHICKNESS)))
+				(_PUTLABEL currentDoorCODE currentDoorCODE (XSTR PANEL_LABEL))
+				(_PUTTAG currentDoorCODE currentDoorCODE PANEL_TAG)
+
+				(setq currentDoorSecFaceCODE (_CREATESFACEMAIN currentDoorCODE (list (_GENERATEPDATA currentDoorWID currentDoorHEI) currentDoorRot __MODULBODYMAT __PANELTHICKNESS PANEL_SFACE_ROTATION_AXIS)))
+				(_PUTLABEL currentDoorSecFaceCODE currentDoorSecFaceCODE (XSTR PANEL_LABEL))
+				(_PUTTAG currentDoorSecFaceCODE currentDoorSecFaceCODE PANEL_TAG)
+										
+				(_PUTUSAGETYPETAG currentDoorCODE currentDoorCODE "DOOR")
+				(_PUTUSAGETYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE "DOOR")
+
+				(_PUTMODELTYPETAG currentDoorCODE currentDoorCODE currentDoorModel)
+				(_PUTMODELTYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE currentDoorModel)
+
+				(_PUTCOSTTYPETAG currentDoorCODE currentDoorCODE doorCostType)
+				(_PUTCOSTTYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE doorCostType)
+				
+				(_PUTLMMDATAMAIN (list currentDoorCODE currentDoorCODE lmm-k-doorform (ifnull (getDoorMDataFromBlockName (getEntPro g_CurrentModulEnt 2 ) k:DoorForm) "") nil))
+				(_PUTLMMDATAMAIN (list currentDoorSecFaceCODE currentDoorSecFaceCODE lmm-k-doorform (ifnull (getDoorMDataFromBlockName (getEntPro g_CurrentModulEnt 2 ) k:DoorForm) "") nil))
+				
+				(_PUTLMMDATAMAIN (list currentDoorCODE currentDoorCODE lmm-k-doorDirection (getDoorDirectionWithDoorPosition g_CurrentModulEnt nil) nil))
+				(_PUTLMMDATAMAIN (list currentDoorSecFaceCODE currentDoorSecFaceCODE lmm-k-doorDirection (getDoorDirectionWithDoorPosition g_CurrentModulEnt nil) nil))
+
+				(if (equal currentDoorTYPE "C")
+					(_PUTTAG currentDoorCODE currentDoorCODE "DRAWER")
+				)
+				
+				; Glass Part
+				(_FSET (_ 'frameThickness (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CDoorFrameThick) nil)))
+				(if (null frameThickness) (_FSET (_ 'frameThickness FRAME_THICKNESS_DEFAULT)))
+				
+				;(_FSET (_ (read glassFRAME) (mapcar '+ frameShares (_ frameThickness frameThickness frameThickness frameThickness))))
+				
+				(_FSET (_ 'glassPartCODE (_& (_ currentDoorCODE "_" (XSTR "GLASS")))))
+				(_PANELMAIN glassPartCODE (list (_GENERATEPDATA (- currentDoorWID lostInWID) (- currentDoorHEI lostInHEI))  currentDoorRot glassDoorLayerMAT __AD_GLASSTHICK))
+
+				(if (equal (iniread ad_WARDROBE-INI "part2cam_rcps" "use_handle_holes" "") "1")
+					(_RUNHELPERRCP "CONNECTOR\\HANDLE" nil "p2chelper")
+				)
+
+				(_RUNHELPERRCP "CONNECTOR\\EDGESTRIPS" nil "p2c")
+			)
+			((or (_NOTNULL doorFramesLayerMAT) (_NOTNULL aluFrameLayerMAT))
+				; Aluminium profile, profile framed GLASS
+				; It is sure that both doorFramesLayerMAT and aluFrameLayerMAT can not have material in the same time
+				(if (_NOTNULL doorFramesLayerMAT)
+					(progn
+						(_FSET (_ 'profileMAT doorFramesLayerMAT))
+						(_FSET (_ 'defaultProfile DOOR_PROFILE_DEFAULT))
+					)
+					(progn
+						(_FSET (_ 'profileMAT aluFrameLayerMAT))
+						(_FSET (_ 'defaultProfile DOOR_ALU_PROFILE_DEFAULT))
+					)
+				)
+
+				(_FSET (_ 'profileList (read (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CProfilesList) "" ))))					
+				(if (equal -1 (getEntPro g_currentmodulent 41))	; If it is right door
+					(setq profileList (convertDoorFlagsListLeftDoorToRightDoor profileList))
+				)
+				(if (apply 'OR profileList)
+					(progn
+						(_FSET (_ 'topProfileMAT (getnth 0 profileList)))
+						(_FSET (_ 'rightProfileMAT (getnth 1 profileList)))
+						(_FSET (_ 'bottomProfileMAT (getnth 2 profileList)))
+						(_FSET (_ 'leftProfileMAT (getnth 3 profileList)))
+					)
+					(progn
+						(_FSET (_ 'topProfileMAT defaultProfile))
+						(_FSET (_ 'rightProfileMAT defaultProfile))
+						(_FSET (_ 'bottomProfileMAT defaultProfile))
+						(_FSET (_ 'leftProfileMAT defaultProfile))
+					)
+				)
+				
+				;Bu case de doorLayerMAT olmadığı için kapak materyalini al (GET_MATERIAL_COLOR_FROM_DOOR_LAYER) seçeneğini gerçekleştiremiyoruz.
+				; Aluminyum çerçeveli kapaklarda profilin sonuna çizimdeki materyalin gelmemesi gerek.
+				(if (_NOTNULL ADD_MATERIAL_COLOR)
+					(progn
+						(if (_NOTNULL topProfileMAT) (_FSET (_ 'topProfileMAT (_& (_ topProfileMAT profileMAT)))))
+						(if (_NOTNULL rightProfileMAT) (_FSET (_ 'rightProfileMAT (_& (_ rightProfileMAT profileMAT)))))
+						(if (_NOTNULL bottomProfileMAT) (_FSET (_ 'bottomProfileMAT (_& (_ bottomProfileMAT profileMAT)))))
+						(if (_NOTNULL leftProfileMAT) (_FSET (_ 'leftProfileMAT (_& (_ leftProfileMAT profileMAT)))))
+					)
+				)
+				; Profiles add as item four each side
+				(_ITEMMAIN topProfileMAT topProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+				(_ITEMMAIN rightProfileMAT rightProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+				(_ITEMMAIN bottomProfileMAT bottomProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+				(_ITEMMAIN leftProfileMAT leftProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+				
+				; Width of profiles are taken from database
+				(_FSET (_ 'leftProfileWID (_GETPROFILEWIDFROMDB leftProfileMAT)))
+				(_FSET (_ 'rightProfileWID (_GETPROFILEWIDFROMDB rightProfileMAT)))
+				(_FSET (_ 'topProfileWID (_GETPROFILEWIDFROMDB topProfileMAT)))
+				(_FSET (_ 'bottomProfileWID (_GETPROFILEWIDFROMDB bottomProfileMAT)))
+				
+				(_FSET (_ 'lostInHEI (+ topProfileWID bottomProfileWID)))
+				(_FSET (_ 'lostInWID (+ leftProfileWID rightProfileWID)))
+				(_FSET (_ 'frameShares (_ topProfileWID rightProfileWID bottomProfileWID leftProfileWID)))
+				
+				; For hinge operations
+				(set (read (strcat (dfetch 5 g_currentModulEnt) "_FRAME")) frameShares)
+
+				(_SET (_ 'currentDoorCODE WARDROBE_PANELS_GENERAL_CODE))
+				(_SET (_ 'currentDoorRot (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+
+				(_PANELMAIN currentDoorCODE (list (_GENERATEPDATA currentDoorWID currentDoorHEI)  currentDoorRot profileMAT __PANELTHICKNESS))
+				(_PUTLABEL currentDoorCODE currentDoorCODE (XSTR PANEL_LABEL))
+				(_PUTTAG currentDoorCODE currentDoorCODE PANEL_TAG)
+				
+				(setq currentDoorSecFaceCODE (_CREATESFACEMAIN currentDoorCODE (list (_GENERATEPDATA currentDoorWID currentDoorHEI) currentDoorRot profileMAT __PANELTHICKNESS PANEL_SFACE_ROTATION_AXIS)))
+				(_PUTLABEL currentDoorSecFaceCODE currentDoorSecFaceCODE (XSTR PANEL_LABEL))
+				(_PUTTAG currentDoorSecFaceCODE currentDoorSecFaceCODE PANEL_TAG)
+				
+				(_PUTUSAGETYPETAG currentDoorCODE currentDoorCODE "DOOR")
+				(_PUTUSAGETYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE "DOOR")
+
+				(_PUTMODELTYPETAG currentDoorCODE currentDoorCODE currentDoorModel)
+				(_PUTMODELTYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE currentDoorModel)
+
+				(_PUTCOSTTYPETAG currentDoorCODE currentDoorCODE doorCostType)
+				(_PUTCOSTTYPETAG currentDoorSecFaceCODE currentDoorSecFaceCODE doorCostType)
+				
+				(_PUTLMMDATAMAIN (list currentDoorCODE currentDoorCODE lmm-k-doorform (ifnull (getDoorMDataFromBlockName (getEntPro g_CurrentModulEnt 2 ) k:DoorForm) "") nil))
+				(_PUTLMMDATAMAIN (list currentDoorSecFaceCODE currentDoorSecFaceCODE lmm-k-doorform (ifnull (getDoorMDataFromBlockName (getEntPro g_CurrentModulEnt 2 ) k:DoorForm) "") nil))
+				
+				(_PUTLMMDATAMAIN (list currentDoorCODE currentDoorCODE lmm-k-doorDirection (getDoorDirectionWithDoorPosition g_CurrentModulEnt nil) nil))
+				(_PUTLMMDATAMAIN (list currentDoorSecFaceCODE currentDoorSecFaceCODE lmm-k-doorDirection (getDoorDirectionWithDoorPosition g_CurrentModulEnt nil) nil))
+
+				(if (equal currentDoorTYPE "C")
+					(_PUTTAG currentDoorCODE currentDoorCODE "DRAWER")
+				)
+				
+				; Glass Part
+				(_FSET (_ 'frameThickness (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CDoorFrameThick) nil)))
+				(if (null frameThickness) (_FSET (_ 'frameThickness FRAME_THICKNESS_DEFAULT)))
+				
+				;(_FSET (_ (read glassFRAME) (mapcar '+ frameShares (_ frameThickness frameThickness frameThickness frameThickness))))
+				
+				(_FSET (_ 'glassPartCODE (_& (_ currentDoorCODE "_" (XSTR "GLASS")))))
+				(_PANELMAIN glassPartCODE (list (_GENERATEPDATA (- currentDoorWID lostInWID) (- currentDoorHEI lostInHEI))  currentDoorRot glassDoorLayerMAT __AD_GLASSTHICK))
+
+				(if (equal (iniread ad_WARDROBE-INI "part2cam_rcps" "use_handle_holes" "") "1")
+					(_RUNHELPERRCP "CONNECTOR\\HANDLE" nil "p2chelper")
+				)
+
+				(_RUNHELPERRCP "CONNECTOR\\EDGESTRIPS" nil "p2c")
+			)
+		)
+	)
+)
+
+(_NONOTCH)

@@ -1,0 +1,137 @@
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "UE_SIDE_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "TOP_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OBLIQUE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+
+(if (and (null USE_PROJECT_PRICING_RECIPES) (_NOTNULL OBLIQUE_UNIT_CONTROL))
+	(progn
+		(if (_EXISTPANEL UE_TOP_PANEL_CODE)
+			(progn
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					
+					(cond
+						((equal TOP_PANEL_JOINT_TYPE 1)
+							(cond
+								((equal __MODULDIRECTION "L")
+									(_FSET (_ 'SSidePanelOrientType "Y-"))
+									(_FSET (_ 'LSidePanelOrientType "Y+"))
+								)
+								((equal __MODULDIRECTION "R")
+									(_FSET (_ 'SSidePanelOrientType "Y+"))
+									(_FSET (_ 'LSidePanelOrientType "Y-"))
+								)
+							)
+							(_FSET (_ 'topPanelOrientTypeForLSide nil))
+							(_FSET (_ 'topPanelOrientTypeForSSide nil))
+							
+							(_FSET (_ 'SSidePanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'LSidePanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'topPanelZValue 0.0))
+							
+							(_FSET (_ 'SSidePanelsConstAxisValue 0.0))
+							(_FSET (_ 'LSidePanelsConstAxisValue 0.0))
+							(_FSET (_ 'topPanelConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+						)
+						((equal TOP_PANEL_JOINT_TYPE 0)
+							(_FSET (_ 'SSidePanelOrientType nil))
+							(_FSET (_ 'LSidePanelOrientType nil))
+							(cond
+								((equal __MODULDIRECTION "L")
+									(_FSET (_ 'topPanelOrientTypeForLSide "X-"))
+									(_FSET (_ 'topPanelOrientTypeForSSide "X+"))
+								)
+								((equal __MODULDIRECTION "R")
+									(_FSET (_ 'topPanelOrientTypeForLSide "X+"))
+									(_FSET (_ 'topPanelOrientTypeForSSide "X-"))
+								)
+							)
+							
+							(_FSET (_ 'SSidePanelsZValue 0.0))
+							(_FSET (_ 'LSidePanelsZValue 0.0))
+							(_FSET (_ 'topPanelZValue (car horizontalHolePos)))
+							
+							(_FSET (_ 'SSidePanelsConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'LSidePanelsConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'topPanelConstAxisValue 0.0))
+						)
+					)
+					
+					(cond
+						((equal __MODULDIRECTION "L")
+							(_FSET (_ 'topPanelConstAxisValueLSideForModulDir (- UE_TOP_PANEL_WID topPanelConstAxisValue)))
+							(_FSET (_ 'topPanelConstAxisValueSSideForModulDir topPanelConstAxisValue))
+							(_FSET (_ 'LSidePanelsConstAxisValueForModuleDir LSidePanelsConstAxisValue))
+							(_FSET (_ 'SSidePanelsConstAxisValueForModuleDir (- UE_SHORT_SIDE_PANEL_HEI SSidePanelsConstAxisValue)))
+						)
+						((equal __MODULDIRECTION "R")
+							(_FSET (_ 'topPanelConstAxisValueLSideForModulDir topPanelConstAxisValue))
+							(_FSET (_ 'topPanelConstAxisValueSSideForModulDir (- UE_TOP_PANEL_WID topPanelConstAxisValue)))
+							(_FSET (_ 'LSidePanelsConstAxisValueForModuleDir (- UE_LONG_SIDE_PANEL_HEI LSidePanelsConstAxisValue)))
+							(_FSET (_ 'SSidePanelsConstAxisValueForModuleDir SSidePanelsConstAxisValue))
+						)
+					)
+
+					(_FSET (_ 'topPanelPointListForLSide (_GETHOLEPOINTLIST operationName 
+						(_ UE_TOP_PANEL_HEI topPanelConstAxisValueLSideForModulDir topPanelZValue "Y")
+						(_ 0.0 0.0 T UE_TOP_PANEL_HEI)
+						(_ FITTING_PARAMETERS nil))))
+					
+					(_HOLEGROUP operationName UE_TOP_PANEL_OP_FACE topPanelPointListForLSide (_ topPanelOrientTypeForLSide "X+") connectorParams)
+
+					(_FSET (_ 'topPanelPointListForSSide (_GETHOLEPOINTLIST operationName 
+						(_ UE_TOP_PANEL_HEI2 topPanelConstAxisValueSSideForModulDir topPanelZValue "Y")
+						(_ 0.0 0.0 T UE_TOP_PANEL_HEI2)
+						(_ FITTING_PARAMETERS nil))))
+					
+					(_HOLEGROUP operationName UE_TOP_PANEL_OP_FACE topPanelPointListForSSide (_ topPanelOrientTypeForSSide "X-") connectorParams)
+					
+					(if (_EXISTPANEL UE_LONG_SIDE_PANEL_CODE)
+						(progn
+							(_FSET (_ 'longSidePointListForTop (_GETHOLEPOINTLIST operationName 
+							(_ UE_LONG_SIDE_PANEL_WID LSidePanelsConstAxisValueForModuleDir LSidePanelsZValue "X")
+							(_ 0.0 0.0 nil UE_LONG_SIDE_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+							
+							(_HOLEGROUP operationName UE_LONG_SIDE_PANEL_CODE longSidePointListForTop (_ LSidePanelOrientType "Y-") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL UE_SHORT_SIDE_PANEL_CODE)
+						(progn
+							(_FSET (_ 'shortSidePointListForTop (_GETHOLEPOINTLIST operationName 
+							(_ UE_SHORT_SIDE_PANEL_WID  SSidePanelsConstAxisValueForModuleDir SSidePanelsZValue "X")
+							(_ 0.0 0.0 nil UE_SHORT_SIDE_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+							
+							(_HOLEGROUP operationName UE_SHORT_SIDE_PANEL_CODE shortSidePointListForTop (_ SSidePanelOrientType "Y+") connectorParams)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

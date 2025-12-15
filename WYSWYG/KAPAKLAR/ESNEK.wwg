@@ -1,0 +1,10 @@
+(cond
+	((equal LR "soL")
+		(setq doorId (kapak_ciz (list "A" "RUSTIKAPAMA" "!!FIX!!") "0-"  ( * unitW 0.5) (+ unitD ad_et) dAltKot unitW unitH nil 0))
+		;(setq doorId (kapak_ciz (list "A" "RUSTIKAPAMA" "!!FIX!!") "0-"  (+ ( * unitW 0.5) unitW) (+ unitD ad_et) dAltKot unitW unitH nil 0))
+		;(setq doorId (kapak_ciz (list "A" "RUSTIKAPAMA" "!!FIX!!") "0-"  ( * unitW 0.5) unitD 0.0 unitW unitH nil 0))
+	)	
+	((equal LR "saG")
+		(setq doorId (kapak_ciz (list "A" "RUSTIKAPAMA" "!!FIX!!") "0-"  ( * unitW 0.5) 0.0 unitD unitW unitH nil 0))
+	)	
+)

@@ -1,0 +1,89 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list (- unitW CT10_T1) 0.0 0.0) 
+	(list (- unitW CT10_T1) unitD 0.0) 
+	(list 0.0 unitD 0.0) 
+	) 
+	nil
+	CT10_T1
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list CT10_T1 0.0 dAltKot)
+	"ALT_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list (- unitW CT10_T1) 0.0 0.0) 
+	(list (- unitW CT10_T1) unitD 0.0) 
+	(list 0.0 unitD 0.0) 
+	) 
+	nil
+	CT10_T1
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list CT10_T1 0.0 (- (+ dAltKot unitH) CT10_T1))
+	"UST_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list unitD 0.0 0.0) 
+	(list unitD unitH 0.0) 
+	(list 0.0 unitH 0.0) 
+	) 
+	nil
+	CT10_T1 
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"SOL_YAN" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list (- unitW CT10_T1) 0.0 0.0) 
+	(list (- unitW CT10_T1) (- unitH CT10_T1 CT10_T1) 0.0) 
+	(list 0.0 (- unitH CT10_T1 CT10_T1) 0.0) 
+	) 
+	nil
+	CT10_T2 
+	0.0
+	(d2r 90.0) 
+	(list CT10_T1 (- CT10_T2) (+ dAltKot CT10_T1))
+	"ARKALIK" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)

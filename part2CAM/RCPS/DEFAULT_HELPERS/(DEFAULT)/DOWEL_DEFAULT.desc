@@ -1,0 +1,6 @@
+DOWEL_DIAMETER -> "Diameter of dowel hole"
+DOWEL_DEPTH -> "Depth of horizontal dowel hole"
+DOWEL_DEPTH_FOR_SIDES -> "Depth of vertical dowel hole"
+DOWEL_HOR_POS -> "Horizontal position of dowel hole"
+DOWEL_CODE -> "Code of dowels"
+DOWEL_UNIT -> "Unit of dowels"

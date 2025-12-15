@@ -1,0 +1,447 @@
+;******************************************
+;*     OMAKSAN POST PROCESSOR FILE		  *
+;*            a.k.a PART2CAM              *
+;*       Cr.Aut:Eyüp Cr.Year:2018	      *
+;******************************************
+
+;lmm_exportOmaksanGCodesDesiredCAMOp ; "imalat dxf" tarafýndan çaðrýlan ana fonksiyon
+
+;ad_OmaksanCAMOperationList ;Cam operasyonlarýnýn sýrasý ile tanýmladýðý listedir. Genelde panellerin üst delikleri sonra kertme delikleri sonra yan delikleri ve en son kanal iþlemleri yapýalcak þekilde tanýmlanýr. 
+							;eðer Gola Layerlarýda yapýlmasý istenirse yine gola layerýna frezeleme cam oprasyonu tanýmlanmalýdýr. 
+							
+;omaksanHoleCAMOperation ; Üst sol sað arka ön delik operasyonlarý için CAM operasyon rutini
+;örnek cam style : (list "O1_8.0" "T1" "HOLE")
+;örnek cam style : (list "O2_8.0" "T1" "HOLE")
+;örnek cam style açýklama:
+		;(list  "O2_8.0" ; layer ismi yerine deliðin bulunduðu yüzey ve çapýyla  oluþturulmuþ bir kombinasyon kullanýlýr. Sýrasýyla üst , sol ,sað,ön,arka delikler için O1,O2,O3,O4,O5 kullanýlýr. Bu layer ismi "(O1 || O2 || O3 || O4 || O5)  + "_" + (cap)%.1f"  gibi olmak zorundadýr. çap deðeri ondalýk ayracýndan sonra tek sayý olacak þekilde yazýlmalýdýr.
+		;		"T1" 	; hangi takým kullanýlacaðý belirtilmeli
+		;		"HOLE") ; ve delik iþlemi yapýlacaðý belirtilemeli
+
+;omaksanMillingCAMOperation ; frezeleme CAM operasyonu yapan rutin
+ ;cam style açýklamasý: "Layer ismi" "Kullanýlacak takým" "CAM operasyonu omaksan ismi(milling için O100)" "kalýnlýðý kaç defada iþleyecek" "alttan nekadar taþacak +" "takým kaydýrmasý" "sað veya sol ise miktarý" "topPlaneSafetyOffset"
+ ;örnek cam style: (list "Groove_8" "T1" "O100" 2 0 0 0 "CENTER" 0 )
+ ;örnek cam style: (list "Groove_8" "T1" "O100" 2 0 0 0 "INSIDE" 2 ) 
+ ;örnek cam style: (list "Groove_8" "Layer ismi"
+						;"T1" 		"Kullanýlacak takým"
+						;"O100" 	"CAM operasyonu omaksan ismi(saw için O100)"
+						;2 			"kalýnlýðý kaç defada iþleyecek"
+						;0 			"alttan nekadar taþacak (+deðer ise  aþaðý doðru)"
+						;0 			"ust yüzeyden yaklaþma duzlem mesafesi"
+						;0 			"son paso miktarý"
+						;"INSIDE"		"takým kaydýrmasý"  KLAVUZ ÝÇÝN BAKINIZ ../../Help/Frezeleme ve testerelme klavuzu.pdf
+						;2			"sað veya sol kaydýrma var ise ise miktarý (herzaman + deðer olamlý)"
+						;"F30"		"iþleme hýzý"
+						;)
+						
+;omaksanSawCAMOperation ; testere cam oprasyonu. Var olan omaksan makineleri sadece x ekseni boyunca  testere iþlemi yapabilmektedir ve bu fonksiyon kendi içinde bunu kontrol eder.
+						; Örneðin Y ekseni boyunca olan bir polyline 'a denk gelirse bunu yapamaz ve post dosyasý içine yorum olarak ekler. Bunu aþmak için Söz konusu panel reçeteden cevrilebilir.
+;Aþaðýda Testere operasyonu nasýl tanýlanabileceði açýklanmýþtýr.
+;örnek cam style: (list "Groove_8" "T1" "O6" 2 0 0 0 "CENTER" 0)
+;cam style açýklamasý: "Layer ismi" "Kullanýlacak takým" "CAM operasyonu omaksan ismi(saw için O6)" "kalýnlýðý kaç defada iþleyecek" "alttan nekadar taþacak (+deðer ise  aþaðý doðru)" "ust yüzeyden yaklaþma duzlem mesafesi" "takým kaydýrmasý" "sað veya sol kaydýrma var ise ise miktarý"
+;örnek cam style: (list "Groove_8" "Layer ismi"
+						;"T1" 		"Kullanýlacak takým"
+						;"O6" 		"CAM operasyonu omaksan ismi(saw için O6)"
+						;2 			"kalýnlýðý kaç defada iþleyecek"
+						;0 			"alttan nekadar taþacak (+deðer ise  aþaðý doðru)"
+						;0 			"ust yüzeyden yaklaþma duzlem mesafesi"
+						;0 			"son paso miktarý"
+						;"INSIDE"		"takým kaydýrmasý" KLAVUZ ÝÇÝN BAKINIZ ../../Help/Frezeleme ve testerelme klavuzu.pdf
+						;2			"sað veya sol kaydýrma var ise ise takýmýn yarýçap miktarý (herzaman + deðer olamlý)"
+						;"F30"		"iþleme hýzý"
+						;)
+
+
+;Delikler için LAYERNAME yerine delikyüzeyi ve çapý, arasýnda alttan çizgi ile birlikte yazýlarak delik tanýmlamasý yapýlmalý. Örneðin üstteki 5mm çapýndaki delik için TOP_5 ,
+;Kanallar için LAYERNAME yerine layer name yazýlabilir. 
+;;LAYERNAME , TOOL , CAM operation type (O1 , O2 , O3 , O4 , O5     O6 testere O100 Freze)
+(setq ad_OmaksanCAMOperationList (list
+										(list "O1_8.0" "T1" "HOLE")
+										(list "O1_15.0" "T6" "HOLE")
+										(list "O1_35.0" "T5" "HOLE")
+										(list "O1_5.0" "T4" "HOLE")
+										(list "O1_4.0" "T8" "HOLE")
+										(list "O1_10.0" "T7" "HOLE")
+										(list "NOTCH" "T1" "O100" 2 1 0 0 "INSIDE" 4 "F30" T)
+										(list "O2_8.0" "T1" "HOLE")
+										(list "O3_8.0" "T1" "HOLE")
+										(list "O4_8.0" "T1" "HOLE")
+										(list "O5_8.0" "T1" "HOLE")
+										;(list "GROOVE" "T1" "O6" 1 0 0 0 "OUTSIDE" 0 "F30" nil)
+										(list "GROOVE" "T1" "O100" 1 0 0 0 "CENTER" 0 "F30" nil)
+										;(list "GOLA_LAYER_TOP_1" "T1" "O100" 1 0 0 0 "INSIDE" 0 "F30" nil)
+										;(list "GOLA_LAYER_TOP_2 " "T1" "O100" 1 0 0 0 "INSIDE" 0 "F30" nil)	
+ ))
+ 
+ ;cam style açýklamasý: "Layer ismi" "Kullanýlacak takým" "CAM operasyonu omaksan ismi(saw için O6)" "kalýnlýðý kaç defada iþleyecek" "alttan nekadar taþacak (+deðer ise  aþaðý doðru)" "ust yüzeyden yaklaþma duzlem mesafesi" "takým kaydýrmasý" "sað veya sol kaydýrma var ise ise miktarý"
+ ;örnek cam style: (list "Groove_8" "T1" "O6" 2 0 0 0 "CENTER" 0)
+ ;örnek cam style: (list "Groove_8" "Layer ismi"
+						;"T1" 		"Kullanýlacak takým"
+						;"O6" 		"CAM operasyonu omaksan ismi(saw için O6)"
+						;2 			"kalýnlýðý kaç defada iþleyecek"
+						;0 			"alttan nekadar taþacak (+deðer ise  aþaðý doðru)"
+						;0 			"ust yüzeyden yaklaþma duzlem mesafesi"
+						;0 			"son paso miktarý"
+						;"INSIDE"		"takým kaydýrmasý" 
+						;2			"sað veya sol kaydýrma var ise ise takýmýn yarýçap miktarý (herzaman + deðer olamlý)"
+						;"F30"		"iþleme hýzý"
+						;)
+ ;ÖNEMLÝ NOT : Testere sadece x ekseninde bir çizgi üzerinde iþlme yapar.
+ (setq omaksanSawCAMOperation nil)
+ (defun omaksanSawCAMOperation ( tempEnt tempCAMStyle safetyPlane file / mrtn tempPoint tempPoints startPoint endPoint middlePoint 
+																	polylineIsStraitAlongByXAxis currentZLevel stepZComponets
+																	bottomZComponent topZComponent stepOfPasses tempDepth  
+																	tempEndPoint )
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq tempPoints (lmm_getPolylinePoints tempEnt))
+	(setq startPoint (nth 0 tempPoints))
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+			)
+		)
+	)
+	(if polylineIsStraitAlongByXAxis 
+		(progn 
+			(setq endPoint (last tempPoints))
+			(if (> (nth 0 startPoint) (nth 0 endpoint))
+				(progn
+					(setq tempEndPoint endPoint)
+					(setq endPoint startPoint)
+					(setq startPoint tempEndPoint)
+				)
+			)
+			(setq tempDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+			(setq stepOfPasses 	(nth 3 tempCAMStyle))
+			(setq bottomZComponent (- safetyPlane (+ tempDepth (nth 4 tempCAMStyle) )) )
+			(setq topZComponent (+ safetyPlane (nth 5 tempCAMStyle) ) )
+			(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+			(cond 
+				( (equal "CENTER" (nth 7 tempCAMStyle))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "INSIDE" (nth 7 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (* (nth 8 tempCAMStyle) -1) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (* (nth 8 tempCAMStyle) -1) 0) ))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (nth 8 tempCAMStyle) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (nth 8 tempCAMStyle) 0) ))
+					(setq tempPoints (list startPoint endPoint))
+				)
+			)
+			(setq mrtn "")
+			(foreach currentZLevel stepZComponets
+				(if (equal mrtn "")
+					(setq mrtn (strcat mrtn "" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+					(setq mrtn (strcat mrtn "\n" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+				)
+				(setq mrtn (strcat mrtn "\n" 	"G0 X" (lmm_convertNumtoStringWithDigit (nth 0 startPoint) 3)
+												" Y"   (lmm_convertNumtoStringWithDigit (nth 1 startPoint) 3)
+												" Z"   (lmm_convertNumtoStringWithDigit topZComponent 3) ))
+				(setq mrtn (strcat mrtn "\n" 	"G1 X" (lmm_convertNumtoStringWithDigit (nth 0 endPoint) 3)
+												" Y"   (lmm_convertNumtoStringWithDigit (nth 1 endPoint) 3)
+												" Z"   (lmm_convertNumtoStringWithDigit currentZLevel 3) ))
+			)
+		)
+		(progn
+			(setq mrtn (strcat "//Testere uygulanamadý. Geometri uygun deðil."))
+		)
+	)
+	(write-line  mrtn file)
+ )
+
+
+;(equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE"
+;(setq tempHolePos (getEntPro tempEnt 10))
+ 
+ ;cam style açýklamasý: "Layer ismi" "Kullanýlacak takým" "CAM operasyonu omaksan ismi(milling için O100)" "kalýnlýðý kaç defada iþleyecek" "alttan nekadar taþacak +" "takým kaydýrmasý" "sað veya sol ise miktarý" "topPlaneSafetyOffset"
+ ;örnek cam style: (list "Groove_8" "T1" "O100" 2 0 0 0 "CENTER" 0 )
+ ;örnek cam style: (list "Groove_8" "T1" "O100" 2 0 0 0 "INSIDE" 2 ) 
+ ;örnek cam style: (list "Groove_8" "Layer ismi"
+						;"T1" 		"Kullanýlacak takým"
+						;"O100" 	"CAM operasyonu omaksan ismi(saw için O100)"
+						;2 			"kalýnlýðý kaç defada iþleyecek"
+						;0 			"alttan nekadar taþacak (+deðer ise  aþaðý doðru)"
+						;0 			"ust yüzeyden yaklaþma duzlem mesafesi"
+						;0 			"son paso miktarý"
+						;"INSIDE"		"takým kaydýrmasý" 
+						;2			"sað veya sol kaydýrma var ise ise miktarý (herzaman + deðer olamlý)"
+						;"F30"		"iþleme hýzý"
+						;)
+(setq omaksanMillingCAMOperation nil)
+(defun omaksanMillingCAMOperation ( tempEnt tempCAMStyle safetyPlane currentPanel file / mrtn bottomZComponent topZComponent stepOfPasses tempDepth stepZComponets currentZLevel 
+																					tempPoints	deleteHelper tempPoint firstPoint secondPoint firstSecondNormal fieldPoint pointIndex)
+    (setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (- safetyPlane (+ tempDepth (nth 4 tempCAMStyle) )) )
+	(setq topZComponent (+ safetyPlane (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints tempEnt))
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints tempEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints  currentPanel (nth 10 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq deleteHelper T)
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints tempEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints  currentPanel (nth 10 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq deleteHelper T)
+		)
+	)
+	
+	(if (equal 1 (getentpro (entlast) 70))
+		(progn
+			(setq tempPoints (append tempPoints (list (nth 0 tempPoints))))
+		)
+	)
+	
+	(setq mrtn "")
+	(foreach currentZLevel stepZComponets
+		(if (equal mrtn "")
+			(setq mrtn (strcat mrtn "" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+			(setq mrtn (strcat mrtn "\n" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+		)
+		(setq mrtn (strcat mrtn "\n" 	"G0 X" (lmm_convertNumtoStringWithDigit (nth 0 (nth 0 tempPoints)) 3)
+										" Y"   (lmm_convertNumtoStringWithDigit (nth 1 (nth 0 tempPoints)) 3)
+										" Z"   (lmm_convertNumtoStringWithDigit topZComponent 3) ))
+		(setq pointIndex 0)
+		(foreach tempPoint tempPoints
+			(if (not (equal pointIndex 0))
+				(setq mrtn (strcat mrtn "\n" 	(nth 9 tempCAMStyle)
+										"\n"	"G1 X" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+										" Y"	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+										" Z"	(lmm_convertNumtoStringWithDigit currentZLevel 3) ))
+			)
+			(setq pointIndex (1+ pointIndex))
+		)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+	(write-line  mrtn file)
+ )
+
+
+(setq omaksanHoleCAMOperation nil)
+(defun omaksanHoleCAMOperation ( currentEnt entLayerName tempCAMStyle currentPanel file / tempHolePos tempHoleDepth tempPanelCurrentHoleX tempPanelCurrentHoleY tempPanelCurrentHoleZ
+																							tempOpToolName tempPanelDepth)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq tempOpToolName (nth 1 currentOp))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	(cond
+		( (equal "O1" (substr entLayerName 1 2))
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleZ (lmm_convertNumtoStringWithDigit (- tempPanelDepth (abs tempHoleDepth)) 3))
+			(write-line (strcat "O1 " tempOpToolName) file)
+			(write-line "F50" file)
+			(write-line (strcat "G0" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" (lmm_convertNumtoStringWithDigit tempPanelDepth 3)) file)
+			(write-line (strcat "G1" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" tempPanelCurrentHoleZ) file)
+		)
+		( (equal "O3" (substr entLayerName 1 2))
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 0 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleZ (lmm_convertNumtoStringWithDigit (/ tempPanelDepth 2) 3))
+			(write-line (strcat "O3 " tempOpToolName) file)
+			(write-line "F50" file)
+			(write-line (strcat "G0" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" (lmm_convertNumtoStringWithDigit tempPanelDepth 3)) file)
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (- (atof tempPanelCurrentHoleX) (abs tempHoleDepth)) 3))
+			(write-line (strcat "G1" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" tempPanelCurrentHoleZ) file)
+		)
+		( (equal "O2" (substr entLayerName 1 2))
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 0 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleZ (lmm_convertNumtoStringWithDigit (/ tempPanelDepth 2) 3))
+			(write-line (strcat "O2 " tempOpToolName) file)
+			(write-line "F50" file)
+			(write-line (strcat "G0" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" (lmm_convertNumtoStringWithDigit tempPanelDepth 3)) file)
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (+ (atof tempPanelCurrentHoleX) (abs tempHoleDepth)) 3))
+			(write-line (strcat "G1" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" tempPanelCurrentHoleZ) file)
+		)
+		( (equal "O5" (substr entLayerName 1 2))
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleZ (lmm_convertNumtoStringWithDigit (/ tempPanelDepth 2) 3))
+			(write-line (strcat "O5 " tempOpToolName) file)
+			(write-line "F50" file)
+			(write-line (strcat "G0" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" (lmm_convertNumtoStringWithDigit tempPanelDepth 3)) file)
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (- (atof tempPanelCurrentHoleY) (abs tempHoleDepth)) 3))
+			(write-line (strcat "G1" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" tempPanelCurrentHoleZ) file)
+		)
+		( (equal "O4" (substr entLayerName 1 2))
+			(setq tempPanelCurrentHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 3))
+			(setq tempPanelCurrentHoleZ (lmm_convertNumtoStringWithDigit (/ tempPanelDepth 2) 3))
+			(write-line (strcat "O4 " tempOpToolName) file)
+			(write-line "F50" file)
+			(write-line (strcat "G0" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" (lmm_convertNumtoStringWithDigit tempPanelDepth 3)) file)
+			(setq tempPanelCurrentHoleY (lmm_convertNumtoStringWithDigit (+ (atof tempPanelCurrentHoleY) (abs tempHoleDepth)) 3))
+			(write-line (strcat "G1" " X" tempPanelCurrentHoleX " Y" tempPanelCurrentHoleY " Z" tempPanelCurrentHoleZ) file)
+		)
+	)
+)
+ 
+ 
+(setq omaksanAllEntities nil)
+(setq omaksanNotFreeEntities nil)
+(setq omaksanEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq omaksanIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "O1_0.0" "O2_0.0" "O3_0.0" "O4_0.0" "O5_0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+ 
+(setq lmm_exportOmaksanGCodesDesiredCAMOp nil)
+(defun lmm_exportOmaksanGCodesDesiredCAMOp ( /  gCodeFilesPath allPanelsList tempPanel gCodeFile tempPanelLength tempPanelWidth
+												tempPanelDepth tempPanelName currentOp tempEnt tempPanelSS tempPanelSSList tempEntityLayerName
+												tempOpLayerName  tempOpOpName tempDerivedLayerName tempHoleDia tempIter alertMsg
+												  )
+	(setq omaksanAllEntities nil)
+	(setq omaksanNotFreeEntities nil)
+	(setq omaksanEntitiesThatCanNotBeCAM nil)
+												  
+												                                                     
+	;þimdi burda verilen layer isimlerine ve sýrasýna göre cam opersayonlarýný oluþtumak gerekiyor.
+	;önce kullanýcýnýn tanýmladýðý cam programalý listesine göre
+	; her defasýna tüm entitileri getirelim ve uygun cam oprasyonun uygulayalým
+	; temelde Z-, X+, X-, Y+, Y-, grove ve profile cam  7 adet operasyonlarý var
+	(setq gCodeFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(setq tempPanelName (lmm_getLMMdata tempPanel lmm-k-customCode))
+		(setq tempPanelDepth (lmm_getLMMdata tempPanel lmm-k-depth))
+		(setq tempPanelLength (getnth 2 (getBBox tempPanel)))
+		(setq tempPanelWidth (getnth 3 (getBBox tempPanel)))
+		(setq gCodeFile (open (strcat gCodeFilesPath (lmm_getDXFFileNameByFileMode (list tempPanel)) ".txt") "w"))
+		;(write-line "%" gCodeFile)
+		(setq tempPanelLength (lmm_convertNumtoStringWithDigit tempPanelLength 3))
+		(setq tempPanelWidth (lmm_convertNumtoStringWithDigit tempPanelWidth 3))
+		(setq tempPanelDepth (lmm_convertNumtoStringWithDigit tempPanelDepth 3))
+		;(write-line (strcat "//" tempPanelName) gCodeFile)
+		(write-line (strcat "L" tempPanelLength " W" tempPanelWidth " D" tempPanelDepth) gCodeFile)
+		(setq tempPanelDepth (atof tempPanelDepth))
+		(setq tempPanelLength (atof tempPanelLength))
+		(setq tempPanelWidth (atof tempPanelWidth))
+		(foreach currentOp ad_OmaksanCAMOperationList
+			(setq tempOpLayerName (nth 0 currentOp))
+	
+			(setq tempOpOpName (nth 2 currentOp))
+			;(write-line (strcat "//CAM_OP "  tempOpLayerName tempOpToolName tempOpOpName) gCodeFile)
+			(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+			(setq tempPanelSSList (convertSStolist tempPanelSS))
+			(setq tempPanelSSList (entOptimization tempPanelSSList))
+			(foreach tempEnt tempPanelSSList
+				(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor
+					(progn 
+						(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+						(cond 
+							( ;Z - 
+								(equal (getnth 2 (getEntPro tempEnt 210)) 1.00000)
+								(setq tempDerivedLayerName "O1_" )
+							)
+							( ;X - 
+								(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+								(setq tempDerivedLayerName "O3_" )
+							)
+							( ;X + 
+								(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+								(setq tempDerivedLayerName "O2_" )
+							)
+							( ;Y - 
+								(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+								(setq tempDerivedLayerName "O5_" )
+							)
+							( ;Y + 
+								(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+								(setq tempDerivedLayerName "O4_" )
+							)
+						)
+						(setq tempDerivedLayerName (strcat tempDerivedLayerName (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+					)
+					(progn 
+						(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+					)
+				)
+				
+				;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+				(if (not (member tempDerivedLayerName omaksanIgnoreLayerNameList))
+					(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) omaksanAllEntities))
+						(setq omaksanAllEntities (append omaksanAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+					)
+				)
+				
+				(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+					(progn
+						(cond 
+							((equal tempOpOpName "HOLE") ; üst, sol,sað,arka,ön delik iþlemi
+								(omaksanHoleCamOperation tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+								
+								;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+								(setq omaksanNotFreeEntities (append omaksanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+							) 
+							((equal tempOpOpName "O6") ;testere iþlemi
+								(omaksanSawCAMOperation tempEnt  currentOp tempPanelDepth gCodeFile)	
+								
+								;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+								(setq omaksanNotFreeEntities (append omaksanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+							)
+							((equal tempOpOpName "O100") ;freze iþlemi
+								(omaksanMillingCAMOperation tempEnt  currentOp tempPanelDepth tempPanel gCodeFile)	
+								
+								;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+								(setq omaksanNotFreeEntities (append omaksanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+							)
+						)
+					)
+				)
+			)
+		)
+		(write-line "M30" gCodeFile)
+		(close gCodeFile)
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem omaksanAllEntities
+		(if (and (not (member tempItem omaksanNotFreeEntities)) (not (member tempItem omaksanEntitiesThatCanNotBeCAM)))
+			(setq omaksanEntitiesThatCanNotBeCAM (append omaksanEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if omaksanEntitiesThatCanNotBeCAM
+		(progn
+			(setq omaksanEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) omaksanEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length omaksanEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter omaksanEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter omaksanEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+	
+)
+
+(princ)

@@ -1,0 +1,41 @@
+(if (> __NOTCHDIM3 __AD_PANELTHICK)
+	(progn
+		(if (_EXISTPANEL BACK_TOP_STRECHER_OP_FACE)
+			(progn	
+				(_FSET (_ 'lengthParametersForNotchedBackTopStrecherAndNotchedLeft (_CALCULATEPANELSINTERSECTIONLENGTH BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBackTopStrecherAndNotchedLeft (car lengthParametersForNotchedBackTopStrecherAndNotchedLeft)))
+
+				(_FSET (_ 'lengthParametersForNotchedBackTopStrecherAndNotchedRight (_CALCULATEPANELSINTERSECTIONLENGTH BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBackTopStrecherAndNotchedRight (car lengthParametersForNotchedBackTopStrecherAndNotchedRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'notchedLeftPanelPointListForNotchedBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																							(_ lengthForNotchedBackTopStrecherAndNotchedLeft (- NOTCHED_LEFT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET LEFT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																							(_ (_= "NOTCHED_LEFT_PANEL_WID - BACK_TOP_STRECHER_HEI - BACK_TOP_STRECHER_BACK_OFFSET - __NOTCHDIM2 - secondaryNotchedPanelStyleV2") 0 nil BACK_TOP_STRECHER_HEI) 
+																							(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName NOTCHED_LEFT_PANEL_CODE notchedLeftPanelPointListForNotchedBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'notchedRightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																					(_ lengthForNotchedBackTopStrecherAndNotchedRight (- NOTCHED_RIGHT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																					(_ (- (* -1 BACK_TOP_STRECHER_BACK_OFFSET) __NOTCHDIM2 secondaryNotchedPanelStyleV2) 0 T BACK_TOP_STRECHER_HEI) 
+																					(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName NOTCHED_RIGHT_PANEL_CODE notchedRightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)
+

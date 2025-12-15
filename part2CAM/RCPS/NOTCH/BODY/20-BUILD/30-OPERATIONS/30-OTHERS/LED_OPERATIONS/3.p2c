@@ -1,0 +1,60 @@
+(if (_EXISTPANEL NOTCHED_BOTTOM_PANEL_CODE)
+	(progn
+		(ifnull (_EXISTPANEL (strcat NOTCHED_BOTTOM_PANEL_CODE "!!SFACE"))
+			(_CREATESFACEMAIN NOTCHED_BOTTOM_PANEL_CODE (_ NOTCHED_BOTTOM_PANEL_PDATA NOTCHED_BOTTOM_PANEL_ROT NOTCHED_BOTTOM_PANEL_MAT NOTCHED_BOTTOM_PANEL_THICKNESS "Y"))
+		)
+		(_FSET (_ 'halfOfThicknessBottom (/ BOTTOM_PANEL_THICKNESS 2)))
+	
+		(if (not (> __NOTCHDIM2 DIST_OF_LED_GROOVE))
+			(progn
+				(if LED_GROOVE_IS_AVAILABLE
+					(progn
+						(_FSET (_ 'grooveDistanceBTS (+ (- __DEP DIST_OF_LED_GROOVE (/ WID_OF_LED_GROOVE 2)) BOTTOM_PANEL_FRONT_VARIANCE)))
+						
+						(_GROOVE "BOTTOM_PANEL_LED_GROOVE" (strcat NOTCHED_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ 	(_ grooveDistanceBTS 0 0) 
+																								(_ grooveDistanceBTS BOTTOM_PANEL_WID 0)) WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE))	
+																								
+						(if (equal BOTTOM_PANEL_JOINT_TYPE 0)
+							(progn
+								(if (and (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE))
+									(progn
+										(_FSET (_ 'grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (/ WID_OF_LED_GROOVE 2))))
+
+										(_GROOVE "LEFT_PANEL_LED_GROOVE" NOTCHED_LEFT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS 0 0) 
+																										(_ grooveDistanceBTS DEPTH_OF_LED_GROOVE 0)) WID_OF_LED_GROOVE LEFT_PANEL_THICKNESS))	
+									)
+								)
+								(if (and (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE))
+									(progn
+										(_FSET (_ 'grooveDistanceBTS (+  (- NOTCHED_RIGHT_PANEL_WID RIGHT_PANEL_FRONT_VARIANCE __DEP) DIST_OF_LED_GROOVE (/ WID_OF_LED_GROOVE 2))))
+
+										(_GROOVE "RIGHT_PANEL_LED_GROOVE" NOTCHED_RIGHT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS 0 0) 
+																											(_ grooveDistanceBTS DEPTH_OF_LED_GROOVE 0)) WID_OF_LED_GROOVE RIGHT_PANEL_THICKNESS))	
+									)
+								)
+							)
+						)
+					)
+				)
+																					
+				(if BACK_SIDE_LED_HOLES_ARE_AVAILABLE																			
+					(progn
+						(_FSET (_ 'holeCodeBody "BOTTOM_BACK_SIDE_LED_HOLE_"))
+						
+						(_HOLE (_& (_ holeCodeBody "RIGHT")) (strcat NOTCHED_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ NOTCHED_BOTTOM_PANEL_HEI BACK_SIDE_LED_HOLES_OFFSET (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X-"))
+						
+						(_HOLE (_& (_ holeCodeBody "LEFT")) (strcat NOTCHED_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ NOTCHED_BOTTOM_PANEL_HEI (- BOTTOM_PANEL_WID BACK_SIDE_LED_HOLES_OFFSET) (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X-"))
+					)
+				)
+			)
+		)
+		
+		(if MIDDLE_LED_HOLE_IS_AVAILABLE																			
+			(progn
+				(_FSET (_ 'holeCodeBody "BOTTOM_PANEL_MIDDLE_LED_HOLE"))
+			
+				(_HOLE holeCodeBody (strcat NOTCHED_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (+ (/ __DEP 2) BOTTOM_PANEL_FRONT_VARIANCE) (- (+ (/ __WID 2) BOTTOM_PANEL_RIGHT_VARIANCE) bottomSideStyleV2) 0.0) MIDDLE_LED_HOLE_DIA MIDDLE_LED_HOLE_DEPTH))
+			)
+		)
+	)
+)

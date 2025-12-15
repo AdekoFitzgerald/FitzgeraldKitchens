@@ -1,0 +1,5 @@
+INTERSECTION_OF_BACK_PANELS -> "Which back panel occupies the intersection of back panels; ''L'' for left, ''R'' for right"
+AK_STRECHER_NUMBER -> "Number of corner unit strecher: 1 or 2"
+IF_NO_TOP_PANEL_AK_STRECHER_EXTEND_TO_UP -> "If there is no top panel in module, extend corner strechers to up"
+CORNER_STRECHERS_SIDE -> "Which back panel corner strechers are leaning against; ''L'' for left, ''R'' for right"
+DOMINANT_SIDE -> "Which corner strecher occupies the intersection of double corner strechers; ''L'' for left, ''R'' for right"

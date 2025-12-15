@@ -1,0 +1,205 @@
+;******************************************
+;*         AES POST PROCESSOR FILE		  *
+;*            a.k.a PART2CAM              *
+;*       Cr.Aut:Eyüp Cr.Year:2018	      *
+;******************************************
+
+;Bu AES Post dosyasý kaydýrmasýz iþlem yapmaktadýr. 1030 mm den uzun panelleri iþleyemez ve uyarý verir. 
+
+
+;Fonksiyon açýklamlarý 
+;lmm_exportAESSiriusNCFilesDesiredCAMOp : Ana fonksiyondur herþey burada baþlar
+;selectAESMachines 						: Eðer üretimde birden fazla makine kullnýlýyor ise ve paneller bu makinelere belirli kurallar dahilinde daðýtýlýyor ise bu kurallar burada tanýmlanýp panellerin durumuna göre makinelere daðýtýmý yapýlabilir.
+;aesInterpretHoleLayerName				: Deliklerin geometrisine göre sanal bir katman ismi üretir bu katman isimleri daha sonra "ad_AESCAMOperationList" gibi deðiþkenlerele CAM operasyonlarý atanabilir.
+
+;Deðiþkenlerin açýklamalarý
+;ad_AESCAMOperationList					:Kanal, Kertme katman isimlerine ve delik sanal katman isimlerine CAM operasonlarýnýn atandýðý deðiþkendir. Buradaki sýra ayný zamanda iþlem sýrasýný belirler. 
+;Eðer farklý makineler için farklý CAM operasonlarý yapýlacaksa bu deðiþken "ad_AESCAMOperationList1 .. ad_AESCAMOperationListn" gibi türetilebilir, "selectAESMachines" fanksiyonu içerisinde makine ve operasyonlarýn listesi eþleþtirilebilinir.
+
+;Aþaðýdaki deðiþkenler bir katmana iþlem yapýlýp yapýlmadýðýný belirlemek için kullanýlýr. Bu bize iþlem yapýlamayan katmanlarýn gözden kaçmasýný engeller.
+;ad_AESIgnoreLayerNameList				;Ýþlem yapýlmayan katman isimlerinin turulduðu deðiþkendir. (genelde delik makinelerinde PANEL ve 0 katmanlarýna iþlem yapýlmaz)
+;ad_AllEntities							;Tüm geometrilerin "Panelismi+Katman/sanal Katman ismi" 'in listesinin tutulduðu deðiþkendir. Bu deðiþken makinelere ait post dosyalarýnda "ad_AESIgnoreLayerNameList" deðiþkeninde bulunmayan katman isimleri eklenmelidir. Var olan herhangi makineye ait post dosyasýnda örnek alýnabilir.
+;ad_NotFreeEntities						;Ýþlem yapýlabilien "Panelismi+Katman/sanal Katman ismi" 'in listesinin tutulduðu deðiþkendir. Bu deðiþken makinelere ait post dosyalarýnda mevcut o anki katmana iþlem yapýlabildiði takdirde o katmanýn ismi eklenmelidir. Var olan herhangi makineye ait post dosyasýnda örnek alýnabilir.
+;ad_EntitiesThatCanNotBeCAM				;Ýþlem yapýlamayan "Panelismi+Katman/sanal Katman ismi" 'in listesinin tutulduðu deðiþkendir. Ýmalat DXF leri çýkartýlan bir projeye ait tüm paneller iþlendikten sonra ad_AllEntities - ad_NotFreeEntities denklemine göre iþlem yapýlamayan panel+katman isimleri bulunur. 
+
+;MultiDrill Konfigürasyonu 950m
+;tk: çap 	x  		 y 		z
+;61	 8	 	0		 0		0	Üst
+;62	 8	 	0		-32		0	Üst
+;63	 8	 	0		-64		0	Üst
+;64	 10	 	0		-96		0	Üst
+;65	 5	 	0		-128	0	Üst
+;66	 35	 	32		-128	0	Üst
+;67	 15	 	64		-128	0	Üst
+;68	 3	 	96		-128	0	Üst
+;69	 3	 	128		-128	0	Üst
+;70	 20	 	160		-128	0	Üst
+;71	 8	 	32		 100	0	Ön
+;72	 8	 	32		 0		0	Arka
+;73	 8	 	132		 32		0	Sol
+;74	 8	 	32		 32		0	Sað
+;75	 8	 	132		 0		0	Sol
+;76	 8	 	32		 0		0	Sað
+
+
+(setq ad_SafetyPlane 30.00)
+(setq ad_AESCAMOperationList (list
+										
+										(list "NOTCH" "41" "CONTOUR" 2 0 0 0 "INSIDE" 3 "S18000" "F4000" "F4000") ; birince F kesme hýzý ikinic F dalma hýzý
+										(list "PK" "41" "CONTOUR" 2 0 0 0 "INSIDE" 3 "S18000" "F4000" "F4000") ; birince F kesme hýzý ikinic F dalma hýzý
+										(list "GROOVE" "41" "CONTOUR" 1 0 0 0 "CENTER" 3 "S18000" "F4000" "F4000") ; birince F kesme hýzý ikinic F dalma hýzý
+										(list "TOP_DIA3.0" "68" "TOP_HOLE" "F4500")
+										(list "TOP_DIA8.0" "62" "TOP_HOLE" "F4500")
+										(list "TOP_DIA15.0" "67" "TOP_HOLE" "F4500")
+										(list "TOP_DIA35.0" "66" "TOP_HOLE" "F4000")
+										(list "TOP_DIA5.0" "65" "TOP_HOLE" "F4000")
+										(list "TOP_DIA4.0" "NO_TOOL" "TOP_HOLE" "F4500")
+										(list "TOP_DIA10.0" "64" "TOP_HOLE" "F4000")
+										(list "LEFT_DIA8.0" "73" "LEFT_HOLE" "F4500")
+										(list "FRONT_DIA8.0" "71" "FRONT_HOLE" "F4500")
+										(list "RIGHT_DIA8.0" "74" "RIGHT_HOLE" "F4500")
+										(list "REAR_DIA8.0" "72" "REAR_HOLE" "F4500")
+										;(list "GROOVE" "95" "SAWX" "INSIDE" 0 "F4000" "F4000" (list 0.0 0.0 -1.0)) ; birince F kesme hýzý ikinic F dalma hýzý
+										
+ ))
+ 
+ ; testerenin giremediði eni 150 mm den küçük parçalar için alternatif freze operasyonu
+(setq ad_alternativeMillingOperation (list "NOTCH" "41" "CONTOUR" 1 0 0 0 "CENTER" 10 "S18000" "F4000" "F2000"))
+
+
+ (setq selectAESMachines nil)
+ (defun selectAESMachines ( cPnl / )
+	(list 	(list "AESSirius950m" ad_AESCAMOperationList) 
+			;(list "AESMachine2" ad_AESCAMOperationList2)
+	)
+ )
+
+(setq ad_AllEntities nil)
+(setq ad_NotFreeEntities nil)
+(setq ad_EntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq ad_AESIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+(setq lmm_exportAESSiriusNCFilesDesiredCAMOp nil)
+(defun lmm_exportAESSiriusNCFilesDesiredCAMOp ( / allPanelsList tempPanel currentMachinesAndOperationLists ,
+												currentMachineAndOperationList ) 
+	(setq ad_AllEntities nil)
+	(setq ad_NotFreeEntities nil)
+	(setq ad_EntitiesThatCanNotBeCAM nil) ; to collect entities that can not cam
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(setq currentMachinesAndOperationLists (selectAESMachines tempPanel))
+		(foreach currentMachineAndOperationList currentMachinesAndOperationLists
+			(if (equal "AESSirius950m" (nth 0 currentMachineAndOperationList))
+				(sendAESSirius950m tempPanel (nth 1 currentMachineAndOperationList))
+			)
+		)
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem ad_AllEntities
+		(if (and (not (member tempItem ad_NotFreeEntities)) (not (member tempItem ad_EntitiesThatCanNotBeCAM)))
+			(setq ad_EntitiesThatCanNotBeCAM (append ad_EntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if ad_EntitiesThatCanNotBeCAM
+		(progn
+			(setq ad_EntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) ad_EntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length ad_EntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter ad_EntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter ad_EntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+	
+)
+
+
+;returns a temporarily layer name by geometry UCS
+(defun aesInterpretHoleLayerName ( tempEnt / isOnTheSFace currentReturn tempHoleDia tempHoleDepth)
+	(setq isOnTheSFace (getEntPro tempEnt 8))
+	(if (equal "_SF" (substr isOnTheSFace (- (strlen isOnTheSFace) 2) 3))
+		(setq isOnTheSFace T)
+		(setq isOnTheSFace nil)
+	)
+	(cond 
+		( ;Z - 
+			(and (equal (getnth 2 (getEntPro tempEnt 210)) 1.00000) 
+				(not isOnTheSFace)
+			)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(or (equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+				isOnTheSFace
+			)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	;(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	currentReturn
+)
+
+;EXTREME_MCODES
+;M00-> PROGRAM STOP
+;M03-> SPINDLE CW
+;M04-> SPINDLE CCW
+;M05-> SPINDLE STOP
+;M06T??-> TOOL CHANGE
+;M16T??-> GETING OFFSET OF MULTIDRILLS
+;M10-> VACUUM OPEN
+;M11-> VACUUM CLOSE
+;M12-> DUSTABSORBTION OPEN
+;M13-> DUSTABSORBTION CLOSE
+;M14 öpark
+;M20-> BELOW UP
+;M21-> BELOW DOWN
+;M39-> MULTIDRILL UP
+;M50-> MAGAZINE FORWARD
+;M51-> MAGAZINE BACK
+;M54-> TOOL UNLOCK
+;M55-> TOOL LOCK
+;M60-M80-> MULTIDRILL
+;M85-> ALL MULTIDRILLS UP
+;M87-> MULTIDRILL MOTOR ON & PISTON DOWN
+;M88-> MULTIDRILL MOTOR OFF
+;M90-M91-> SWEEPING FUNCTION
+;M92-M93-> LOADING FUNCTION
+;M95-M96-> SAWBLADE
+;M101-> SUCKERS DOWN
+;M102-> SUCKERS UP
+;M105-> VACUUM SUCKER ON
+;M106-> VACUUM SUCKER OFF
+;M110-> HYDROLIC ON
+;M125-> WANTED TOOL NUMBER IS WRONG
+;M151-> SWEEP PISTON DOWN FOR CLEANING
+;M152-> SWEEP PISTON DOWN FOR SWEEPING
+;M153-> SWEEP PISTON UP 
+
+
+(princ)

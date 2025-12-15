@@ -1,0 +1,374 @@
+; boy ; tall
+(setq akk_SelectedBlindPartLayer (if (equal __MODULTYPE "UK1") (getnth 2 (getnth 1 (getnth 9 (read (get_mdata g_currentmodulent k:mData))))) (getnth 3 (getnth 1 (getnth 10 (read (get_mdata g_currentmodulent k:mData)))))))
+(setq akk_DrwDoorH (if (get_mdata g_currentmodulent k:CDrawerList) (cu2mm (cadar (read (get_mdata g_currentmodulent k:CDrawerList)))) nil))
+(setq akk_FSHFromBottom (if akk_DrwDoorH (- __HEI (+ (* 0.5 (- __AD_PANELTHICK __DOORSBETWEENCLEAR)) __DOORSBETWEENCLEAR)  akk_DrwDoorH) (- (cu2mm ad_adh) __AD_PANELTHICK)))
+(setq akk_FSHCalc ( - akk_FSHFromBottom bottomSideStyleV1))
+(setq akk_SectionUnderFSH (- akk_FSHFromBottom __AD_PANELTHICK))
+(setq akk_SectionOverFSH (- __HEI (+ (* 3 __AD_PANELTHICK) akk_SectionUnderFSH)))
+(setq akk_AdjPosListUnderFSH (mapcar '(lambda (x) (+ x (ifnull ASHELF_HOLE_DIAMETER 0.0))) (mapcar 'cu2mm (gm1_alt_Raf_Kural (+ (mm2cu akk_SectionUnderFSH) (* 2 ad_et)) ad_et))))
+(setq akk_AdjPosListOverFSH (mapcar '(lambda (x) (- x (ifnull ASHELF_HOLE_DIAMETER 0.0))) (mapcar '(lambda (x) (progn (+ x akk_FSHCalc __ad_panelthick))) (mapcar 'cu2mm (gm1_Ust_Raf_Kural (+ (mm2cu akk_SectionOverFSH) (* 2 ad_et)) ad_et)))))
+
+;prefvars
+(_SETA 'IS_EXTRA_PART_AVAILABLE (if (equal akk_SelectedBlindPartLayer "CAB_DOORS") nil T))
+(_SETA 'IS_INNER_EXTRA_PART_AVAILABLE nil)
+(_SETA 'IS_BLIND_DOOR_AVAILABLE T)
+(_SETA 'EXTRA_PART_WID 150)
+(_SETA 'INNER_EXTRA_PART_WID 75)
+(_SETA 'IS_BLIND_DOOR_INSIDE_MODULE nil)
+(_SETA 'OVERLAPPING_DISTANCE EXTRA_PART_WID)
+(_SETA 'ASSUME_DRAWER_AS_DOOR T)
+(_SETA 'AKK_PANELS_SOURCE nil)
+
+;AKK fixed and adjustable shelf parameters
+(_SETA 'BLIND_CORNER_FIXED_SHELF_ELEV_LIST __BLINDCORNERFIXEDSHELFELEVLIST)
+(_SETA 'BLIND_CORNER_ADJUSTABLE_SHELF_ELEV_LIST __BLINDCORNERADJSHELFELEVLIST)
+
+; Blind Door Parameters
+(_SETA 'BLIND_DOOR_CONN_LEFT_OFFSET 180)
+(_SETA 'BLIND_DOOR_CONN_RIGHT_OFFSET 80)
+
+(_SETA 'BLIND_DOOR_OPERATION 0)
+(_SETA 'BLIND_DOOR_THICKNESS 0)
+
+(_SETA 'AKK_BLIND_DOOR_GRAIN (+ 90 __MODULBODYMATROT))
+
+(_SETA 'BLIND_DOOR_LABEL nil)
+(_SETA 'BLIND_DOOR_TAG nil)
+
+(_SETA 'BLIND_DOOR_LEFT_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'BLIND_DOOR_RIGHT_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'BLIND_DOOR_TOP_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'BLIND_DOOR_BOTTOM_EDGESTRIP_MAT PvcKoduON)
+
+; Extra Part Parameters
+(_SETA 'AKK_EXTRA_PART_GRAIN nil)
+
+(_SETA 'EXTRA_PART_LABEL nil)
+(_SETA 'EXTRA_PART_TAG nil)
+
+(_SETA 'EXTRA_PART_LEFT_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'EXTRA_PART_RIGHT_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'EXTRA_PART_TOP_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'EXTRA_PART_BOTTOM_EDGESTRIP_MAT PvcKoduKAPAK)
+
+; Inner Extra Part Parameters
+(_SETA 'INNER_EXTRA_PART_MAIN_ROTATION nil)
+(_SETA 'INNER_EXTRA_PART_CUTLIST_ROTATION nil)
+(_SETA 'INNER_EXTRA_PART_DXF_ROTATION nil)
+(_SETA 'INNER_EXTRA_PART_MIRRORING_AXIS nil)
+
+(_SETA 'INNER_EXTRA_PART_LABEL nil)
+(_SETA 'INNER_EXTRA_PART_TAG nil)
+
+(_SETA 'INNER_EXTRA_PART_LEFT_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'INNER_EXTRA_PART_RIGHT_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'INNER_EXTRA_PART_TOP_EDGESTRIP_MAT PvcKoduON)
+(_SETA 'INNER_EXTRA_PART_BOTTOM_EDGESTRIP_MAT PvcKoduON)
+
+; Filler Parameters
+(_SETA 'AKK_FILLER_GRAIN nil)
+
+(_SETA 'FILLER_LABEL nil)
+(_SETA 'FILLER_TAG nil)
+
+(_SETA 'FILLER_LEFT_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'FILLER_RIGHT_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'FILLER_TOP_EDGESTRIP_MAT PvcKoduKAPAK)
+(_SETA 'FILLER_BOTTOM_EDGESTRIP_MAT PvcKoduKAPAK)
+
+; CONTINGENCIES
+; BLIND_DOOR_OPERATION
+(if (null (member BLIND_DOOR_OPERATION (_ 1 2 3 4 5))) 
+	(_FSET (_ 'BLIND_DOOR_OPERATION nil))
+	(progn
+		(cond
+			((equal BLIND_DOOR_OPERATION 1)
+				(_FSET (_ 'BLIND_DOOR_OPERATION "DOWEL"))
+			)
+			((equal BLIND_DOOR_OPERATION 2)
+				(_FSET (_ 'BLIND_DOOR_OPERATION "MINIFIX"))
+			)
+			((equal BLIND_DOOR_OPERATION 3)
+				(_FSET (_ 'BLIND_DOOR_OPERATION "RAFIX"))
+			)
+			((equal BLIND_DOOR_OPERATION 4)
+				(_FSET (_ 'BLIND_DOOR_OPERATION "SCREW"))
+			)
+			(T
+				(_FSET (_ 'BLIND_DOOR_OPERATION "CABINEO"))
+			)
+		)
+	)
+)
+; IS_EXTRA_PART_AVAILABLE
+(if (null (member IS_EXTRA_PART_AVAILABLE (_ nil T))) (_FSET (_ 'IS_EXTRA_PART_AVAILABLE T)))
+; IS_BLIND_DOOR_INSIDE_MODULE
+(if (null (member IS_BLIND_DOOR_INSIDE_MODULE (_ nil T))) (_FSET (_ 'IS_BLIND_DOOR_INSIDE_MODULE T)))
+; ASSUME_DRAWER_AS_DOOR
+(if (null (member ASSUME_DRAWER_AS_DOOR (_ nil T))) (_FSET (_ 'ASSUME_DRAWER_AS_DOOR T)))
+; AKK_PANELS_SOURCE
+(if (null (member AKK_PANELS_SOURCE (_ "INSOURCE" "OUTSOURCE"))) (_FSET (_ 'AKK_PANELS_SOURCE nil)))
+
+; Standard Values, IS_EXTRA_PART_AVAILABLE nil, EXTRA_PART_WID 197, IS_BLIND_DOOR_INSIDE_MODULE nil, OVERLAPPING_DISTANCE 177, ASSUME_DRAWER_AS_DOOR nil, AKK_PANELS_SOURCE nil
+; PRELIMINARY CONTROLS
+; IMPORTANT INFORMATION
+;  AK_DOOR_GAPS_DATA is a global variable which will be used in AKK_MANUFACTURER
+(cond
+	((equal __MODULTYPE "AK1")
+		; BLIND CORNER
+		(_FSET (_ 'BLIND_CORNER_CONTROL T))
+		; This global variable used in AKK_MANUFACTURER
+		(_FSET (_ 'BCU_DOOR_GAPS_DATA (_ __DOORSBASETOPCLEAR __DOORSBASEHBETWEENCLEAR __DOORSBASEBOTTOMCLEAR)))
+	)
+	((equal __MODULTYPE "UK1")
+		; WALL BLIND CORNER
+		(_FSET (_ 'BLIND_CORNER_CONTROL T))
+		; This global variable used in AKK_MANUFACTURER
+		(_FSET (_ 'BCU_DOOR_GAPS_DATA (_ __DOORSWALLTOPCLEAR __DOORSWALLHBETWEENCLEAR __DOORSWALLBOTTOMCLEAR)))
+	)
+	(T
+		(_FSET (_ 'BLIND_CORNER_CONTROL nil))
+		(_FSET (_ 'BCU_DOOR_GAPS_DATA nil))
+	)
+)
+
+; If module type is valid then preliminary controls are performed
+(if (_NOTNULL BLIND_CORNER_CONTROL)
+	(progn
+		(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+
+		(if (_NOTNULL BCU_DOOR_GAPS_DATA)
+			(progn
+				(_FSET (_ 'doorClearanceTOP (getnth 0 BCU_DOOR_GAPS_DATA)))
+				(_FSET (_ 'doorClearanceBETWEEN (getnth 1 BCU_DOOR_GAPS_DATA)))
+				(_FSET (_ 'doorClearanceBOTTOM (getnth 2 BCU_DOOR_GAPS_DATA)))
+			)
+		)
+
+		(if (and (_NOTNULL __BLINDTOWALL) (null IS_BLIND_DOOR_INSIDE_MODULE))
+			(_FSET (_ 'DISTANCE_TO_WALL (- __WIDLONG __WID)))
+			(_FSET (_ 'DISTANCE_TO_WALL 0))
+		)
+
+		; DRAWER CONTROL -> Whether first door is drawer or not
+		(if (_ISDOORDRAWER __DOOR0_TYPE)
+			(progn 
+				; It is sure that there is a drawer
+				(if (equal __DOORSCOUNT 3)
+					(_FSET (_ 'widthLossForDoors (_= "__DOOR1_WID + __DOOR2_WID + __DOORSSIDECLEAR + __DOORSBETWEENCLEAR + __DOORSBETWEENCLEAR")))
+					(_FSET (_ 'widthLossForDoors (_= "__DOOR1_WID + __DOORSSIDECLEAR + __DOORSBETWEENCLEAR")))
+				)
+				(_FSET (_ 'AKK_MANU_CUR_DOOR_INDEX 1))
+			)
+
+		   (if (_NOTNULL __DOOR0_TYPE)
+			   (progn 
+				   ; No drawer in module
+				   (if (equal __DOORSCOUNT 2)
+					   (_FSET (_ 'widthLossForDoors (_= "__DOOR0_WID + __DOOR1_WID + __DOORSSIDECLEAR + __DOORSBETWEENCLEAR + __DOORSBETWEENCLEAR")))
+					   (_FSET (_ 'widthLossForDoors (_= "__DOOR0_WID + __DOORSSIDECLEAR + __DOORSBETWEENCLEAR")))
+				   )
+				   (_FSET (_ 'AKK_MANU_CUR_DOOR_INDEX 0))
+			   )
+			   (progn
+				   ;kapak bulamazsa,tasarımda kapak için ayrılmış değeri al.
+				   (_FSET (_ 'widthLossForDoors (+ __DOORSSIDECLEAR __DOORSBETWEENCLEAR (getnth 5 (read (get_mdata g_CurrentModulEnt k:mdata))))))
+				   (_FSET (_ 'AKK_MANU_CUR_DOOR_INDEX 0))
+			   )
+		   )
+		)
+		; These variables can be changed from library to library
+		(cond 
+			(	(equal __MODULTYPE "UK1")
+				(setq doorTrimBOTTOM (lmm_sfread (getnth 11 (getnth 1 (getnth 9 (read (get_mData g_CurrentModulEnt k:mdata)))))))
+				(if (and doorTrimBOTTOM (eq 'STR (type doorTrimBOTTOM))) (setq doorTrimBOTTOM (cu2mm (read doorTrimBOTTOM))))
+			)
+			(	(equal __MODULTYPE "AK1")
+				(setq doorTrimTOP (lmm_sfread (getnth 13 (getnth 1 (getnth 10 (read (get_mData g_CurrentModulEnt k:mdata)))))))
+				(if (and doorTrimTOP (eq 'STR (type doorTrimTOP))) (setq doorTrimTOP (cu2mm (read doorTrimTOP))))
+			)
+		)
+		
+		(_SETA 'BLIND_DOOR_LOSS_TOP 			0.0	)
+		(_SETA 'BLIND_DOOR_LOSS_BOTTOM 			(if (and IS_EXTRA_PART_AVAILABLE doorTrimBOTTOM) doorTrimBOTTOM 0.0)	)
+		(_SETA 'EXTRA_PART_LOSS_TOP 			(+ doorClearanceTOP (ifnull doorTrimTOP 0.0))			)
+		(_SETA 'EXTRA_PART_LOSS_BOTTOM		 	(+ doorClearanceBOTTOM (ifnull doorTrimBOTTOM 0.0)) 	)
+		(_SETA 'FILLER_LOSS_TOP 				(+ doorClearanceTOP (ifnull doorTrimTOP 0.0))			)
+		(_SETA 'FILLER_LOSS_BOTTOM 				(+ doorClearanceBOTTOM (ifnull doorTrimBOTTOM 0.0))		)
+
+		(setq doorTrimBOTTOM nil doorTrimTOP nil)
+		
+		; WIDTHS AND HEIGHTS OF BLIND CORNER PANELS
+		; IMPORTANT INFORMATION
+		; According to state of blind corner blind door, subtype of current blind corner is determined
+		(cond
+			((and (_NOTNULL IS_BLIND_DOOR_INSIDE_MODULE) (_NOTNULL IS_EXTRA_PART_AVAILABLE))
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - EXTRA_PART_WID + OVERLAPPING_DISTANCE - __AD_PANELTHICK - widthLossForDoors + __DOORSSIDECLEAR")))
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_HEI (_= "__HEI - __AD_PANELTHICK - __AD_PANELTHICK")))
+				; Subtype of current blind corner unit, INSM is the shortage of INSIDE OF MODULE
+				(_FSET (_ 'AKK_MODULE_SUBTYPE "INSM"))
+			)
+			((_NOTNULL IS_EXTRA_PART_AVAILABLE)
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - EXTRA_PART_WID - widthLossForDoors + DISTANCE_TO_WALL + __DOORSSIDECLEAR")))
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_HEI (_= "__HEI - BLIND_DOOR_LOSS_TOP - BLIND_DOOR_LOSS_BOTTOM")))
+				; Subtype of current blind corner unit, OUTM is the shortage of OUTSIDE OF MODULE
+				(_FSET (_ 'AKK_MODULE_SUBTYPE "OUTM"))
+			)
+			(T
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - widthLossForDoors + DISTANCE_TO_WALL + __DOORSSIDECLEAR")))
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_HEI (_= "__HEI - BLIND_DOOR_LOSS_TOP - BLIND_DOOR_LOSS_BOTTOM")))
+				; Subtype of current blind corner unit, OUTM is the shortage of OUTSIDE OF MODULE
+				(_FSET (_ 'AKK_MODULE_SUBTYPE "OUTM"))
+			)
+		)
+		(_FSET (_ 'AKK_MANU_EXTRA_PART_WID EXTRA_PART_WID))
+		(_FSET (_ 'AKK_MANU_EXTRA_PART_HEI (_= "__HEI - EXTRA_PART_LOSS_TOP - EXTRA_PART_LOSS_BOTTOM")))
+
+		(_FSET (_ 'AKK_MANU_FILLER_WID (_= "__WID2 - __DEP - __AD_PANELTHICK")))
+		(_FSET (_ 'AKK_MANU_FILLER_HEI (_= "__HEI - FILLER_LOSS_TOP - FILLER_LOSS_BOTTOM")))
+
+		(_FSET (_ 'AKK_PARTS_LOSSES (_ BLIND_DOOR_LOSS_TOP BLIND_DOOR_LOSS_BOTTOM EXTRA_PART_LOSS_TOP EXTRA_PART_LOSS_BOTTOM FILLER_LOSS_TOP FILLER_LOSS_BOTTOM)))
+		
+		(_FSET (_ 'currentDoorID (_S2V (_& (_ "__DOOR" AKK_MANU_CUR_DOOR_INDEX "_DOORID")))))
+		(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ "__DOOR" AKK_MANU_CUR_DOOR_INDEX "_TYPE")))))
+
+		(if (_NOTNULL currentDoorID)
+			(progn
+				(_FSET (_ 'currentDoorMODEL (_GETDOORMODEL currentDoorID)))			
+				
+				; Extra Item code is set in here
+				(_FSET (_ 'extraItemCODE (_& (_ currentDoorMODEL "_" (_CONVERTDOORTYPETOCOSTTYPE currentDoorTYPE)))))
+				
+				; MATERIAL CONTROL
+				(_FSET (_ 'currentDoorMAT (_GETDOORMATS currentDoorID GENERAL_DOORS_LAYER)))
+			)
+		)
+		
+		(if (null currentDoorMAT)
+			(_FSET (_ 'currentDoorMAT (_GETLAYERMAT GENERAL_DOORS_LAYER)))
+		)
+									
+		; SOURCE CONTROL
+		(if (_NOTNULL AKK_PANELS_SOURCE)
+			(_FSET (_ 'sourceOfPanels AKK_PANELS_SOURCE))
+			(progn
+				; In this case source of blind corner panels are not declared by user
+				(if (_NOTNULL currentDoorID)
+					(_FSET (_ 'sourceOfPanels (_GETDOORSOURCE currentDoorID)))
+				)
+				(if (null sourceOfPanels)
+					(_FSET (_ 'sourceOfPanels "OUTSOURCE"))
+				)
+			)
+		)
+		; IMPORTANT INFORMATIONS
+		; Four cases for assembling blind corner panels
+		; CASE			EXTRA PART			BLIND DOOR MATERIAL			FILLER MATERIAL
+		;  1				nil					 BODY						BODY
+		;  2				 T					 BODY						DOOR
+		;  3				nil					 DOOR						DOOR
+		;  4				 T					 DOOR						DOOR
+		
+		; EXTRA_ITEM	It is the variable which is used to perform extra items of outsource panels which are made from door material
+		;				When source of panels is OUTSOURCE and material mode of outsource panels are 2 then this variable gets T value, otherwise it gets nil
+		
+		; IOD 			It is the shortened version of IS OUTSOURCE DOOR. Variables which has this shortening FILLER_IOD, BLIND_DOOR_IOD and EXTRA_PART_IOD
+		; 				These variables holds the value whether OUTSOURCE will be put as source tag or not
+		(if (and (null IS_EXTRA_PART_AVAILABLE) (not (equal __BLINDDOORLAYER GENERAL_DOORS_LAYER)))
+			(progn
+				; This branch contains only CASE 1
+				(_FSET (_ 'AKK_BLIND_DOOR_MAT __BLINDDOORMAT))
+				(_FSET (_ 'AKK_FILLER_MAT __BLINDDOORMAT))
+
+				(setq AKK_BLIND_DOOR_GRAIN (ifnull AKK_BLIND_DOOR_GRAIN __BLINDDOORMATROT))
+				(setq AKK_FILLER_GRAIN (ifnull AKK_FILLER_GRAIN __BLINDDOORMATROT))
+				
+				(_FSET (_ 'AKK_BLIND_DOOR_EDGES T))
+				(_FSET (_ 'AKK_FILLER_EDGES T))
+				
+				; Whatever the source of panels is both part will be created from body material. Thats why there is no need for extra item
+				(_FSET (_ 'BLIND_DOOR_EXTRA_ITEM nil))
+				(_FSET (_ 'FILLER_EXTRA_ITEM nil))
+				
+				(_FSET (_ 'BLIND_DOOR_IOD nil))
+				(_FSET (_ 'FILLER_IOD nil))
+			)
+			(progn
+				(if (null __DOOR0_TYPE)
+					(progn
+						(setq AKK_FILLER_GRAIN (ifnull AKK_FILLER_GRAIN __BLINDDOORMATROT))
+						(_FSET (_ 'AKK_FILLER_MAT __BLINDDOORMAT))	
+					)
+					(progn
+						; This branch contains CASE 2, 3 and 4
+						(_FSET (_ 'AKK_FILLER_MAT currentDoorMAT))
+						(setq AKK_FILLER_GRAIN (ifnull AKK_FILLER_GRAIN (_GETDOORMATROTS currentDoorID GENERAL_DOORS_LAYER)))
+					)
+				)
+					
+				(if (equal sourceOfPanels "INSOURCE")
+					(progn
+						; INSOURCE
+						(_FSET (_ 'AKK_FILLER_EDGES T))
+						(_FSET (_ 'FILLER_EXTRA_ITEM nil))
+						(_FSET (_ 'FILLER_IOD nil))
+					)
+					(progn
+						; OUTSOURCE
+						(_FSET (_ 'AKK_FILLER_EDGES nil))
+						(if (equal OUTSOURCE_DOORS_MATERIAL_MODE 2)
+							(_FSET (_ 'FILLER_EXTRA_ITEM extraItemCODE))
+							(_FSET (_ 'FILLER_EXTRA_ITEM nil))
+						)
+						(_FSET (_ 'FILLER_IOD T))
+					)
+				)
+				; EXTRA PART Controls
+				(if (_NOTNULL IS_EXTRA_PART_AVAILABLE)
+					(progn
+						(_FSET (_ 'AKK_EXTRA_PART_WID AKK_MANU_EXTRA_PART_WID))
+						(_FSET (_ 'AKK_EXTRA_PART_HEI AKK_MANU_EXTRA_PART_HEI))
+						
+						(_FSET (_ 'AKK_EXTRA_PART_MAT AKK_FILLER_MAT))
+						(setq AKK_EXTRA_PART_GRAIN (ifnull AKK_EXTRA_PART_GRAIN AKK_FILLER_GRAIN))
+						(_FSET (_ 'AKK_EXTRA_PART_EDGES AKK_FILLER_EDGES))
+						
+						(_FSET (_ 'EXTRA_PART_EXTRA_ITEM FILLER_EXTRA_ITEM))
+						(_FSET (_ 'EXTRA_PART_IOD FILLER_IOD))
+					)
+				)
+				; BLIND DOOR CONTROLS
+				(if (equal __BLINDDOORLAYER GENERAL_DOORS_LAYER)
+					(progn
+						; DOOR
+						(_FSET (_ 'AKK_BLIND_DOOR_MAT AKK_FILLER_MAT))
+						(setq AKK_BLIND_DOOR_GRAIN (ifnull AKK_BLIND_DOOR_GRAIN AKK_FILLER_GRAIN))
+						(_FSET (_ 'AKK_BLIND_DOOR_EDGES AKK_FILLER_EDGES))
+						
+						(_FSET (_ 'BLIND_DOOR_EXTRA_ITEM FILLER_EXTRA_ITEM))
+						(_FSET (_ 'BLIND_DOOR_IOD FILLER_IOD))
+					)
+					(progn
+						; BODY
+						(_FSET (_ 'AKK_BLIND_DOOR_MAT __BLINDDOORMAT))
+						(setq AKK_BLIND_DOOR_GRAIN (ifnull AKK_BLIND_DOOR_GRAIN __BLINDDOORMATROT))
+						(_FSET (_ 'AKK_BLIND_DOOR_EDGES T))
+						
+						(_FSET (_ 'BLIND_DOOR_EXTRA_ITEM nil))
+						(_FSET (_ 'BLIND_DOOR_IOD nil))
+					)
+				)
+			)
+		)
+		; Global variables of blind corner blind door are determined
+		(_FSET (_ 'AKK_BLIND_DOOR_HEI AKK_MANU_BLIND_DOOR_HEI))
+		(_FSET (_ 'AKK_BLIND_DOOR_WID AKK_MANU_BLIND_DOOR_WID))
+		; Global variables of blind corner filler are determined
+		(_FSET (_ 'AKK_FILLER_WID AKK_MANU_FILLER_WID))
+		(_FSET (_ 'AKK_FILLER_HEI AKK_MANU_FILLER_HEI))
+		; AKK_PANELS_SOURCE is overloaded by sourceOfPanels
+		(_FSET (_ 'AKK_PANELS_SOURCE sourceOfPanels))
+	)
+)
+
+(_NONOTCH)

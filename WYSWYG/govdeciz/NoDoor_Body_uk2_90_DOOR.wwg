@@ -1,0 +1,16 @@
+(setq ptlst (Kgovde_ciz UDEN1 UDEN2 UDH (list Der1 Der2) 0.0 "CAB_BODY_WALL"
+							(if pah (- pah) 0.0)
+							(if pah (- pah) 0.0)
+							"90"
+							T
+							raf_list
+							rafLayer
+							ad_ET ;rafEt                           ;rafOfset
+							notch_type
+							notch_dims
+							) ; 90 uk2
+)
+(if (equal how2put 5)
+	(grx_setmaterial (entlast) (GetUpKapakMat))
+	(grx_setmaterial (entlast) (GetKapakMat))
+)

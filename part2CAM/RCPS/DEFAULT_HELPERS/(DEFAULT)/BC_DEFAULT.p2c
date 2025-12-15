@@ -1,0 +1,79 @@
+(cond 
+	((equal __MODULTYPE "BC")
+		(_FSET (_ 'FRIDGE_CABINET_CONTROL T))
+		; For now there is no specific parameters for module type
+		; Like oblique unit modules, parameters will be created in here
+	)
+	(T
+		(_FSET (_ 'FRIDGE_CABINET_CONTROL nil))
+	)
+)
+(if (_NOTNULL FRIDGE_CABINET_CONTROL)
+	(progn
+		; According to the state of side panels required global variables are created in here
+		; Left side variables
+		(_FSET (_ 'BC_LEFT_SIDE_TYPE (getnth 0 (getnth 0 __FRIDGESIDESLIST))))
+		(_FSET (_ 'BC_LEFT_SIDE_THICKNESS (* (getnth 1 (getnth 0 __FRIDGESIDESLIST)) 10)))
+		(_FSET (_ 'BC_LEFT_SIDE_HEI (getnth 2 (getnth 0 __FRIDGESIDESLIST))))
+		(_FSET (_ 'BC_LEFT_SIDE_WID (getnth 3 (getnth 0 __FRIDGESIDESLIST))))
+		; Right side variables
+		(_FSET (_ 'BC_RIGHT_SIDE_TYPE (getnth 0 (getnth 1 __FRIDGESIDESLIST))))
+		(_FSET (_ 'BC_RIGHT_SIDE_THICKNESS (* (getnth 1 (getnth 1 __FRIDGESIDESLIST)) 10)))
+		(_FSET (_ 'BC_RIGHT_SIDE_HEI (getnth 2 (getnth 1 __FRIDGESIDESLIST))))
+		(_FSET (_ 'BC_RIGHT_SIDE_WID (getnth 3 (getnth 1 __FRIDGESIDESLIST))))
+		; Side types and their definitions are expressed below
+		;   Side Types			Definition
+		;		0			Only short side available
+		;		1			Only long side available
+		;		2			Both of sides available
+		; In adeko if the side thickness is changed then both sides are changed but in fact only the long side have to change
+		; Left side share
+		(cond
+			((equal BC_LEFT_SIDE_TYPE 0)
+				; In this case only short side which is the actual left panel of cabinet is available
+				(_FSET (_ 'BC_LEFT_SIDE_SHARE __AD_PANELTHICK))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_LEFT 0))
+				; WARNING - In adeko when the side thickness of left side changed in this state thickness of left side is changing. But in fact there shouldnt be any change
+			)
+			((equal BC_LEFT_SIDE_TYPE 1)
+				; In this case only long side which is the side of all module is available
+				(_FSET (_ 'BC_LEFT_SIDE_SHARE BC_LEFT_SIDE_THICKNESS))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_LEFT 0))
+			)
+			((equal BC_LEFT_SIDE_TYPE 2)
+				; In this case both of the sides are available
+				(_FSET (_ 'BC_LEFT_SIDE_SHARE (+ BC_LEFT_SIDE_THICKNESS __AD_PANELTHICK)))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_LEFT BC_LEFT_SIDE_THICKNESS))
+				; WARNING - In adeko in this state if the thickness of left side is changed then both of the panels are effected. But in fact only the long left side have to be effected, not both of them
+			)
+		)
+		; Right side share
+		(cond
+			((equal BC_RIGHT_SIDE_TYPE 0)
+				; In this case only short side which is the actual left panel of cabinet is available
+				(_FSET (_ 'BC_RIGHT_SIDE_SHARE __AD_PANELTHICK))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_RIGHT 0))
+				; WARNING - In adeko when the side thickness of left side changed in this state thickness of left side is changing. But in fact there shouldnt be any change
+			)
+			((equal BC_RIGHT_SIDE_TYPE 1)
+				; In this case only long side which is the side of all module is available
+				(_FSET (_ 'BC_RIGHT_SIDE_SHARE BC_RIGHT_SIDE_THICKNESS))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_RIGHT 0))
+			)
+			((equal BC_RIGHT_SIDE_TYPE 2)
+				; In this case both of the sides are available
+				(_FSET (_ 'BC_RIGHT_SIDE_SHARE (+ BC_RIGHT_SIDE_THICKNESS __AD_PANELTHICK)))
+				; This variable is used in only Fridge Cabinet Back Panel
+				(_FSET (_ 'BC_BACK_PANEL_LOSS_RIGHT BC_RIGHT_SIDE_THICKNESS))
+				; WARNING - In adeko in this state if the thickness of left side is changed then both of the panels are effected. But in fact only the long left side have to be effected, not both of them
+			)
+		)
+	)
+)
+
+(_NONOTCH)

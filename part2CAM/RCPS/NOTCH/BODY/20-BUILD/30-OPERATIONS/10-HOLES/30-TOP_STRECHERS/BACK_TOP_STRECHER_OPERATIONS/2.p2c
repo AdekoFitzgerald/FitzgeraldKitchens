@@ -1,0 +1,57 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		(if (_EXISTPANEL NOTCHED_BACK_TOP_STRECHER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForNotchedBackTopStrecherAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBackTopStrecherAndLeft (car lengthParametersForNotchedBackTopStrecherAndLeft)))
+
+				(_FSET (_ 'lengthParametersForNotchedBackTopStrecherAndRight (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBackTopStrecherAndRight (car lengthParametersForNotchedBackTopStrecherAndRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'notchedBackTopStrecherPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForNotchedBackTopStrecherAndLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil NOTCHED_BACK_TOP_STRECHER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName NOTCHED_BACK_TOP_STRECHER_OP_FACE notchedBackTopStrecherPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'notchedBackTopStrecherPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForNotchedBackTopStrecherAndRight NOTCHED_BACK_TOP_STRECHER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil NOTCHED_BACK_TOP_STRECHER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName NOTCHED_BACK_TOP_STRECHER_OP_FACE notchedBackTopStrecherPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForNotchedBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForNotchedBackTopStrecherAndLeft (- LEFT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET LEFT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																			(_ (_= "LEFT_PANEL_WID - NOTCHED_BACK_TOP_STRECHER_HEI - LEFT_PANEL_BACK_VARIANCE - BACK_TOP_STRECHER_BACK_OFFSET") 0 nil NOTCHED_BACK_TOP_STRECHER_HEI) 
+																			(_ FITTING_PARAMETERS nil))))
+																			
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForNotchedBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																		 (_ lengthForNotchedBackTopStrecherAndRight (- SECONDARY_RIGHT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																		 (_ (* -1 BACK_TOP_STRECHER_BACK_OFFSET) 0 T NOTCHED_BACK_TOP_STRECHER_HEI) 
+																		 (_ FITTING_PARAMETERS nil))))
+																		 
+							(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE rightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

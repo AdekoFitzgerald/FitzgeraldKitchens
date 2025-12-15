@@ -1,0 +1,16 @@
+; GLOBAL_DOOR_PARAMS are taken from original door recipes
+(_FSET (_ 'doorInfo (getnth 1 GLOBAL_DOOR_PARAMS)))
+; WARNING -> All the parameters GLOBAL_DOOR_PARAMS are not taken in this recipe because there is no need to use them
+
+
+(if (_NOTNULL ADD_STORE_DOOR_SIZE)
+	(progn
+		(_FSET (_ 'currentDoorHEI (getnth 1 doorInfo)))
+		(_FSET (_ 'currentDoorWID (getnth 2 doorInfo)))
+		(_FSET (_ 'tempStoreCODE (_& (_ STORE_DOOR_CODE currentDoorWID "x" currentDoorHEI))))
+	)
+	(_FSET (_ 'tempStoreCODE STORE_DOOR_CODE))
+)
+; Item added
+(_ITEMMAIN tempStoreCODE tempStoreCODE (_ 1 STORE_DOOR_UNIT))
+(_NONOTCH)

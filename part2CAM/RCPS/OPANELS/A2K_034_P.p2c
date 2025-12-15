@@ -1,0 +1,4 @@
+(_PANEL (lmm_readEvalIfSet "#SOL") (_ (lmm_convertToRealIfReal (lmm_readEvalIfSet "11")) (lmm_convertToRealIfReal (lmm_readEvalIfSet "22")) 0.0 (lmm_readEvalIfSet "__MODULBODYMAT") (lmm_convertToRealIfReal (lmm_readEvalIfSet "18")))) 
+(_EDGELEFT "EDGESTRIP_1" (lmm_readEvalIfSet "#SOL") (_ (lmm_readEvalIfSet "Pvc08mm")  (lmm_convertToRealIfReal (lmm_readEvalIfSet "0.8")))) 
+(_USEPREMADEDRAWS)
+(_NONOTCH)

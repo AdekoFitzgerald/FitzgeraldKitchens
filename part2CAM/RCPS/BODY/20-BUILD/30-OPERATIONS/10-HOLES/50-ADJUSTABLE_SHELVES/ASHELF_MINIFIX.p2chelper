@@ -1,0 +1,224 @@
+(_RUNDEFAULTHELPERRCP "MINIFIX_DEFAULT" nil "p2chelper")
+
+; DATA SHEET OF DIVIDER_SHELF_OP_DATA
+; Index			DATA
+; 0				Index of current division
+; 1				Whether code pattern will be changed or not
+; 2				Number of virtual divisions
+; 3				Number of shelves in current division
+; 4				Number of dividers in current division
+
+; If module is notched, operations are not performed
+(if (or (equal __NOTCHTYPE 0) (_NOTNULL GROUP_HOLES_FOR_NOTCH))
+	(progn
+		; DSOD prefix refers to DIVIDER_SHELF_OP_DATA
+		(_FSET (_ 'DSOD_curDivOrder (getnth 0 DIVIDER_SHELF_OP_DATA)))
+		(_FSET (_ 'DSOD_changeCodePattern (getnth 1 DIVIDER_SHELF_OP_DATA)))
+		(_FSET (_ 'DSOD_numberOfVirtualDivisions (getnth 2 DIVIDER_SHELF_OP_DATA)))
+		(_FSET (_ 'DSOD_numberOfShelves (getnth 3 DIVIDER_SHELF_OP_DATA)))
+		(_FSET (_ 'DSOD_numberOfDividers (getnth 4 DIVIDER_SHELF_OP_DATA)))
+		
+		(_FSET (_ 'currentDivision (_& (_ "__DIV" DSOD_curDivOrder))))
+		
+		(_FSET (_ 'virtualDivisionCounter 0))
+		(repeat DSOD_numberOfVirtualDivisions
+			; Via DSOD_changeCodePattern parameter base of code bodies are determined
+			(if (_NOTNULL DSOD_changeCodePattern)
+				(progn
+					; Sure that there are virtual divisions
+					(_FSET (_ 'shelfCodeBody (_& (_ (XSTR "ADJUSTABLE_SHELF") "_" DSOD_curDivOrder "_" virtualDivisionCounter "_"))))
+					(_FSET (_ 'paramBodyBase (_& (_ "ADJUSTABLE_SHELF_" DSOD_curDivOrder "_" virtualDivisionCounter "_"))))
+					(_FSET (_ 'holeParamBodyBase (_& (_ "ADJUSTABLE_SHELF_HOLE_" DSOD_curDivOrder "_" virtualDivisionCounter "_"))))
+				)
+				(progn
+					; No divider, no virtual division at all base of code bodies
+					(_FSET (_ 'shelfCodeBody (_& (_ (XSTR "ADJUSTABLE_SHELF") "_" DSOD_curDivOrder "_"))))
+					(_FSET (_ 'paramBodyBase (_& (_ "ADJUSTABLE_SHELF_" DSOD_curDivOrder "_"))))
+					(_FSET (_ 'holeParamBodyBase (_& (_ "ADJUSTABLE_SHELF_HOLE_" DSOD_curDivOrder "_"))))
+				)
+			)
+			; This variables prevents calling connection helper over and over in the same virtual division
+			(_FSET (_ 'CHECK_CONNECTIONS nil))
+			
+			(_FSET (_ 'centerGroupIndex (+ 1 SHELF_HOLES_EXTRA_DOWN)))
+			(_FSET (_ 'shelfCounter 1))
+			(repeat DSOD_numberOfShelves
+				; Unique code of adjustable shelves are determined here
+				(_FSET (_ 'currentShelfCODE (_& (_ shelfCodeBody shelfCounter))))
+				(if (_EXISTPANEL currentShelfCODE)
+					(progn
+						(_FSET (_ 'paramRoot (_& (_ paramBodyBase shelfCounter "_"))))
+						
+						(_FSET (_ 'shelfCONN (_S2V (_& (_ paramRoot "CONN")))))
+						(_FSET (_ 'curDivELEV (_S2V (_& (_ currentDivision "_STARTFROMBOTTOM")))))
+						; Global data container for connection helper is created here
+						(_FSET (_ 'GROUP_HOLES_DATA (_ DSOD_curDivOrder virtualDivisionCounter DSOD_numberOfDividers curDivELEV shelfCONN)))
+						
+						; Connection helper is called for detecting current adjustable shelf will be connected which panels
+						(if (null CHECK_CONNECTIONS) (_RUNDEFAULTHELPERRCP "CONNECTION_HELPER" nil "p2c"))
+						
+						; DATA SHEET OF CONN_HELPER_DATA
+						; Index			DATA
+						; 0				Data required about LEFT side
+						; 1				Data required about RIGHT side
+						
+						(if (_NOTNULL CONN_HELPER_DATA)
+							(progn
+								; CHD prefix refers to CONN_HELPER_DATA
+								(_FSET (_ 'CHD_leftSideInfo (getnth 0 CONN_HELPER_DATA)))
+								(_FSET (_ 'CHD_rightSideInfo (getnth 1 CONN_HELPER_DATA)))
+								
+								; IMPORTANT INFORMATION
+								; Each side info consists of -> Panel Code, Elevation, Panel Width, Tolerance Share, Hole Code For Minifix 
+								
+								(_FSET (_ 'leftSideCODE (getnth 0 CHD_leftSideInfo)))
+								(_FSET (_ 'leftSideELEV (getnth 1 CHD_leftSideInfo)))
+								(_FSET (_ 'leftSideWID (getnth 2 CHD_leftSideInfo)))
+								(_FSET (_ 'leftSideTOLERANCE (getnth 3 CHD_leftSideInfo)))
+								(_FSET (_ 'holeCodeLEFT (getnth 4 CHD_leftSideInfo)))
+								
+								(_FSET (_ 'rightSideCODE (getnth 0 CHD_rightSideInfo)))
+								(_FSET (_ 'rightSideELEV (getnth 1 CHD_rightSideInfo)))
+								(_FSET (_ 'rightSideWID (getnth 2 CHD_rightSideInfo)))
+								(_FSET (_ 'rightSideTOLERANCE (getnth 3 CHD_rightSideInfo)))
+								(_FSET (_ 'holeCodeRIGHT (getnth 4 CHD_rightSideInfo)))
+								
+								;(_FSET (_ 'currentShelfHEI (- (_S2V (_& (_ paramRoot "HEI")))SIDE_PANELS_FRONT_OFFSET)))
+								(_FSET (_ 'currentShelfHEI (_S2V (_& (_ paramRoot "HEI")))))
+								(_FSET (_ 'currentShelfWID (_S2V (_& (_ paramRoot "WID")))))
+								(_FSET (_ 'currentShelfTHICKNESS (_S2V (_& (_ paramRoot "THICKNESS")))))
+								(if (_NOTNULL ASHELF_HOLES_ON_LOWER_SURFACE)
+									(progn
+										(_FSET (_ 'currentShelfPDATA (_S2V (_& (_ paramRoot "PDATA")))))
+										(_FSET (_ 'currentShelfROT (_S2V (_& (_ paramRoot "ROT")))))
+										(_FSET (_ 'currentShelfMAT (_S2V (_& (_ paramRoot "MAT")))))
+										
+										(_FSET (_ 'currentShelfCODE (_CREATESFACEMAIN currentShelfCODE (_ currentShelfPDATA currentShelfROT currentShelfMAT currentShelfTHICKNESS "Y"))))
+									)
+								)
+								(if (or (>= currentShelfHEI LIMIT_FOR_MIDDLE_HOLE_GROUP) (_NOTNULL IS_MIDDLE_HOLE_GROUP_AVAILABLE))
+									(progn
+										(_FSET (_ 'thirdMinifix T))
+										(_FSET (_ 'thirdMinifixOffset (+ (/ currentShelfHEI 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+									)
+									(_FSET (_ 'thirdMinifix nil))
+								)
+								(_FSET (_ 'activeShelfELEV (_S2V (_& (_ paramRoot "ELEV")))))
+								(_FSET (_ 'halfOfThickness (/ currentShelfTHICKNESS 2.0)))
+								(_FSET (_ 'leftSideOffset_Y (_= "leftSideELEV + activeShelfELEV + halfOfThickness")))
+								(_FSET (_ 'rightSideOffset_Y (_= "rightSideELEV + activeShelfELEV + halfOfThickness")))
+								
+								(_FSET (_ 'frontHoleOffset ASHELF_FRONT_HOLE_OFFSET))
+								(_FSET (_ 'backHoleOffset (- currentShelfHEI ASHELF_BACK_HOLE_OFFSET)))
+								; Adjustable shelf minifix holes
+								(_FSET (_ 'leftFrontHolePos (_ frontHoleOffset currentShelfWID (* halfOfThickness -1))))
+								(_FSET (_ 'leftBackHolePos (_ backHoleOffset currentShelfWID (* halfOfThickness -1))))
+								(_FSET (_ 'rightFrontHolePos (_ frontHoleOffset 0 (* halfOfThickness -1))))
+								(_FSET (_ 'rightBackHolePos (_ backHoleOffset 0 (* halfOfThickness -1))))
+								
+								(if (equal currentShelfType 0)
+									(progn
+										(_FSET (_ 'holeCodeBody "ADJUSTABLE_SHELF_MINIFIX_VER_HOLE_"))
+										(_HOLE (_& (_ holeCodeBody "LF")) currentShelfCODE (_ (_ frontHoleOffset (- currentShelfWID MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0.0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "LB")) currentShelfCODE (_ (_ backHoleOffset (- currentShelfWID MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RF")) currentShelfCODE (_ (_ frontHoleOffset (+ MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RB")) currentShelfCODE (_ (_ backHoleOffset (+ MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+									
+										(_FSET (_ 'holeCodeBody "ADJUSTABLE_SHELF_MINIFIX_HOR_HOLE_"))
+										(_HOLE (_& (_ holeCodeBody "LF")) currentShelfCODE (_ leftFrontHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y-"))
+										(_HOLE (_& (_ holeCodeBody "LB")) currentShelfCODE (_ leftBackHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y-"))
+										(_HOLE (_& (_ holeCodeBody "RF")) currentShelfCODE (_ rightFrontHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y+"))
+										(_HOLE (_& (_ holeCodeBody "RB")) currentShelfCODE (_ rightBackHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y+"))
+									
+										(_ITEMMAIN MINIFIX_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM 4) MINIFIX_UNIT))
+										(if (_NOTNULL thirdMinifix)
+											(progn
+												(_FSET (_ 'thirdHoleOffset thirdMinifixOffset))
+												(_FSET (_ 'leftMiddleHolePos (_ thirdHoleOffset currentShelfWID (* halfOfThickness -1))))
+												(_FSET (_ 'rightMiddleHolePos (_ thirdHoleOffset 0.0 (* halfOfThickness -1))))
+												
+												(_FSET (_ 'holeCodeBody "ADJUSTABLE_SHELF_MINIFIX_VER_HOLE_"))
+												(_HOLE (_& (_ holeCodeBody "LM")) currentShelfCODE (_ (_ thirdHoleOffset (- currentShelfWID MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0.0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+												(_HOLE (_& (_ holeCodeBody "RM")) currentShelfCODE (_ (_ thirdHoleOffset (+ MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+												(_FSET (_ 'holeCodeBody "ADJUSTABLE_SHELF_MINIFIX_HOR_HOLE_"))
+												(_HOLE (_& (_ holeCodeBody "LM")) currentShelfCODE (_ leftMiddleHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y-"))
+												(_HOLE (_& (_ holeCodeBody "RM")) currentShelfCODE (_ rightMiddleHolePos MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "Y+"))
+												(_ITEMMAIN MINIFIX_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM 2) MINIFIX_UNIT))
+											)
+										)
+									)
+								)
+								; Hole positions
+								(_FSET (_ 'holePosition_LF (_= "leftSideTOLERANCE + ASHELF_FRONT_HOLE_OFFSET + LEFT_PANEL_FRONT_VARIANCE")))
+								(_FSET (_ 'holePosition_LB (_= "leftSideTOLERANCE + currentShelfHEI - ASHELF_BACK_HOLE_OFFSET + LEFT_PANEL_FRONT_VARIANCE")))
+								(_FSET (_ 'holePosition_RF (_= "rightSideWID - rightSideTOLERANCE - ASHELF_FRONT_HOLE_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+								(_FSET (_ 'holePosition_RB (_= "rightSideWID - rightSideTOLERANCE - currentShelfHEI + ASHELF_BACK_HOLE_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+								; Center holes		
+								(_HOLE (_& (_ holeCodeLEFT centerGroupIndex "_FRONT")) leftSideCODE (_ (_ holePosition_LF leftSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+								(_HOLE (_& (_ holeCodeLEFT centerGroupIndex "_BACK")) leftSideCODE (_ (_ holePosition_LB leftSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+								(_HOLE (_& (_ holeCodeRIGHT centerGroupIndex "_FRONT")) rightSideCODE (_ (_ holePosition_RF rightSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+								(_HOLE (_& (_ holeCodeRIGHT centerGroupIndex "_BACK")) rightSideCODE (_ (_ holePosition_RB rightSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+								(if (_NOTNULL thirdMinifix)
+									(progn
+										; Hole positions
+										(_FSET (_ 'holePosition_LM (+ leftSideTOLERANCE thirdHoleOffset)))
+										(_FSET (_ 'holePosition_RM (_= "rightSideWID - rightSideTOLERANCE - thirdHoleOffset")))
+										; Center Holes
+										(_HOLE (_& (_ holeCodeLEFT centerGroupIndex "_MIDDLE")) leftSideCODE (_ (_ holePosition_LM leftSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))		
+										(_HOLE (_& (_ holeCodeRIGHT centerGroupIndex "_MIDDLE")) rightSideCODE (_ (_ holePosition_RM rightSideOffset_Y 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									)
+								)
+								; Upper-than-center holes
+								(_FSET (_ 'stepCounter 1))
+								(repeat SHELF_HOLES_EXTRA_UP
+									; (_FSET (_ 'currentStepHEI_LEFT (+ (- leftSideOffset_Y SIDE_PANELS_FRONT_OFFSET) (* stepCounter HOLE_GROUP_DISTANCE))))
+									; (_FSET (_ 'currentStepHEI_RIGHT (+ (- rightSideOffset_Y SIDE_PANELS_FRONT_OFFSET) (* stepCounter HOLE_GROUP_DISTANCE))))
+									(_FSET (_ 'currentStepHEI_LEFT (+ leftSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+									(_FSET (_ 'currentStepHEI_RIGHT (+ rightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+									(_FSET (_ 'currentHoleIndex (+ centerGroupIndex stepCounter)))
+									
+									(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_FRONT")) leftSideCODE (_ (_ holePosition_LF currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_BACK")) leftSideCODE (_ (_ holePosition_LB currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_FRONT")) rightSideCODE (_ (_ holePosition_RF currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_BACK")) rightSideCODE (_ (_ holePosition_RB currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(if (_NOTNULL thirdMinifix)
+										(progn
+											(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_MIDDLE")) leftSideCODE (_ (_ holePosition_LM currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+											(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_MIDDLE")) rightSideCODE (_ (_ holePosition_RM currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+										)
+									)
+									(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+								)
+								; Lower-than-center holes
+								(_FSET (_ 'stepCounter 1))
+								(repeat SHELF_HOLES_EXTRA_DOWN
+									; In current step all holes has same coordinate on Y-AXIS and this coordinate is held by a variable which is below
+									(_FSET (_ 'currentStepHEI_LEFT (- leftSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+									(_FSET (_ 'currentStepHEI_RIGHT (- rightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+									(_FSET (_ 'currentHoleIndex (- centerGroupIndex stepCounter)))
+									
+									(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_FRONT")) leftSideCODE (_ (_ holePosition_LF currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_BACK")) leftSideCODE (_ (_ holePosition_LB currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_FRONT")) rightSideCODE (_ (_ holePosition_RF currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_BACK")) rightSideCODE (_ (_ holePosition_RB currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+									(if (_NOTNULL thirdMinifix)
+										(progn
+											(_HOLE (_& (_ holeCodeLEFT currentHoleIndex "_MIDDLE")) leftSideCODE (_ (_ holePosition_LM currentStepHEI_LEFT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+											(_HOLE (_& (_ holeCodeRIGHT currentHoleIndex "_MIDDLE")) rightSideCODE (_ (_ holePosition_RM currentStepHEI_RIGHT 0) MINIFIX_DIAMETER_FOR_SIDES MINIFIX_DEPTH_FOR_SIDES))
+										)
+									)
+									(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+								)
+							)
+						)
+					)
+				)
+				(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+			)
+			; New virtual division
+			(_FSET (_ 'virtualDivisionCounter (+ 1 virtualDivisionCounter)))
+		)
+		; Whether operation is called from notch recipe or not, following variable is set by nil
+		(_FSET (_ 'GROUP_HOLES_FOR_NOTCH nil))
+	)
+)

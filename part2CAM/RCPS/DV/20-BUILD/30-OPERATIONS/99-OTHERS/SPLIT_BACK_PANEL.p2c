@@ -1,0 +1,156 @@
+(_RUNDEFAULTHELPERRCP "BACK_PANEL_DEFAULT" nil "p2chelper")
+
+(if (equal SPLIT_BACK_PANEL T)
+	(if (or (equal __CURDIVTYPE "AP") (equal __CURDIVTYPE "FS"))
+		(progn
+			; State controls for back panel split operation
+			(cond 
+				((equal SPLITTED_PARTS_COUNTER 1)
+					; Original back panel hasnt been splitted yet
+					(cond 
+						((equal __NOTCHTYPE 0)
+							(_FSET (_ 'backPanelCODE BACK_PANEL_CODE))
+							(_FSET (_ 'paramRoot "BACK_PANEL_"))
+						)
+						((equal __NOTCHTYPE 4)
+							(_FSET (_ 'backPanelCODE 	NOTCHED_BACK_PANEL_CODE))
+							(_FSET (_ 'paramRoot "NOTCHED_BACK_PANEL_"))
+						)
+					)
+					(_FSET (_ 'bracketControl T))
+				)
+				((> SPLITTED_PARTS_COUNTER 1)
+					; Original back panel has already been splitted
+					(_FSET (_ 'backPanelCODE (_& (_ (XSTR "BACK_PANEL") "_" SPLITTED_PARTS_COUNTER))))
+					
+					(_FSET (_ 'paramRoot (_& (_ "BACK_PANEL_" SPLITTED_PARTS_COUNTER "_"))))
+					(_FSET (_ 'bracketControl nil))
+				)
+				(T
+					; SPLITTED_PARTS_COUNTER hasnt got a valid value
+					(_FSET (_ 'backPanelCODE nil))
+					
+					(_FSET (_ 'paramRoot nil))
+					(_FSET (_ 'bracketControl nil))
+				)
+			)
+			(if (_EXISTPANEL backPanelCODE)
+				(progn
+					(_DELPANEL backPanelCODE)
+					; Global variables of back panel which will be splitted into two parts
+					(_FSET (_ 'backPanelHEI (_S2V (_& (_ paramRoot "HEI")))))
+					(_FSET (_ 'backPanelWID (_S2V (_& (_ paramRoot "WID")))))
+					
+					(_FSET (_ 'backPanelROT (_S2V (_& (_ paramRoot "ROT")))))
+					(_FSET (_ 'backPanelMAT (ifnull (_S2V (_& (_ paramRoot "MATERIAL"))) (_S2V (_& (_ paramRoot "MAT"))))))
+					(_FSET (_ 'backPanelTHICKNESS (_S2V (_& (_ paramRoot "THICKNESS")))))
+					; There is no need for polyline data of back panel which will be splitted into two
+					(_FSET (_ 'backPanelLABEL (_S2V (_& (_ paramRoot "LABEL")))))
+					(_FSET (_ 'backPanelTAG (_S2V (_& (_ paramRoot "TAG")))))
+					(_FSET (_ 'backPanelELEV (_S2V (_& (_ paramRoot "ELEV")))))
+					
+					; Upper and lower bound of split operation for back panel is calculated
+					(_FSET (_ 'upperBoundForSplit (_= "__CURDIVELEV + __CURDIVINSIDEHEI + UPPERBOUND_VARIANCE - backPanelELEV")))
+					(_FSET (_ 'lowerBoundForSplit (_= "__CURDIVELEV + LOWERBOUND_VARIANCE - backPanelELEV")))
+					
+					; UPPER PART
+					(_FSET (_ 'up_paramRoot (_& (_ "BACK_PANEL_" SPLITTED_PARTS_COUNTER "_"))))
+					
+					(_FSET (_ 'upperPartHEI (_& (_ up_paramRoot "HEI"))))
+					(_FSET (_ 'upperPartWID (_& (_ up_paramRoot "WID"))))
+					
+					(_FSET (_ 'upperPartROT (_& (_ up_paramRoot "ROT"))))
+					(_FSET (_ 'upperPartMAT (_& (_ up_paramRoot "MAT"))))
+					(_FSET (_ 'upperPartTHICKNESS (_& (_ up_paramRoot "THICKNESS"))))
+					
+					(_FSET (_ 'upperPartPDATA (_& (_ up_paramRoot "PDATA"))))
+					(_FSET (_ 'upperPartLABEL (_& (_ up_paramRoot "LABEL"))))
+					(_FSET (_ 'upperPartTAG (_& (_ up_paramRoot "TAG"))))
+					(_FSET (_ 'upperPartELEV (_& (_ up_paramRoot "ELEV"))))
+					
+					(_FSET (_ 'upperPartCODE (_& (_ (XSTR "BACK_PANEL") "_" SPLITTED_PARTS_COUNTER))))
+					
+					(_FSET (_ (read upperPartHEI) (- backPanelHEI upperBoundForSplit)))
+					(_FSET (_ (read upperPartWID) backPanelWID))
+					
+					(_FSET (_ (read upperPartROT) backPanelROT))
+					(_FSET (_ (read upperPartMAT) backPanelMAT))
+					(_FSET (_ (read upperPartTHICKNESS) backPanelTHICKNESS))
+					
+					(_FSET (_ (read upperPartLABEL) (XSTR backPanelLABEL)))
+					(_FSET (_ (read upperPartTAG) backPanelTAG))
+					(_FSET (_ (read upperPartELEV) (+ upperBoundForSplit backPanelELEV)))
+					; This control determines the ployline data of upper part
+					(if (and (_NOTNULL bracketControl) (_NOTNULL BACK_PANEL_WITH_BRACKET))
+						(progn
+							; There will be notch operations on back panel for brackets
+							(_FSET (_ 'notchShareHEI (getnth 0 BACK_PANEL_WITH_BRACKET)))
+							(_FSET (_ 'notchShareWID (getnth 1 BACK_PANEL_WITH_BRACKET)))
+							
+							(_FSET (_ (read upperPartPDATA) (_ (_ 0.0 0.0 0.0) 0 
+															   (_ 0.0 (- (_S2V upperPartHEI) notchShareHEI) 0.0) 0 
+															   (_ notchShareWID (- (_S2V upperPartHEI) notchShareHEI) 0.0) 0 
+															   (_ notchShareWID (_S2V upperPartHEI) 0.0) 0 
+															   (_ (- (_S2V upperPartWID) notchShareWID) (_S2V upperPartHEI) 0.0) 0 
+															   (_ (- (_S2V upperPartWID) notchShareWID) (- (_S2V upperPartHEI) notchShareHEI) 0.0) 0 
+															   (_ (_S2V upperPartWID) (- (_S2V upperPartHEI) notchShareHEI) 0.0) 0 
+															   (_ (_S2V upperPartWID) 0.0 0.0) 0 
+															   (_ 0.0 0.0 0.0) 0)))
+							; For safety of further operations this variable is cleared
+							(_FSET (_ 'BACK_PANEL_WITH_BRACKET nil))
+						)
+						(progn
+							; No notch operation on back panel
+							(_FSET (_ (read upperPartPDATA) (_GENERATEPDATA (_S2V upperPartWID) (_S2V upperPartHEI))))
+						)
+					)
+					(_PANELMAIN upperPartCODE (_ (_S2V upperPartPDATA) (_S2V upperPartROT) (_S2V upperPartMAT) (_S2V upperPartTHICKNESS)))
+					
+					(_PUTLABEL upperPartCODE upperPartCODE (_S2V upperPartLABEL))
+					(_PUTTAG upperPartCODE upperPartCODE (_S2V upperPartTAG))
+					
+					; For new part SPLITTED_PARTS_COUNTER is increased
+					(_FSET (_ 'SPLITTED_PARTS_COUNTER (+ 1 SPLITTED_PARTS_COUNTER)))
+					
+					; LOWER PART
+					(_FSET (_ 'lp_paramRoot (_& (_ "BACK_PANEL_" SPLITTED_PARTS_COUNTER "_"))))
+					
+					(_FSET (_ 'lowerPartHEI (_& (_ lp_paramRoot "HEI"))))
+					(_FSET (_ 'lowerPartWID (_& (_ lp_paramRoot "WID"))))
+					
+					(_FSET (_ 'lowerPartROT (_& (_ lp_paramRoot "ROT"))))
+					(_FSET (_ 'lowerPartMAT (_& (_ lp_paramRoot "MAT"))))
+					(_FSET (_ 'lowerPartTHICKNESS (_& (_ lp_paramRoot "THICKNESS"))))
+					
+					(_FSET (_ 'lowerPartPDATA (_& (_ lp_paramRoot "PDATA"))))
+					(_FSET (_ 'lowerPartLABEL (_& (_ lp_paramRoot "LABEL"))))
+					(_FSET (_ 'lowerPartTAG (_& (_ lp_paramRoot "TAG"))))
+					(_FSET (_ 'lowerPartELEV (_& (_ lp_paramRoot "ELEV"))))
+					
+					(_FSET (_ 'lowerPartCODE (_& (_ (XSTR "BACK_PANEL") "_" SPLITTED_PARTS_COUNTER))))
+					
+					(_FSET (_ (read lowerPartHEI) lowerBoundForSplit))
+					(_FSET (_ (read lowerPartWID) backPanelWID))
+					
+					(_FSET (_ (read lowerPartROT) backPanelROT))
+					(_FSET (_ (read lowerPartMAT) backPanelMAT))
+					(_FSET (_ (read lowerPartTHICKNESS) backPanelTHICKNESS))
+					
+					(_FSET (_ (read lowerPartPDATA) (_GENERATEPDATA (_S2V lowerPartWID) (_S2V lowerPartHEI))))
+					(_FSET (_ (read lowerPartLABEL) (XSTR backPanelLABEL)))
+					(_FSET (_ (read lowerPartTAG) backPanelTAG))
+					(_FSET (_ (read lowerPartELEV) backPanelELEV))
+					
+					(_PANELMAIN lowerPartCODE (_ (_S2V lowerPartPDATA) (_S2V lowerPartROT) (_S2V lowerPartMAT) (_S2V lowerPartTHICKNESS)))
+					
+					(_PUTLABEL lowerPartCODE lowerPartCODE (_S2V lowerPartLABEL))
+					(_PUTTAG lowerPartCODE lowerPartCODE (_S2V lowerPartTAG))
+				)
+			)
+		)
+	)
+)
+; Whether operation is performed or not, boundry variables will be reset
+(_FSET (_ 'UPPERBOUND_VARIANCE 0))
+(_FSET (_ 'LOWERBOUND_VARIANCE 0))
+(_NONOTCH)

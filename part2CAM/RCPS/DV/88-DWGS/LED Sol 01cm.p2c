@@ -1,0 +1,26 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MISCELLANEOUS_DEFAULT" nil "p2chelper")
+
+(setq earlyLedFinSOL 10) ; kenarlardan kisaltir
+(setq DIST_OF_LED_GROOVE 10) ; mesafe override
+(setq ledItemCodeOverride "LED")
+
+(if (_EXISTPANEL LEFT_PANEL_CODE)
+	(progn
+		(setq PANELINFO (getBBox (_EXISTPANEL LEFT_PANEL_CODE)))
+		(setq grooveDistanceBTS 
+			(_ 
+				(_ (+ 0.0 (+ DIST_OF_LED_GROOVE (/ (cu2mm gm1_solledwid) 2))) (if (and (_EXISTPANEL BOTTOM_PANEL_CODE) (equal BOTTOM_PANEL_JOINT_TYPE 0)) earlyLedFinSOL 0.0) 0.0)
+				(_ (+ 0.0 (+ DIST_OF_LED_GROOVE (/ (cu2mm gm1_solledwid) 2))) (- (getnth 3 PANELINFO) (if (and (_EXISTPANEL TOP_PANEL_CODE) (equal TOP_PANEL_JOINT_TYPE 0)) earlyLedFinSOL 0.0)) 0.0)
+			)
+		)
+		(if LED_GROOVE_IS_AVAILABLE (_GROOVE "LEFT_PANEL_LED_GROOVE" LEFT_PANEL_CODE (_ grooveDistanceBTS (cu2mm gm1_solledwid) (cu2mm gm1_solleddep))))
+		(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+	)
+)
+
+(setq currentLedShelfCODE nil)
+(setq ledItemCodeOverride nil)
+(setq earlyLedFinSOL nil)
+
+(_NONOTCH)

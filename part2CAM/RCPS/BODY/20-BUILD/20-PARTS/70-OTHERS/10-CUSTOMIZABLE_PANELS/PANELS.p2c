@@ -1,0 +1,65 @@
+; Modul connectors defaults
+PANELS_CODES_LIST -> "Panels codes' list. Format: (_ CODE1 CODE2 ...)"
+
+PANELS_ROTATIONS_LIST -> "Panels rotations' list. Format: (_ (_ MAIN_ROT CUTLIST_ROT DXF_ROT MIRROR_AXIS) ...) Ex: (_ (_90 nil nil \"X\") ...)"
+
+PANELS_MATERIAL_LIST -> "Panels materials' list. Format: (_ MAT1 MAT2 ...)"
+
+PANELS_THICKNESSES_LIST -> "Panels thicknesses' list. Format: (_ THICKNESS1 THICKNESS2 ...)"
+
+PANELS_POINTS_LIST -> "List of panels points. Format: (_ (_ (_ Hole_X Hole_Y Rail_hole_Z) Hole_bulge) ...)) Ex: (_ (_ (_ 10 20 0) 1) ...))"
+
+PANELS_EDGESTRIPS_LIST -> "List of panels edgestrips. Format: (_ (_ (_  EdgestripCode EdgestripThickness) ...)) Ex: (_ (_ (_  \"PVC1mm\" 1.0) ...))"
+
+;prefvars
+(_SETA 'PANELS_CODES_LIST (_ "SOL_PANEL" "SAG_PANEL"))
+(_SETA 'PANELS_ROTATIONS_LIST (_ (_ 0 nil nil nil) (_ 0 nil nil nil)))
+(_SETA 'PANELS_MATERIAL_LIST (_ __MODULBODYMAT __MODULBODYMAT))
+(_SETA 'PANELS_THICKNESSES_LIST (_ __AD_PANELTHICK __AD_PANELTHICK))
+
+(_SETA 'PANELS_POINTS_LIST (_ 
+							(_ 
+								(_ 0.0 0.0 0.0) 0
+								(_ 0.0 50.0 0.0) 0 
+								(_ 100.0 50.0 0.0) 0 
+								(_ 100.0 0.0 0.0) 0 
+								(_ 0.0 0.0 0.0) 0)
+							(_ 
+								(_ 0.0 0.0 0.0) 0 
+								(_ 0.0 100.0 0.0) 0 
+								(_ 50.0 100.0 0.0) 0 
+								(_ 50.0 0.0 0.0) 0 
+								(_ 0.0 0.0 0.0) 0)
+							)
+)
+							
+(_SETA 'PANELS_EDGESTRIPS_LIST (_ 
+						(_ (_ "PVC1mm" 1.0)
+						   (_ "" 0)
+						   (_ "" 0)
+						   (_ "PVC1mm" 1.0))
+						(_ (_ "PVC1mm" 1.0)
+						   (_ "" 0)
+						   (_ "" 0)
+						   (_ "PVC1mm" 1.0))
+							))
+
+(setq panelCounter 0)
+(while (< panelCounter (length PANELS_CODES_LIST))
+
+	(setq PANEL_CODE (getnth panelCounter PANELS_CODES_LIST))
+	(setq PANEL_ROT (getnth panelCounter PANELS_ROTATIONS_LIST))
+	(setq PANEL_MAT (getnth panelCounter PANELS_MATERIAL_LIST))
+	(setq PANEL_THICKNESS (getnth panelCounter PANELS_THICKNESSES_LIST))
+	(setq PANEL_POINT_LIST (getnth panelCounter PANELS_POINTS_LIST))
+	(setq PANEL_EDGESTRIP_LIST (getnth panelCounter PANELS_EDGESTRIPS_LIST))
+	
+	(_PANELMAIN PANEL_CODE (_ PANEL_POINT_LIST PANEL_ROT PANEL_MAT PANEL_THICKNESS))
+	(_CREATEEDGESTRIPS PANEL_CODE PANEL_EDGESTRIP_LIST)
+
+	(setq panelCounter (+ 1 panelCounter))
+)
+
+(_NONOTCH)
+
+

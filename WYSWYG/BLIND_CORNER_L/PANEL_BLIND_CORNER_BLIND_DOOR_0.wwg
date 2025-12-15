@@ -1,0 +1,24 @@
+(setq blindoorEnding (if (equal blindDoorTouchWall 1) (- unitW (ifnull aden1 uden1)) 0.0))
+
+(setq wwg_layerName (ifnull gm1:layerName szBodyLayer))
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel 
+	(list 
+		(list blindoorEnding 0.0 0.0) 
+		(list (- unitW gor_GEN (- (ifnull aden1 uden1) gor_gen unitd2)) 0.0 0.0) 
+		(list (- unitW gor_GEN (- (ifnull aden1 uden1) gor_gen unitd2)) unitH 0.0) 
+		(list blindoorEnding unitH 0.0)
+	) 
+	nil
+	ad_et
+	0.0
+	(d2r 90.0) 
+	(list 0.0 (- (- unitD) ad_et) dAltKot)
+	"PANEL_BLIND_CORNER_BLIND_DOOR" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)

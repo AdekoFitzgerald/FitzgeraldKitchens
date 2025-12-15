@@ -1,0 +1,69 @@
+(_RUNDEFAULTHELPERRCP "RAFIX_DEFAULT" nil "p2chelper")
+
+WARDROBE_RSCREW_HOLE_DIA -> "Diameter of wardrobe rafix screw holes. Default value -> RAFIX_VER_DIAMETER"
+WARDROBE_RSCREW_HOLE_DEPTH -> "Depth of wardrobe rafix screw holes. Default value -> RAFIX_VER_DEPTH"
+WARDROBE_RSCREW_HOLE_VER_CENTER -> "Offset from rafix housing hole center to panel edge. Default value -> RAFIX_VER_CENTER"
+WARDROBE_RSCREW_TAIL_HOLE_DIST -> "Distance from rafix dowel hole center to rafix housing hole center. Default value -> TAIL_HOLE_DISTANCE"
+WARDROBE_RSCREW_TAIL_HOLE_DIA -> "Diameter of rafix dowel holes. Default value -> TAIL_HOLE_DIAMETER"
+WARDROBE_RSCREW_TAIL_HOLE_DEPTH -> "Depth of rafix tail holes. Default value -> TAIL_HOLE_DEPTH"
+;prefvars
+(_SETA 'WARDROBE_RSCREW_HOLE_DIA RAFIX_VER_DIAMETER)
+(_SETA 'WARDROBE_RSCREW_HOLE_DEPTH RAFIX_VER_DEPTH)
+(_SETA 'WARDROBE_RSCREW_HOLE_VER_CENTER RAFIX_VER_CENTER)
+(_SETA 'WARDROBE_RSCREW_TAIL_HOLE_DIST TAIL_HOLE_DISTANCE)
+(_SETA 'WARDROBE_RSCREW_TAIL_HOLE_DIA TAIL_HOLE_DIAMETER)
+(_SETA 'WARDROBE_RSCREW_TAIL_HOLE_DEPTH TAIL_HOLE_DEPTH)
+
+(if (not (equal RAFIX_DIA1 nil)) (_FSET (_ 'WARDROBE_RSCREW_HOLE_DIA (convertLengthToSpecifiedUnit RAFIX_DIA1 (getvar "INSUNITS") 4))))
+(if (not (equal RAFIX_DEP1 nil)) (_FSET (_ 'WARDROBE_RSCREW_HOLE_DEPTH (convertLengthToSpecifiedUnit RAFIX_DEP1 (getvar "INSUNITS") 4))))
+(if (not (equal RAFIX_X1 nil)) (_FSET (_ 'WARDROBE_RSCREW_HOLE_VER_CENTER (convertLengthToSpecifiedUnit RAFIX_X1 (getvar "INSUNITS") 4))))
+(if (not (equal RAFIX_X2 nil)) (_FSET (_ 'WARDROBE_RSCREW_TAIL_HOLE_DIST (convertLengthToSpecifiedUnit RAFIX_X2 (getvar "INSUNITS") 4))))
+(if (not (equal RAFIX_DIA2 nil)) (_FSET (_ 'WARDROBE_RSCREW_TAIL_HOLE_DIA (convertLengthToSpecifiedUnit RAFIX_DIA2 (getvar "INSUNITS") 4))))
+(if (not (equal RAFIX_DEP2 nil)) (_FSET (_ 'WARDROBE_RSCREW_TAIL_HOLE_DEPTH (convertLengthToSpecifiedUnit RAFIX_DEP2 (getvar "INSUNITS") 4))))
+
+; Standard Values, WARDROBE_RSCREW_HOLE_DIA RAFIX_VER_DIAMETER, WARDROBE_RSCREW_HOLE_DEPTH RAFIX_VER_DEPTH
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (_NOTNULL (car targetPanels))
+	(progn
+		(_FSET (_ 'tPanelInfo (getnth 0 targetPanels)))
+		(_FSET (_ 'tempDwgExt  (get_mdata g_currentModulEnt  k:P2CConnectorDwgExt)))
+		(_FSET (_ 'tempDwgAng (get_mdata g_currentModulEnt  k:P2CConnectorDwgAng)))
+
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+
+		(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+		(if (_ISVERTICALFACE currentFaceNormal)
+			(progn
+				; Type of current face is either 0 or 1 in this case
+				(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+					(progn
+						(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+						(_FSET (_ 'holeOrient (getRafixOrientByDwgInfo 2 tempDwgAng)))
+					)
+					(progn
+						(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+						(_FSET (_ 'holeOrient (getRafixOrientByDwgInfo 1 tempDwgAng)))
+					)
+				)
+				(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+				(setq holePosition (replace 0 2 holePosition))
+
+				
+				(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_RAFIX_VER_HOLE"))))
+				;(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_RSCREW_HOLE_DIA WARDROBE_RSCREW_HOLE_DEPTH holeOrient))
+				(_RAFIX holeCodeBody connectedFaceCode (_ holePosition WARDROBE_RSCREW_HOLE_VER_CENTER WARDROBE_RSCREW_HOLE_DIA WARDROBE_RSCREW_HOLE_DEPTH holeOrient (_ WARDROBE_RSCREW_TAIL_HOLE_DIST WARDROBE_RSCREW_TAIL_HOLE_DIA WARDROBE_RSCREW_TAIL_HOLE_DEPTH)))
+					
+				(_ITEMMAIN WARDROBE_RAFIX_CODE WARDROBE_RAFIX_CODE (_ 1 WARDROBE_RAFIX_UNIT))
+			)
+		)
+	)
+)
+
+
+(_RESETCURMODUL)
+
+(_NONOTCH)

@@ -1,0 +1,36 @@
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+
+WARDROBE_DRAIL_HOLE_DIA -> "Diameter of wardrobe drawer rail holes. Default value -> DRAWER_RAIL_HOLES_DIAMETER"
+WARDROBE_DRAIL_HOLE_DEPTH -> "Depth of wardrobe drawer rail holes. Default value -> DRAWER_RAIL_HOLES_DEPTH"
+;prefvars
+(_SETA 'WARDROBE_DRAIL_HOLE_DIA DRAWER_RAIL_HOLES_DIAMETER)
+(_SETA 'WARDROBE_DRAIL_HOLE_DEPTH DRAWER_RAIL_HOLES_DEPTH)
+; Standard Values, WARDROBE_DRAIL_HOLE_DIA DRAWER_RAIL_HOLES_DIAMETER, WARDROBE_DRAIL_HOLE_DEPTH DRAWER_RAIL_HOLES_DEPTH
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(_FSET (_ 'tPanelInfo (getnth 0 targetPanels)))
+
+(_SETCURMODUL (getnth 0 tPanelInfo))
+
+(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+(if (_ISVERTICALFACE currentFaceNormal)
+	(progn
+		; Type of current face is either 0 or 1 in this case
+		(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+			(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+		)
+		(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+		(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+		
+		(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_DRAWER_RAIL_HOLE"))))
+		(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_DRAIL_HOLE_DIA WARDROBE_DRAIL_HOLE_DEPTH holeOrient))
+	)
+)
+
+(_RESETCURMODUL)
+
+(_NONOTCH)

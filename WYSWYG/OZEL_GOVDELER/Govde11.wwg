@@ -1,0 +1,35 @@
+(initget (strcat (Xstr "1 2 3 4 5") " ~1 ~2 ~3 ~4 ~5"))
+(setq dikmeSayisi (atof (getkword (Xstr "\Kaç raf olsun?"))))
+(setq urafPanelh unitH)												"Bazasýz yükseklik"
+(setq urafhq  dikmeSayisi)												"Bölüm sayýsý"
+(setq urafq  (- urafhq 1.0))										"Raf sayýsý"
+(setq urafbh (/ (- urafPanelh (* urafhq ad_et)) urafhq))			"Bölüm yüksekliði"
+(setq indexH 0)
+(setq urafhq (atoi (rtos urafhq 2 0)))
+
+(repeat urafhq
+	(setq urafh (* indexH (+ ad_et urafbh)))
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list (- unitW 4.0) 0.0 0.0) 
+			(list (- unitW 4.0) unitD 0.0) 
+			(list 0.0 unitD 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		;(d2r 90.0)
+		0.0
+		(list 2.0 0.0 (+ urafh (/ urafbh 2)))
+		"ORTA_RAFLAR"
+		""
+		nil
+		"SHELF"
+		(strcat kodBlock "_CAB_DOORS")
+		"CAB_DOORS"
+		"noedgedrawing"
+	)
+	(setq indexH (1+ indexH))
+)

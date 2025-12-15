@@ -1,0 +1,37 @@
+(defun mtzg (dummyKod dummyParams / TK20_W2 unitW unitd TK20_D1 kodBlock TK20_W1)
+	(setq kodBlock "LTezgah")
+	(setq TK20_W1 (getreal "\nTezgahýn soldan kertiðe kadar mesafesi kaç cm olsun? : "))
+	(setq TK20_W2 (getreal "\nTezgahýn kertik geniþliði kaç cm olsun? : "))
+	(setq unitW (getreal "\nTezgahýn kertikten saðýna kadar olam mesafesi kaç cm olsun? : "))
+	(setq unitd (getreal "\nTezgah derinliði kaç cm olsun? : "))
+	(setq TK20_D1 (getreal "\nKertik Derinliði kaç cm olsun? : "))
+	
+	(setq unitw (+ unitw TK20_W1 TK20_W2))
+	(createGPanel
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list 0.0 unitD 0.0) 
+			(list unitW unitD 0.0) 
+			(list unitW 0.0 0.0) 
+			(list (+ TK20_W1 TK20_W2) 0.0 0.0) 
+			(list (+ TK20_W1 TK20_W2) TK20_D1 0.0) 
+			(list TK20_W1 TK20_D1 0.0) 
+			(list TK20_W1 0.0 0.0)
+		) 
+		nil
+		3
+		0.0
+		;(d2r 90.0)
+		0.0
+		(getpoint "Köþeyi Gösteriniz:")
+		"TK20_01"
+		""
+		nil
+		"SHELF"
+		kodBlock
+		"CAB_DOORS"
+		"noedgedrawing"		
+	)
+	
+	(set_Mdata (entlast)  (list (cons k:mtyp "DUMMY")))
+)

@@ -1,0 +1,105 @@
+(if (> __NOTCHDIM2 __AD_PANELTHICK)
+	(progn
+		(if (_EXISTPANEL LEFT_TOP_NAILER_OP_FACE)
+			(progn
+				(_FSET (_ 'lengthParametersForLeftTopNailerAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH LEFT_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForLeftTopNailerAndLeft (car lengthParametersForLeftTopNailerAndLeft)))
+
+				(_FSET (_ 'lengthParametersForLeftTopNailerAndSecondaryRight (_CALCULATEPANELSINTERSECTIONLENGTH LEFT_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForLeftTopNailerAndSecondaryRight (car lengthParametersForLeftTopNailerAndSecondaryRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'leftTopNailerPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForLeftTopNailerAndLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil LEFT_TOP_NAILER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName LEFT_TOP_NAILER_OP_FACE leftTopNailerPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'leftTopNailerPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForLeftTopNailerAndSecondaryRight LEFT_TOP_NAILER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil LEFT_TOP_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName LEFT_TOP_NAILER_OP_FACE leftTopNailerPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForLeftTopNailer (_GETHOLEPOINTLIST operationName 
+																		(_ lengthForLeftTopNailerAndLeft (- LEFT_PANEL_WID LEFT_PANEL_BACK_VARIANCE TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																		(_ (- LEFT_PANEL_HEI LEFT_PANEL_UPPER_VARIANCE LEFT_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil LEFT_TOP_NAILER_HEI) 
+																		(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForLeftTopNailer (_ nil "X+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryRightPanelPointListForLeftTopNailer (_GETHOLEPOINTLIST operationName 
+																		(_ lengthForLeftTopNailerAndSecondaryRight (+ TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																		(_ (- SECONDARY_RIGHT_PANEL_HEI LEFT_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil LEFT_TOP_NAILER_HEI) 
+																		(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE secondaryRightPanelPointListForLeftTopNailer (_ nil "X-") connectorParams)
+						)
+					)
+				
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+		
+		(if (_EXISTPANEL RIGHT_TOP_NAILER_OP_FACE)
+			(progn
+				(_FSET (_ 'lengthParametersForRightTopNailerAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH RIGHT_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForRightTopNailerAndSecondaryLeft (car lengthParametersForRightTopNailerAndLeft)))
+
+				(_FSET (_ 'lengthParametersForRightTopNailerAndSecondaryRight (_CALCULATEPANELSINTERSECTIONLENGTH RIGHT_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForRightTopNailerAndRight (car lengthParametersForRightTopNailerAndSecondaryRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'rightTopNailerPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForRightTopNailerAndSecondaryLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil RIGHT_TOP_NAILER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName RIGHT_TOP_NAILER_OP_FACE rightTopNailerPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'rightTopNailerPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForRightTopNailerAndRight RIGHT_TOP_NAILER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil RIGHT_TOP_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName RIGHT_TOP_NAILER_OP_FACE rightTopNailerPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL SECONDARY_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryLeftPanelPointListForRightTopNailer (_GETHOLEPOINTLIST operationName 
+																				(_ lengthForRightTopNailerAndSecondaryLeft (- SECONDARY_LEFT_PANEL_WID TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																				(_ (- SECONDARY_LEFT_PANEL_HEI RIGHT_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil RIGHT_TOP_NAILER_HEI) 
+																				(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_LEFT_PANEL_CODE secondaryLeftPanelPointListForRightTopNailer (_ nil "X+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForRightTopNailer (_GETHOLEPOINTLIST operationName 
+																		(_ lengthForRightTopNailerAndRight (+ RIGHT_PANEL_BACK_VARIANCE TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																		(_ (- RIGHT_PANEL_HEI RIGHT_PANEL_UPPER_VARIANCE RIGHT_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil RIGHT_TOP_NAILER_HEI) 
+																		(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForRightTopNailer (_ nil "X-") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

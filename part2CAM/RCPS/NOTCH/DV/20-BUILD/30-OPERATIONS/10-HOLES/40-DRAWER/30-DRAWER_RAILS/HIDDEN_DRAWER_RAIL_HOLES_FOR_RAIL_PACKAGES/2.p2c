@@ -1,0 +1,55 @@
+(if (> __NOTCHDIM2 __AD_PANELTHICK)
+	(progn
+		(_FSET (_ 'currentDivision (_& (_ "__DIV" __CURDIVORDER))))
+		
+		(_FSET (_ 'maxDrawerDepthPossible (- __DEP __NOTCHDIM2)))
+		(_FSET (_ 'actualDrawerDepth (_= "DRAWER_DEPTH - DRAWER_TOTAL_GAP_DEP - __NOTCHDIM2")))
+		(_FSET (_ 'hiddenDrawerPosList (_S2V (_& (_ currentDivision "_SHELVESOFFSETS")))))
+		(_FSET (_ 'hDrawerCounter (_& (_ "HIDDEN_DRAWERS_COUNTER_" __CURDIVORDER))))
+		; General validation control for RAIL_HOLES_FOR_RAIL_PACKAGES
+		(if (and (_NOTNULL RAIL_HOLES_FOR_RAIL_PACKAGES) (equal (type RAIL_HOLES_FOR_RAIL_PACKAGES) 'LIST) (< (_S2V hDrawerCounter) (length hiddenDrawerPosList)))
+			(progn
+				; Package controls are perfomed in original recipe
+				; HOLE OPERATIONS
+				; If our drawer depth is a valid one for any package then operations are performed
+				(if (_NOTNULL SELECTED_RAIL_INDEX)
+					(progn
+						(_FSET (_ 'activeRailPackage (getnth SELECTED_RAIL_INDEX RAIL_HOLES_FOR_RAIL_PACKAGES)))
+						(_FSET (_ 'currentPackageCode (getnth 1 activeRailPackage)))
+						; 0 and 1 indexes are occupied by upper limit of rail package and rail package code
+						(_FSET (_ 'railCounter 2))
+						(while (< railCounter (length activeRailPackage))
+							(_FSET (_ 'currentHole (getnth railCounter activeRailPackage)))
+							
+							(_FSET (_ 'currentHoleDiameter (getnth 0 currentHole)))
+							(_FSET (_ 'currentHoleDepth (getnth 1 currentHole)))
+							(_FSET (_ 'currentHolePosition (getnth 2 currentHole)))
+							(_FSET (_ 'currentDrawerOffset (getnth (_S2V hDrawerCounter) hiddenDrawerPosList)))
+							
+							(_FSET (_ 'holePosX (getnth 0 currentHolePosition)))
+							(_FSET (_ 'holePosY (_= "__CURDIVELEV + currentDrawerOffset - bottomSideStyleV1")))
+							(_FSET (_ 'holePosZ (getnth 2 currentHolePosition)))
+							; Validation controls for current hole
+							(_FSET (_ 'frontSideControl (< (/ currentHoleDiameter 2.0) holePosX)))
+							(_FSET (_ 'backSideControl (> maxDrawerDepthPossible (+ holePosX (/ currentHoleDiameter 2.0)))))
+							(if (and frontSideControl backSideControl)
+								(progn
+									; Left panel operations are performed in original recipe
+									(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'holeCodeBody "NOTCHED_RIGHT_PANEL_HIDDEN_DRAWER_RAIL_HOLE_"))
+											(_HOLE (_& (_ holeCodeBody (- railCounter 1))) NOTCHED_RIGHT_PANEL_CODE (_ (_ (- NOTCHED_RIGHT_PANEL_WID holePosX) holePosY holePosZ) currentHoleDiameter currentHoleDepth))
+										)
+									)
+								)
+							)
+							(_FSET (_ 'railCounter (+ 1 railCounter)))
+						)
+						; Item of rail package has already been added in original recipe
+						(_FSET (_ 'SELECTED_RAIL_INDEX nil))
+					)
+				)
+			)
+		)
+	)
+)

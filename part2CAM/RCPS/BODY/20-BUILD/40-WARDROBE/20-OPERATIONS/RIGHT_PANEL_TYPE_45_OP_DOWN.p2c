@@ -1,0 +1,9 @@
+(_FSET (_ 'panelHei (distance (getnth 2 __PANELPOLYLINEDATA) (getnth 4 __PANELPOLYLINEDATA))))
+(_FSET (_ 'panelWidth (distance (getnth 0 __PANELPOLYLINEDATA) (getnth 2 __PANELPOLYLINEDATA))))
+
+		(_FSET (_ 'polylineDataUp (list (list 0.0 0.0 0.0) 0.0
+									  (list panelWidth 0.0 0.0) 0.0)))
+						 
+		(_POLYLINEHOLE "TYE_45_OP" tempSecFaceCode (_ polylineDataUp __PANELTHICKNESS TYPE_45_PANEL_OP_LAYER))
+		
+(_NONOTCH)

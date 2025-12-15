@@ -1,0 +1,70 @@
+(if (and (null ALU_SCREW_CODE) (null ALU_SCREW_UNIT)) 
+	(_FSET (_ 'QUANTITY_OF_SCREW_ITEM 0))
+	(_FSET (_ 'QUANTITY_OF_SCREW_ITEM 1))
+)
+; Item added in anyway
+(_ITEMMAIN ALU_SCREW_CODE ALU_SCREW_CODE (_ (* QUANTITY_OF_SCREW_ITEM 2.0) ALU_SCREW_UNIT))
+
+(if (_NOTNULL NO_NEED_SCREW_HOLES)
+	(progn
+		; No need to perform notch operations because there is no need to perform operations
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'halfOfScrewDia (/ SCREW_HOLES_DIAMETER 2.0)))
+		(_FSET (_ 'halfOfAluStrecherDia (/ ALU_STRECHER_HOLE_DIAMETER 2.0)))
+		
+		; (if (> SCREW_HOLES_HOR_OFFSET (+ halfOfScrewDia halfOfAluStrecherDia))
+			; (progn
+			
+		(if (not (equal STATUS_OF_STRECHERS 1))	
+			(progn
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'offsetOnAxisX (_= "LEFT_PANEL_WID - ALU_STRECHER_HOLE_HOR_OFFSET - SCREW_HOLES_HOR_OFFSET - LEFT_PANEL_BACK_VARIANCE")))
+						(_FSET (_ 'offsetOnAxisY (_= "LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE")))
+						
+						(_FSET (_ 'holeCodeBody "LEFT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+						(_HOLE holeCodeBody LEFT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'offsetOnAxisX (_= "ALU_STRECHER_HOLE_HOR_OFFSET + SCREW_HOLES_HOR_OFFSET + RIGHT_PANEL_BACK_VARIANCE")))
+						(_FSET (_ 'offsetOnAxisY (_= "RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - RIGHT_PANEL_UPPER_VARIANCE")))
+						
+						(_FSET (_ 'holeCodeBody "RIGHT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+						(_HOLE holeCodeBody	RIGHT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+					)
+				)
+			)
+			
+			(progn
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'offsetOnAxisX (_= "LEFT_PANEL_WID - ALU_STRECHER_HOLE_HOR_OFFSET - LEFT_PANEL_BACK_VARIANCE")))
+						(_FSET (_ 'offsetOnAxisY (_= "LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - SCREW_HOLES_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE")))
+						
+						(_FSET (_ 'holeCodeBody "LEFT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+						(_HOLE holeCodeBody LEFT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'offsetOnAxisX (+ ALU_STRECHER_HOLE_HOR_OFFSET RIGHT_PANEL_BACK_VARIANCE)))
+						(_FSET (_ 'offsetOnAxisY (_= "RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - SCREW_HOLES_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE")))
+						
+						(_FSET (_ 'holeCodeBody "RIGHT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+						(_HOLE holeCodeBody	RIGHT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+					)
+				)
+			)
+		)
+			; )
+			; (progn
+				; ; With current parameters there is no way to perform screw operations thats why no need for notch operation also
+				; (_NONOTCH)
+			; )
+		; )
+	)
+)

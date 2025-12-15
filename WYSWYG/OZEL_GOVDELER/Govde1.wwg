@@ -1,0 +1,370 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 (- ad_bazaH) 0.0) 
+		(list 0.0 unitH 0.0) 
+		(list unitD unitH  0.0) 
+		(list unitD 0.0 0.0) 
+		(list (- unitD 0.0) 0.0 0.0) 
+		(list (- unitD 0.0) (- ad_bazaH) 0.0) 
+		(list 0.0 (- ad_bazaH) 0.0) 
+	)
+	nil
+	ad_et 
+	0.0 
+	0.0 
+	(list 0.0 0.0 ad_bazaH)
+	(xstr "LEFT_PANEL" )
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 (- ad_bazaH) 0.0) 
+		(list 0.0 unitH 0.0) 
+		(list unitD unitH  0.0) 
+		(list unitD 0.0 0.0) 
+		(list (- unitD 0.0) 0.0 0.0) 
+		(list (- unitD 0.0) (- ad_bazaH) 0.0) 
+		(list 0.0 (- ad_bazaH) 0.0)
+	)
+	nil
+	ad_et 
+	0.0 
+	0.0 
+	(list (- unitW ad_et) 0.0 ad_bazaH)
+	(xstr "RIGHT_PANEL" )
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 (- ad_bazaH) 0.0) 
+		(list 0.0 (- unitH ad_et ad_bazaH ad_et) 0.0) 
+		(list (- unitD ad_et ad_et) (- unitH ad_et ad_bazaH ad_et)  0.0) 
+		(list (- unitD ad_et ad_et) 0.0 0.0) 
+		(list (- unitD ad_et ad_et) 0.0 0.0) 
+		(list (- unitD ad_et ad_et) (- ad_bazaH) 0.0) 
+		(list 0.0 (- ad_bazaH) 0.0) 
+	)
+	nil
+	ad_et 
+	0.0 
+	0.0 
+	(list (- (/ unitW 2) (/ ad_et 2)) (- ad_et) (+ (* ad_bazaH 2) ad_et))
+	"DIKME"
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list (- unitW 2.0) 0.0 0.0) 
+	(list (- unitW 2.0) (- unitH 2.0) 0.0) 
+	(list 0.0 (- unitH 2.0) 0.0) 
+	) 
+	nil
+	0.8 
+	0.0
+	(d2r 90.0) 
+	(list 1.0 (- ad_et) (+ dAltKot 1.0))
+	"ARKALIK" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_ARKALIK")
+	"LACQUER"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitD ad_et ad_et) 0.0) 
+		(list 0.0 (- unitD ad_et ad_et) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	(d2r 90.0)
+	0.0
+	(list ad_et (- ad_et) (- (+ daltKot (/ unitH 2)) (/ ad_et 2)))
+	"_RAF"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) dAltKot 0.0) 
+		(list 0.0 dAltKot 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0
+	(d2r 90.0) 
+	(list ad_et (+ (- unitD ) 0.0) 0.0)
+	"BAZA" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW (* 0.314 2)) 0.0 0.0) 
+		(list (- unitW (* 0.314 2)) (- unitH 1.2 1.2) 0.0) 
+		(list 0.0 (- unitH 1.2 1.2) 0.0) 
+	) 
+	nil
+	arkalikWid 
+	0.0
+	(d2r 90.0) 
+	(list 0.314 (- ad_et) (+ dAltKot 1.2))
+	"ARKALIK" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitD ad_et) 0.0) 
+		(list 0.0 (- unitD ad_et) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list ad_et 0.0 dAltKot)
+	(XSTR "BOTTOM_PANEL")
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitD ad_et) 0.0) 
+		(list 0.0 (- unitD ad_et) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list ad_et 0.0 (- (+ dAltKot unitH) ad_et))
+	(XSTR "TOP_PANEL")
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+	
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW ad_et ad_et) 0.0 0.0) 
+(list (- unitW ad_et ad_et) (- unitD ad_et ad_et) 0.0) 
+(list 0.0 (- unitD ad_et ad_et) 0.0) 
+) 
+nil
+ad_et
+0.0
+;(d2r 90.0)
+0.0
+(list ad_et (- ad_et) (- (+ daltKot (/ unitH 2)) (/ ad_et 2)))
+"ALT_TABLA"
+""
+nil
+"SHELF"
+(strcat kodBlock "_LACQUER")
+"LACQUER"
+"noedgedrawing"
+
+)
+
+
+
+
+
+(setq rafSet1 (* 1.968 2.54))
+(setq rafSet2 (* rafset1 2))
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) rafSet1 0.0) 
+		(list 0.0 rafSet1 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0
+	(d2r 90.0) 
+	(list ad_et (- unitD ) (+ daltKot 0.0))
+	"BIEN4" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) rafSet1 0.0) 
+		(list 0.0 rafSet1 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0
+	(d2r 90.0) 
+	(list ad_et (- unitD ) (- (+ daltKot (/ unitH 2)) (/ ad_et 2)))
+	"BIEN5" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+
+(setq _dekorW (- unitW ad_et ad_et))
+(setq _dekorP01 (* 1.375   2.54))
+(setq _dekorP02 (* 0.3125  2.54))
+(setq _dekorP03 (* 0.2500  2.54))
+(setq _dekorP04 (* 0.3125  2.54))
+(setq _dekorP05 (* 0.1875  2.54))
+(setq _dekorP06 (* 1.125   2.54))
+(setq _dekorP07 (* 0.2500  2.54))
+(setq _dekorP08 (* 0.2500  2.54))
+(setq _dekorP09 (* 0.2500  2.54))
+(setq _dekorP10 (* 0.3125  2.54))
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		
+		;___________________________________________________________________________________________________________________
+	
+		(list (* 0.0	2.54)		(* 0.0 		2.54)		0.0)
+		(list (* 1.375	2.54)		(* 0.0 		2.54)		0.0)
+		(list (* 1.6875	2.54)		(* 0.0 		2.54)		0.0)
+		(list (* 1.9375	2.54)		(* 0.125 	2.54)		0.0)
+		(list (* 2.250	2.54)		(* 0.250 	2.54)		0.0)
+		(list (* 2.4375	2.54)		(* 0.4375 	2.54)		0.0)
+		(list (* 3.5625	2.54)		(* 1.5625 	2.54)		0.0)
+		(list (* 3.8125	2.54)		(* 1.750 	2.54)		0.0)
+		(list (* 4.0625	2.54)		(* 1.875 	2.54)		0.0)
+		(list (* 4.3125	2.54)		(* 2.0 		2.54)		0.0)
+		(list (* 4.625	2.54)		(* 2.0 		2.54)		0.0)
+		
+		;_______________________________________________________________________________________________________________
+		
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05 _dekorP06 _dekorP07 _dekorP08 _dekorP09 _dekorP10)		(* 2.0 2.54) 				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05 _dekorP06 _dekorP07 _dekorP08 _dekorP09)			(* 2.0 2.54) 				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05 _dekorP06 _dekorP07 _dekorP08)			(* 1.875 2.54) 				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05 _dekorP06 _dekorP07)			(* 1.75 2.54) 				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05 _dekorP06)		    (* 1.5625 2.54)				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04 _dekorP05)		(* 0.4375 2.54)			0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03 _dekorP04)		(* 0.25 2.54) 				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02 _dekorP03)		(* 0.125 2.54)				0.0)
+		(list (- _dekorW _dekorP01 _dekorP02)			(* 0.0 2.54) 				0.0)
+		(list (- _dekorW _dekorP01)		0.0 				0.0)
+		(list _dekorW		0.0 				0.0)
+		
+		;________________________________________________________________________________________________________________
+	
+		(list _dekorW		(* 4.0 2.54)				0.0)
+							
+		(list 0.0		    (* 4.0 2.54)				0.0)
+		
+		(list 0.0		    0.0 				0.0)
+		
+	) 
+	nil
+	ad_et 
+	0.0
+	(d2r 90.0) 
+	(list ad_et (- unitD) (- (+ unitH dAltKot) (* 4.0 2.54)))
+	"BIEN6" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+
+)

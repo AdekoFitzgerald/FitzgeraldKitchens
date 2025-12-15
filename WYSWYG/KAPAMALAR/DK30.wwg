@@ -1,0 +1,27 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.0 unitH 0.0) 
+		(list (+ (+ ad_UDDER ad_et) DK30_V2) unitH  0.0) 
+		(list (+ (+ ad_UDDER ad_et) DK30_V2) (+ (+ ad_tezH ad_adH (- ad_bazaH dAltKot)) DK30_V1) 0.0) 
+		(list unitD (+ (+ ad_tezH ad_adH (- ad_bazaH dAltKot)) DK30_V1) 0.0) 
+		(list unitD 0.0 0.0) 
+	) 
+	nil
+	unitW 
+	0.0
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"SSS" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+

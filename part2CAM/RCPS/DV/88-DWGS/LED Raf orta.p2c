@@ -1,0 +1,30 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MISCELLANEOUS_DEFAULT" nil "p2chelper")
+
+(setq earlyLedFinRAF 0) ; kenarlardan kisaltir ve yan panele operasyon yaptirmaz
+(setq DIST_OF_LED_GROOVE (- (* 0.5 (if (and (equal SPECIAL_FIXED_SHELF_ORDER __CURDIVORDER) SPECIAL_FIXED_SHELF_HEI) SPECIAL_FIXED_SHELF_HEI (- __DEP FIXED_SHELF_FRONT_OFFSET GROOVE_WID GROOVE_DISTANCE))) (* 0.5 WID_OF_LED_GROOVE) )) ; mesafe override
+(setq ledItemCodeOverride "LED")
+
+(if USE_PROJECT_PRICING_RECIPES
+	(progn
+		(_NONOTCH)
+	)
+	(progn
+		(cond
+			(	(_EXISTPANEL (setq currentLedShelfCODE (strcat (XSTR "FIXED_SHELF") "_" (itoa __CURDIVORDER))))
+				(progn
+					(setq grooveDistanceBTS (- (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)) FIXED_SHELF_FRONT_OFFSET))
+					(setq grooveDistanceBTS (_ (_ earlyLedFinRAF grooveDistanceBTS 0) (_ (- __CURDIVINSIDEWID FIXED_SHELF_SIDES_TOTAL_OFFSET earlyLedFinRAF) grooveDistanceBTS 0)))
+					(if LED_GROOVE_IS_AVAILABLE (_GROOVE "FIXED_SHELF_LED_GROOVE" currentLedShelfCODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+					(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+				)
+			)
+		)
+	)
+)
+
+(setq currentLedShelfCODE nil)
+(setq ledItemCodeOverride nil)
+(setq earlyLedFinRAF nil)
+
+(_NONOTCH)

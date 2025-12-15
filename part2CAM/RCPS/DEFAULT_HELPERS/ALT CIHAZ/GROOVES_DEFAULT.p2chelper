@@ -1,0 +1,61 @@
+;prefvars
+(_RUNDEFAULTHELPERRCP "BACK_PANEL_BASE_DEFAULT" nil "p2chelper")
+
+; General groove parameters
+(_SETA 'GROOVE_WID (+ GENERAL_GROOVE_COMPANSATION GENERAL_BACK_PANEL_THICKNESS))
+(_SETA 'GROOVE_DISTANCE (- 75 GROOVE_WID))
+(_SETA 'GROOVE_DEPTH 8)
+
+; Stop distance parameters
+(_SETA 'GROOVE_STOP_DISTANCE_LEFT_TOP nil)
+(_SETA 'GROOVE_STOP_DISTANCE_LEFT_BOTTOM nil)
+(_SETA 'GROOVE_STOP_DISTANCE_RIGHT_TOP nil)
+(_SETA 'GROOVE_STOP_DISTANCE_RIGHT_BOTTOM nil)
+(_SETA 'GROOVE_STOP_DISTANCE_TOP_LEFT nil)
+(_SETA 'GROOVE_STOP_DISTANCE_TOP_RIGHT nil)
+(_SETA 'GROOVE_STOP_DISTANCE_BOTTOM_LEFT nil)
+(_SETA 'GROOVE_STOP_DISTANCE_BOTTOM_RIGHT nil)
+
+;groove ending parameters for side panel with split groove
+(_IFNULLSET 'SIDE_PANEL_BOTTOM_GROOVE_TILL_BOTTOM nil)
+(_IFNULLSET 'SIDE_PANEL_BOTTOM_GROOVE_TILL_SHELF_ENDING nil)
+(_IFNULLSET 'SIDE_PANEL_TOP_GROOVE_TILL_SHELF_ENDING nil)
+(_IFNULLSET 'SIDE_PANEL_TOP_GROOVE_TILL_TOP nil)
+
+; PRELIMINARY CONTROLS
+; This code block works only once when the MODULE IS NOTCHED
+(if (not (equal __NOTCHTYPE 0))
+	(progn
+		; Groove States for general panels notch operations
+		; STATES							EXPLANATION
+		;	1			Notch on Y axis is smaller than groove distance
+		;	2			Notch on Y axis	is bigger than or equal to groove distance
+		; 	3			Notch on Y axis is bigger than sum of groove width and groove distance
+		
+		; This variable used for state 2 of groove operations. Its exceptional and closed to users from program interface
+		(_FSET (_ 'GROOVE_DISTANCE_FOR_STATE2 GROOVE_DISTANCE))
+		; Validation control for groove parameters. If GROOVE_WID isnt valid then GROOVE_DISTANCE equals to 0
+		(if (not (> GROOVE_WID 0)) (_FSET (_ 'GROOVE_DISTANCE 0)))
+		; GROOVE_STATE controls for regular modules
+		(if (> __NOTCHDIM2 (+ GROOVE_DISTANCE GROOVE_WID))
+			(_FSET (_ 'GROOVE_STATE 3))
+			(progn
+				(if (< __NOTCHDIM2 GROOVE_DISTANCE)
+					(_FSET (_ 'GROOVE_STATE 1))
+					(_FSET (_ 'GROOVE_STATE 2))
+				)
+			)
+		)
+		; If current modul is a corner unit module then helper of current notch type will be loaded
+		(if (or (equal __MODULTYPE "AK2") (equal __MODULTYPE "UK2") (equal __MODULTYPE "AK3") (equal __MODULTYPE "UK3"))
+			(_RUNHELPERRCP (strcat "NOTCH\\NOTCH_HELPERS\\AK_DEFAULTS\\" (itoa __NOTCHTYPE)) nil "p2chelper")
+		)
+	)
+)
+
+(setq GROOVE_BACK_OFFSET (+ GROOVE_DISTANCE GROOVE_WID))
+
+; Groove operations will be performed or not determined in here
+(_FSET (_ 'PERFORM_GROOVES (and (> GROOVE_WID 0) (> GROOVE_DEPTH 0))))
+
+(_NONOTCH)

@@ -1,0 +1,52 @@
+;This parameters in (wardrobe.ini)
+(if 
+	(apply 'AND
+		(list
+			(if (not (equal ADJ_HORIZONTAL_DEP nil)) (_FSET (_ 'WARDROBE_ADJ_HORIZONTAL_DEP (convertLengthToSpecifiedUnit ADJ_HORIZONTAL_DEP (getvar "INSUNITS") 4))))
+			(if (not (equal ADJ_HORIZONTAL_DIA nil)) (_FSET (_ 'WARDROBE_ADJ_HORIZONTAL_DIA (convertLengthToSpecifiedUnit ADJ_HORIZONTAL_DIA (getvar "INSUNITS") 4))))
+		)
+	)
+	(progn
+		(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+		(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+		(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+		(if (equal (length targetPanels) 2)
+			(progn
+				(_FSET (_ 'panelCounter 0))
+				(_FSET (_ 'connCounter 0))
+				(repeat (length targetPanels)
+					(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+					
+					(_SETCURMODUL (getnth 0 tPanelInfo))
+					
+					(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+					(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+					
+					(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+					(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+					
+					(cond
+						((_ISHORIZONTALFACE currentFaceNormal)
+							; Type of current face is either 2, 3, 4 or 5 in this case
+							(if (null (minusp (getnth 2 holePosition)))
+								(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+							)
+							(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_ADJ_HOR_HOLE"))))
+							(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_ADJ_HORIZONTAL_DIA WARDROBE_ADJ_HORIZONTAL_DEP holeOrient))
+							(_FSET (_ 'connCounter (+ 1 connCounter)))
+						)
+					)
+					
+					(_RESETCURMODUL)
+					(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+				)
+				(_SETCURMODUL __CONNECTORPARENT)
+				(if (equal connCounter 2) (_ITEMMAIN WARDROBE_DOWEL_CODE WARDROBE_DOWEL_CODE (_ 1 WARDROBE_DOWEL_UNIT)))
+				(_RESETCURMODUL)
+			)
+		)
+	)
+)
+(_NONOTCH)

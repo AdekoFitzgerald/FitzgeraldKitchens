@@ -1,0 +1,40 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+
+(list 
+(list 0.0 0.0 0.0) 
+(list (cm 2.6) 0.0 0.0) 
+(list (cm 2.6) (cm 0.62) 0.0) 
+(list (cm 1.64) (cm 0.62) 0.0) 
+(list (cm 1.46) (cm 0.65) 0.0) 
+(list (cm 1.29) (cm 0.72) 0.0) 
+(list (cm 1.15) (cm 0.83) 0.0) 
+(list (cm 1.04) (cm 0.97) 0.0) 
+(list (cm 0.97) (cm 1.14) 0.0) 
+(list (cm 0.94) (cm 1.32) 0.0) 
+(list (cm 0.94) (cm 5.80) 0.0) 
+(list 0.0 (cm 5.80) 0.0) 
+) 
+
+nil
+
+(- ADEN1 ADDer ad_et)
+0.0
+(d2r 270.0)
+
+;(list 0.0 (+ (- unitD) 2.6) (- (+ dAltKot unitH) 5.6))
+(list  (+ unitD2 (cm 15.5))  (- (- unitD) ad_et) (- (+ dAltKot unitH) (cm 5.8)))
+
+"GOLAPROFILE" 
+
+"" 
+
+nil 
+
+"SIDE" 
+
+(strcat kodBlock "_ALUMINIUM_FRAME")
+"GOLAPROFILE"
+"noedgedrawing"
+)

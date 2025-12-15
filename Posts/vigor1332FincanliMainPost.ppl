@@ -1,0 +1,724 @@
+(setq ad_VigorCAMOperationList (list
+										(list "GROOVE" "6MMFREZE" "MILLING" 1 0 0 0 "CENTER" 0 "7.00" "18000" nil)
+										(list "NOTCH" "6MMFREZE" "MILLING" 2 0 0 0 "INSIDE" 3 "7.00" "18000" T)
+										;(list "TOP_DIA3.0" "T=1" "HOLE" "2.00" "3000")
+										(list "TOP_DIA5.0" "T3" "HOLE" "3.00" "4000")
+										(list "TOP_DIA8.0" "T1" "HOLE" "3.00" "4000")
+										(list "TOP_DIA8.1" "T7" "HOLE" "3.00" "4000")
+										(list "TOP_DIA10.0" "T8" "HOLE" "3.00" "4000")
+										(list "TOP_DIA15.0" "T10" "HOLE" "3.00" "4000")
+										(list "TOP_DIA35.0" "T2" "HOLE" "3.00" "4000")
+										(list "LEFT_DIA8.0" "TH1" "HOLE" "3.00" "4000")
+										(list "FRONT_DIA8.0" "TH6" "HOLE" "3.00" "4000")
+										(list "RIGHT_DIA8.0" "TH2" "HOLE" "3.00" "4000")
+										(list "REAR_DIA8.0" "TH5" "HOLE" "3.00" "4000")
+										;(list "PK" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "INSIDE" 4 "F 3000" )
+										
+ ))
+ 
+ 
+ ;Gola varsa notch layerini gormezden gel. 
+ (defun prepareVigorCAMOperationList  ( tempPanel / tempPanelSS tempPanelSSList hasGolaLayer tempEnt layerName mrtn currOp) 
+	(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(setq hasGolaLayer nil)
+	(foreach tempEnt tempPanelSSList
+		 (setq layerName (getEntPro tempEnt 8))
+		 (if (member layerName '("GOLA_LAYER_TOP_1" "GOLA_LAYER_TOP_2"))
+			(setq hasGolaLayer T)
+		 )
+	)
+	(setq mrtn nil)
+	(if hasGolaLayer
+		(progn
+			(foreach currOp ad_VigorCAMOperationList
+				(if (not (member (nth 0 currOp) '("NOTCH")))
+					(setq mrtn (append mrtn (_ currOp)))
+				)
+			)
+		)
+		(setq mrtn ad_VigorCAMOperationList)
+	)
+	mrtn
+ )
+
+									
+;Basic parameters:
+;X Coordinate X for first  hole
+;Y Coordinate Y for first  hole
+;Z Hole depth
+;D Hole diameter
+;R Number of holes (including the original hole)
+;x X step for repetitions
+;y Y step for repetitions
+;N Hole type (P=flat, L=lance, S=taper)
+;Extended parameters:
+;L Taper height (only if N=S)
+;V Boring speed
+;G Number of chip discharge steps
+;
+;To make a hole, parameters X, Y, Z, D, N, F are mandatory
+;The example that can be written as an element into the ad_xxlCAMOperationList .
+;(list "TOP_DIA8.0" "T=1" "XBO")
+
+(defun selectWorkingFace ( wface panel file / tempPanelWidth tempPanelLength tempPanelDepth)
+	
+	(if (not (equal currentWorkingFace wface))
+		(progn
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(cond
+				( (equal "TOP" wface); top hole routines
+					(write-line (strcat ";UPPER FACE\n"
+										"G161 X 0 Y 0 Z " (lmm_convertNumtoStringWithDigit tempPanelDepth 2)
+										"\nG160 I1 J0 K0 P0 Q1 R0 U0 V0 W1"
+										) file)
+				)
+				( (equal "RIG" wface) ;right hole routines
+					(write-line (strcat ";RIGHT FACE\n"
+										"G161 X " (lmm_convertNumtoStringWithDigit tempPanelLength 2) " Y 0 Z 0\n"
+										"G160 I0 J1 K0 P0 Q0 R1 U1 V0 W0"
+										) file)
+					
+				)
+				( (equal "LEF" wface) ; left hole routines
+					(write-line (strcat ";LEFT FACE\n"
+										"G161 X 0 Y " (lmm_convertNumtoStringWithDigit tempPanelWidth 2) " Z 0\n"
+										"G160 I0 J-1 K0 P0 Q0 R1 U-1 V0 W0"
+										) file)
+		
+				)
+				( (equal "REA" wface) ; rear holes routines
+					(write-line (strcat ";REAR FACE\n"
+										"G161 X " (lmm_convertNumtoStringWithDigit tempPanelLength 2) " Y " (lmm_convertNumtoStringWithDigit tempPanelWidth 2) " Z 0\n"
+										"G160 I-1 J0 K0 P0 Q0 R1 U0 V1 W0"
+										) file)
+				)
+				( (equal "FRO" wface) ; front hole routines
+					(write-line (strcat ";FRONT FACE\n"
+										"G161 X 0 Y 0 Z 0\n"
+										"G160 I1 J0 K0 P0 Q0 R1 U0 V-1 W0"
+										) file)
+				)
+		
+			)
+			(setq currentWorkingFace wface)
+		)
+	)
+)
+
+(defun selectTool ( tool file / )
+	(if (not (equal currentTool tool))
+		(progn
+			(princ (sprintf "N~s PAN=1 ST1=\"~s\" L=PATC\n" (list (adeNLVigor) (nth 1 tempCAMStyle))) file)
+			(setq currentTool tool)
+		)
+	)
+)
+;(vigorHoleCamOperation tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+(setq vigorHoleCAMOperation nil)
+(defun vigorHoleCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDepth mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opToolType tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide mRealY mRealZ) 
+																				  
+	(vigorPlacePNEXTVal file entLayerName)
+	 
+	;(selectWorkingFace 	(substr entLayerName 1 3) currentPanel file)
+	;(selectTool (nth 1 tempCAMStyle) file)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opToolType (nth 1 currentOp))
+	(setq opOpName (nth 2 currentOp))
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealY (- tempPanelWidth (getnth 1 tempHolePos)))
+			;G�venlik 
+			(if (> tempHoleDepth (+ tempPanelDepth 5))
+				(alert (sprintf "Takim Carpma riski hasil oldu!!!\n ~s -> ~s\n Delik derinligi: ~s" (list (lmm_getDXFFileNameByFileMode (list currentPanel))
+																					entLayerName
+																					(lmm_convertNumtoStringWithDigit tempHoleDepth 2))))
+			)
+			
+			;(princ (sprintf "N~s X~s Y~s PRF=~s ~s QVF=~s QVR=~s PNEXT=0 L=G99\n" (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) mHoleDepth (nth 1 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle))) file) ;rapit yakla�ma G0 
+			(princ (sprintf "N~s X=~s Y=~s PRF=~s QSD=0 AX=X,Y,Z QVD=~s QVF=~s QVR=~s QTM=1 ~s " (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) ;right hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealY (- tempPanelWidth (getnth 1 tempHolePos)))
+			(setq mRealZ (- tempPanelDepth (getnth 2 tempHolePos)))
+			;G�venlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takim Carpma riski hasil oldu!!!\n ~s -> ~s\n Delik derinligi: ~s" (list (lmm_getDXFFileNameByFileMode (list currentPanel))
+																					entLayerName
+																					(lmm_convertNumtoStringWithDigit tempHoleDepth 2))))
+			)
+			;(princ (sprintf "; Drill-> Side=3 Diam=~f Type=1 Dept=~s(0.00) Az=0.00 Ar=180.00 Tf=0 Priority=4)\n" (list mHoleDia mHoleDepth)) file)
+			;(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=3 AX=Y,Z,X QVD=~s QVF=~s QVR=~s QTM=2 ~s PNEXT=0 L=GH\n" (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+			(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=3 AX=Y,Z,X QVD=~s QVF=~s QVR=~s QTM=2 ~s " (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+			
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) ; left hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealY (- tempPanelWidth (getnth 1 tempHolePos)))
+			(setq mRealZ (- tempPanelDepth (getnth 2 tempHolePos)))
+			;G�venlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takim Carpma riski hasil oldu!!!\n ~s -> ~s\n Delik derinligi: ~s" (list (lmm_getDXFFileNameByFileMode (list currentPanel))
+																					entLayerName
+																					(lmm_convertNumtoStringWithDigit tempHoleDepth 2))))
+			)
+			;(princ (sprintf "; Drill-> Side=1 Diam=~f Type=1 Dept=~s(0.00) Az=0.00 Ar=0.00 Tf=0 Priority=2)\n" (list mHoleDia mHoleDepth)) file)
+			;(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=1 AX=Y,Z,X QVD=~s QVF=~s QVR=~s QTM=2 ~s PNEXT=0 L=GH\n" (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+			(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=1 AX=Y,Z,X QVD=~s QVF=~s QVR=~s QTM=2 ~s " (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+		)
+		( (equal "REA" (substr entLayerName 1 3)) ; rear holes routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealY (- tempPanelWidth (getnth 1 tempHolePos)))
+			(setq mRealZ (- tempPanelDepth (getnth 2 tempHolePos)))
+			;G�venlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takim Carpma riski hasil oldu!!!\n ~s -> ~s\n Delik derinligi: ~s" (list (lmm_getDXFFileNameByFileMode (list currentPanel))
+																					entLayerName
+																					(lmm_convertNumtoStringWithDigit tempHoleDepth 2))))
+			)
+			;(princ (sprintf "; Drill-> Side=4 Diam=~f Type=1 Dept=~s(0.00) Az=0.00 Ar=270.00 Tf=0 Priority=5)\n" (list mHoleDia mHoleDepth)) file)
+			;(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=4 AX=X,Z,Y QVD=~s QVF=~s QVR=~s QTM=2 ~s PNEXT=0 L=GH\n" (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+			(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=4 AX=X,Z,Y QVD=~s QVF=~s QVR=~s QTM=2 ~s " (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) ; front hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealY (- tempPanelWidth (getnth 1 tempHolePos)))
+			(setq mRealZ (- tempPanelDepth (getnth 2 tempHolePos)))
+			;G�venlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takim Carpma riski hasil oldu!!!\n ~s -> ~s\n Delik derinligi: ~s" (list (lmm_getDXFFileNameByFileMode (list currentPanel))
+																					entLayerName
+																					(lmm_convertNumtoStringWithDigit tempHoleDepth 2))))
+			)
+			;(princ (sprintf "; Drill-> Side=2 Diam=~f Type=1 Dept=~s(0.00) Az=0.00 Ar=90.00 Tf=0 Priority=3)\n" (list mHoleDia mHoleDepth)) file)
+			;(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=2 AX=X,Z,Y QVD=~s QVF=~s QVR=~s QTM=2 ~s PNEXT=0 L=GH\n" (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+			(princ (sprintf "N~s QX=~s QY=~s QZ=~s PRF=~s QSD=2 AX=X,Z,Y QVD=~s QVF=~s QVR=~s QTM=2 ~s " (list (adeNLVigor) mHoleX (lmm_convertNumtoStringWithDigit mRealY 2) (lmm_convertNumtoStringWithDigit mRealZ 2) mHoleDepth (nth 3 tempCAMStyle) (nth 3 tempCAMStyle) (nth 4 tempCAMStyle) (nth 1 tempCAMStyle))) file)
+		)
+	)
+
+	(setq vigorLastLayerName entLayerName)
+)
+
+(defun vigorPlacePNEXTVal (file entLayerName/ )
+	(if (not (equal vigorLastLayerName ""))
+		(if (equal vigorLastLayerName entLayerName)
+			(progn
+				(cond 
+					((equal "TOP" (substr vigorLastLayerName 1 3)); top hole
+						(princ "PNEXT=1 L=G99\n" file)
+					)
+					( (equal "RIG" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=1 L=GH\n" file)
+					)
+					( (equal "LEF" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=1 L=GH\n" file)
+					)
+					( (equal "REA" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=1 L=GH\n" file)
+					)
+					( (equal "FRO" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=1 L=GH\n" file)
+					)
+				)
+			)
+			(progn 
+				(cond 
+					((equal "TOP" (substr vigorLastLayerName 1 3)); top hole
+						(princ "PNEXT=0 L=G99\n" file)
+					)
+					( (equal "RIG" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=0 L=GH\n" file)
+					)
+					( (equal "LEF" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=0 L=GH\n" file)
+					)
+					( (equal "REA" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=0 L=GH\n" file)
+					)
+					( (equal "FRO" (substr vigorLastLayerName 1 3))
+						(princ "PNEXT=0 L=GH\n" file)
+					)
+				)
+			)
+		)
+	)
+)
+
+(setq doVigorCONTOURCam nil)
+(defun doVigorCONTOURCam (currentEnt entLayerName tempCAMStyle currentPanel file /  deleteHelper tempDepth stepOfPasses
+																bottomZComponent topZComponent stepZComponets cutFeedRate 
+																tempPoints helperEntity fieldPoint firstPoint secondPoint
+																firstSecondNormal iteration currentZLevel tempPoint bulgeOfSegment
+																radiusOfSegment tempPanelDepth tempAdditionalDepth tempPanelWidth safeDistanceZ)
+	
+	(vigorPlacePNEXTVal file "FRZ")
+	(setq safeDistanceZ 10)
+	;(selectWorkingFace "TOP" currentPanel file)
+	;(selectTool (nth 1 tempCAMStyle) file)
+	(setq deleteHelper nil)
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(if (equal (TYPE (nth 4 tempCAMStyle)) 'STR)
+		(setq tempAdditionalDepth (* -1  (atof (ifnull (LMM_SFREAD (nth 4 tempCAMStyle)) "0")) ))
+		(setq tempAdditionalDepth (nth 4 tempCAMStyle))
+	)
+	(setq bottomZComponent (+ (- tempDepth) tempAdditionalDepth ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq cutFeedRate (nth 9 tempCAMStyle))
+	
+	;Center m� inside m� outside m�?
+	(cond
+	( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints  (lmm_getPolylinePoints currentEnt) )
+			(setq helperEntity currentEnt)
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints (entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints (entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+
+	;helper entitiyi kullanaca��z
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	; (( x y z) b (x y z) b)
+	
+	(selectTool (nth 1 tempCAMStyle) file)
+	
+	(foreach currentZLevel stepZComponets
+		(if (> (abs currentZLevel) (+ 2 tempPanelDepth) )
+			(alert (sprintf "Tak�m �arpma riski hasil oldu!!!\n ~s -> ~s\n Freze derinli�i: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																	entLayerName
+																	currentZLevel)))
+		)
+		
+		(setq iteration 1)
+		(foreach tempPoint tempPointsWB
+			(if (equal 0 (rem iteration 2))
+				(setq bulgeOfSegment tempPoint)
+				(progn
+					(cond
+						((equal 1 iteration) ; ilk harekat yakla�ma hareketlerinide yap
+							
+							(princ (sprintf "N~s X=~s Y=~s PRF=-~s QSD=0 AX=X,Y,Z QVD=~s QVF=~s QVR=~s QTM=3 TP1 PNEXT=0 L=PON\n" (list 
+																										(adeNLVigor) 
+																										(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																										(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																										(lmm_convertNumtoStringWithDigit safeDistanceZ 3)
+																										(nth 9 tempCAMStyle)
+																										(nth 9 tempCAMStyle)
+																										(nth 10 tempCAMStyle)
+																									)
+									) 
+							file)
+							(princ (sprintf "N~s G1 ZI=~s F=~s\n" (list 	(adeNLVigor) 
+																		(lmm_convertNumtoStringWithDigit (- safeDistanceZ currentZLevel)  3) 
+																		cutFeedRate )) file) ; plunge move
+						)
+						((equal (- (length tempPointsWB) 1) iteration) ; son kesme hareketleri ve uzakla�ma hareketleri
+							(cond
+								((equal 0.0 bulgeOfSegment)
+									(princ (sprintf "N~s G1 X=~s Y=~s F=~s\n" (list   (adeNLVigor) 	
+																					(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																					(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																					cutFeedRate
+											)) 
+									file)
+								)
+								((> 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "N~s G5 X=~s Y=~s R=-~s F=~s\n" 	(list 	(adeNLVigor)
+																						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																						(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																						cutFeedRate
+											)) 
+									file)
+								)
+								((< 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "N~s G4 X=~s Y=~s R=~s F=~s\n" 	(list 	(adeNLVigor)
+																						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																						(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																						cutFeedRate
+											)) 
+									file)
+								)
+							)
+							(princ (sprintf "N~s G0 ZI=~s\n" (list (adeNLVigor) (lmm_convertNumtoStringWithDigit (* -1 (- safeDistanceZ currentZLevel))  3) )) file) ; plunge move
+						)
+						((and (< 1 iteration) (> (length tempPointsWB) iteration)) ; kesme hareketleri
+							(cond
+								((equal 0.0 bulgeOfSegment)
+									(princ (sprintf "N~s G1 X=~s Y=~s F=~s\n" 	(list   (adeNLVigor)
+																					(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																					(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																					cutFeedRate
+											)) 
+									file)
+								)
+								((> 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "N~s G5 X=~s Y=~s R=-~s F=~s\n" 	(list 	(adeNLVigor)
+																						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																						(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																						cutFeedRate
+											)) 
+									file)
+								)
+								((< 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "N~s G4 X=~s Y=~s R=~s F=~s\n" 	(list 	(adeNLVigor)
+																						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+																						(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																						cutFeedRate
+											)) 
+									file)
+								)
+							)
+						)
+					)
+					(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+				)
+			)
+			(setq iteration (+ 1 iteration))
+		)
+	)
+	(princ (sprintf "N~s L=POFF\n"(list (adeNLVigor))) file)
+	(if deleteHelper (deleteEntity (entlast)))
+	
+	(setq vigorLastLayerName "")
+)
+
+(defun adeNLVigor ( / )
+	(setq vigorLineNumberCount (+ 10 vigorLineNumberCount))
+	(lmm_convertNumtoStringWithDigit vigorLineNumberCount 0)
+)
+(defun adeNLVigorWcni ( / buffer mrtn countofzeros)
+	(setq vigorLineNumberCountWcni (1+ vigorLineNumberCountWcni))
+	(setq mrtn (lmm_convertNumtoStringWithDigit vigorLineNumberCountWcni 0))
+	(setq buffer (strlen mrtn))
+	(setq countofzeros (- 3 buffer))
+	(repeat countofzeros
+		(setq mrtn (strcat "0" mrtn))
+	)
+	mrtn
+)
+(setq vigorLastLayerName "")
+(setq vigorLineNumberCount 0)
+(setq vigorLineNumberCountWcni 0)
+(setq vigorAllEntities nil)
+(setq vigorNotFreeEntities nil)
+(setq vigorEntitiesThatCanNotBeCAM nil) ; i�len atanamayan layerlar� toplamak i�in. E�er bu liste doluysa "Bu layerlara i�lem ypa�lmad���n� bildirir"
+(setq vigorIgnoreLayerNameList (list "0" "PANEL" "TOP_DIA0.0" "GOLA_LAYER_3" "NOTCH" "LMM_EDGESTRIP")) ; bu layerlara i�lem yap�lmad� diye carlamaz
+(setq currentWorkingFace nil)
+(setq currentTool nil)
+
+(setq lmm_exportVigorPCNIFilesDesiredCAMOp nil)
+(defun lmm_exportVigorPCNIFilesDesiredCAMOp ( / )
+	(lmm_exportVigor1332FincanliFilesDesiredCAMOp)
+)
+
+(setq lmm_exportVigor1332FincanliFilesDesiredCAMOp nil)
+(defun lmm_exportVigor1332FincanliFilesDesiredCAMOp ( / allPanelsList tempPanel panelIndex gCodeFilesPath gCodeFile
+												tempDerivedLayerName tempPanelName tempPanelDepth tempPanelLength
+												tempPanelWidth tempOpLayerName tempOpOpName tempProgramName
+												ad_VigorCAMOperationListTemp )
+	
+	
+	(setq vigorAllEntities nil)
+	(setq vigorNotFreeEntities nil)
+	(setq vigorEntitiesThatCanNotBeCAM nil)
+	
+	(setq allPanelsList (lmm_getAllPanelsList))
+ 	(setq gCodeFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	
+	
+	;islistesi oluşturma
+	;wcni ac
+	;header
+	;all panelliste dolan
+	;wcni kapat
+	(setq worklistFile (open (strcat gCodeFilesPath  "IsListesi.wcni") "w"))
+	(princ "[WLIST]\nREM=\n\n" worklistFile)
+	(setq vigorLineNumberCountWcni -1)
+	(foreach tempPanel allPanelsList
+		(setq tempPanelName  (lmm_getDXFFileNameByFileMode (list tempPanel)))
+		(setq tempPanelLength (getnth 2 (getBBox tempPanel)))
+		(setq tempPanelWidth (getnth 3 (getBBox tempPanel)))
+		(princ (sprintf "[ROW_~s]\nLABL=\nPROG=~s\nQNTA=~s\nCONT=\nCOMM_0=~s\nCOMM_1=~s\nCOMM_2=\n\n" (list 
+							(adeNLVigorWcni) 
+							tempPanelName
+							(lmm_convertNumtoStringWithDigit (ifnull lmm-ProjectMultiple 1) 0)
+							(lmm_convertNumtoStringWithDigit tempPanelLength 2)
+							(lmm_convertNumtoStringWithDigit tempPanelWidth 2))) worklistFile)
+	)
+	(close worklistFile)
+	
+	(foreach tempPanel allPanelsList
+		(setq vigorLineNumberCount 10)
+		(setq vigorLastLayerName "")
+		;�al��ma y�zeyini her panel i�lemeye kalk��t���m�zda nil lemmemzi gerekiyor
+		(setq currentWorkingFace nil)
+		(setq currentTool nil)
+	
+		;panelin baz� bilgileri al�n�yor
+		(setq tempPanelName (lmm_getLMMdata tempPanel lmm-k-customCode))
+		(setq tempPanelDepth (lmm_getLMMdata tempPanel lmm-k-depth))
+		(setq tempPanelLength (getnth 2 (getBBox tempPanel)))
+		(setq tempPanelWidth (getnth 3 (getBBox tempPanel)))
+	
+		;panel i�in dosya yarat
+		(setq tempProgramName (lmm_getDXFFileNameByFileMode (list tempPanel)))
+		(setq gCodeFile (open (strcat gCodeFilesPath  tempProgramName) "w"))
+		
+		;header par�a en boy kal�nl�k
+		
+		(write-line "[COMMENTO]
+[CENTRO01]
+PARAMETRI=000000243
+CONTORNATURA=000000338
+TABELLEFORI=000002242
+FORATURA=000002262
+UTENSILI=000002279
+LABELC=000002296
+LABELF=000002309
+CONFASSIST=000002322
+ATTREZZAGGIO=000002341
+CUSTOMSEZ=000002362
+SEIFERT=000002380
+[PARAMETRI01]"  gCodeFile)
+(princ (sprintf "N10 G71 KA=0 HC=1 LX=~s LY=~s LZ=~s PNULL=1 PUOS=1 PRS=1 L=PRIMO" (list (lmm_convertNumtoStringWithDigit tempPanelLength 2) (lmm_convertNumtoStringWithDigit tempPanelWidth 2) (lmm_convertNumtoStringWithDigit tempPanelDepth 2)) )gCodeFile)
+(write-line  "\n%
+[CONTORNATURA01]" gCodeFile)
+		
+		(setq ad_VigorCAMOperationListTemp (prepareVigorCAMOperationList tempPanel))
+		(foreach currentOp ad_VigorCAMOperationListTemp
+			;operasyon bilgileri al�n�yor
+			(setq tempOpLayerName (nth 0 currentOp))
+			(setq tempOpOpName (nth 2 currentOp))
+			
+			(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+			(setq tempPanelSSList (convertSStolist tempPanelSS))
+			(setq tempPanelSSList (entOptimization tempPanelSSList))
+			(foreach tempEnt tempPanelSSList
+				(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine g�re yorumlan�yor ge�ici bir layer ismi belirleniyor
+						(progn 
+							(setq tempDerivedLayerName (interpretVigorHoleLayerName tempEnt))
+						)
+						(progn 
+							(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+						)
+					)
+				
+				;��lem yap�lamayan layer ismindeki varl�klar� yakalamk i�in t�m layerlar� *AllEntities te topluyoruz
+				(if (not (member tempDerivedLayerName vigorIgnoreLayerNameList))
+					(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) vigorAllEntities))
+						(setq vigorAllEntities (append vigorAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+					)
+				)
+				
+				
+				(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yap�lmas� gereken etity
+					(cond
+						( (equal tempOpOpName "HOLE"); ko�ul delik ise delik yap
+							;(princ (strcat tempDerivedLayerName tempOpLayerName tempOpOpName))
+							(vigorHoleCamOperation tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+							(setq vigorNotFreeEntities (append vigorNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+					
+						
+						)
+						( (equal tempOpOpName "MILLING") ; ko�ul freze ise freze operasyonu yap
+							(doVigorCONTOURCam tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+							(setq vigorNotFreeEntities (append vigorNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						
+						)
+						;((equal tempOpOpName "SAW") ; ko�ul testerese ise testere yap
+						;	;(setq vigorNotFreeEntities (append vigorNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						;
+						;)
+					)
+				)
+			)
+		)
+		
+		;footer
+		(vigorPlacePNEXTVal gCodeFile "EOF")
+		(princ "; Ending\n" gCodeFile)
+		(princ (sprintf "N~s L=PEND\n" (list (adeNLVigor))) gCodeFile)
+		
+		(write-line (strcat "%
+[TABELLEFORI01]
+%
+[FORATURA01]
+%
+[UTENSILI01]
+%
+[LABELC01]
+%
+[LABELF01]
+%
+[CONFASSIST01]
+%
+[ATTREZZAGGIO01]
+%
+[CUSTOMSEZ01]
+%
+[SEIFERT01]
+%
+[]" ) GCodeFile)
+
+		(close gCodeFile)
+	)
+	
+	;��lem yap�lamayan layer ismindeki varl�klar� yakalamak i�in t�m varl�klara i�lem yap�l�p yap�mad��� kontrol ediliyor 
+	(foreach tempItem vigorAllEntities
+		(if (and (not (member tempItem vigorNotFreeEntities)) (not (member tempItem vigorEntitiesThatCanNotBeCAM)))
+			(setq vigorEntitiesThatCanNotBeCAM (append vigorEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;E�er i�lem yap�lamayan varl�k varsa bunu kullan�c�ya bildir.
+	(if vigorEntitiesThatCanNotBeCAM
+		(progn
+			(setq vigorEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) vigorEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length vigorEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter vigorEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter vigorEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "g�r�nen o ki ok her yolunda"))
+	)
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun interpretVigorHoleLayerName ( tempEnt / isOnTheSFace currentReturn tempHoleDia tempHoleDepth)
+	(setq isOnTheSFace (getEntPro tempEnt 8))
+	(if (equal "_SF" (substr isOnTheSFace (- (strlen isOnTheSFace) 2) 3))
+		(setq isOnTheSFace T)
+		(setq isOnTheSFace nil)
+	)
+	(cond 
+		( ;Z - 
+			(and (equal (getnth 2 (getEntPro tempEnt 210)) 1.00000) 
+				(not isOnTheSFace)
+			)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(or (equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+				isOnTheSFace
+			)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	;(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	;(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	(if (equal 0.0 tempHoleDia) 
+		(setq currentReturn (getEntPro tempEnt 8))
+	)
+	currentReturn
+)
+
+
+
+
+(princ)

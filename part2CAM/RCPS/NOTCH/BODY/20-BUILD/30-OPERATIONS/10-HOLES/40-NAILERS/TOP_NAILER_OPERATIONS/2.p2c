@@ -1,0 +1,54 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		; According to position of top nailer side panel holes are calibrated 
+		(if (_EXISTPANEL NOTCHED_TOP_NAILER_CODE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForNotchedTopNailerAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedTopNailerAndLeft (car lengthParametersForNotchedTopNailerAndLeft)))
+
+				(_FSET (_ 'lengthParametersForNotchedTopNailerAndRight (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_TOP_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedTopNailerAndRight (car lengthParametersForNotchedTopNailerAndRight)))
+				
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'notchedTopNailerPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																(_ lengthForNotchedTopNailerAndLeft 0 (car horizontalHolePos) "Y") 
+																(_ 0 0 nil NOTCHED_TOP_NAILER_HEI) 
+																(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_TOP_NAILER_CODE notchedTopNailerPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'notchedTopNailerPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																(_ lengthForNotchedTopNailerAndRight NOTCHED_TOP_NAILER_WID (car horizontalHolePos) "Y") 
+																(_ 0 0 nil NOTCHED_TOP_NAILER_HEI) 
+																(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_TOP_NAILER_CODE notchedTopNailerPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForNotchedTopNailer (_GETHOLEPOINTLIST operationName 
+																		(_ lengthForNotchedTopNailerAndLeft (- LEFT_PANEL_WID LEFT_PANEL_BACK_VARIANCE TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																		(_ (- LEFT_PANEL_HEI LEFT_PANEL_UPPER_VARIANCE NOTCHED_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil NOTCHED_TOP_NAILER_HEI) 
+																		(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForNotchedTopNailer (_ nil "X+") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryRightPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+																		(_ lengthForNotchedTopNailerAndRight (+ TOP_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																		(_ (- SECONDARY_RIGHT_PANEL_HEI NOTCHED_TOP_NAILER_HEI TOP_NAILER_UP_OFFSET) 0 nil NOTCHED_TOP_NAILER_HEI) 
+																		(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE secondaryRightPanelPointListForTopPanel (_ nil "X-") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)
+

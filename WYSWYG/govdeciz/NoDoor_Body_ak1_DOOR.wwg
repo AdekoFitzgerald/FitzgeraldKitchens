@@ -1,0 +1,7 @@
+(setq ptlst 
+	(govde_ciz ADEN ADH ADDer ad_bazaH nil szBodyLayer nil nil nil) ;ak1
+)
+(if (equal how2put 5)
+	(grx_setmaterial (entlast) (GetUpKapakMat))
+	(grx_setmaterial (entlast) (GetKapakMat))
+)

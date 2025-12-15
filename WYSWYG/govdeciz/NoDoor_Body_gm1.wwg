@@ -1,0 +1,3 @@
+(setq ptlst
+	(govde_ciz BDEN BDH ADDer dAltKot nil gm1:layerName nil nil xros isSinkUnit) ;gm1
+)

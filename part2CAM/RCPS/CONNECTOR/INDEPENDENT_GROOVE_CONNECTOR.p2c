@@ -1,0 +1,43 @@
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_SETCURMODUL (get_Mdata g_currentConnectorEnt k:P2CConnectorParent))
+
+(if (not (equal g_currentModulEnt g_currentConnectorEnt))
+	(progn
+		(setq connectedFaceCode WARDROBE_PANELS_GENERAL_CODE)
+		(setq currentPanelCode WARDROBE_PANELS_GENERAL_CODE)
+		(setq currentFaceNormal (get_Mdata g_currentConnectorEnt k:P2CConnectorFirstPointEntityUCSNormal))
+		
+		(if (member (_DETERMINEFACETYPE currentFaceNormal) (list 1 4 5))
+			(setq currentPanelCode (strcat currentPanelCode "!!SFACE"))
+		)
+
+		(setq currentPanelType (get_Mdata g_currentModulEnt k:MTYP))
+		(cond 
+			((equal currentPanelType "URAF")
+				(setq grooveFirstPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnShelvePanels (get_Mdata g_currentConnectorEnt k:P2CConnectorFirstPoint) g_currentModulEnt)))
+				(setq grooveSecondPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnShelvePanels (get_Mdata g_currentConnectorEnt k:P2CConnectorSecondPoint) g_currentModulEnt)))
+			)
+			((or (equal currentPanelType "UPANO") (equal currentPanelType "KPK"))
+				(setq grooveFirstPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnWallPanels (get_Mdata g_currentConnectorEnt k:P2CConnectorFirstPoint) g_currentModulEnt)))
+				(setq grooveSecondPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnWallPanels (get_Mdata g_currentConnectorEnt k:P2CConnectorSecondPoint) g_currentModulEnt)))
+			)
+			((equal currentPanelType "PANELS_SIDE")
+				(setq grooveFirstPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnSidePanels (get_Mdata g_currentConnectorEnt k:P2CConnectorFirstPoint) g_currentModulEnt)))
+				(setq grooveSecondPoint (mapcar '(lambda(x) (cu2mm x)) (ptOnSidePanels (get_Mdata g_currentConnectorEnt k:P2CConnectorSecondPoint) g_currentModulEnt)))
+			)
+		)
+		
+		(setq WARDROBE_GROOVE_PARAMS (splitstr (parseRGT (dfetch 2 g_currentConnectorEnt) "$$") "_"))
+		(setq grooveWidth (getnth 0 WARDROBE_GROOVE_PARAMS) grooveDepth (getnth 1 WARDROBE_GROOVE_PARAMS))
+		
+		(_GROOVE "INDEPENDENT_GROOVE" currentPanelCode (_ (_ grooveFirstPoint grooveSecondPoint) (cu2mm (atof grooveWidth)) (cu2mm (atof grooveDepth))))
+		
+		(_RESETCURMODUL)
+	)
+)
+
+(_SETCURMODUL __CONNECTORPARENT)
+(_RESETCURMODUL)
+		
+(_NONOTCH)

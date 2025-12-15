@@ -1,0 +1,32 @@
+(cond
+	((or  (< unitW kpmMin) (> unitW kpmMax) (< unitH kpmMin) (> unitH kpmMax))
+        (alert "\nGirilen olculer uretilemez.!
+Lutfen genislik,yukseklik ve derinlik olculerinizi gozden geciriniz.")
+        (/ 0 0)
+       (princ)
+       )
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	DD10_T1 
+	0.0
+	(d2r 90.0) 
+	(list 0.0 (- unitD) dAltKot)
+	"DD10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)

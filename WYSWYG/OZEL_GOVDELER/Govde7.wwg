@@ -1,0 +1,228 @@
+(setq kalinlik1 3.0)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD ad_et) 0.0 0.0) 
+		(list (- unitD ad_et ad_et) ad_et 0.0) 
+		(list ad_et ad_et 0.0) 
+		(list 0.0 ad_et 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	(d2r -90.0) 
+	;0.0
+	(list ad_et (- ad_et) ad_bazaH)
+	"SOL_YAN" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list kalinlik1 0.0 0.0) 
+		(list kalinlik1 ad_et 0.0) 
+		(list ad_et ad_et 0.0) 
+		(list 0.0 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	;(d2r 90.0) 
+	0.0
+	(list 0.0 (+ (- unitD unitD UnitD) ad_et) ad_bazaH)
+	"SOL_45" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD ad_et) 0.0 0.0) 
+		(list (- unitD ad_et) ad_et 0.0) 
+		(list ad_et ad_et 0.0) 
+	(list 0.0 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	(d2r 90.0) 
+	;0.0
+	(list (- unitW ad_et) (- (- unitD)0.0) ad_bazaH)
+	"SAG_YAN" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list kalinlik1 0.0 0.0) 
+		(list (- kalinlik1 ad_et) ad_et 0.0) 
+		(list 0.0 ad_et 0.0) 
+		(list 0.0 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	;(d2r 90.0) 
+	0.0
+	(list (- unitW kalinlik1) (+ (- unitD) ad_et) ad_bazaH)
+	"SAG_YAN_45" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitD ad_et ad_et) 0.0) 
+		(list 0.0 (- unitD ad_et ad_et) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list ad_et (- ad_et) dAltKot)
+	"ALT_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitD ad_et ad_et) 0.0) 
+		(list 0.0 (- unitD ad_et ad_et) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list ad_et (- ad_et) (- (+ unitH ad_bazaH) ad_et))
+	"UST_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW kalinlik1 kalinlik1) 0.0 0.0) 
+		(list (- unitW kalinlik1 kalinlik1) kalinlik1 0.0) 
+		(list 0.0 kalinlik1 0.0) 
+	) 
+	nil
+	ad_et
+	(d2r 90.0)
+	;(d2r 90.0)
+	0.0
+	(list kalinlik1 (+ (- unitD) ad_et) (+ ad_bazaH unitH))
+	"UST_KAYIT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW kalinlik1 kalinlik1) 0.0 0.0) 
+		(list (- unitW kalinlik1 kalinlik1) kalinlik1 0.0) 
+		(list 0.0 kalinlik1 0.0) 
+	) 
+	nil
+	ad_et
+	(d2r 90.0)
+	;(d2r 90.0)
+	0.0
+	(list kalinlik1 (+ (- unitD) ad_et) (+ ad_bazaH kalinlik1))
+	"UST_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW ad_et ad_et) 0.0 0.0) 
+		(list (- unitW ad_et ad_et) (- unitH ad_et ad_et) 0.0) 
+		(list 0.0 (- unitH ad_et ad_et) 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0
+	(d2r 90.0) 
+	(list ad_et (- (- ad_et) ad_et) (+ dAltKot ad_et))
+	"ARKALIK" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)
+
+(setq KPK_wyswyg_tip1 (cond ((equal gm1:layername "CAB_BODY_BASE")
+							(getUpKapakname)
+							)
+							((equal gm1:layername "CAB_BODY_BASE")
+							(getTallKapakname)
+							)
+							(T
+								(getKapakname)
+							)
+					)
+)
+(setq doorId (kapak_ciz (list "A" KPK_wyswyg_tip1) "0-" unitW (- (/ unitD 2) (/ kalinlik1 2)) ad_bazaH (- unitD kalinlik1) unitH nil 90.0))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A kanat ;;;;;;;;;;;;; kulp ;;;; x ;;;;;; y ;;;;;;; z ;;; en ; boy ;;;;;;;;;;;

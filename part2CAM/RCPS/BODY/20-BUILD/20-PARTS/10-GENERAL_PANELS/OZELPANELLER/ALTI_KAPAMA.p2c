@@ -1,0 +1,50 @@
+SPECIAL_PANEL_COUNT -> "Count of special panel"
+SPECIAL_PANEL_CODE -> "Code of special panel"
+SPECIAL_PANEL_WID -> "Width of special panel"
+SPECIAL_PANEL_HEI -> "Height of special panel"
+SPECIAL_PANEL_MATERIAL -> "Material of special panel"
+SPECIAL_PANEL_THICKNESS -> "Thickness of special panel"
+
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+SPECIAL_PANEL_LABEL -> "Label of special panel"
+SPECIAL_PANEL_TAG -> "Tag of special panel"
+
+LEFT_EDGESTRIP_MAT -> "Material of left edgestrip"
+RIGHT_EDGESTRIP_MAT -> "Material of right edgestrip"
+TOP_EDGESTRIP_MAT -> "Material of top edgestrip"
+BOTTOM_EDGESTRIP_MAT -> "Material of bottom edgestrip"
+;prefvars
+(_SETA 'SPECIAL_PANEL_COUNT 1)
+(_SETA 'SPECIAL_PANEL_CODE "ALTI_KAPAMA")
+(_SETA 'SPECIAL_PANEL_WID __WID)
+(_SETA 'SPECIAL_PANEL_HEI __DEP)
+(_SETA 'SPECIAL_PANEL_MATERIAL (get_visible_matName g_currentModulEnt "CAB_BODY_WALL"))
+(_SETA 'SPECIAL_PANEL_THICKNESS __AD_PANELTHICK)
+
+(_SETA 'PANEL_MAIN_ROTATION nil)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'SPECIAL_PANEL_LABEL nil)
+(_SETA 'SPECIAL_PANEL_TAG nil)
+
+;'LEFT_EDGESTRIP_MAT ("Pvc_1.0")
+;'RIGHT_EDGESTRIP_MAT (_& (_ "KB_" SPECIAL_PANEL_MATERIAL)))
+;'TOP_EDGESTRIP_MAT (_& (_ "KB_" SPECIAL_PANEL_MATERIAL)))
+;'BOTTOM_EDGESTRIP_MAT (_& (_ "KB_" SPECIAL_PANEL_MATERIAL)))
+(if (or (equal SPECIAL_PANEL_COUNT nil) (equal (type SPECIAL_PANEL_COUNT) 'STR)) (_FSET (_ 'SPECIAL_PANEL_COUNT 1)))
+(_FSET (_ 'tempSpecialPanelCode SPECIAL_PANEL_CODE))
+(_FSET (_ 'index 1))
+(repeat SPECIAL_PANEL_COUNT
+	(if (not(equal SPECIAL_PANEL_COUNT 1))
+		(_FSET (_ 'SPECIAL_PANEL_CODE (_& (_ tempSpecialPanelCode "$" index))))
+	)
+		(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\PRIMITIVE_UNITS\\SPECIAL_PANEL" T "p2chelper")
+	(_FSET (_ 'index (+ index 1)))
+)
+(_NONOTCH)

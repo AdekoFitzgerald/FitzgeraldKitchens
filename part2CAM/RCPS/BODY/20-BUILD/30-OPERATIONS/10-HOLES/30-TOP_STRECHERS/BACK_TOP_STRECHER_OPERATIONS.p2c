@@ -1,0 +1,71 @@
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		; According to position of back top strecher side panel holes are calibrated 
+		(if (_EXISTPANEL BACK_TOP_STRECHER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForBackTopStrecherAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForBackTopStrecherAndLeft (car lengthParametersForBackTopStrecherAndLeft)))
+
+				(_FSET (_ 'lengthParametersForBackTopStrecherAndRight (_CALCULATEPANELSINTERSECTIONLENGTH BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForBackTopStrecherAndRight (car lengthParametersForBackTopStrecherAndRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'backTopStrecherPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForBackTopStrecherAndLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil BACK_TOP_STRECHER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName BACK_TOP_STRECHER_OP_FACE backTopStrecherPointListForLeftSide (_ "X+" "Y+") connectorParams)
+					
+					(_FSET (_ 'backTopStrecherPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForBackTopStrecherAndRight BACK_TOP_STRECHER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil BACK_TOP_STRECHER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName BACK_TOP_STRECHER_OP_FACE backTopStrecherPointListForRightSide (_ "X-" "Y+") connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForBackTopStrecherAndLeft (- LEFT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET LEFT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																			(_ (_= "LEFT_PANEL_WID - BACK_TOP_STRECHER_HEI - LEFT_PANEL_BACK_VARIANCE - BACK_TOP_STRECHER_BACK_OFFSET") (_= "BACK_TOP_STRECHER_HEI + LEFT_PANEL_BACK_VARIANCE + BACK_TOP_STRECHER_BACK_OFFSET - LEFT_PANEL_WID") nil BACK_TOP_STRECHER_HEI) 
+																			(_ FITTING_PARAMETERS nil))))
+																			
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																		 (_ lengthForBackTopStrecherAndRight (- RIGHT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																		 (_ (* -1 (+ BACK_TOP_STRECHER_BACK_OFFSET RIGHT_PANEL_BACK_VARIANCE)) BACK_TOP_STRECHER_BACK_OFFSET T BACK_TOP_STRECHER_HEI) 
+																		 (_ FITTING_PARAMETERS nil))))
+																		 
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)
+
+

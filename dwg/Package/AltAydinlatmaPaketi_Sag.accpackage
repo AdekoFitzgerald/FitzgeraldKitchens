@@ -1,0 +1,2 @@
+
+(("dwg\\Dolap Ici Ust Spot" ("{(/ unitW 2)}" "{(- 0 gm1_ustspotofset)}" "{(- (- unith ad_et) ad_et)}") "" ("{(* 0.125 gm1_ustspotdia)}" "{(* 0.125 gm1_ustspotdia)}" "") 2.00000 "" "" "") ("dwg\\Dolap Ici Sag Yan Led" ("{(- unitW 0.8)}" "{(- (- unitD) (- gm1_sagledofset))}" -2.00000) "" (1.00000 "{(/ gm1_sagledwid 2)}" "{(/ unitH 73)}") 2.00000 "" "" "") 2)

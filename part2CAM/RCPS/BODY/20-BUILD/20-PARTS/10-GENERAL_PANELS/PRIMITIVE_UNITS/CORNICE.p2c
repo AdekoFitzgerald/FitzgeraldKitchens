@@ -1,0 +1,6 @@
+; Cornice shell recipe
+; Only function of this recipe is to call corresponding cornice recipe according to module code
+(if (_NOTNULL __CORNICESPARTSLIST)
+	(_RRCP (strcat "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\PRIMITIVE_UNITS\\" (parse$ __MODULCODE)) nil)
+)
+(_NONOTCH)

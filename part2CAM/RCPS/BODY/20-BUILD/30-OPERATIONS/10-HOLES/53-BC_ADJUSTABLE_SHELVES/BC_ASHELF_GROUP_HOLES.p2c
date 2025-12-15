@@ -1,0 +1,119 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "BC_DEFAULT" nil "p2c")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (and (null USE_PROJECT_PRICING_RECIPES) (_NOTNULL FRIDGE_CABINET_CONTROL))
+	(progn
+		(if (and (null SHELF_PIN_CODE) (null SHELF_PIN_UNIT))
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(_FSET (_ 'QUANTITY_OF_ITEM 1))
+		)
+		(if (> __SHELFNO 0)
+			(progn
+				(_FSET (_ 'centerHoleIndex (+ 1 SHELF_HOLES_EXTRA_DOWN)))				
+				(_FSET (_ 'shelfCounter 1))
+				(repeat __SHELFNO
+					; Unique code of adjustable shelves
+					(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FRIDGE_CABINET") "_" (XSTR "ADJUSTABLE_SHELF") "_" shelfCounter))))
+					(if (_EXISTPANEL currentShelfCODE)
+						(progn
+							; Items related with adjustable shelf are added
+							(_ITEMMAIN SHELF_PIN_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS) SHELF_PIN_UNIT))
+							; Global variables of current shelf
+							(_FSET (_ 'paramBody (_& (_ "BC_ADJUSTABLE_SHELF_" shelfCounter "_"))))
+							
+							(_FSET (_ 'currentShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+							(_FSET (_ 'currentShelfELEV (_S2V (_& (_ paramBody "ELEV")))))
+							; According to side type, related variables have to change
+							(_FSET (_ 'cabinetHEI (- __HEI __HEI2)))
+							(if (equal BC_LEFT_SIDE_TYPE 1)
+								(progn
+									; LONG SIDE
+									(_FSET (_ 'leftSideCode BC_LONG_LEFT_SIDE_CODE))
+									(_FSET (_ 'currentShelfLeftHEI (+ cabinetHEI currentShelfELEV)))
+								)
+								(progn
+									; SHORT SIDE
+									(_FSET (_ 'leftSideCode BC_SHORT_LEFT_SIDE_CODE))
+									(_FSET (_ 'currentShelfLeftHEI currentShelfELEV))
+								)
+							)
+							(if (equal BC_RIGHT_SIDE_TYPE 1)
+								(progn
+									; LONG SIDE
+									(_FSET (_ 'rightSideCode BC_LONG_RIGHT_SIDE_CODE))
+									(_FSET (_ 'rightSidePanelWID BC_LONG_RIGHT_SIDE_WID))
+									(_FSET (_ 'currentShelfRightHEI (+ cabinetHEI currentShelfELEV)))
+								)
+								(progn
+									; SHORT SIDE
+									(_FSET (_ 'rightSideCode BC_SHORT_RIGHT_SIDE_CODE))
+									(_FSET (_ 'rightSidePanelWID BC_SHORT_RIGHT_SIDE_WID))
+									(_FSET (_ 'currentShelfRightHEI currentShelfELEV))
+								)
+							)
+							(_FSET (_ 'holeCodeBody (_& (_ "BC_ADJUSTABLE_SHELF_HOLE_" shelfCounter "_"))))
+							; Center holes
+							(if (_EXISTPANEL leftSideCode)
+								(progn
+									(_FSET (_ 'holePosition_LF (+ ASHELF_FRONT_OFFSET BC_ASHELF_FRONT_HOLE_OFFSET)))
+									(_FSET (_ 'holePosition_LB (_= "ASHELF_FRONT_OFFSET + currentShelfHEI - BC_ASHELF_BACK_HOLE_OFFSET")))
+									
+									(_HOLE (_& (_ holeCodeBody centerHoleIndex "_LF")) leftSideCode (_ (_ holePosition_LF currentShelfLeftHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									(_HOLE (_& (_ holeCodeBody centerHoleIndex "_LB")) leftSideCode (_ (_ holePosition_LB currentShelfLeftHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+							)
+							(if (_EXISTPANEL rightSideCode)
+								(progn
+									(_FSET (_ 'holePosition_RF (_= "rightSidePanelWID - ASHELF_FRONT_OFFSET - BC_ASHELF_FRONT_HOLE_OFFSET")))
+									(_FSET (_ 'holePosition_RB (_= "rightSidePanelWID - ASHELF_FRONT_OFFSET - currentShelfHEI + BC_ASHELF_BACK_HOLE_OFFSET")))
+									
+									(_HOLE (_& (_ holeCodeBody centerHoleIndex "_RF")) rightSideCode (_ (_ holePosition_RF currentShelfRightHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									(_HOLE (_& (_ holeCodeBody centerHoleIndex "_RB")) rightSideCode (_ (_ holePosition_RB currentShelfRightHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+							)
+							; Upper-than-center
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_UP
+								(_FSET (_ 'currentHoleIndex (+ centerHoleIndex stepCounter)))
+								(if (_EXISTPANEL leftSideCode)
+									(progn
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LF")) leftSideCode (_ (_ holePosition_LF (+ currentShelfLeftHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LB")) leftSideCode (_ (_ holePosition_LB (+ currentShelfLeftHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									)
+								)
+								(if (_EXISTPANEL rightSideCode)
+									(progn
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) rightSideCode (_ (_ holePosition_RF (+ currentShelfRightHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) rightSideCode (_ (_ holePosition_RB (+ currentShelfRightHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									)
+								)
+								(_FSET (_ 'stepCounter (+ stepCounter 1)))
+							)
+							; Lower-than-center
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_DOWN
+								(_FSET (_ 'currentHoleIndex (- centerHoleIndex stepCounter)))
+								(if (_EXISTPANEL leftSideCode)
+									(progn
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LF")) leftSideCode (_ (_ holePosition_LF (- currentShelfLeftHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LB")) leftSideCode (_ (_ holePosition_LB (- currentShelfLeftHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									)
+								)	
+								(if (_EXISTPANEL rightSideCode)
+									(progn
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) rightSideCode (_ (_ holePosition_RF (- currentShelfRightHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+										(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) rightSideCode (_ (_ holePosition_RB (- currentShelfRightHEI (* stepCounter HOLE_GROUP_DISTANCE)) 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+									)
+								)
+								(_FSET (_ 'stepCounter (+ stepCounter 1)))
+							)
+						)
+					)
+					(_FSET (_ 'shelfCounter (+ shelfCounter 1)))
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

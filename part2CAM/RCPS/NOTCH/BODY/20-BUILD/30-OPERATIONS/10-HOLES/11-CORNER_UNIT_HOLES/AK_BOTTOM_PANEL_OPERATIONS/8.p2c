@@ -1,0 +1,50 @@
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+			(progn
+
+				(_FSET (_ 'lengthParametersForBottomAndNotchedBackLeft (_CALCULATEPANELSINTERSECTIONLENGTH AK_NOTCHED_BACK_PANEL_LEFT_WID (_ 0 0 0 0))))
+				(_SETA 'lengthForBottomAndNotchedBackLeft (getnth 0 lengthParametersForBottomAndNotchedBackLeft))	
+				
+				; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+				; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+				; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					
+					
+					(_FSET (_ 'bottomPanelPointListForNotchedBackLeft (_GETHOLEPOINTLIST operationName 
+						(_ lengthForBottomAndNotchedBackLeft (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES) 0 "X") 
+						(_ 0 0 T AK_NOTCHED_BACK_PANEL_LEFT_WID) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_BOTTOM_PANEL_OP_FACE bottomPanelPointListForNotchedBackLeft (_ nil nil) connectorParams)
+	
+					(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBottomAndLeft RightPanelsConstAxisValue (car horizontalHolePos) "X") 
+								(_ frontStartingPointLeft backStartingPointLeft T AK_RIGHT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_RIGHT_PANEL_CODE leftPanelPointListForBottomPanel (_ LeftPanelOrientType nil) connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL AK_NOTCHED_BACK_PANEL_LEFT_CODE)
+						(progn
+							(_FSET (_ 'notchedBackPanelLeftPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForBottomAndNotchedBackLeft 0 (car horizontalHolePos) "X") 
+								(_ 0 0 nil AK_NOTCHED_BACK_PANEL_LEFT_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_BACK_PANEL_LEFT_CODE notchedBackPanelLeftPanelPointListForBottomPanel (_ "Y+" nil) connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

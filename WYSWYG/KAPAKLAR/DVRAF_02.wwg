@@ -1,0 +1,181 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list unitD 0.0 0.0) 
+(list (- unitD ad_et) ad_et 0.0) 
+(list ad_et ad_et 0.0) 
+) 
+nil
+
+unitW
+
+(d2r -270.0)
+
+(d2r -90.0)
+
+
+(list unitW 0.0 ad_et)
+
+"ALT" 
+"" 
+nil 
+ 
+"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list unitD 0.0 0.0) 
+(list (- unitD ad_et) ad_et 0.0) 
+(list ad_et ad_et 0.0) 
+) 
+nil
+
+unitW
+
+(d2r -90.0)
+
+(d2r -90.0)
+
+
+(list 0.0 0.0 (- unitH ad_et))
+
+"UST" 
+"" 
+nil 
+ 
+"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+   
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list 0.0 unitH 0.0) 
+(list ad_et (- unitH ad_et) 0.0) 
+(list ad_et  ad_et 0.0) 
+) 
+nil
+
+unitW
+
+(d2r 0.0)
+(d2r 0.0)
+
+
+(list 0.0 0.0 0.0)
+
+"ARKA" 
+"" 
+nil 
+ 
+"SIDE" 
+;"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list 0.0 unitH 0.0) 
+(list ad_et (- unitH ad_et) 0.0) 
+(list ad_et  ad_et 0.0) 
+) 
+nil
+
+unitW
+
+(d2r 0.0)
+(d2r 180.0)
+
+
+(list unitW (- unitD) 0.0)
+
+"ONDE" 
+"" 
+nil 
+ 
+"SIDE" 
+;"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list 0.0 (- unitH ad_et ad_et) 0.0) 
+(list  (- unitD ad_et ad_et) (- unitH ad_et ad_et) 0.0) 
+(list (- unitD ad_et ad_et) 0.0 0.0) 
+) 
+nil
+
+ad_et
+
+(d2r 0.0)
+(d2r 180.0)
+
+
+(list ad_et (+ (- unitD ) ad_et) ad_et)
+
+"SOLYAN" 
+"" 
+nil 
+ 
+"SIDE" 
+;"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list 0.0 (- unitH ad_et ad_et) 0.0) 
+(list  (- unitD ad_et ad_et) (- unitH ad_et ad_et) 0.0) 
+(list (- unitD ad_et ad_et) 0.0 0.0) 
+) 
+nil
+
+ad_et
+
+(d2r 0.0)
+(d2r 180.0)
+
+
+(list unitW (+ (- unitD ) ad_et) ad_et)
+
+"SAGYAN" 
+"" 
+nil 
+ 
+"SIDE" 
+;"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+
+

@@ -1,0 +1,124 @@
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+
+(_ADDPARTMAT2EDGESTRIPS (_ 'BACK_PANEL_LEFT_EDGESTRIP_MAT 'BACK_PANEL_RIGHT_EDGESTRIP_MAT 'BACK_PANEL_TOP_EDGESTRIP_MAT 'BACK_PANEL_BOTTOM_EDGESTRIP_MAT) DRAWER_BODY_MAT ADD_PART_MATERIAL)
+; Width of edgestrips are taken from database
+(_FSET (_ 'LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BACK_PANEL_LEFT_EDGESTRIP_MAT)))
+(_FSET (_ 'RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BACK_PANEL_RIGHT_EDGESTRIP_MAT)))
+(_FSET (_ 'TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BACK_PANEL_TOP_EDGESTRIP_MAT)))
+(_FSET (_ 'BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BACK_PANEL_BOTTOM_EDGESTRIP_MAT)))
+; Code Generator block for drawer body panels
+(_FSET (_ 'currentPanelType "BACK"))
+(if (_NOTNULL DIV_ON_HAND)
+	(progn
+		(if (equal DIV_ON_HAND __CURDIVORDER)
+			(progn
+				(if (equal LAST_OPERATOR currentPanelType)
+					(progn
+						(_FSET (_ 'DRAWER_ID (+ DRAWER_ID 1)))
+						(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+					)
+					(progn
+						(_FSET (_ 'LAST_OPERATOR currentPanelType))
+						(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+						(_FSET (_ 'tempPanelCode (_& (_ currentPanelCode (XSTR "BACK_PANEL")))))
+						(if (_EXISTPANEL tempPanelCode)
+							(progn
+								(_FSET (_ 'DRAWER_ID (+ DRAWER_ID 1)))
+								(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+							)
+						)
+					)
+				)
+			)
+			(progn
+				(_FSET (_ 'DIV_ON_HAND __CURDIVORDER))
+				(_FSET (_ 'LAST_OPERATOR currentPanelType))
+				(_FSET (_ 'DRAWER_ID 0))
+				(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+			)
+		)
+	)
+	(progn
+		(_FSET (_ 'DIV_ON_HAND __CURDIVORDER))
+		(_FSET (_ 'LAST_OPERATOR currentPanelType))
+		(_FSET (_ 'DRAWER_ID 0))
+		(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+	)
+)
+(_FSET (_ 'paramBody (_& (_ "DRAWER_" DIV_ON_HAND "_" DRAWER_ID "_BACK_PANEL_"))))
+
+(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+
+(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+
+(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+
+(if IS_THERE_EXTRA_PANEL_FOR_HIDDEN_DRAWER
+	(_FSET (_ (read tempWID) (_= "__WID - DRAWER_TOTAL_GAP_WID - DRAWER_PANELS_WID_DIFF - __AD_PANELTHICK - __AD_PANELTHICK - HIDDEN_DRAWER_EXTRA_PANEL_THICKNESS")))
+	(_FSET (_ (read tempWID) (_= "__WID - DRAWER_TOTAL_GAP_WID - DRAWER_PANELS_WID_DIFF - __AD_PANELTHICK - __AD_PANELTHICK")))
+)
+; (_FSET (_ (read tempWID) (_= "__WID - DRAWER_TOTAL_GAP_WID - DRAWER_PANELS_WID_DIFF - __AD_PANELTHICK - __AD_PANELTHICK")))
+(_FSET (_ (read tempHEI) (_= "DRAWER_BODY_HEI - DRAWER_PANELS_HEI_DIFF_TOP - DRAWER_PANELS_HEI_DIFF_BOTTOM")))
+
+(_FSET (_ (read tempROT) (_ BACK_PANEL_MAIN_ROTATION BACK_PANEL_CUTLIST_ROTATION BACK_PANEL_DXF_ROTATION BACK_PANEL_MIRRORING_AXIS)))
+(_FSET (_ (read tempMAT) DRAWER_BODY_MAT))
+(_FSET (_ (read tempTHICKNESS) DRAWER_BODY_THICKNESS))
+
+; (_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+(if (equal NOTCH_DRAWER_PANELS_FOR_SIDES nil)
+	(progn
+		(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+		
+		(_FSET (_ (read tempEDGESTRIPS) (_ (_ BACK_PANEL_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+								   (_ BACK_PANEL_TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+								   (_ BACK_PANEL_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID)
+								   (_ BACK_PANEL_BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID))))
+	)
+	(progn
+		(_FSET (_ (read tempPDATA) (_ (_ DRAWER_BODY_THICKNESS 0.0 0.0) 0 
+										 (_ DRAWER_BODY_THICKNESS (- (_S2V tempHEI) NOTCH_BEGINNING_LENGTH_FROM_TOP) 0.0) 0 
+										 (_ 0.0 (- (_S2V tempHEI) NOTCH_BEGINNING_LENGTH_FROM_TOP) 0.0) 0 
+										 (_ 0.0 (_S2V tempHEI) 0.0) 0 
+										 (_ (_S2V tempWID) (_S2V tempHEI) 0.0) 0 
+										 (_ (_S2V tempWID) (- (_S2V tempHEI) NOTCH_BEGINNING_LENGTH_FROM_TOP) 0.0) 0 
+										 (_ (- (_S2V tempWID) DRAWER_BODY_THICKNESS) (- (_S2V tempHEI) NOTCH_BEGINNING_LENGTH_FROM_TOP) 0.0) 0 
+										 (_ (- (_S2V tempWID) DRAWER_BODY_THICKNESS) 0.0 0.0) 0
+										 (_ DRAWER_BODY_THICKNESS 0.0 0.0) 0)))
+		
+		(_FSET (_ (read tempEDGESTRIPS) (_ (_ BACK_PANEL_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID) 
+											(_ BACK_PANEL_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID) 
+											(_ BACK_PANEL_BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID))))
+	)
+)
+
+(_FSET (_ (read tempLABEL) (XSTR BACK_PANEL_LABEL)))
+(_FSET (_ (read tempTAG) BACK_PANEL_TAG))
+
+(_FSET (_ 'DRAWER_BACK_PANEL_CODE (_& (_ currentPanelCode (XSTR "BACK_PANEL")))))
+
+(_PANELMAIN DRAWER_BACK_PANEL_CODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+
+(_CREATEEDGESTRIPS DRAWER_BACK_PANEL_CODE (_S2V tempEDGESTRIPS))
+
+(if (_NOTNULL IS_DRAWER_BACK_PANEL_HOLE_FOR_RAIL_AVAILABLE)
+	(_CREATESFACEMAIN DRAWER_BACK_PANEL_CODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS) "Y"))
+)
+
+(_PUTLABEL DRAWER_BACK_PANEL_CODE DRAWER_BACK_PANEL_CODE (_S2V tempLABEL))
+(_PUTTAG DRAWER_BACK_PANEL_CODE DRAWER_BACK_PANEL_CODE (_S2V tempTAG))
+; Current drawer division order and id
+(_FSET (_ 'CURRENT_DRAWER_DATA (_ DIV_ON_HAND DRAWER_ID)))
+(_NONOTCH)

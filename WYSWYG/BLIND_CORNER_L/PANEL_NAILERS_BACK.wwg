@@ -1,0 +1,25 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(setq w_KayitEni (cm 8.0))
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW (* 2 ad_et)) 0.0 0.0) 
+(list (- unitW (* 2 ad_et)) w_KayitEni 0.0) 
+(list 0.0 w_KayitEni 0.0) 
+) 
+
+nil
+ad_et
+0.0
+(d2r 90.0) 
+
+(list ad_et (- (* 2 ad_et)) (- (+ unitH dAltKot) w_KayitEni))
+
+"PANEL_NAILERS_BACK" 
+"" 
+nil 
+"SIDE" 
+(strcat kodBlock "_CAB_BODY_BASE")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)

@@ -1,0 +1,71 @@
+(_RUNDEFAULTHELPERRCP "ALU_STRECHER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+; This variable will be used as a control in operation recipes
+(_FSET (_ 'IS_AK_DOUBLE_ALU_STRECHER_EXISTS T))
+
+(cond
+	((equal AK_ALU_STRECHER_DOMINANT_SIDE "LEFT")
+		(_FSET (_ 'usageWidLongOne __WID2))
+		(_FSET (_ 'usageWidShortOne (- __WID __DEP2)))
+	)
+	((equal AK_ALU_STRECHER_DOMINANT_SIDE "RIGHT")
+		(_FSET (_ 'usageWidLongOne __WID))
+		(_FSET (_ 'usageWidShortOne (- __WID2 __DEP)))
+	)
+)
+
+; Control for item variables
+(if (and (null ALU_STRECHER_CODE) (null ALU_STRECHER_UNIT)) 
+	(progn
+		(_FSET (_ 'QUANTITY_OF_ALU_ITEM_LONG_ONE 0))
+		(_FSET (_ 'aluItemCODELongOne ALU_STRECHER_CODE))
+		
+		(_FSET (_ 'QUANTITY_OF_ALU_ITEM_SHORT_ONE 0))
+		(_FSET (_ 'aluItemCODEShortOne ALU_STRECHER_CODE))
+	)
+	(progn
+		(if (_NOTNULL ALU_ITEM_UNIT_AS_LENGTH)
+			(progn
+				;long aluminium
+				(_FSET (_ 'lossOnWIDLongOne (+ __AD_PANELTHICK GROOVE_DISTANCE GROOVE_WID PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM_LONG_ONE (/ (- usageWidLongOne lossOnWIDLongOne) 1000.0)))
+				
+				(_FSET (_ 'aluItemCODELongOne ALU_STRECHER_CODE))
+				
+				;short aluminium
+				(_FSET (_ 'lossOnWIDShortOne (+ __AD_PANELTHICK AK_ALU_STRECHER_OFFSET PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM_SHORT_ONE (/ (- usageWidShortOne lossOnWIDShortOne) 1000.0)))
+				
+				(_FSET (_ 'aluItemCODEShortOne ALU_STRECHER_CODE))
+			)
+			(progn
+				;long aluminium
+				(_FSET (_ 'lossOnWIDLongOne (+ __AD_PANELTHICK GROOVE_DISTANCE GROOVE_WID PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'aluStrecherLengthLongOne (/ (- usageWidLongOne lossOnWIDLongOne) 1000.0)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM_LONG_ONE 1))
+				
+				;short aluminium
+				(_FSET (_ 'lossOnWIDShortOne (+ __AD_PANELTHICK AK_ALU_STRECHER_OFFSET PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'aluStrecherLengthShortOne (/ (- usageWidShortOne lossOnWIDShortOne) 1000.0)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM_SHORT_ONE 1))
+				
+				(if (_NOTNULL USE_LENGTH_IN_ALU_CODE)
+					(progn
+						(_FSET (_ 'aluItemCODELongOne (_& (_ ALU_STRECHER_CODE "_" aluStrecherLengthLongOne))))
+						(_FSET (_ 'aluItemCODEShortOne (_& (_ ALU_STRECHER_CODE "_" aluStrecherLengthShortOne))))
+					)
+					(progn
+						(_FSET (_ 'aluItemCODELongOne ALU_STRECHER_CODE))
+						(_FSET (_ 'aluItemCODEShortOne ALU_STRECHER_CODE))
+					)
+				)
+			)
+		)
+	)
+)
+; Item added in anyway
+(_ITEMMAIN aluItemCODELongOne aluItemCODELongOne (_ QUANTITY_OF_ALU_ITEM_LONG_ONE ALU_STRECHER_UNIT))
+	
+(_ITEMMAIN aluItemCODEShortOne aluItemCODEShortOne (_ QUANTITY_OF_ALU_ITEM_SHORT_ONE ALU_STRECHER_UNIT))	
+(_NONOTCH)

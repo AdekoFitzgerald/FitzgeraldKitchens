@@ -1,0 +1,64 @@
+; Modul connectors defaults
+PANEL_CODE_LIST -> "Panel code list to be drilled. Format: (_ CODE1 CODE2 ...)"
+
+HOLE_GEOMETRY -> "Geometry of hole. POLYLINE or CIRCLE ?"
+
+HOLE_PARAMETERS_LIST -> "List of holes and parameters. Format: (_ (_ (_ (_ Hole_X Hole_Y Rail_hole_Z) Hole_dia Hole_depth Hole_Orient) ...)) Ex: (_ (_ (_ (_ 10 20 0) 3.5 8.0 nil) ...))"
+
+;prefvars
+(_SETA 'PANEL_CODE_LIST (_ "SOL_PANEL" "SAG_PANEL"))
+
+(_SETA 'HOLE_GEOMETRY "CIRCLE")
+
+(setq panelCounter 0)
+(while (< panelCounter (length PANEL_CODE_LIST))
+
+	(_FSET (_ 'PANEL_CODE (getnth panelCounter PANEL_CODE_LIST)))
+	
+	; Operations
+	(if (_EXISTPANEL PANEL_CODE)
+		(progn
+			; Panel dimensions info
+			(_FSET (_ 'RECENTPANELENT (_EXISTPANEL PANEL_CODE)))
+			(_FSET (_ 'WID (lmm_getLMMdata RECENTPANELENT lmm-k-panelXDim)))
+			(_FSET (_ 'HEI (lmm_getLMMdata RECENTPANELENT lmm-k-panelYDim)))
+
+			(_SETA 'HOLE_PARAMETERS_LIST
+				(_
+					(_
+						(_ (_ 0 0 0) 5 14 nil)
+						(_ (_ WID HEI 0) 5 14 nil)
+					)
+					(_ 
+						(_ (_ 0 0 0) 5 14 nil)
+						(_ (_ WID HEI 0) 5 14 nil)
+					)
+				)
+			)
+
+			; Hole operations
+			(_FSET (_ 'holeCounter 0))
+			(while (< holeCounter (length (getnth panelCounter HOLE_PARAMETERS_LIST)))
+				(_FSET (_ 'currentHole (getnth holeCounter (getnth panelCounter HOLE_PARAMETERS_LIST))))
+
+				(cond
+					((equal HOLE_GEOMETRY "POLYLINE")
+						(_POLYLINECIRCLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE nil currentHole)
+							
+					)
+					(T
+						(_HOLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE currentHole)
+					)
+				)
+				
+				(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+			)
+		)
+	)
+
+	(setq panelCounter (+ 1 panelCounter))
+)
+
+(_NONOTCH)
+
+

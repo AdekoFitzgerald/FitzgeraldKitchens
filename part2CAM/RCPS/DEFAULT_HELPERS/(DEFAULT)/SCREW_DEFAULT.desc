@@ -1,0 +1,6 @@
+SCREW_DIAMETER -> "Diameter of screw hole"
+SCREW_DEPTH -> "Depth of horizontal screw hole"
+SCREW_DEPTH_FOR_SIDES -> "Depth of vertical screw hole"
+SCREW_HOR_POS -> "Horizontal position of screw hole"
+SCREW_CODE -> "Code of screws"
+SCREW_UNIT -> "Unit of screws"

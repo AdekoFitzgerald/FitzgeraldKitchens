@@ -1,0 +1,169 @@
+(cond
+	((or  (< unitW kpmMin) (> unitW kpmMax) (< unitH kpmMin) (> unitH kpmMax))
+        (alert "\nGirilen olculer uretilemez.!
+Lutfen genislik,yukseklik ve derinlik olculerinizi gozden geciriniz.")
+        (/ 0 0)
+       (princ)
+       )
+)
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW DJ10_T1 DJ10_T1) 0.0 0.0) 
+		(list (- unitW DJ10_T1 DJ10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	DJ10_T1 
+	0.0
+	(d2r 90.0) 
+	(list DJ10_T1 (- unitD) dAltKot)
+	"DJ10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+(initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
+(setq kpmLR (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Left/Right: ")))
+(cond
+	((equal kpmLR "Right")
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DJ10_D1 0.0 0.0) 
+				(list DJ10_D1 unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DJ10_T1 
+			0.0 
+			0.0 
+			
+			(list (- unitW DJ10_T1) (+ (- unitD) DJ10_D1) dAltKot)
+			
+			"DJ10_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DJ10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 0.0 dAltKot)
+			
+			"DJ10_03" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+		)
+	)
+	(T
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DJ10_D1 0.0 0.0) 
+				(list DJ10_D1 unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DJ10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 (+ (- unitD) DJ10_D1) dAltKot)
+			
+			"DJ10_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DJ10_T1 
+			0.0 
+			0.0 
+			
+			(list (- unitW DJ10_T1) 0.0 dAltKot)
+			
+			"DJ10_03" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+		)
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+)	

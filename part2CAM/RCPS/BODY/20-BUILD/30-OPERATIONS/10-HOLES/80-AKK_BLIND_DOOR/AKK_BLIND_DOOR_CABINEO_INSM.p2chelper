@@ -1,0 +1,82 @@
+(_FSET (_ 'halfOfThickness (/ __AD_PANELTHICK 2.0)))
+(if (_EXISTPANEL AKK_BLIND_DOOR_CODE)
+	(progn
+		; IMPORTANT INFORMATION
+		; 	To discriminate holes on each side of blind door shortkeys are used. Meaning of shortkeys, ds,DS -> Door side, bs,BS -> blind side
+		; 	Door side assumed as front side and blind side assumed as back side. According to this assumption, rafix parameters are used
+		
+		; According to module direction, hole positions on X-axis are determined
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisX (- AKK_BLIND_DOOR_WID BLIND_DOOR_CONN_LEFT_OFFSET)))
+				(_FSET (_ 'ds_holePosOnAxisX BLIND_DOOR_CONN_RIGHT_OFFSET))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisX BLIND_DOOR_CONN_LEFT_OFFSET))
+				(_FSET (_ 'ds_holePosOnAxisX (- AKK_BLIND_DOOR_WID BLIND_DOOR_CONN_RIGHT_OFFSET)))
+			)
+		)
+		; Meaning of shortkeys, U -> Up, D -> Down
+		(_FSET (_ 'holePosition_BSU (_ bs_holePosOnAxisX AKK_BLIND_DOOR_HEI 0)))
+		(_FSET (_ 'holePosition_BSD (_ bs_holePosOnAxisX 0 0)))
+		(_FSET (_ 'holePosition_DSU (_ ds_holePosOnAxisX AKK_BLIND_DOOR_HEI 0)))
+		(_FSET (_ 'holePosition_DSD (_ ds_holePosOnAxisX 0 0)))
+		
+		(_CABINEOMAIN "BSU" AKK_BLIND_DOOR_CODE (_ holePosition_BSU CABINEO_PARAMETERS) "Y-")
+		(_CABINEOMAIN "BSD" AKK_BLIND_DOOR_CODE (_ holePosition_BSD CABINEO_PARAMETERS) "Y+")
+		(_CABINEOMAIN "DSU" AKK_BLIND_DOOR_CODE (_ holePosition_DSU CABINEO_PARAMETERS) "Y-")
+		(_CABINEOMAIN "DSD" AKK_BLIND_DOOR_CODE (_ holePosition_DSD CABINEO_PARAMETERS) "Y+")
+		(_ITEMMAIN CABINEO_CODE AKK_BLIND_DOOR_CODE (_ (* QUANTITY_OF_ITEM 4) CABINEO_UNIT))
+	)
+)
+; IMPORTANT INFORMATION
+; 	Priority of top panel is higher than front top strechers. If both of them exists by the way it is not logical, then operation performs on top panel
+(cond
+	((_EXISTPANEL TOP_PANEL_CODE)
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (- TOP_PANEL_WID BLIND_DOOR_CONN_LEFT_OFFSET)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "TOP_PANEL_WID - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY BLIND_DOOR_CONN_LEFT_OFFSET))
+				(_FSET (_ 'ds_holePosOnAxisY (- AKK_BLIND_DOOR_WID BLIND_DOOR_CONN_RIGHT_OFFSET)))
+			)
+		)
+		(_FSET (_ 'holeCodeBody (_& (_ "TOP_PANEL_RAFIX_HOLE_"))))
+		(_CABINEOMAIN (_& (_ holeCodeBody "BS")) TOP_PANEL_OP_FACE (_ (_ (- TOP_PANEL_HEI (+ halfOfThickness CABINEO_HOR_DIAMETER)) bs_holePosOnAxisY 0) CABINEO_PARAMETERS) nil)
+		(_CABINEOMAIN (_& (_ holeCodeBody "DS")) TOP_PANEL_OP_FACE (_ (_ (- TOP_PANEL_HEI (+ halfOfThickness CABINEO_HOR_DIAMETER)) ds_holePosOnAxisY 0) CABINEO_PARAMETERS) nil)
+	)
+	((_EXISTPANEL FRONT_TOP_STRECHER_CODE)
+		(cond
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisX BLIND_DOOR_CONN_LEFT_OFFSET))
+				(_FSET (_ 'ds_holePosOnAxisX (- AKK_BLIND_DOOR_WID BLIND_DOOR_CONN_RIGHT_OFFSET)))
+			)
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisX (- FRONT_TOP_STRECHER_WID BLIND_DOOR_CONN_LEFT_OFFSET)))
+				(_FSET (_ 'ds_holePosOnAxisX (_= "FRONT_TOP_STRECHER_WID - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holeCodeBody (_& (_ "FRONT_TOP_STRECHER_RAFIX_HOLE_"))))
+		(_CABINEOMAIN (_& (_ holeCodeBody "BS")) FRONT_TOP_STRECHER_OP_FACE (_ (_ bs_holePosOnAxisX (+ halfOfThickness CABINEO_HOR_DIAMETER) 0) CABINEO_PARAMETERS) nil)
+		(_CABINEOMAIN (_& (_ holeCodeBody "DS")) FRONT_TOP_STRECHER_OP_FACE (_ (_ ds_holePosOnAxisX (+ halfOfThickness CABINEO_HOR_DIAMETER) 0) CABINEO_PARAMETERS) nil)
+	)
+)
+(if (_EXISTPANEL BOTTOM_PANEL_CODE)
+	(progn
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (_= "BOTTOM_PANEL_WID - bottomSideStyleV1 - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "BOTTOM_PANEL_WID - bottomSideStyleV1 - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY (+ bottomSideStyleV1 BLIND_DOOR_CONN_LEFT_OFFSET)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "bottomSideStyleV1 + AKK_BLIND_DOOR_WID - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holeCodeBody (_& (_ "BOTTOM_PANEL_RAFIX_HOLE_"))))
+		(_CABINEOMAIN (_& (_ holeCodeBody "BS")) BOTTOM_PANEL_OP_FACE (_ (_ (+ halfOfThickness CABINEO_HOR_DIAMETER) bs_holePosOnAxisY 0) CABINEO_PARAMETERS) nil)
+		(_CABINEOMAIN (_& (_ holeCodeBody "DS")) BOTTOM_PANEL_OP_FACE (_ (_ (+ halfOfThickness CABINEO_HOR_DIAMETER) ds_holePosOnAxisY 0) CABINEO_PARAMETERS) nil)
+	)
+)

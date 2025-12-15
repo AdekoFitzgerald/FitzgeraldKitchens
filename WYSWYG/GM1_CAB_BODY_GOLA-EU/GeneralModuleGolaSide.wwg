@@ -1,0 +1,24 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	ad_et 
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 0.0)
+	
+	"PANEL_SIDE" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_GOLAPROFILE")
+	"GOLAPROFILE"
+	"noedgedrawing"
+)

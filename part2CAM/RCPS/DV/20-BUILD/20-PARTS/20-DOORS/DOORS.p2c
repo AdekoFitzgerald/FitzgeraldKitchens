@@ -1,0 +1,251 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+
+; DATA SHEET OF GROUP_HOLES_DATA
+; Index			DATA
+; 0				State of door codes
+; 1				Module definition of doors
+; 2				Module parameter root
+
+; MDP is shortening for MODULE_DOOR_PARAMS
+(if (_NOTNULL MODULE_DOOR_PARAMS)
+	(progn
+		(_FSET (_ 'MDP_changeDoorCodes (getnth 0 MODULE_DOOR_PARAMS)))
+		(_FSET (_ 'MDP_moduleDefinition (getnth 1 MODULE_DOOR_PARAMS)))
+		(_FSET (_ 'MDP_paramRoot (getnth 2 MODULE_DOOR_PARAMS)))
+	)
+	(progn
+		(_FSET (_ 'MDP_changeDoorCodes CHANGE_DOOR_CODES))
+		(_FSET (_ 'MDP_moduleDefinition "ST"))
+		(_FSET (_ 'MDP_paramRoot "CDOOR"))
+	)
+)
+(_FSET (_ 'doorCounter 0))
+(repeat (length __CURDIVDOORSLIST)
+	(_FSET (_ 'tempDoorInfo (getnth doorCounter __CURDIVDOORSLIST)))
+
+;	;;;;;; override door dimension example for manufacture dxf ; use with caution with operations.
+;	(if	(and
+;			(equal MDP_paramRoot "BC_CDOOR") ;"bc_cdoor" buzdolap kapak ise
+;			(member (_GETDOORMODEL (getnth 7 tempDoorInfo))	(list "DURU" "A17ALU"))	;listedeki "DURU" veya "A17ALU" kapak modeli ise
+;		)
+;		(progn
+;			(setq
+;				tempDoorInfoChangeInHei	0.0	; change hei
+;				tempDoorInfoChangeInWid	0.0	; change wid
+;			)
+;			(if	(and 
+;					(equal (nth 4 tempDoorInfo) "S")		; "S" kalkar kapak ise
+;					(equal (length __CURDIVDOORSLIST) 1)	; "1" tek kapak ise
+;				)
+;				(progn
+;						(_FSET (_ 'tempDoorInfo (replace (+ (nth 2 tempDoorInfo) tempDoorInfoChangeInWid	) 2 tempDoorInfo)))	; tekrar wid setle
+;						(_FSET (_ 'tempDoorInfo (replace (+ (nth 1 tempDoorInfo) tempDoorInfoChangeInHei	) 1 tempDoorInfo)))	; tekrar hei setle
+;				)
+;				(progn
+;						(_FSET (_ 'tempDoorInfo (replace (+ (nth 2 tempDoorInfo) (* 0.5 tempDoorInfoChangeInWid)	) 2 tempDoorInfo))) ; tekrar wid setle
+;						(_FSET (_ 'tempDoorInfo (replace (+ (nth 1 tempDoorInfo) tempDoorInfoChangeInHei			) 1 tempDoorInfo))) ; tekrar hei setle
+;				)
+;			)
+;		)
+;	)
+
+	(_FSET (_ 'doorCounter (+ 1 doorCounter)))
+	
+	(_FSET (_ 'currentDoorTYPE (getnth 4 tempDoorInfo)))
+	(_FSET (_ 'currentDoorID (getnth 7 tempDoorInfo)))
+	
+	(_FSET (_ 'currentDoorMODEL (_GETDOORMODEL currentDoorID)))
+	(_FSET (_ 'currentDoorGroup (getnth 4 (getnth 1 (getnth 3 (assoc currentDoorMODEL kapak:mlofl))))))
+	(_FSET (_ 'currentDoorSource (_GETDOORSOURCE currentDoorID)))
+	
+	(if (not (member currentDoorSource (list "OUTSOURCE" "INSOURCE" "" " " 0 0.0 nil "nil")))
+		(progn
+			(setq currentDoorSource0 currentDoorSource currentDoorSource "INSOURCE")
+			(if (equal (type (_s2v currentDoorSource0)) 'LIST)
+				(progn
+					(setq currentDoorSource1 (getnth 1 (_s2v currentDoorSource0)))
+					(setq currentDoorSource0 (getnth 0 (_s2v currentDoorSource0)))
+				)
+				(setq currentDoorSource1 nil)
+			)
+		)
+		(setq currentDoorSource0 nil currentDoorSource1 nil)
+	)
+	
+	(_FSET (_ 'doorCostType (_CONVERTDOORTYPETOCOSTTYPE currentDoorTYPE)))
+	; List of door parameters which will be used in specific door recipes
+	(_FSET (_ 'GLOBAL_DOOR_PARAMS (_ doorCounter tempDoorInfo MDP_changeDoorCodes MDP_moduleDefinition __CURDIVORDER MDP_paramRoot)))
+	
+	(_FSET (_ 'currentDoorHEI (getnth 1 tempDoorInfo)))
+	(_FSET (_ 'currentDoorWID (getnth 2 tempDoorInfo)))
+
+	(cond 
+		((_NOTNULL (_GETDOORSPCRCPSTATE currentDoorID))
+			; SPECIAL DOOR
+			; Special recipe will be called in this branch via model
+			(_RUNHELPERRCP (strcat "DV\\20-BUILD\\20-PARTS\\20-DOORS\\" currentDoorMODEL) nil "p2chelper")
+			
+			; IMPORTANT INFORMATION ->	The interaction of special doors with operations are completely the responsibility of special door recipe author !
+		)
+		((equal doorCostType "G")
+			; STORE DOOR
+			; Either it is insource or outsource same procedure is performed for store doors
+			(_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\20-DOORS\\STORE_DOOR" nil "p2chelper")
+		)
+		((equal currentDoorSource "INSOURCE")
+			; INSOURCE DOOR
+			(cond
+				((equal doorCostType "A")
+					; PLAIN DOORS
+					(_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\20-DOORS\\PLAIN_DOOR" nil "p2chelper")
+				)
+				((equal doorCostType "B")
+					; GLASS DOORS
+					(_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\20-DOORS\\GLASS_DOOR" nil "p2chelper")
+				)
+				((equal doorCostType "H")
+					; LATTICE DOOR
+					(_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\20-DOORS\\LATTICE_DOOR" nil "p2chelper")
+				)
+			)
+		)
+		(T
+			; OUTSOURCE DOOR
+			; We have to sure that currentDoorSource has valid value
+			(_FSET (_ 'currentDoorSource "OUTSOURCE"))
+			(_FSET (_ 'currentDoorTAGS (_GETDOORTAGS currentDoorID)))
+			; Material of current OUTSOURCE door is determined. First two condition is specially defined **
+			(cond 
+				((_NOTNULL (_S2V (_& (_ currentDoorMODEL "_" currentDoorTYPE "_MAT_LAYER"))))
+					(_FSET (_ 'materialLAYER (_S2V (_& (_ currentDoorMODEL "_" currentDoorTYPE "_MAT_LAYER")))))
+				)
+				((_NOTNULL (_S2V (_& (_ currentDoorMODEL "_MAT_LAYER"))))
+					(_FSET (_ 'materialLAYER (_S2V (_& (_ currentDoorMODEL "_MAT_LAYER")))))
+				)
+				(T
+					(_FSET (_ 'materialLAYER GENERAL_DOORS_LAYER))
+				)
+			)
+			(_FSET (_ 'currentDoorMAT (_GETDOORMATS currentDoorID materialLAYER)))
+			(cond 
+				((_NOTNULL currentDoorMAT)
+					; WOOD PART EXISTS
+					
+					; IMPORTANT INFORMATION -> 	In fact we are not sure about whether current door has wooden part or not. If in the design of door user uses special layers,
+					;							then it is not possible to determine door has a wooden part. Because of the nature of problem its up to door designer aka JOUSSEF ABI... 
+					
+					; Data which will be needed for _GENERATEDOORPARAMS is created
+					(_FSET (_ 'curDoorDATA (_ (getnth 0 tempDoorInfo)
+											  (getnth 1 tempDoorInfo)
+											  (getnth 2 tempDoorInfo)
+											  currentDoorTYPE
+											  (getnth 5 tempDoorInfo)
+											  currentDoorID
+											  (_GETDOORMATROTS currentDoorID materialLAYER)
+											  currentDoorMAT
+											  ; currentDoorMAT sat�r� yerine alttaki sat�r kullan�ld���nda outsource olan kapaklar�n malzeme kodunu ay�r�r.
+											  ;(_DERIVEDOORMAT currentDoorSource currentDoorTYPE currentDoorMODEL currentDoorMAT OUTSOURCE_DOORS_MATERIAL_MODE)
+											  (_ 0.0 0.0 0.0 0.0)
+											  currentDoorSource)))
+					
+					(_FSET (_ 'paramBody (_GENERATEDOORPARAMS curDoorDATA __CURDIVORDER doorCounter MDP_moduleDefinition MDP_paramRoot)))
+					; Unique variables of frame of door
+					(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+					(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+					(_FSET (_ 'tempTYPE (_& (_ paramBody "TYPE"))))
+					(_FSET (_ 'tempGRAIN (_& (_ paramBody "GRAIN"))))
+					(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+					; Unique code of current door
+					(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE (_S2V tempTYPE) __CURDIVORDER doorCounter MDP_changeDoorCodes MDP_moduleDefinition)))
+					
+					(_PANEL currentDoorCODE (_ (_S2V tempWID) (_S2V tempHEI) (_S2V tempGRAIN) (_S2V tempMAT)))
+					
+					(_PUTDOORSPECIFICATIONS
+						(list
+							currentDoorCODE
+							currentDoorTYPE
+							currentDoorSource
+							currentDoorMODEL
+							doorCostType
+							currentDoorTAGS
+							(_GETDOORFORM currentDoorID)
+							(getDoorDirectionWithDoorPosition g_CurrentModulEnt currentDoorID)
+							(_GETHANDLEPOSINDEX currentDoorID)
+						)
+					)
+					
+					; Material mode control
+					(if (equal OUTSOURCE_DOORS_MATERIAL_MODE 2)
+						(progn
+							; When material mode equals to 2, model with cost type entered as an item
+							(_FSET (_ 'areaOfPanel (/ (* (_S2V tempWID) (_S2V tempHEI)) 1000000.0)))
+							(_FSET (_ 'panelAsItem (_& (_ currentDoorMODEL "_" (_CONVERTDOORTYPETOCOSTTYPE (_S2V tempTYPE))))))
+							
+							(_ITEMMAIN panelAsItem panelAsItem (_ areaOfPanel "m2"))
+						)
+					)
+					(_FSET (_ (read (_& (_ MDP_paramRoot "_" __CURDIVORDER "_" doorCounter "_VIRTUAL"))) nil))
+				)
+				(T
+					; NO-WOOD PART
+					; In current door types of adeko there is only one door which hasnt got wooden part, Glass door with aluminium profiles
+					(_FSET (_ 'aluFrameLayerMAT (_GETDOORMATS currentDoorID ALUMINIUM_FRAME_LAYER)))
+					(_FSET (_ 'glassDoorLayerMAT (_GETDOORMATS currentDoorID GLASS_DOOR_LAYER)))
+					(if (and (_NOTNULL aluFrameLayerMAT) (_NOTNULL glassDoorLayerMAT))
+						(progn
+							(_FSET (_ 'doorMaterial (_& (_ aluFrameLayerMAT "_" (XSTR "DOOR") "_" glassDoorLayerMAT))))
+							(_FSET (_ 'doorHEI (getnth 1 tempDoorInfo)))
+							(_FSET (_ 'doorWID (getnth 2 tempDoorInfo)))
+							; Data which will be needed for _GENERATEDOORPARAMS is created
+							(_FSET (_ 'curDoorDATA (_ (getnth 0 tempDoorInfo)
+													  doorHEI
+													  doorWID
+													  currentDoorTYPE
+													  (getnth 5 tempDoorInfo)
+													  currentDoorID
+													  (_ nil nil nil nil)
+													  doorMaterial
+													  (_ 0.0 0.0 0.0 0.0)
+													  currentDoorSource)))
+							
+							(_GENERATEDOORPARAMS curDoorDATA __CURDIVORDER doorCounter MDP_moduleDefinition MDP_paramRoot)
+							
+							(_FSET (_ 'doorCode (_& (_ (XSTR "ALUMINIUM_GLASS_DOOR") "_" __CURDIVORDER "_" doorCounter))))
+							
+							(_PANEL doorCode (_ doorWID doorHEI (_ nil nil nil nil) doorMaterial))
+							
+							(_PUTDOORSPECIFICATIONS
+								(list
+									doorCode
+									currentDoorTYPE
+									currentDoorSource
+									currentDoorMODEL
+									doorCostType
+									currentDoorTAGS
+									(_GETDOORFORM currentDoorID)
+									(getDoorDirectionWithDoorPosition g_CurrentModulEnt currentDoorID)
+									(_GETHANDLEPOSINDEX currentDoorID)
+								)
+							)
+
+							; When code of panel isnt found then this parameter steps up for items of operations
+							(_FSET (_ (read (_& (_ MDP_paramRoot "_" __CURDIVORDER "_" doorCounter "_VIRTUAL"))) T))
+						)
+					)
+				)
+			)
+		)
+	)
+	(if (and p2C_Labour_Calc Post_Door_P2C_Labour_Process)
+		(progn
+			(defun Post_Door_P2C_Labour_Process_TEMP ( / areaOfDoor currentDoorForm) ;fail safe for local parameters b4 labour
+				(setq areaOfDoor (* (* currentDoorWID 0.001) (* currentDoorHEI 0.001))) ;mm to m2 
+				(setq currentDoorForm (_GETDOORFORM currentDoorID))
+				(Post_Door_P2C_Labour_Process)
+			)
+			(Post_Door_P2C_Labour_Process_TEMP)
+			(setq Post_Door_P2C_Labour_Process_TEMP nil)
+		)
+	)
+)
+(_NONOTCH)

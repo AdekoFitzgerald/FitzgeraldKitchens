@@ -1,0 +1,1133 @@
+;  				Biesse Insider post processor
+;	2020 01 21
+;	eyup@adeko.com
+;Notlar: 
+;- Y panelin width ine göre terslenmesi gerekiyor
+;- Poyraz makine postuna benziyor
+;- Delikler için takýmlar useToolDesieredHoleDiameter de ayarlanabilir. Burada yüzeydeki çapa göre takým atamasý yapýlabilir.
+;- Frezeler için takýmlar fillCAMOperationListForBiesseInsiderMachine de NOTCH, GROOVE , TYPE45, ve PK layerlarýna tanýmlanabilir.
+;- Layer- takým listesini fillCAMOperationListForBiesseInsiderMachine de otomatik olarak oluþturulur.
+
+(defun rowNumber ( / )
+	(cond
+		((equal 0 cuurentToolHeadNumber)
+			(setq biesseInsideNToolHead0 (10+ biesseInsideNToolHead0))
+		)
+		((equal 1 cuurentToolHeadNumber)
+			(setq biesseInsideNToolHead1 (10+ biesseInsideNToolHead1))
+		)
+	)
+)
+
+(defun biesseInsider_HoleCamOperation (currentEnt entLayerName tempCAMStyle currentPanel file / tempHolePos mHoleDepth tempHoleDepth ikiyuzon tempHolePosWorld
+																									mHoleX mHoleY mHoleZ tempPanelName currentToolName tempPanelWidth biesseInsideN) 	
+	;  					L=G4
+	;				|---------|
+	;				|         |
+	;sol üst L=G1 	|  L=G99  |  L=G3 sað alt
+	;				|         |
+	;				|*________|
+	;					L=G2
+	;
+	;Set DXF layer as Z origin bottom of the panel.3
+	
+	(setq tempPanelName (lmm_getLMMdata currentPanel lmm-k-customCode))
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq currentToolName (nth 1 tempCAMStyle))
+	
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq ikiyuzon (getEntPro currentEnt 210))
+	(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+	(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePosWorld) 2))
+	;Y must be invert
+	(setq mHoleY (lmm_convertNumtoStringWithDigit  (- tempPanelWidth (getnth 1 tempHolePosWorld)) 2))
+	(setq mHoleZ (lmm_convertNumtoStringWithDigit  (getnth 2 tempHolePosWorld) 2))
+	(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+	(cond
+		((equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq biesseInsideN (rowNumber))
+			(princ (sprintf "\nN~s QX=~s QY=~s ST1=\"~s\" PRF=~s L=G99" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+																		mHoleX
+																		mHoleY
+																		currentToolName
+																		mHoleDepth
+																		)) file)
+			(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" entLayerName))))
+		)
+		((equal "RIG" (substr entLayerName 1 3)); right hole routines
+			(setq biesseInsideN (rowNumber))
+			(princ (sprintf "\nN~s QX=~s QY=~s QZ=~s ST1=\"~s\" QW=~s PRF=~s L=G3" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+																		mHoleX
+																		mHoleY
+																		mHoleZ
+																		currentToolName
+																		mHoleZ
+																		mHoleDepth
+																		)) file)
+			(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" entLayerName))))
+		)
+		((equal "LEF" (substr entLayerName 1 3)); left hole routines
+			(setq biesseInsideN (rowNumber))
+			(princ (sprintf "\nN~s QX=~s QY=~s QZ=~s ST1=\"~s\" QW=~s PRF=~s L=G1" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+																		mHoleX
+																		mHoleY
+																		mHoleZ
+																		currentToolName
+																		mHoleZ
+																		mHoleDepth
+																		)) file)
+			(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" entLayerName))))
+		)
+		((equal "REA" (substr entLayerName 1 3)); rear hole routines
+			(setq biesseInsideN (rowNumber))
+			(princ (sprintf "\nN~s QX=~s QY=~s QZ=~s ST1=\"~s\" QW=~s PRF=~s L=G4" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+																		mHoleX
+																		mHoleY
+																		mHoleZ
+																		currentToolName
+																		mHoleZ
+																		mHoleDepth
+																		)) file)
+			(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" entLayerName))))
+		)
+		((equal "FRO" (substr entLayerName 1 3)); front hole routines
+			(setq biesseInsideN (rowNumber))
+			(princ (sprintf "\nN~s QX=~s QY=~s QZ=~s ST1=\"~s\" QW=~s PRF=~s L=G2" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+																		mHoleX
+																		mHoleY
+																		mHoleZ
+																		currentToolName
+																		mHoleZ
+																		mHoleDepth
+																		)) file)
+			(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" entLayerName))))
+		)
+		((equal "BOT" (substr entLayerName 1 3)); bottom hole routines
+		)
+	)
+
+)
+
+(defun biesseInsider_ContourCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file /  
+								tempDepth stepOfPasses bottomZComponent topZComponent stepZComponets
+								spindleSpeed cutFeedRate plungeFeedRate currentTool iteration tempPoint
+								currentZLevel tempPoints tempPointsWB bulgeOfSegment firstPoint secondPoint firstSecondNormal 
+								fieldPoint deleteHelper ijkOfSegment centerOfSegment lengthOfSegment helperEntity maxSegDistance arcValues
+								totalRadOfSegment stepVal buffRadVec deltaAngle bufferPoint tempPanelWidth toolCompansation biesseInsideN)
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq spindleSpeed (nth 9 tempCAMStyle))
+	(setq cutFeedRate (nth 10 tempCAMStyle))
+	(setq plungeFeedRate (nth 11 tempCAMStyle))
+	(setq currentTool (nth 1 tempCAMStyle))	
+	(setq helperEntity currentEnt)	
+	(cond
+		( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq toolCompansation "G40")
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq toolCompansation "G41")
+				(setq toolCompansation "G42")
+			)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq toolCompansation "G42")
+				(setq toolCompansation "G41")
+			)
+		)
+	)
+	
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	(foreach currentZLevel stepZComponets
+		(setq iteration 1)
+		(foreach tempPoint tempPoints
+			(cond
+				; first move 
+				( (equal 1 iteration)
+					(setq biesseInsideN (rowNumber))
+					(princ (sprintf "\nN~s QX=~s QY=~s QC=0 PAN=1 UT=0 PRF=~s VF=2 VA=5 ~s INTF=-1000 L=PON" 
+						(_ 
+						(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+						(lmm_convertNumtoStringWithDigit (* -1 currentZLevel) 3) ; Aþaðý + Z
+						toolCompansation
+						currentTool
+						)) file)
+				)
+				
+				; last moves
+				( (equal (length tempPoints) iteration)
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s G40 G1" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+							)) file)
+						)
+												((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G2" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G3" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+					)
+					
+					;safety move
+					(setq biesseInsideN (rowNumber))
+					(princ (sprintf "\nN~s L=POFF" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0))) file)
+				)
+				
+				
+				; middle moves
+				( (and (< 1 iteration) (> (length tempPoints) iteration))
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s G1" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+							)) file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G2" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G3" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+					)
+				)
+			)
+			(setq iteration (+ 1 iteration))
+			(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+		)
+	)
+	
+	(princ )
+)
+
+(defun biesseInsider_ContourCAMOperationG40 (currentEnt entLayerName tempCAMStyle currentPanel file /  
+								tempDepth stepOfPasses bottomZComponent topZComponent stepZComponets
+								spindleSpeed cutFeedRate plungeFeedRate currentTool iteration tempPoint
+								currentZLevel tempPoints tempPointsWB bulgeOfSegment firstPoint secondPoint firstSecondNormal 
+								fieldPoint deleteHelper ijkOfSegment centerOfSegment lengthOfSegment helperEntity maxSegDistance arcValues
+								totalRadOfSegment stepVal buffRadVec deltaAngle bufferPoint tempPanelWidth biesseInsideN)
+								
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq spindleSpeed (nth 9 tempCAMStyle))
+	(setq cutFeedRate (nth 10 tempCAMStyle))
+	(setq plungeFeedRate (nth 11 tempCAMStyle))
+	(setq currentTool (nth 1 tempCAMStyle))		
+	(cond
+		( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints  (lmm_getPolylinePoints currentEnt) )
+			(setq helperEntity currentEnt)
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+	
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	
+	(foreach currentZLevel stepZComponets
+		(setq iteration 1)
+		(foreach tempPoint tempPoints
+			(cond
+				; first move 
+				( (equal 1 iteration)
+					(setq biesseInsideN (rowNumber))
+					(princ (sprintf "\nN~s QX=~s QY=~s QC=0 PAN=1 UT=0 PRF=~s VF=2 VA=5 G40 INTF=-1000 L=PON" 
+						(_ 
+						(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+						(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+						(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+						(lmm_convertNumtoStringWithDigit (* -1 currentZLevel) 3) ; Aþaðý + Z
+						currentTool
+						)) file)
+				)
+				
+				; last moves
+				( (equal (length tempPoints) iteration)
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s G40 G1" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+							)) file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G2" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G3" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+					)
+					
+					;safety move
+					(setq biesseInsideN (rowNumber))
+					(princ (sprintf "\nN~s L=POFF" (_ (lmm_convertNumtoStringWithDigit biesseInsideN 0))) file)
+				)
+				
+				
+				; middle moves
+				( (and (< 1 iteration) (> (length tempPoints) iteration))
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s G1" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit biesseInsideN 0)
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 tempPoint)) 3)
+							)) file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G2" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq biesseInsideN (rowNumber))
+							(princ (sprintf "\nN~s X=~s Y=~s I=~s J=~s G3" (_ 	(lmm_convertNumtoStringWithDigit biesseInsideN 0) 
+															(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 secondPoint)) 3) 
+															(lmm_convertNumtoStringWithDigit (nth 0 centerOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (- tempPanelWidth (nth 1 centerOfSegment)) 3)
+															)) file)
+						)
+					)
+				)
+			)
+			(setq iteration (+ 1 iteration))
+			(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+		)
+	)
+	
+	(if deleteHelper (deleteEntity (entlast)))
+	(princ )
+)
+
+
+(setq divideEntitiesToSidesForBiesseInsiderMachine nil)
+(defun divideEntitiesToSidesForBiesseInsiderMachine ( / tempPanelSS tempPanelSSList tempEnt tempDerivedLayerName
+								side1 side2 side3 side4 side5 side6 )
+	;side1 Top
+	;side2 Bottom
+	;side3 Front
+	;side4 Right
+	;side5 Rear
+	;side6 Left
+	(setq side1 nil side2 nil side3 nil side4 nil side5 nil side6 nil)
+	
+	(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(foreach tempEnt tempPanelSSList
+		(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+			(progn
+				(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+				(cond
+					((equal "TOP" (substr tempDerivedLayerName 1 3))
+						(setq side1 (append side1 (_ tempEnt)))
+					)
+					((equal "BOT" (substr tempDerivedLayerName 1 3))
+						(setq side2 (append side2 (_ tempEnt)))
+					)
+					((equal "FRO" (substr tempDerivedLayerName 1 3))
+						(setq side3 (append side3 (_ tempEnt)))
+					)
+					((equal "RIG" (substr tempDerivedLayerName 1 3))
+						(setq side4 (append side4 (_ tempEnt)))
+					)
+					((equal "REA" (substr tempDerivedLayerName 1 3))
+						(setq side5 (append side5 (_ tempEnt)))
+					)
+					((equal "LEF" (substr tempDerivedLayerName 1 3))
+						(setq side6 (append side6 (_ tempEnt)))
+					)
+				)
+			)
+			(progn
+				(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+				(if (> (strlen tempDerivedLayerName) 3)
+					(if (equal "_SF" (substr tempDerivedLayerName (- (strlen tempDerivedLayerName) 2) 3))
+						(setq side2 (append side2 (_ tempEnt)))
+						(setq side1 (append side1 (_ tempEnt)))
+					)
+					(setq side1 (append side1 (_ tempEnt)))
+				)
+			)
+		)
+	)
+	(list side1 side2 side3 side4 side5 side6)
+)
+
+(defun useToolDesieredHoleDiameter ( side dia / )
+    ; side 1 TOP
+	; side 2 BOTTOM
+	; side 3 FRONT
+	; side 4 RIGHT
+	; side 5 REAR
+	; side 6 LEFT
+	(cond 
+		( (equal side 1)
+			(cond 
+				( (equal  dia 10) ; 12, 13, 14
+				  "5"
+				)
+				( (equal  dia 35) ; 11 
+					"1"
+				)
+				( (equal  dia 20)
+					"T_20"
+				)
+				( (equal  dia 8) ; 8,9,10 hep 8 lik 15,
+					"8"
+				)
+				( (equal  dia 15)
+					"2"
+				)
+				( (equal  dia 7)
+					"17"
+				)
+				( (equal  dia 5) ; 18 ,19, 20
+					"19"
+				)
+				( (equal  dia 3)
+					"4"
+				)
+				( (equal  dia 2.5)
+					"3"
+				)
+				( T
+					"T_T"
+				)
+			)
+		)
+		
+		;Bottom
+		( (equal side 2)
+			"BT"
+		)
+		
+		;Front
+		( (equal side 3)
+			(cond
+				((equal dia 8)
+					"21"
+				)
+				( T
+					"F_T"
+				)
+			)
+		)
+		
+		;Rýght
+		( (equal side 4)
+			(cond
+				((equal dia 8)
+					"6"
+				)
+				( T
+					"RI_T"
+				)
+			)
+		)
+		
+		;Rear
+		( (equal side 5)
+			(cond
+				((equal dia 8)
+					"7"
+				)
+				( T
+					"RE_T"
+				)
+			)
+		)
+		
+		;Left
+		( (equal side 6)
+			(cond
+				((equal dia 8)
+					"5"
+				)
+				((equal dia 5)
+					"3"
+				)
+				( T
+					"L_T"
+				)
+			)
+		)
+	)
+)
+
+;Add all hole entities to cam operation list
+(setq fillCAMOperationListForBiesseInsiderMachine nil)
+(defun fillCAMOperationListForBiesseInsiderMachine (sides / sideIteration side toolName mHoleDia pickedToolHead )
+	(setq ad_biesseInsiderCAMOperationList nil)
+	(setq pickedToolHead 0) ; pick first tool head default
+	(setq sideIteration 1)
+	(foreach side sides
+		(cond
+			((equal sideIteration 1)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "TOP" (substr tempDerivedLayerName 1 3))
+								(progn
+									;decide toolhead
+									(cond 
+										((equal mHoleDia 12.5) ;pick second tool head
+											(setq pickedToolHead 1)
+										)
+										;((equal mHoleDia 5) ;pick second tool head
+										;	(setq pickedToolHead 1)
+										;)
+										( (equal SELECTEDBINSIDERORJ1 "1")
+											(setq pickedToolHead 0)
+										)
+										( (equal SELECTEDBINSIDERORJ1 "4")
+											(setq pickedToolHead 1)
+										)
+										(T ;pick first tool head
+											(setq pickedToolHead 0)
+										)
+									)
+									(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+										(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 2)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "BOT" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+									(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 3)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "FRO" (substr tempDerivedLayerName 1 3))
+								(progn
+									;decide toolhead
+									(cond 
+										((equal mHoleDia 8) ;pick second tool head
+											(setq pickedToolHead 1)
+										)
+										(T ;pick first tool head
+											(setq pickedToolHead 1)
+										)
+									)
+									(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+										(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 4)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "RIG" (substr tempDerivedLayerName 1 3))
+								(progn
+									;decide toolhead
+									(cond 
+										((equal mHoleDia 8)
+											(setq pickedToolHead 1)
+										)
+										(T ;pick first tool head
+											(setq pickedToolHead 1)
+										)
+									)
+									(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+										(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 5)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "REA" (substr tempDerivedLayerName 1 3))
+								(progn
+									;decide toolhead
+									(cond 
+										((equal mHoleDia 8)
+											(setq pickedToolHead 0)
+										)
+										(T ;pick first tool head
+											(setq pickedToolHead 0)
+										)
+									)
+									(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+										(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 6)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq mHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+							(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+							(if	(equal "LEF" (substr tempDerivedLayerName 1 3))
+								(progn
+									;decide toolhead
+									(cond 
+										((equal mHoleDia 8)
+											(setq pickedToolHead 0)
+										)
+										(T ;pick first tool head
+											(setq pickedToolHead 0)
+										)
+									)
+									(if (not (member (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead) ad_biesseInsiderCAMOperationList))
+										(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list tempDerivedLayerName (useToolDesieredHoleDiameter sideIteration mHoleDia) "HOLE" "" pickedToolHead))))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+		(setq sideIteration (1+ sideIteration))
+	)
+	(cond 
+		( (equal SELECTEDBINSIDERORJ1 "1")
+			(setq pickedToolHead 0)
+		)
+		( (equal SELECTEDBINSIDERORJ1 "4")
+			(setq pickedToolHead 1)
+		)
+		( T
+			(setq pickedToolHead 0)
+		)
+	)
+	(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list "NOTCH" "" "CONTOUR" 2 0 0 0 "INSIDE" 2.5 "16000" "4000" pickedToolHead))))
+	;; All milling and saw  operations are must be add after sides hole operations. Except notch milling
+	(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list "GROOVE" "" "CONTOUR" 1 0 0 0 "CENTER" 2.5 "16000" "4000" pickedToolHead))))
+	(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list "MNFZ" "" "CONTOUR" 2 0 0 0 "CENTER" 2.5 "16000" "4000" pickedToolHead))))
+	;(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list "GROOVE" "" "SAWX" 1 0 0 0 "OUTSIDE" 2.5 "16000" "4000" pickedToolHead))))
+	;(setq ad_biesseInsiderCAMOperationList (append ad_biesseInsiderCAMOperationList (_ (list "TYPW45" "1001" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" pickedToolHead))))
+)
+
+(defun 10+ (val  / )
+	(+ 10 val)
+)
+
+(defun biesseInsider:decideToOrjin  ( cPnl / tempPanelLength tempPanelWidth hasLeftSideHole hasRightSideHole tempPanelSS tempPanelSSList tempEnt mRtn )
+	;eger panelde sol delik varsa ve sag delik yoksa orjin 1de iþlenecek
+	;eger panelde sag delik varsa ve sold elik yoksa orijin 4 de iþlenecek
+	;eger panel her iki tarafta deligi varsa ve 600mm den büyükse yine orijin 1 de iþlenecek
+	;eger panel her iki tarafta deligi varsa ve 600mm den kucukse orijin 2 de iþlenecek
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq hasRightSideHole nil)
+	(setq hasLeftSideHole nil)
+	(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(foreach tempEnt tempPanelSSList
+		(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+			(progn
+				(if (equal (getnth 0 (getEntPro tempEnt 210)) 1.000000) (setq hasRightSideHole T))
+				(if (equal (getnth 0 (getEntPro tempEnt 210)) -1.000000) (setq hasLeftSideHole T))
+			)
+		)
+	)
+	
+	(cond 
+		( (and (and hasLeftSideHole hasRightSideHole) (> tempPanelLength 600))
+			(setq mRtn "1")	
+		)
+		( (and (and hasLeftSideHole hasRightSideHole) (<= tempPanelLength 600))
+			(setq mRtn "2")
+		)
+		( hasLeftSideHole
+			(setq mRtn "1")
+		)
+		( hasRightSideHole
+			(setq mRtn "4")
+		)
+		( T
+			(setq mRtn "1")
+		)
+	)
+	mRtn
+)
+
+(defun sendBiesseInsiderMachine ( cPnl / biesseInsideNToolHead0 biesseInsideNToolHead1 tempPanelName tempPanelDepth biesseInsiderFile
+													tempPanelLength tempPanelWidth biesseInsiderFilesPath
+													sides side currentOp tempOpLayerName tempOpOpName tempDerivedLayerName tempEnt selectedToolHead
+													SELECTEDBINSIDERORJ1 )
+	(setq biesseInsideNToolHead0 0)
+	(setq biesseInsideNToolHead1 0)
+	(setq SELECTEDBINSIDERORJ1 (biesseInsider:decideToOrjin cPnl))
+	(setq biesseInsiderFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	
+	(setq sides (divideEntitiesToSidesForBiesseInsiderMachine))
+	(fillCAMOperationListForBiesseInsiderMachine sides)
+	
+	(createDir (strcat biesseInsiderFilesPath))
+	(setq biesseInsiderFile (open (strcat biesseInsiderFilesPath (lmm_getDXFFileNameByFileMode (list cPnl)) ".anc") "w"))
+	(princ "[COMMENTO]\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "[CENTRO01]\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "PARAMETRI=000000654\n" biesseInsiderFile)
+	(princ "UTENSILI=000000780\n" biesseInsiderFile)
+	(princ "LABELF=000001610\n" biesseInsiderFile)
+	(princ "LABELC=000001597\n" biesseInsiderFile)
+	(princ "FORATURA=000001564\n" biesseInsiderFile)
+	(princ "CONTORNATURA=000000795\n" biesseInsiderFile)
+	(princ "TABELLEFORI=000001579\n" biesseInsiderFile)
+	(princ "CONFASSIST=000001623\n" biesseInsiderFile)
+	(princ "ATTREZZAGGIO=000001640\n" biesseInsiderFile)
+	(princ "CUSTOMSEZ=000001659\n" biesseInsiderFile)
+	(princ "[CENTRO02]\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "PARAMETRI=000001675\n" biesseInsiderFile)
+	(princ "UTENSILI=000001801\n" biesseInsiderFile)
+	(princ "LABELF=000002310\n" biesseInsiderFile)
+	(princ "LABELC=000002297\n" biesseInsiderFile)
+	(princ "FORATURA=000002264\n" biesseInsiderFile)
+	(princ "CONTORNATURA=000001816\n" biesseInsiderFile)
+	(princ "TABELLEFORI=000002279\n" biesseInsiderFile)
+	(princ "CONFASSIST=000002323\n" biesseInsiderFile)
+	(princ "ATTREZZAGGIO=000002340\n" biesseInsiderFile)
+	(princ "CUSTOMSEZ=000002359\n" biesseInsiderFile)
+	(princ "[CENTRO03]\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "PARAMETRI=000002375\n" biesseInsiderFile)
+	(princ "UTENSILI=000002501\n" biesseInsiderFile)
+	(princ "LABELF=000002581\n" biesseInsiderFile)
+	(princ "LABELC=000002568\n" biesseInsiderFile)
+	(princ "FORATURA=000002535\n" biesseInsiderFile)
+	(princ "CONTORNATURA=000002516\n" biesseInsiderFile)
+	(princ "TABELLEFORI=000002550\n" biesseInsiderFile)
+	(princ "CONFASSIST=000002594\n" biesseInsiderFile)
+	(princ "ATTREZZAGGIO=000002611\n" biesseInsiderFile)
+	(princ "CUSTOMSEZ=000002630\n" biesseInsiderFile)
+	(princ "\n" biesseInsiderFile)
+	(princ "[PARAMETRI01]\n" biesseInsiderFile)
+	(setq biesseInsideNToolHead0 (10+ biesseInsideNToolHead0))
+	(princ (sprintf "N~s  SPEC=0 G71 HC=1 LX=~s LY=~s LZ=~s TRA=11 OR1=~s OR2=2 TTV=3 STAM=0 SIPR=2 NOVL=0 L=GLOGICO NSY=1 NOGG=0\n" (_
+																					(lmm_convertNumtoStringWithDigit biesseInsideNToolHead0 0) 
+																					(lmm_convertNumtoStringWithDigit tempPanelLength 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelWidth 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelDepth 1)
+																					SELECTEDBINSIDERORJ1
+																					) ) biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[UTENSILI01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONTORNATURA01]" biesseInsiderFile)
+		
+	(setq cuurentToolHeadNumber 0)
+	(foreach side sides
+		(foreach currentOp ad_biesseInsiderCAMOperationList
+			(setq tempOpLayerName (nth 0 currentOp))
+			(setq tempOpOpName (nth 2 currentOp))
+			(setq selectedToolHead (last currentOp))
+			(foreach tempEnt side
+				(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+					(progn 
+						(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+					)
+					(progn 
+						(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+					)
+				)
+				
+				(if (not (member tempDerivedLayerName biesseInsiderIgnoreLayerNameList))
+					(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) biesseInsiderAllEntities))
+						(setq biesseInsiderAllEntities (append biesseInsiderAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+					)
+				)
+				
+				(if (and (equal tempDerivedLayerName tempOpLayerName)  (equal selectedToolHead 0));; cam yapýlmasý gereken etity
+							(progn
+								(cond 
+									((equal tempOpOpName "HOLE") 
+										(biesseInsider_HoleCamOperation tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										;kontrol iþi operasyon içine yüklendi
+									) 
+									((equal tempOpOpName "CONTOUR") ;freze iþlemi
+										(biesseInsider_ContourCAMOperation tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+									((equal tempOpOpName "CONTOURG40") ;freze iþlemi takým telafisi yerine adeko ofseti kullanýyor
+										(biesseInsider_ContourCAMOperationG40 tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+								)
+							)
+						)
+				
+			)
+		)
+	)
+	
+	(princ "\n%\n" biesseInsiderFile)
+	(princ "[FORATURA01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[TABELLEFORI01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELC01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELF01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONFASSIST01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[ATTREZZAGGIO01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CUSTOMSEZ01]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[PARAMETRI02]\n" biesseInsiderFile)
+	(setq biesseInsideNToolHead1 (10+ biesseInsideNToolHead1))
+	(princ (sprintf "N~s  SPEC=0 G71 HC=1 LX=~s LY=~s LZ=~s TRA=11 OR1=~s OR2=2 TTV=3 STAM=0 SIPR=2 NOVL=0 L=GLOGICO NSY=1 NOGG=0\n" (_
+																					(lmm_convertNumtoStringWithDigit biesseInsideNToolHead1 0)
+																					(lmm_convertNumtoStringWithDigit tempPanelLength 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelWidth 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelDepth 1)
+																					SELECTEDBINSIDERORJ1
+																					) ) biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[UTENSILI02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONTORNATURA02]" biesseInsiderFile)
+	
+	(setq cuurentToolHeadNumber 1)
+	(foreach side sides
+		(foreach currentOp ad_biesseInsiderCAMOperationList
+			(setq tempOpLayerName (nth 0 currentOp))
+			(setq tempOpOpName (nth 2 currentOp))
+			(setq selectedToolHead (last currentOp))
+			(foreach tempEnt side
+				(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+					(progn 
+						(setq tempDerivedLayerName (biesseInsiderInterpretHoleLayerName tempEnt))
+					)
+					(progn 
+						(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+					)
+				)
+				
+				(if (not (member tempDerivedLayerName biesseInsiderIgnoreLayerNameList))
+					(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) biesseInsiderAllEntities))
+						(setq biesseInsiderAllEntities (append biesseInsiderAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+					)
+				)
+				
+				(if (and (equal tempDerivedLayerName tempOpLayerName)  (equal selectedToolHead 1));; cam yapýlmasý gereken etity
+							(progn
+								(cond 
+									((equal tempOpOpName "HOLE") 
+										(biesseInsider_HoleCamOperation tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										;kontrol iþi operasyon içine yüklendi
+									) 
+									((equal tempOpOpName "CONTOUR") ;freze iþlemi
+										(biesseInsider_ContourCAMOperation tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+									((equal tempOpOpName "CONTOURG40") ;freze iþlemi takým telafisi yerine adeko ofseti kullanýyor
+										(biesseInsider_ContourCAMOperationG40 tempEnt tempDerivedLayerName currentOp cPnl biesseInsiderFile)
+										(setq biesseInsiderNotFreeEntities (append biesseInsiderNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+								)
+							)
+						)
+				
+			)
+		)
+	)
+	
+	
+	(princ "\n%\n" biesseInsiderFile)
+	(princ "[FORATURA02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[TABELLEFORI02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELC02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELF02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONFASSIST02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[ATTREZZAGGIO02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CUSTOMSEZ02]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[PARAMETRI03]\n" biesseInsiderFile)
+	(princ (sprintf "N10  SPEC=0 G71 HC=1 LX=~s LY=~s LZ=~s TRA=11 OR1=~s OR2=2 TTV=3 STAM=0 SIPR=2 NOVL=0 L=GLOGICO NSY=1 NOGG=0\n" (_ 
+																					(lmm_convertNumtoStringWithDigit tempPanelLength 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelWidth 1)
+																					(lmm_convertNumtoStringWithDigit tempPanelDepth 1)
+																					SELECTEDBINSIDERORJ1
+																					) ) biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[UTENSILI03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONTORNATURA03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[FORATURA03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[TABELLEFORI03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELC03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[LABELF03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CONFASSIST03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[ATTREZZAGGIO03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[CUSTOMSEZ03]\n" biesseInsiderFile)
+	(princ "%\n" biesseInsiderFile)
+	(princ "[]" biesseInsiderFile)
+	(close biesseInsiderFile)
+)
+
+
+
+
+
+(setq ad_biesseInsiderCAMOperationList nil)
+(setq biesseInsiderAllEntities nil)
+(setq biesseInsiderNotFreeEntities nil)
+(setq biesseInsiderEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq biesseInsiderIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+(defun lmm_exportBiesseInsider ( / allPanelsList tempPanel )
+	(setq biesseInsiderAllEntities nil)
+	(setq biesseInsiderNotFreeEntities nil)
+	(setq biesseInsiderEntitiesThatCanNotBeCAM nil)
+
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(sendBiesseInsiderMachine tempPanel )
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem biesseInsiderAllEntities
+		(if (and (not (member tempItem biesseInsiderNotFreeEntities)) (not (member tempItem biesseInsiderEntitiesThatCanNotBeCAM)))
+			(setq biesseInsiderEntitiesThatCanNotBeCAM (append biesseInsiderEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if biesseInsiderEntitiesThatCanNotBeCAM
+		(progn
+			(setq biesseInsiderEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) biesseInsiderEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length biesseInsiderEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter biesseInsiderEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter biesseInsiderEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+
+)
+
+
+;returns a temporarily layer name by geometry UCS
+; biesse insider
+(defun biesseInsiderInterpretHoleLayerName ( tempEnt / currentReturn tempHoleDia tempHoleDepth)
+	(cond 
+		( ;Z - 
+			(equal (getnth 2 (getEntPro tempEnt 210)) 1.00000)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	currentReturn
+)
+
+(princ)

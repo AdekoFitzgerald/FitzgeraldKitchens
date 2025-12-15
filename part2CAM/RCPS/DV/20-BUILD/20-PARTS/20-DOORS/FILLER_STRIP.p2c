@@ -1,0 +1,55 @@
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+PANEL_LABEL -> "Label of panel"
+PANEL_TAG -> "Tag of panel"
+;prefvars
+(_SETA 'PANEL_MAIN_ROTATION nil)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'PANEL_LABEL nil)
+(_SETA 'PANEL_TAG nil)
+; Standard Values, PANEL_MAIN_ROTATION nil, PANEL_CUTLIST_ROTATION nil, PANEL_DXF_ROTATION nil, PANEL_MIRRORING_AXIS nil
+; Standard Values, PANEL_LABEL nil, PANEL_TAG nil
+
+(_FSET (_ 'fillerCounter 0))
+(while (< fillerCounter (length __CURDIVDOORSLIST))
+	(_FSET (_ 'tempFiller (getnth fillerCounter __CURDIVDOORSLIST)))
+	(_FSET (_ 'fillerCounter (+ 1 fillerCounter)))
+	
+	(_FSET (_ 'paramBody (_& (_ "FILLER_STRIP_" __CURDIVORDER "_" fillerCounter "_"))))
+	
+	(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+	(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+	
+	(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+	(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+	(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+	
+	(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+	(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+	(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+	
+	(_FSET (_ (read tempWID) __WID))
+	(_FSET (_ (read tempHEI) (getnth 1 tempFiller)))
+	
+	(_FSET (_ (read tempROT) (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+	(_FSET (_ (read tempMAT) (_GETDOORMAT (getnth 7 tempFiller))))
+	(_FSET (_ (read tempTHICKNESS) __AD_PANELTHICK))
+	
+	(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+	(_FSET (_ (read tempLABEL) (XSTR PANEL_LABEL)))
+	(_FSET (_ (read tempTAG) PANEL_TAG))
+	
+	(_FSET (_ 'fillerCODE (_& (_ (XSTR "FILLER_STRIP") "_" __CURDIVORDER "_" fillerCounter))))
+
+	(_PANELMAIN fillerCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+	
+	(_PUTLABEL fillerCODE fillerCODE (_S2V tempLABEL))
+	(_PUTTAG fillerCODE fillerCODE (_S2V tempTAG))
+)
+(_NONOTCH)

@@ -1,0 +1,120 @@
+(_FSET (_ 'backUpFor_UPPR USE_PROJECT_PRICING_RECIPES))
+(_FSET (_ 'USE_PROJECT_PRICING_RECIPES nil))
+
+(_FSET (_ 'panelDepthAfterGroove (- __AD_PANELTHICK GROOVE_DEPTH)))
+(_FSET (_ 'basicGrooveCenterDist (+ (/ GROOVE_WID 2.0) GROOVE_DISTANCE)))
+
+; GROOVE OPERATION
+(if (equal AK_GROOVE_STATE 1)
+	(progn
+		; NOTCHED RIGHT BACK PANEL GROOVE OPERATION
+		(if (_EXISTPANEL AK_NOTCHED_BACK_PANEL_RIGHT_CODE)
+			(progn
+				(if (_EXISTPANEL SECONDARY_TOP_PANEL_CODE)
+					(progn
+						(_FSET (_ 'AK_NOTCHED_BACK_PANEL_RIGHT_HEI (_= "AK_NOTCHED_BACK_PANEL_RIGHT_HEI - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceNTP (- SECONDARY_TOP_PANEL_WID basicGrooveCenterDist)))
+
+								(_FSET (_ 'topPanelStartDist SECONDARY_TOP_PANEL_HEI))
+								(_FSET (_ 'topPanelEndDist 0))
+			
+								(_GROOVE "CORNER_UNIT_NOTCHED_TOP_PANEL_GROOVE_LEFT" SECONDARY_TOP_PANEL_CODE (_ (_ (_ topPanelStartDist grooveDistanceNTP 0) 
+																													 (_ topPanelEndDist grooveDistanceNTP 0)) GROOVE_WID GROOVE_DISTANCE))
+							)
+						)
+						(_FSET (_ 'noTopPanel nil))
+					)
+					(_FSET (_ 'noTopPanel T))
+				)
+				(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+					(progn
+						(_FSET (_ 'AK_NOTCHED_BACK_PANEL_RIGHT_HEI (_= "AK_NOTCHED_BACK_PANEL_RIGHT_HEI - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceNBP basicGrooveCenterDist))
+								
+								(if (equal BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM")
+									(_FSET (_ 'bottomStyleOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomStyleOffset 0))
+								)
+								(if (null GROOVE_STOP_DISTANCE_BOTTOM_LEFT)
+									(_FSET (_ 'bottomPanelStartDist (- AK_BOTTOM_PANEL_WID bottomStyleOffset)))
+									(_FSET (_ 'bottomPanelStartDist (- AK_BOTTOM_PANEL_WID GROOVE_STOP_DISTANCE_BOTTOM_LEFT)))
+								)
+
+								(_FSET (_ 'bottomPanelEndDist panelDepthAfterGroove))
+
+								(_GROOVE "CORNER_UNIT_BOTTOM_PANEL_GROOVE_LEFT" AK_BOTTOM_PANEL_CODE (_ (_ (_ grooveDistanceNBP bottomPanelStartDist 0) 
+																										   (_ grooveDistanceNBP bottomPanelEndDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+						(_FSET (_ 'noBottomPanel nil))
+					)
+					(_FSET (_ 'noBottomPanel T))
+				)
+				(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'AK_NOTCHED_BACK_PANEL_RIGHT_WID (_= "AK_NOTCHED_BACK_PANEL_RIGHT_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceRP basicGrooveCenterDist))
+								
+								(if (and (equal BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES") (null noBottomPanel))
+									(_FSET (_ 'bottomStyleOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomStyleOffset 0))
+								)
+								(if (null GROOVE_STOP_DISTANCE_RIGHT_TOP)
+									(_FSET (_ 'rightPanelTopDist (_= "AK_NOTCHED_RIGHT_PANEL_HEI + topSideStyleV1 - panelDepthAfterGroove - __NOTCHDIM3 - RIGHT_PANEL_UPPER_VARIANCE" )))
+									(_FSET (_ 'rightPanelTopDist (_= "AK_NOTCHED_RIGHT_PANEL_HEI + topSideStyleV1 - panelDepthAfterGroove - __NOTCHDIM3 - GROOVE_STOP_DISTANCE_RIGHT_TOP")))
+								)
+								(if (null GROOVE_STOP_DISTANCE_RIGHT_BOTTOM)
+									(_FSET (_ 'rightPanelBottomDist (+ bottomStyleOffset RIGHT_PANEL_LOWER_VARIANCE)))
+									(_FSET (_ 'rightPanelBottomDist GROOVE_STOP_DISTANCE_RIGHT_BOTTOM))
+								)
+
+								(_GROOVE "CORNER_UNIT_NOTCHED_RIGHT_PANEL_GROOVE" AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ (_ grooveDistanceRP rightPanelTopDist 0) 
+																								  (_ grooveDistanceRP rightPanelBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+					)
+				)
+				(if (_EXISTPANEL AK_NOTCHED_BACK_PANEL_LEFT_CODE)
+					(progn
+						(_FSET (_ 'AK_NOTCHED_BACK_PANEL_RIGHT_WID (_= "AK_NOTCHED_BACK_PANEL_RIGHT_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceSRP (- AK_NOTCHED_BACK_PANEL_LEFT_WID basicGrooveCenterDist)))
+								
+								(if (null GROOVE_STOP_DISTANCE_RIGHT_TOP)
+									(_FSET (_ 'leftPanelTopDist (- __HEI __AD_PANELTHICK __NOTCHDIM3 panelDepthAfterGroove)))
+									(_FSET (_ 'leftPanelTopDist (- __HEI GROOVE_STOP_DISTANCE_RIGHT_TOP)))
+								)
+								(if (null GROOVE_STOP_DISTANCE_RIGHT_BOTTOM)
+									(_FSET (_ 'leftPanelBottomDist 0))
+									(_FSET (_ 'leftPanelBottomDist GROOVE_STOP_DISTANCE_RIGHT_BOTTOM))
+								)
+								
+								(_GROOVE "CORNER_UNIT_NOTCHED_LEFT_BACK_PANEL_GROOVE" AK_NOTCHED_BACK_PANEL_LEFT_CODE (_ (_ (_ grooveDistanceSRP leftPanelTopDist 0) 
+																															(_ grooveDistanceSRP leftPanelBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+					)
+				)
+				; Former notched left back panel is destroyed and new one is created with parameters which are modified by notch operations
+				(_DELPANEL AK_NOTCHED_BACK_PANEL_RIGHT_CODE)
+				(_FSET (_ 'AK_NOTCHED_BACK_PANEL_RIGHT_PDATA (_GENERATEPDATA AK_NOTCHED_BACK_PANEL_RIGHT_WID AK_NOTCHED_BACK_PANEL_RIGHT_HEI)))
+				(_PANELMAIN AK_NOTCHED_BACK_PANEL_RIGHT_CODE (_ AK_NOTCHED_BACK_PANEL_RIGHT_PDATA AK_NOTCHED_BACK_PANEL_RIGHT_ROT AK_NOTCHED_BACK_PANEL_RIGHT_MAT AK_NOTCHED_BACK_PANEL_RIGHT_THICKNESS))
+				
+				(_PUTLABEL AK_NOTCHED_BACK_PANEL_RIGHT_CODE AK_NOTCHED_BACK_PANEL_RIGHT_CODE AK_NOTCHED_BACK_PANEL_RIGHT_LABEL)
+				(_PUTTAG AK_NOTCHED_BACK_PANEL_RIGHT_CODE AK_NOTCHED_BACK_PANEL_RIGHT_CODE AK_NOTCHED_BACK_PANEL_RIGHT_TAG)
+			)
+		)
+		
+	)
+)
+(_FSET (_ 'USE_PROJECT_PRICING_RECIPES backUpFor_UPPR))

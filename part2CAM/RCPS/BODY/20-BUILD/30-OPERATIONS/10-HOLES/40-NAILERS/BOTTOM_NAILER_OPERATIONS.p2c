@@ -1,0 +1,131 @@
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		; According to position of bottom nailer side panel holes are calibrated 
+		(if (_EXISTPANEL BOTTOM_NAILER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForBottomNailerAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForBottomNailerAndLeft (car lengthParametersForBottomNailerAndLeft)))
+
+				(_FSET (_ 'lengthParametersForBottomNailerAndRight (_CALCULATEPANELSINTERSECTIONLENGTH BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForBottomNailerAndRight (car lengthParametersForBottomNailerAndRight)))
+				
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'bottomNailerPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForBottomNailerAndLeft 0 (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil BOTTOM_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName BOTTOM_NAILER_OP_FACE bottomNailerPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'bottomNailerPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForBottomNailerAndRight BOTTOM_NAILER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil BOTTOM_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName BOTTOM_NAILER_OP_FACE bottomNailerPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					; Bottom nailer bottom panel middle hole operation
+					(if (and (equal IS_BOTTOM_NAILER_BOTTOM_PANEL_HOLE_AVAILABLE T) (ifnull USE_GENERAL_FORMULATION_FOR_BOTTOM_NAILER_BOTTOM_PANEL_HOLE (equal operationName WHICH_CONN_IS_DOMINANT)) (member BOTTOM_NAILER_DOWN_OFFSET (list 0.0 (* -1 BOTTOM_PANEL_THICKNESS))))
+						(progn
+							(if reverseBottomPanelBottomNailerOP
+								(setq 	nailerZ 0.0
+										nailerY (cadr horizontalHolePos)
+										nailerOrient nil
+										
+										bottomZ (car horizontalHolePos)
+										bottomX BOTTOM_PANEL_HEI
+										bottomOrient "X-"
+								)
+								(setq 	nailerZ (car horizontalHolePos)
+										nailerY 0.0
+										nailerOrient "Y+"
+										
+										bottomZ 0.0
+										bottomX (- BOTTOM_PANEL_HEI (cadr horizontalHolePos))
+										bottomOrient nil
+								)
+							)
+						
+							(if USE_GENERAL_FORMULATION_FOR_BOTTOM_NAILER_BOTTOM_PANEL_HOLE
+								(progn
+									(_FSET (_ 'bottomNailerPointListForBottomSide 	(_GETHOLEPOINTLIST operationName 
+																					(_ BOTTOM_NAILER_WID nailerY nailerZ "X") 
+																					(_ 0 0 nil BOTTOM_NAILER_WID) 
+																					(_ FITTING_PARAMETERS nil))))
+																					
+									(_HOLEGROUP operationName BOTTOM_NAILER_OP_FACE bottomNailerPointListForBottomSide (_ nailerOrient "X+") connectorParams)
+									
+									(_FSET (_ 'bottomPanelPointListForBottomSide 	(_GETHOLEPOINTLIST operationName 
+																					(_ BOTTOM_NAILER_WID bottomX bottomZ "Y")
+																					(_ (+ bottomSideStyleV1 BOTTOM_PANEL_RIGHT_VARIANCE) (+ bottomSideStyleV1 BOTTOM_PANEL_LEFT_VARIANCE) nil BOTTOM_PANEL_WID) 
+																					(_ FITTING_PARAMETERS nil))))
+																					
+									(_HOLEGROUP operationName BOTTOM_PANEL_CODE bottomPanelPointListForBottomSide (_ bottomOrient "X+") connectorParams)
+								)
+								(progn
+									(cond 
+										((equal operationName "MINIFIX_OPERATION")
+											(_MINIFIX "MIDDLE" BOTTOM_NAILER_OP_FACE (_ (_ (/ BOTTOM_NAILER_WID 2) nailerY nailerZ) MINIFIX_PARAMETERS) nailerOrient)
+											(_MINIFIX "MIDDLE" BOTTOM_PANEL_CODE (_ (_ bottomX (+ BOTTOM_PANEL_RIGHT_VARIANCE bottomSideStyleV1 (/ BOTTOM_NAILER_WID 2)) bottomZ) MINIFIX_PARAMETERS) bottomOrient)
+										)
+										((equal operationName "DOWEL_OPERATION")
+											(_DOWEL "MIDDLE" BOTTOM_NAILER_OP_FACE (_ (_ (/ BOTTOM_NAILER_WID 2)nailerY nailerZ) DOWEL_PARAMETERS) nailerOrient)
+											(_DOWEL "MIDDLE" BOTTOM_PANEL_CODE (_ (_ bottomX (+ BOTTOM_PANEL_RIGHT_VARIANCE bottomSideStyleV1 (/ BOTTOM_NAILER_WID 2)) bottomZ) DOWEL_PARAMETERS) bottomOrient)
+										)
+										((equal operationName "RAFIX_OPERATION")
+											(_RAFIXMAIN "MIDDLE" BOTTOM_NAILER_OP_FACE (_ (_ (/ BOTTOM_NAILER_WID 2) nailerY nailerZ) RAFIX_PARAMETERS) nailerOrient)
+											(_RAFIXMAIN "MIDDLE" BOTTOM_PANEL_CODE (_ (_ bottomX (+ BOTTOM_PANEL_RIGHT_VARIANCE bottomSideStyleV1 (/ BOTTOM_NAILER_WID 2)) bottomZ) RAFIX_PARAMETERS) bottomOrient)
+										)
+										((equal operationName "SCREW_OPERATION")
+											(_SCREW "MIDDLE" BOTTOM_NAILER_OP_FACE (_ (_ (/ BOTTOM_NAILER_WID 2) nailerY nailerZ) SCREW_PARAMETERS) nailerOrient)
+											(_SCREW "MIDDLE" BOTTOM_PANEL_CODE (_ (_ bottomX (+ BOTTOM_PANEL_RIGHT_VARIANCE bottomSideStyleV1 (/ BOTTOM_NAILER_WID 2)) bottomZ) SCREW_PARAMETERS) bottomOrient)
+										)
+										((equal operationName "CABINEO_OPERATION")
+											(_CABINEOMAIN "MIDDLE" BOTTOM_NAILER_OP_FACE (_ (_ (/ BOTTOM_NAILER_WID 2) nailerY nailerZ) CABINEO_PARAMETERS) nailerOrient)
+											(_CABINEOMAIN "MIDDLE" BOTTOM_PANEL_CODE (_ (_ bottomX (+ BOTTOM_PANEL_RIGHT_VARIANCE bottomSideStyleV1 (/ BOTTOM_NAILER_WID 2)) bottomZ) CABINEO_PARAMETERS) bottomOrient)
+										)
+									)
+								)
+							)
+						)
+					)
+
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForBottomNailer (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForBottomNailerAndLeft (- (+ LEFT_PANEL_WID BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET LEFT_PANEL_BACK_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																			(_ (+ LEFT_PANEL_LOWER_VARIANCE bottomSideStyleV2 BOTTOM_NAILER_DOWN_OFFSET) 0 nil (+ BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																			(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForBottomNailer (_ nil nil) connectorParams)
+						)
+					)
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForBottomNailerAndRight (+ (- RIGHT_PANEL_BACK_VARIANCE BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																			(_ (+ RIGHT_PANEL_LOWER_VARIANCE bottomSideStyleV2 BOTTOM_NAILER_DOWN_OFFSET) 0 nil (+ BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																			(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForBottomPanel (_ nil nil) connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)
+

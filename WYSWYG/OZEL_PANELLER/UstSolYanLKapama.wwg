@@ -1,0 +1,73 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+(list 
+(list 0.0 0.0 0.0) 
+(list 10.0 0.0 0.0) 
+(list 10.0 ad_et 0.0) 
+(list 0.0 ad_et 0.0) 
+) 
+nil
+(- unitH ad_et)
+(d2r 90.0)
+0.0
+;(list 0.0 (+ (- unitD) 10) dAltKot)
+(list (- unitW ad_et) (+ (- unitD) 11.8) (+ dAltKot unitH))
+"YAN"
+""
+nil
+"SIDE"
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+)
+
+;_____________
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+(list 
+(list 0.0 0.0 0.0) 
+(list unitW 0.0 0.0) 
+(list unitW ad_et 0.0) 
+(list 0.0 ad_et 0.0) 
+) 
+nil
+unitH
+(d2r 90.0)
+(d2r 90.0)
+
+(list 0.0 (- unitD) (+ dAltKot unitH))
+"ON"
+""
+nil
+"SIDE"
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)
+
+;_____________
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(SETQ golaSideH  (- unitH ad_et ad_et))
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitD ad_et) 0.0 0.0) 
+(list (- unitD ad_et) unitW 0.0) 
+(list 0.0 unitW 0.0 ) 
+) 
+nil
+
+ad_et 
+0.0 
+(d2r 90.0)
+
+(list 0.0 (+ (- unitD) ad_et) dAltKot)
+
+"ALT_PANEL" 
+"" 
+nil 
+"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)

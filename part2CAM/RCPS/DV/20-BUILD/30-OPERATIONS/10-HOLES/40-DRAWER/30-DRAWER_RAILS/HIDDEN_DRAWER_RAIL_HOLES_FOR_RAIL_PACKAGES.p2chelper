@@ -1,0 +1,156 @@
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" (getnth 0 CURRENT_DRAWER_DATA) "_" (getnth 1 CURRENT_DRAWER_DATA) "_"))))
+		(_FSET (_ 'paramRoot (_& (_ "DRAWER_" (getnth 0 CURRENT_DRAWER_DATA) "_" (getnth 1 CURRENT_DRAWER_DATA) "_"))))
+		; Unique code of drawer panels
+		(_FSET (_ 'DRAWER_LEFT_PANEL_CODE (_& (_ codeBody (XSTR "LEFT_PANEL") "!!SFACE"))))
+		(_FSET (_ 'DRAWER_RIGHT_PANEL_CODE (_& (_ codeBody (XSTR "RIGHT_PANEL") "!!SFACE"))))
+		
+		(_FSET (_ 'currentDivision (_& (_ "__DIV" __CURDIVORDER))))
+		; If the current divisions shelf type is hidden drawer then operation is performed
+		(if (not (equal (_S2V (_& (_ currentDivision "_SHELFTYPE"))) 2))
+			(progn
+				; Hidden drawer operations are not valid for current division. Thats why there is no need for notch operations
+				(_NONOTCH)
+			)
+			(progn
+				(_FSET (_ 'hiddenDrawerPosList (_S2V (_& (_ currentDivision "_SHELVESOFFSETS")))))
+				(_FSET (_ 'hDrawerCounter (_& (_ "HIDDEN_DRAWERS_COUNTER_" __CURDIVORDER))))
+				(if (_NOTNULL (_S2V hDrawerCounter))
+					(_FSET (_ (read hDrawerCounter) (+ 1 (_S2V hDrawerCounter))))
+					(_FSET (_ (read hDrawerCounter) 0))
+				)
+	
+				; General validation control for RAIL_HOLES_FOR_RAIL_PACKAGES
+				(if (and (< (_S2V hDrawerCounter) (length hiddenDrawerPosList)))
+					(progn
+						; HOLE OPERATIONS
+						; If our drawer depth is a valid one for any package then operations are performed
+						(if (_NOTNULL indexOfRail)
+							(progn
+								(_FSET (_ 'activeRailPackage (getnth indexOfRail RAIL_HOLES_FOR_RAIL_PACKAGES)))
+								(_FSET (_ 'currentPackageCode (getnth 1 activeRailPackage)))
+								; 0 and 1 indexes are occupied by upper limit of rail package and rail package code
+								(_FSET (_ 'railCounter 2))
+								(_FSET (_ 'currentDrawerOffset (getnth (_S2V hDrawerCounter) hiddenDrawerPosList)))
+								(_FSET (_ 'holePosY_Left (_= "__CURDIVELEV + currentDrawerOffset - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE")))
+								(_FSET (_ 'holePosY_Right (_= "__CURDIVELEV + currentDrawerOffset - bottomSideStyleV1 + RIGHT_PANEL_LOWER_VARIANCE")))
+								(while (< railCounter (length activeRailPackage))
+									(_FSET (_ 'currentHole (getnth railCounter activeRailPackage)))
+									
+									(_FSET (_ 'currentHoleDiameter (getnth 0 currentHole)))
+									(_FSET (_ 'currentHoleDepth (getnth 1 currentHole)))
+									(_FSET (_ 'currentHolePosition (getnth 2 currentHole)))
+									; (_FSET (_ 'currentDrawerOffset (getnth (_S2V hDrawerCounter) hiddenDrawerPosList)))
+									
+									(_FSET (_ 'holePosX (getnth 0 currentHolePosition)))
+									; (_FSET (_ 'holePosY_Left (_= "__CURDIVELEV + currentDrawerOffset - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE")))
+									; (_FSET (_ 'holePosY_Right (_= "__CURDIVELEV + currentDrawerOffset - bottomSideStyleV1 + RIGHT_PANEL_LOWER_VARIANCE")))
+									(_FSET (_ 'holePosZ (getnth 2 currentHolePosition)))
+									; Validation controls for current hole
+									(_FSET (_ 'frontSideControl (< (/ currentHoleDiameter 2.0) holePosX)))
+									(_FSET (_ 'backSideControl (> maxDrawerDepthPossible (+ holePosX (/ currentHoleDiameter 2.0)))))
+									(if (and frontSideControl backSideControl)
+										(progn
+											(if (and (_NOTNULL IS_THERE_EXTRA_PANEL_FOR_HIDDEN_DRAWER) (_NOTNULL ARE_EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_AVAILABLE))
+												(progn
+													(_FSET (_ 'holeCodeBody "EXTRA_PANEL_FOR_HIDDEN_DRAWER_RAIL_HOLE_"))
+													(_HOLE (_& (_ holeCodeBody (- railCounter 1))) HIDDEN_DRAWER_EXTRA_PANEL_CODE (_ (_ holePosX (+ EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_BOTTOM_DISTANCE EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_HOLES_HEI_DIFF_WITH_RAIL_HOLES_FOR_SIDES) 0) currentHoleDiameter currentHoleDepth))															
+															
+													(if (equal __MODULDIRECTION "R")
+														(progn															
+															(if (_EXISTPANEL LEFT_PANEL_CODE)
+																(progn
+																	(_FSET (_ 'holeCodeBody "LEFT_PANEL_HIDDEN_DRAWER_RAIL_HOLE_"))
+																	(_HOLE (_& (_ holeCodeBody (- railCounter 1))) LEFT_PANEL_CODE (_ (_ (+ holePosX LEFT_PANEL_FRONT_VARIANCE) holePosY_Left holePosZ) currentHoleDiameter currentHoleDepth))
+																)
+															)
+														)
+														(progn
+															(if (_EXISTPANEL RIGHT_PANEL_CODE)
+																(progn
+																	(_FSET (_ 'holeCodeBody "RIGHT_PANEL_HIDDEN_DRAWER_RAIL_HOLE_"))
+																	(_HOLE (_& (_ holeCodeBody (- railCounter 1))) RIGHT_PANEL_CODE (_ (_  (- RIGHT_PANEL_WID (+ holePosX RIGHT_PANEL_FRONT_VARIANCE))  holePosY_Right holePosZ) currentHoleDiameter currentHoleDepth))
+																)
+															)
+														)
+													)													
+												)
+												(progn
+													(if (_EXISTPANEL LEFT_PANEL_CODE)
+														(progn
+															(_FSET (_ 'holeCodeBody "LEFT_PANEL_HIDDEN_DRAWER_RAIL_HOLE_"))
+															(_HOLE (_& (_ holeCodeBody (- railCounter 1))) LEFT_PANEL_CODE (_ (_ (+ holePosX LEFT_PANEL_FRONT_VARIANCE) holePosY_Left holePosZ) currentHoleDiameter currentHoleDepth))
+														)
+													)
+													(if (_EXISTPANEL RIGHT_PANEL_CODE)
+														(progn
+															(_FSET (_ 'holeCodeBody "RIGHT_PANEL_HIDDEN_DRAWER_RAIL_HOLE_"))
+															(_HOLE (_& (_ holeCodeBody (- railCounter 1))) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID (+ holePosX RIGHT_PANEL_FRONT_VARIANCE)) holePosY_Right holePosZ) currentHoleDiameter currentHoleDepth))
+														)
+													)
+												)
+											)
+											
+										)
+									)
+									
+									; Drawer rail holes for drawer sides						
+									(if (_NOTNULL RAIL_HOLES_FOR_DRAWER_SIDES_AVAILABLE)
+										(progn
+											(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+												(_HOLE (_& (_ DRAWER_LEFT_PANEL_CODE "_RAIL_HOLE_" (- railCounter 1))) DRAWER_LEFT_PANEL_CODE (_ (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST) RAIL_HOLES_FOR_DRAWER_SIDES_DIAMETER RAIL_HOLES_FOR_DRAWER_SIDES_DEPTH))
+											)
+											(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'dRightPanelWID (_S2V (_& (_ paramRoot "RIGHT_PANEL_WID")))))
+													(_HOLE (_& (_ DRAWER_RIGHT_PANEL_CODE "_RAIL_HOLE_" (- railCounter 1))) DRAWER_RIGHT_PANEL_CODE (_ (_ (- dRightPanelWID (car (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST))) (cadr (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST)) (caddr (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST))) RAIL_HOLES_FOR_DRAWER_SIDES_DIAMETER RAIL_HOLES_FOR_DRAWER_SIDES_DEPTH))
+												)
+											)								
+										)
+									)
+									
+									(_FSET (_ 'railCounter (+ 1 railCounter)))
+								)
+								; Item of rail package is added
+								(_ITEMMAIN currentPackageCode currentPackageCode (_ 1 "kit"))
+								
+								(if IS_RAIL_BACK_PANEL_HOLDER_AVAILABLE
+									(_ITEMMAIN RAIL_BACK_PANEL_HOLDER_CODE currentPackageCode (_ 1 "kit"))
+								)
+								; Variable which will be used in notch recipes is created in here
+								(if (not (equal __NOTCHTYPE 0)) (_FSET (_ 'SELECTED_RAIL_INDEX indexOfRail)))
+								
+								; Hidden drawer extra panel holes
+								(if (and (_NOTNULL IS_THERE_EXTRA_PANEL_FOR_HIDDEN_DRAWER) (_NOTNULL ARE_EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_AVAILABLE))
+									(progn
+										(_FSET (_ 'index 1))
+										(foreach holeXPosition EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_LIST
+										
+											(_FSET (_ 'holeCodeBody "EXTRA_PANEL_FOR_HIDDEN_DRAWER_HOLE_"))
+											(_HOLE (_& (_ holeCodeBody index)) (strcat HIDDEN_DRAWER_EXTRA_PANEL_CODE "!!SFACE") (_ (_ holeXPosition EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_BOTTOM_DISTANCE 0) EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DIA EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DEPTH))
+
+											(_FSET (_ 'holeCodeBody "EXTRA_PANEL_FOR_HIDDEN_DRAWER_HOLE_FOR_SIDES_"))
+											(if (equal __MODULDIRECTION "R")
+												(_HOLE (_& (_ holeCodeBody index)) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID (+ holeXPosition EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_FOR_SIDES_SHIFTING_VALUE)) (- holePosY_Right EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_HOLES_HEI_DIFF_WITH_RAIL_HOLES_FOR_SIDES) 0) EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DIA_FOR_SIDES EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DEPTH_FOR_SIDES))
+												(_HOLE (_& (_ holeCodeBody index)) LEFT_PANEL_CODE (_ (_ (+ holeXPosition EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_FOR_SIDES_SHIFTING_VALUE) (- holePosY_Left EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_HOLES_HEI_DIFF_WITH_RAIL_HOLES_FOR_SIDES) 0) EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DIA_FOR_SIDES EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DEPTH_FOR_SIDES))
+											)
+											
+											(_FSET (_ 'index (+ index 1)))
+										)
+									)
+								)
+							)
+							(_NONOTCH)
+						)
+					)
+					(_NONOTCH)
+				)
+			)
+		)
+	)
+)

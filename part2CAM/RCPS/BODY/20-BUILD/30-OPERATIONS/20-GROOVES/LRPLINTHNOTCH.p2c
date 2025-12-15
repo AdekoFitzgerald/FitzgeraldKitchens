@@ -1,0 +1,35 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (_EXISTPANEL RIGHT_PANEL_CODE)
+	(progn
+		(setq rectR (lmm_drawPolyline
+			(_ 
+				(reverse (_ 0.0 RIGHT_PANEL_WID)) 0.0
+				(reverse (_ 0.0	(- RIGHT_PANEL_WID (- __DEP (cu2mm ad_bazay))))) 0.0
+				(reverse (_ (cu2mm ad_bazah) (- RIGHT_PANEL_WID (- __DEP (cu2mm ad_bazay))))) 0.0
+				(reverse (_ (cu2mm ad_bazah) RIGHT_PANEL_WID)) 0.0 
+				(reverse (_ 0.0 RIGHT_PANEL_WID)) 0.0
+			) "PLINTHNOTCH" "nil" )
+		)
+		(changeEntPro rectR 39 (- __AD_PANELTHICK))
+		(lmm_createObjsLMMDATA rectR "PLINTHNOTCH" RIGHT_PANEL_CODE nil "PLINTHNOTCH" (_ 1 0))
+		(setq rectR nil)
+	)
+)
+
+(if (_EXISTPANEL LEFT_PANEL_CODE)
+	(progn
+		(setq rectL (lmm_drawPolyline
+			(_ 
+				(reverse (_ 0.0 0.0)) 0.0
+				(reverse (_ 0.0	(- __DEP (cu2mm ad_bazay)))) 0.0
+				(reverse (_ (cu2mm ad_bazah)	(- __DEP (cu2mm ad_bazay)))) 0.0
+				(reverse (_ (cu2mm ad_bazah)	0.0)) 0.0 
+				(reverse (_ 0.0 0.0)) 0.0
+			) "PLINTHNOTCH" "nil" )
+		)
+		(changeEntPro rectL 39 (- __AD_PANELTHICK))
+		(lmm_createObjsLMMDATA rectL "PLINTHNOTCH" LEFT_PANEL_CODE nil "PLINTHNOTCH" (_ 1 0))
+		(setq rectL nil)
+	)
+)

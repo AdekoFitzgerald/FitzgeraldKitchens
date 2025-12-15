@@ -1,0 +1,41 @@
+; Only if AK_GROOVE_STATE equals to either 1 or 2, operations will be performed
+(if (not (equal AK_GROOVE_STATE 3))
+	(progn
+		; Holes are performed on the midpoint of panels
+		(_FSET (_ 'halfOfThickness (/ __AD_PANELTHICK 2.0)))
+		; According to which side corner strecher is leaning on, parameters of operations are determined
+		(cond
+			((equal CORNER_STRECHERS_SIDE "L")
+				; Strecher is leaning on LEFT back panel
+				; Parameters which are related to corner unit top panel
+				(_FSET (_ 'topPanelHoleAxisX (+ AK_GROOVE_SHARE_RIGHT AK_DOWEL_FRONT_OFFSET)))
+				(_FSET (_ 'topPanelHoleAxisY (_= "AK_NOTCHED_TOP_PANEL_WID - AK_GROOVE_SHARE_LEFT - halfOfThickness")))
+				; Parameters which are related to corner unit bottom panel
+				(_FSET (_ 'botPanelHoleAxisX (+ AK_GROOVE_SHARE_RIGHT AK_DOWEL_FRONT_OFFSET)))
+				(_FSET (_ 'botPanelHoleAxisY	(+ AK_GROOVE_SHARE_LEFT halfOfThickness)))
+			)
+			((equal CORNER_STRECHERS_SIDE "R")
+				; Strecher is leaning on RIGHT back panel
+				; Parameters which are related to corner unit top panel
+				(_FSET (_ 'topPanelHoleAxisX (+ AK_GROOVE_SHARE_RIGHT halfOfThickness)))
+				(_FSET (_ 'topPanelHoleAxisY (_= "AK_NOTCHED_TOP_PANEL_WID - AK_GROOVE_SHARE_LEFT - AK_DOWEL_FRONT_OFFSET")))
+				; Parameters which are related to corner unit bottom panel
+				(_FSET (_ 'botPanelHoleAxisX (+ AK_GROOVE_SHARE_RIGHT halfOfThickness)))
+				(_FSET (_ 'botPanelHoleAxisY	(+ AK_GROOVE_SHARE_LEFT AK_DOWEL_FRONT_OFFSET)))
+			)
+		)
+		; Corner unit corner strecher operations are performed in original recipe
+		(if (_EXISTPANEL AK_NOTCHED_TOP_PANEL_CODE)
+			(progn
+				(_FSET (_ 'holeCodeBody (_& (_ "AK_NOTCHED_TOP_PANEL_" DOWEL_PARAM_ROOT "_HOLE"))))
+				(_HOLE holeCodeBody AK_NOTCHED_TOP_PANEL_CODE (_ (_ topPanelHoleAxisX topPanelHoleAxisY 0) DOWEL_DIAMETER DOWEL_DEPTH_FOR_SIDES))
+			)
+		)
+		(if (_EXISTPANEL AK_NOTCHED_BOTTOM_PANEL_CODE)
+			(progn
+				(_FSET (_ 'holeCodeBody (_& (_ "AK_NOTCHED_BOTTOM_PANEL_" DOWEL_PARAM_ROOT "_HOLE"))))
+				(_HOLE holeCodeBody AK_NOTCHED_BOTTOM_PANEL_CODE (_ (_ botPanelHoleAxisX botPanelHoleAxisY 0) DOWEL_DIAMETER DOWEL_DEPTH_FOR_SIDES))
+			)
+		)
+	)
+)

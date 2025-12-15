@@ -1,0 +1,73 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		(_FSET (_ 'doorCounter 0))
+		(repeat __DOORSCOUNT
+			(_FSET (_ 'doorCounter (+ 1 doorCounter)))
+			(_FSET (_ 'paramBody (_& (_ "AKK_CDOOR_" doorCounter "_"))))
+			
+			(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+			; Control for drawer
+			(if (and (_ISDOORDRAWER currentDoorTYPE) (null ASSUME_DRAWER_AS_DOOR))
+				(_FSET (_ 'drawerControl nil))
+				(_FSET (_ 'drawerControl T))
+			)
+			; If drawer control fails, no part of operation is performed
+			(if (_NOTNULL drawerControl)
+				(progn
+					; Current door variables
+					(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+					(_FSET (_ 'currentDoorELEV (_S2V (_& (_ paramBody "ELEV")))))
+					(_FSET (_ 'currentDoorODIR (_S2V (_& (_ paramBody "ODIR")))))
+					(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ paramBody "FRAME")))))
+					
+					(_FSET (_ 'topFrameVAL (getnth 0 currentDoorFRAME)))
+					(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+					(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+					(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+					
+					; DOOR OPERATION
+					; Door operations are performed in original recipe
+					
+					; SIDE OPERATION
+					(if (null NO_NEED_HINGE_CONN_HOLES)
+						(progn
+							(_FSET (_ 'holeCodeBody "HINGE_CONN_HOLE_"))
+							(cond
+								((and (equal __MODULDIRECTION currentDoorODIR)(equal NEED_HINGE_CONN_HOLES_ON_TWO_SIDES nil))
+									; Extra part operations are performed in original recipe
+									; Blind door operations are performed in original recipe
+								)
+								(T
+									; Open direction of current door is different from module direction
+									; Modul Direction		Door Open Direction			Panel which hinge connects to
+									;		Left					Right				 		Right Panel
+									;		Right					Left						Left Panel
+									(cond 
+										((equal currentDoorODIR "L")
+											; Left panel operations are performed in original recipe
+										)
+										((equal currentDoorODIR "R")
+											(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'connHolePOS_UF (_ (- NOTCHED_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET) (_= "currentDoorELEV - bottomSideStyleV1 + currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE + distOfConnHolesToCenter") 0)))
+													(_FSET (_ 'connHolePOS_US (_ (_= "NOTCHED_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff") (_= "currentDoorELEV - bottomSideStyleV1 + currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE - distOfConnHolesToCenter") 0)))
+													(_FSET (_ 'connHolePOS_DF (_ (- NOTCHED_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET) (_= "currentDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE + distOfConnHolesToCenter") 0)))
+													(_FSET (_ 'connHolePOS_DS (_ (_= "NOTCHED_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff") (_= "currentDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE - distOfConnHolesToCenter") 0)))
+													
+													(_HOLE (_& (_ holeCodeBody "UF")) NOTCHED_RIGHT_PANEL_CODE (_ connHolePOS_UF HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+													(_HOLE (_& (_ holeCodeBody "US")) NOTCHED_RIGHT_PANEL_CODE (_ connHolePOS_US HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+													(_HOLE (_& (_ holeCodeBody "DF")) NOTCHED_RIGHT_PANEL_CODE (_ connHolePOS_DF HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+													(_HOLE (_& (_ holeCodeBody "DS")) NOTCHED_RIGHT_PANEL_CODE (_ connHolePOS_DS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)

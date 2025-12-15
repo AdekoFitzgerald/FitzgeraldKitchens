@@ -1,0 +1,132 @@
+; -------------------------------------------------- DEFAULT RECIPES ---------------------------------------------------------
+
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "RIGHT_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "LEFT_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GOLA_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'RIGHT_PANEL_DEFAULT_LOADED nil))
+; -------------------------------------------------- EDGESTRIPS ---------------------------------------------------------
+; Edgestrip material controls
+(if (null VISIBLE_EDGESTRIP_MAT) (_FSET (_ 'VISIBLE_EDGESTRIP_MAT FRONTSIDE_EDGES_MAT)))
+(if (null HIDDEN_EDGESTRIP_MAT) (_FSET (_ 'HIDDEN_EDGESTRIP_MAT WALLSIDE_EDGES_MAT)))
+;(if (null TOP_EDGESTRIP_MAT) (_FSET (_ 'TOP_EDGESTRIP_MAT UPCAST_EDGES_MAT)))
+(if (null TOP_EDGESTRIP_MAT) (_FSET (_ 'TOP_EDGESTRIP_MAT (if (equal TOPSIDE_STYLE "TOP_ON_SIDES") nil UPCAST_EDGES_MAT))))
+(if (null BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'BOTTOM_EDGESTRIP_MAT (if (equal BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM") nil SIDES_BOTTOM_EDGES_MAT))))
+
+(_ADDPARTMAT2EDGESTRIPS (_ 'VISIBLE_EDGESTRIP_MAT 'HIDDEN_EDGESTRIP_MAT 'TOP_EDGESTRIP_MAT 'BOTTOM_EDGESTRIP_MAT) __MATSIDEL ADD_PART_MATERIAL)
+; Width of edgestrips are taken from database
+(_FSET (_ 'VISIBLE_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB VISIBLE_EDGESTRIP_MAT)))
+(_FSET (_ 'HIDDEN_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB HIDDEN_EDGESTRIP_MAT)))
+(_FSET (_ 'TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB TOP_EDGESTRIP_MAT)))
+(_FSET (_ 'BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BOTTOM_EDGESTRIP_MAT)))
+
+; -------------------------------------------------- PANEL ROTATION ---------------------------------------------------------	
+; Control for cutlist and dxf rotation
+(if (null PANEL_CUTLIST_ROTATION) (_FSET (_ 'PANEL_CUTLIST_ROTATION __MATSIDELROT)))
+(if (null PANEL_DXF_ROTATION) (_FSET (_ 'PANEL_DXF_ROTATION __MATSIDELROT)))
+
+(_FSET (_ 'LEFT_PANEL_ROT (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+
+; -------------------------------------------------- PANEL DIMENSION DATA ---------------------------------------------------------
+; Global variables of left panel
+
+(_FSET (_ 'LEFT_PANEL_WID (+ __DEP LEFT_PANEL_FRONT_VARIANCE LEFT_PANEL_BACK_VARIANCE)))
+(_FSET (_ 'LEFT_PANEL_HEI (_= "__HEI + LEFT_PANEL_UPPER_VARIANCE + LEFT_PANEL_LOWER_VARIANCE - bottomSideStyleV1 - topSideStyleV1")))
+
+(_FSET (_ 'LEFT_PANEL_MAT __MATSIDEL))
+
+(_FSET (_ 'LEFT_PANEL_LABEL (XSTR PANEL_LABEL)))
+(_FSET (_ 'LEFT_PANEL_TAG PANEL_TAG))
+
+(_FSET (_ 'LEFT_PANEL_CODE (XSTR "LEFT_PANEL")))
+
+; If user selects to change code of visible left side
+(if (and (_NOTNULL CHANGE_SIDES_CODE)  (equal __SIDELNO 1)) (_FSET (_ 'LEFT_PANEL_CODE (XSTR "VISIBLE_LEFT_SIDE"))))
+
+;;;;;;;;;;; GOLA_PREFERENCES;;;;;;;;;;;;;;;;
+(if	(and (not (null GOLA_PATTERN)) GOLA_OP_AVAILABLE (if __VLSIDE GOLA_VSIDE_OP_AVAILABLE T) (or (equal 1 GOLA_SIDE_SELECTION)(equal 3 GOLA_SIDE_SELECTION)))
+	(progn	
+		(setq gCavityShift (_ 0 (_= "0 - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE") 0));;if necessary, offsetting gola cavity. Domestic or Euro styles for example
+		(setq nCavityShift (_ 0 (_= "0 - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE") 0));;if necessary, offsetting notch cavity. Domestic or Euro styles for example
+		(setq PanelInformations (_GENERATEPDATAV2 LEFT_PANEL_WID 
+									   LEFT_PANEL_HEI 
+									   0 
+									   gCavityShift
+									   nCavityShift
+									   GOLA_CAVITY_ORDER
+									   nil  ));; notching order (_ (_ H h d) (_ H1 h1 d1)) .... H is Height of  from bottom of module to top of the notching
+																							   ;h height of the notching cavity
+																							   ;d depth of the notching cavity
+		(setq GolaPData (nth 0 PanelInformations))
+		(setq GolaEdgeStrips (mapcar '(lambda (item) 
+											(if (equal item 0) (setq item (_ " " 0)))
+											(if (equal item 1) (setq item (_ VISIBLE_EDGESTRIP_MAT VISIBLE_EDGESTRIP_WID)))
+											(if (equal item 2) (setq item (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)))
+											(if (equal item 3) (setq item (_ HIDDEN_EDGESTRIP_MAT HIDDEN_EDGESTRIP_WID)))
+											(if (equal item 4) (setq item (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)))
+											item ) (nth 1 PanelInformations)))
+		(setq golaControlPoints (nth 2 PanelInformations))
+		(setq golaEdgeTrimCtrlPts (nth 4 PanelInformations))
+		
+		; if you want to draw for notching 
+		;(setq golaControlPoints (append golaControlPoints (nth 3 PanelInformations)))
+		;(setq golaEdgeTrimCtrlPts (append golaEdgeTrimCtrlPts (nth 5 PanelInformations)))
+
+		
+		; milling approach lines adding 
+		(if (or (equal GOLA_DRAW_APPROACH_OUTSIDE 1) (equal GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE 1))
+			(progn
+				(_GENERATEMILLINGAPPROACH LEFT_PANEL_CODE 
+										  golaControlPoints                                                      ; definition of up L , down L , U cavities control points 
+										  GOLA_DRAW_APPROACH_OUTSIDE											 ; Draw top approach lines
+										  GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE      						 ; Draw bottom approach lies
+										  1											 ; Mirror bottom approach lines. it needed for biesse cam			
+										  GOLA_APPROACH_DISTANCE 												 ; Desired approach distance from the outside of panels
+										  GOLA_INNER_RADIUS														 ; Definition of the cavities concave corner radius
+										  (_ (_ 0.0 (/ LEFT_PANEL_HEI 2) 0.0) (_ 1.0 (/ LEFT_PANEL_HEI 2) 0.0) )); Mirror axis
+				(_GENERATEEDGEMILLING LEFT_PANEL_CODE 
+									  golaEdgeTrimCtrlPts 						; definition of up L , down L , U cavities control points list. firsth and last points are create the line to be cut
+									  GOLA_EDGE_TRIM_GEO_OFFSET_DISTANCE		; cutoff line, outward offset
+									  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE		; extension of offseted cutoff line from start point
+									  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE2)	; extension of offseted cutoff line to end point
+			)
+		)
+														
+		(if (equal GOLA_DRAW_PATTERN 1)
+			(progn
+				(_FSET (_ 'LEFT_PANEL_PDATA GolaPData))												
+				(_FSET (_ 'LEFT_PANEL_EDGESTRIPS GolaEdgeStrips))
+			)
+		)
+		(if GOLA_DRAW_RECT_GEOMETRY (generate_special_golaRectPattern LEFT_PANEL_CODE golaControlPoints))
+	)
+)
+		
+(if (or (equal LEFT_PANEL_PDATA nil) (equal LEFT_PANEL_EDGESTRIPS nil))
+	(progn
+		(_FSET (_ 'LEFT_PANEL_PDATA (_GENERATEPDATA LEFT_PANEL_WID LEFT_PANEL_HEI)))	
+		
+		(_FSET (_ 'LEFT_PANEL_EDGESTRIPS (_ (_ VISIBLE_EDGESTRIP_MAT VISIBLE_EDGESTRIP_WID)
+										(_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+										(_ HIDDEN_EDGESTRIP_MAT HIDDEN_EDGESTRIP_WID)
+										(_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID))))
+	)
+)
+
+; -------------------------------------------------- CREATING PANEL ---------------------------------------------------------
+(_PANELMAIN LEFT_PANEL_CODE (_ LEFT_PANEL_PDATA LEFT_PANEL_ROT LEFT_PANEL_MAT LEFT_PANEL_THICKNESS))
+
+(if (or (equal __MODULBODYMAT LEFT_PANEL_MAT) (null USE_DOOR_EDGESTRIPS_FOR_VISIBLESIDES))
+	(_CREATEEDGESTRIPS LEFT_PANEL_CODE LEFT_PANEL_EDGESTRIPS)
+)
+
+(_PUTLABEL LEFT_PANEL_CODE LEFT_PANEL_CODE LEFT_PANEL_LABEL)
+(if (equal __SIDELNO 1)
+	(progn
+		(_PUTSOURCETAG LEFT_PANEL_CODE LEFT_PANEL_CODE "INSOURCE")
+		(_PUTUSAGETYPETAG LEFT_PANEL_CODE LEFT_PANEL_CODE "GYAN")
+	)
+)
+(_PUTTAG LEFT_PANEL_CODE LEFT_PANEL_CODE LEFT_PANEL_TAG)

@@ -1,0 +1,27 @@
+(if (equal GROOVE_STATE 3)
+	(progn
+		;MECH_CONTROLS and other parameters defined orijinal recipie
+		(_FSET (_ 'activateNotchedRightSideHole (getnth 1 MECH_CONTROLS)))
+
+		(_FSET (_ 'holeCounter 0))
+		(repeat (length MECHANISM_HOLES_LIST_ON_SIDES)
+			(_FSET (_ 'currentHole (getnth holeCounter MECHANISM_HOLES_LIST_ON_SIDES)))
+			(_FSET (_ 'holeOffset_X (getnth 0 currentHole)))
+			(_FSET (_ 'holeOffset_Y (getnth 1 currentHole)))
+			(_FSET (_ 'offsetOnAxisX (_= "holeOffset_X - upperDivisionAxisXVariance")))
+
+			(if (null ARE_MECHANISM_HOLES_DISTANCES_FROM_MODULE_TOP)
+				(if (null ARE_MECHANISM_HOLES_DISTANCES_FROM_DIV_TOP)
+					(_FSET (_ 'offsetOnAxisY (_= "currentDoorELEV + holeOffset_Y - bottomSideStyleV1 - upperDivisionAxisYVariance")))
+					(_FSET (_ 'offsetOnAxisY (_= "__CURDIVELEV + __CURDIVINSIDEHEI - bottomSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance")))
+				)
+				(_FSET (_ 'offsetOnAxisY (_= "__HEI - topSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance - bottomSideStyleV1")))
+			)
+			(_FSET (_ 'holeCodeBody (_& (_ "MECHANISM_HOLE_" holeCounter))))
+			(if (and (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE) (_NOTNULL activateNotchedRightSideHole))
+				(_HOLE holeCodeBody NOTCHED_RIGHT_PANEL_CODE (_ (_ (- NOTCHED_RIGHT_PANEL_OP_WID offsetOnAxisX RIGHT_PANEL_FRONT_VARIANCE) offsetOnAxisY 0) MECHANISM_HOLES_DIA MECHANISM_HOLES_DEPTH))
+			)
+			(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+		)
+	)
+)

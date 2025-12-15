@@ -1,0 +1,22 @@
+(setq wwg_layerName (ifnull gm1:layerName szBodyLayer))
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0)
+		(list (- (ifnull ADen2 Uden2) (ifnull ADDer UDDer) ad_et) 0.0 0.0)
+		(list (- (ifnull ADen2 Uden2) (ifnull ADDer UDDer) ad_et) unitH 0.0)
+		(list 0.0 unitH 0.0)
+	)
+	nil
+	ad_et
+	0.0
+	0.0
+	(list  (+ unitD2 (- unitW (ifnull Aden1 Uden1))) (- (- unitD) ad_et) dAltKot)
+	"PANEL_FILLER"
+	""
+	nil
+	"SIDE"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)

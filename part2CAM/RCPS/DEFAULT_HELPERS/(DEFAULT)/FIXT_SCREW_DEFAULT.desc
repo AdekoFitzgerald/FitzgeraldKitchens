@@ -1,0 +1,21 @@
+FIXT_MAIN_HOLE_DEPTH -> "Depth of fixt main hole"
+FIXT_MAIN_HOLE_DIA -> "Dia of fixt main hole"
+
+FIXT_ADD_FLANGE -> "Add flange on fixt hole"
+FIXT_FLANGE_OUTSIDE_OVERFLOW -> "Flange overflow of fixt hole"
+FIXT_FLANGE_DEPTH -> "Flange depth of fixt hole"
+
+FIXT_APPROACH_DISTANCE -> "Approach distance of fixt"
+
+FIXT_IS_OPPOSED_HOLE_AVAILABLE -> "Is fixt opposed hole available?"
+FIXT_OPPOSED_HOLE_DEPTH -> "Depth of fixt opposed hole"
+FIXT_OPPOSED_HOLE_DIA -> "Dia of fixt opposed hole"
+FIXT_OPPOSED_HOLE_POS -> "Position of fixt opposed hole"
+
+FIXT_IS_SECOND_OPPOSED_HOLE_AVAILABLE -> "Is fixt second opposed hole available?"
+FIXT_SECOND_OPPOSED_HOLE_DEPTH -> "Depth of fixt second opposed hole"
+FIXT_SECOND_OPPOSED_HOLE_DIA -> "Dia of fixt second opposed hole"
+FIXT_SECOND_OPPOSED_HOLE_POS -> "Position of fixt second opposed hole"
+
+FIXT_CODE -> "Code of fixt"
+FIXT_UNIT -> "Unit of fixt"

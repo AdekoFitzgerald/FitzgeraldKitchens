@@ -1,0 +1,152 @@
+; -------------------------------------------------- DEFAULT RECIPES ---------------------------------------------------------
+
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "TOP_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GOLA_DEFAULT" nil "p2chelper")
+
+(if (null THERE_IS_NO_TOP_PANEL)
+	(progn
+	
+		; -------------------------------------------------- EDGESTRIPS ---------------------------------------------------------
+		; Edgestrip material controls
+		(if (null LEFT_EDGESTRIP_MAT) (_FSET (_ 'LEFT_EDGESTRIP_MAT (if (equal TOPSIDE_STYLE "TOP_BETWEEN_SIDES") nil TOPS_SIDE_EDGES_MAT))))
+		(if (null RIGHT_EDGESTRIP_MAT) (_FSET (_ 'RIGHT_EDGESTRIP_MAT (if (equal TOPSIDE_STYLE "TOP_BETWEEN_SIDES") nil TOPS_SIDE_EDGES_MAT))))
+		(if (null TOP_EDGESTRIP_MAT) (_FSET (_ 'TOP_EDGESTRIP_MAT (if (_NOTNULL TOP_PANEL_TILL_BACK) nil WALLSIDE_EDGES_MAT))))
+		(if (null BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'BOTTOM_EDGESTRIP_MAT FRONTSIDE_EDGES_MAT)))
+
+		(_ADDPARTMAT2EDGESTRIPS (_ 'LEFT_EDGESTRIP_MAT 'RIGHT_EDGESTRIP_MAT 'TOP_EDGESTRIP_MAT 'BOTTOM_EDGESTRIP_MAT) __MATSIDET ADD_PART_MATERIAL)
+		; Width of edgestrips are taken from database
+		(_FSET (_ 'LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB LEFT_EDGESTRIP_MAT)))
+		(_FSET (_ 'RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB RIGHT_EDGESTRIP_MAT)))
+		(_FSET (_ 'TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB TOP_EDGESTRIP_MAT)))
+		(_FSET (_ 'BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BOTTOM_EDGESTRIP_MAT)))
+										   
+		; -------------------------------------------------- PANEL ROTATION ---------------------------------------------------------
+		; Control for cutlist and dxf rotation
+		(if (null PANEL_CUTLIST_ROTATION) (_FSET (_ 'PANEL_CUTLIST_ROTATION __MODULBODYMATROT)))
+		(if (null PANEL_DXF_ROTATION) (_FSET (_ 'PANEL_DXF_ROTATION __MODULBODYMATROT)))
+
+		(_FSET (_ 'TOP_PANEL_ROT (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+
+		; -------------------------------------------------- PANEL DIMENSION DATA ---------------------------------------------------------
+		; Global variables of top panel
+		(_FSET (_ 'TOP_PANEL_WID (_= "__WID + TOP_PANEL_LEFT_VARIANCE + TOP_PANEL_RIGHT_VARIANCE - topSideStyleV2 - topSideStyleV2")))
+		(_FSET (_ 'TOP_PANEL_HEI (_= "__DEP + TOP_PANEL_FRONT_VARIANCE + TOP_PANEL_BACK_VARIANCE")))
+		
+		(_FSET (_ 'blindDoorBaseUnitGolaCheck nil))
+		(if (and (equal (get_mdata g_CurrentModulEnt  k:MTYP) "AK1") GOLA_PATTERN) ;alt kör köþelerdeki gola kertiði yapýlýyor
+			(progn
+				(_FSET (_ 'golaTypee (car (read GOLA_PATTERN))))
+				(_FSET (_ 'golaProfilTypeList (cadr (read GOLA_PATTERN))))
+				
+				(_FSET (_ 'index 0))
+				(foreach queryy golaProfilTypeList
+					(if queryy (_FSET (_ 'golaProfilTypeQuery index)))
+					(_FSET (_ 'index (+ index 1)))
+				)
+						
+				(_FSET (_ 'typeString (iniread ad_MOD-INI "gola" golaTypee nil)))
+				
+				(if (and typeString golaProfilTypeQuery)
+					(progn
+						(_FSET (_ 'golaProfileTypee (cadr (getnth golaProfilTypeQuery (read typeString)))))
+						(_FSET (_ 'golaProfileProps (iniread ad_MOD-INI "golaProfiles" golaProfileTypee nil)))
+						
+						(if golaProfileProps
+							(progn
+								(_FSET (_ 'moduldirection (get_Mdata g_CurrentModulEnt k:CModulDirection)))
+							
+								(_FSET (_ 'golaProfileWDH (caddr (read golaProfileProps))))
+								(_FSET (_ 'golaProfileHeight (* 10 (car golaProfileWDH))))
+								(_FSET (_ 'golaProfileWidth (* 10 (cadr golaProfileWDH))))
+								
+								
+								(if (equal (length __CURDIVDOORSLIST) 2)
+									(_FSET (_ 'notchDimX (+ (- (+ (* (caddr (car __CURDIVDOORSLIST)) 2) __DOORSSIDECLEAR __DOORSBETWEENCLEAR) topSideStyleV2) GOLA_AKK_TOP_PANEL_ADDITIONAL_NOTCH_AFTER_DOOR_ENDING)))
+									(_FSET (_ 'notchDimX (- (+ __DOORSSIDECLEAR (caddr (car __CURDIVDOORSLIST)) GOLA_AKK_TOP_PANEL_ADDITIONAL_NOTCH_AFTER_DOOR_ENDING) topSideStyleV2)))
+								)
+								(_FSET (_ 'TOP_PANEL_SECONDARY_WID (- TOP_PANEL_WID notchDimX)))
+								(_FSET (_ 'TOP_PANEL_SECONDARY_HEI (- TOP_PANEL_HEI golaProfileWidth)))
+
+								(cond
+									((equal moduldirection "R")
+										(_FSET (_ 'TOP_PANEL_PDATA (_	(_ 0.0 0.0 0.0) 0
+																					(_ TOP_PANEL_HEI 0.0 0.0) 0
+																					(_ TOP_PANEL_HEI TOP_PANEL_SECONDARY_WID 0.0) 0
+																					(_ TOP_PANEL_SECONDARY_HEI TOP_PANEL_SECONDARY_WID 0.0) 0
+																					(_ TOP_PANEL_SECONDARY_HEI TOP_PANEL_WID 0.0) 0
+																					(_ 0.0 TOP_PANEL_WID 0.0) 0
+																					(_ 0.0 0.0 0.0) 0)))
+																					
+										(_FSET (_ 'TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																		   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																		   (_ "" 0)
+																		   (_ "" 0)
+																		   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																		   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+										
+										
+																					 
+									)
+									((equal moduldirection "L")
+											(_FSET (_ 'TOP_PANEL_PDATA (_	(_ 0.0 0.0 0.0) 0
+																			(_ TOP_PANEL_SECONDARY_HEI 0.0 0.0) 0
+																			(_ TOP_PANEL_SECONDARY_HEI notchDimX 0.0) 0
+																			(_ TOP_PANEL_HEI notchDimX 0.0) 0
+																			(_ TOP_PANEL_HEI TOP_PANEL_WID 0.0) 0
+																			(_ 0.0 TOP_PANEL_WID 0.0) 0
+																			(_ 0.0 0.0 0.0) 0)))																			
+																					
+										(_FSET (_ 'TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																		   (_ "" 0)
+																		   (_ "" 0)
+																		   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																		   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																		   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+									)
+								)
+								(_FSET (_ 'blindDoorBaseUnitGolaCheck T))
+							)
+						)
+					)
+				)
+			)
+		)
+		
+		(if (not TOP_PANEL_PDATA)
+			(progn
+				(_FSET (_ 'TOP_PANEL_PDATA (_GENERATEPDATA TOP_PANEL_HEI TOP_PANEL_WID)))
+				
+				(_FSET (_ 'TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+												   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+												   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+												   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+			)
+		)
+
+		(_FSET (_ 'TOP_PANEL_MAT __MATSIDET))
+				
+		(_FSET (_ 'TOP_PANEL_LABEL (XSTR PANEL_LABEL)))
+		(_FSET (_ 'TOP_PANEL_TAG PANEL_TAG))
+
+		(_FSET (_ 'TOP_PANEL_CODE (XSTR "TOP_PANEL")))
+
+		; -------------------------------------------------- CREATING PANEL ---------------------------------------------------------
+		(_PANELMAIN TOP_PANEL_CODE (_ TOP_PANEL_PDATA TOP_PANEL_ROT TOP_PANEL_MAT TOP_PANEL_THICKNESS))
+
+		(_CREATEEDGESTRIPS TOP_PANEL_CODE TOP_PANEL_EDGESTRIPS)
+
+		(_PUTLABEL TOP_PANEL_CODE TOP_PANEL_CODE TOP_PANEL_LABEL)
+		(_PUTTAG TOP_PANEL_CODE TOP_PANEL_CODE TOP_PANEL_TAG)
+		
+		(if GOLA_TOP_OP_AVAILABLE (ManualTopPanelGolaOp))
+		
+		; IMPORTANT INFORMATION -> LOWER face is the primary operation face
+		; OPERATION FACE SELECTION
+		(if (_NOTNULL TOP_PANEL_OP_ON_UPPER_FACE)
+			(_FSET (_ 'TOP_PANEL_OP_FACE (_CREATESFACEMAIN TOP_PANEL_CODE (_ TOP_PANEL_PDATA TOP_PANEL_ROT TOP_PANEL_MAT TOP_PANEL_THICKNESS "Y"))))
+			(_FSET (_ 'TOP_PANEL_OP_FACE TOP_PANEL_CODE))
+		)
+	)
+)

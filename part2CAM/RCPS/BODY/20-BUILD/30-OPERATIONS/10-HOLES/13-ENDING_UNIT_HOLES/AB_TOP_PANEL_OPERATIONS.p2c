@@ -1,0 +1,141 @@
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "AB_SIDE_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "TOP_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "AB_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+
+(if (and (null USE_PROJECT_PRICING_RECIPES) (_NOTNULL ENDING_UNIT_CONTROL))
+	(progn
+		; Clearance values are determined
+		(cond
+			((and (_NOTNULL BACK_PANEL_TILL_END) (equal TOP_PANEL_JOINT_TYPE 1))
+				(_FSET (_ 'topClearanceSide __AD_PANELTHICK))
+				(_FSET (_ 'topClearanceBack 0.0))
+				(_FSET (_ 'sideClearance 0.0))
+				(_FSET (_ 'backClearance 0.0))
+			)
+			((and (_NOTNULL BACK_PANEL_TILL_END) (equal TOP_PANEL_JOINT_TYPE 0))
+				(_FSET (_ 'topClearanceSide 0.0))
+				(_FSET (_ 'topClearanceBack 0.0))
+				(_FSET (_ 'sideClearance 0.0))
+				(_FSET (_ 'backClearance __AD_PANELTHICK))
+			)
+			((and (null BACK_PANEL_TILL_END) (equal TOP_PANEL_JOINT_TYPE 1))
+				(_FSET (_ 'topClearanceSide 0.0))
+				(_FSET (_ 'topClearanceBack __AD_PANELTHICK))
+				(_FSET (_ 'sideClearance 0.0))
+				(_FSET (_ 'backClearance 0.0))
+			)
+			((and (null BACK_PANEL_TILL_END) (equal TOP_PANEL_JOINT_TYPE 0))
+				(_FSET (_ 'topClearanceSide 0.0))
+				(_FSET (_ 'topClearanceBack 0.0))
+				(_FSET (_ 'sideClearance __AD_PANELTHICK))
+				(_FSET (_ 'backClearance 0.0))
+			)
+		)
+		(if (_EXISTPANEL AB_TOP_PANEL_CODE)
+			(progn
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					
+					(cond
+						((equal TOP_PANEL_JOINT_TYPE 1)
+							(cond
+								((equal __MODULDIRECTION "L")
+									(_FSET (_ 'SidePanelOrientType "Y+"))
+								)
+								((equal __MODULDIRECTION "R")
+									(_FSET (_ 'SidePanelOrientType "Y-"))
+								)
+							)
+							(_FSET (_ 'topPanelOrientTypeForSide nil))
+							(_FSET (_ 'BackPanelOrientType "Y-"))
+							(_FSET (_ 'topPanelOrientTypeForBack nil))
+							
+							(_FSET (_ 'SidePanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'BackPanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'topPanelZValue 0.0))
+							
+							(_FSET (_ 'SidePanelsConstAxisValue 0.0))
+							(_FSET (_ 'BackPanelsConstAxisValue 0.0))
+							(_FSET (_ 'topPanelConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+						)
+						((equal TOP_PANEL_JOINT_TYPE 0)
+							(_FSET (_ 'SidePanelOrientType nil))
+							(cond
+								((equal __MODULDIRECTION "L")
+									(_FSET (_ 'topPanelOrientTypeForSide "Y+"))
+								)
+								((equal __MODULDIRECTION "R")
+									(_FSET (_ 'topPanelOrientTypeForSide "Y-"))
+								)
+							)
+							
+							(_FSET (_ 'BackPanelOrientType nil))
+							(_FSET (_ 'topPanelOrientTypeForBack "X+"))
+							
+							(_FSET (_ 'SidePanelsZValue 0.0))
+							(_FSET (_ 'BackPanelsZValue 0.0))
+							(_FSET (_ 'topPanelZValue (car horizontalHolePos)))
+							
+							(_FSET (_ 'SidePanelsConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'BackPanelsConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'topPanelConstAxisValue 0.0))
+						)
+					)
+					
+					;controling for module direction
+					(cond
+						((equal __MODULDIRECTION "L")
+							(_FSET (_ 'topPanelConstAxisValueForModuleDir topPanelConstAxisValue))
+							(_FSET (_ 'SidePanelsConstAxisValueForModuleDir SidePanelsConstAxisValue))
+							(_FSET (_ 'reversePanelForBackSide nil))
+						)((equal __MODULDIRECTION "R")
+							(_FSET (_ 'topPanelConstAxisValueForModuleDir (- AB_TOP_PANEL_WID topPanelConstAxisValue)))
+							(_FSET (_ 'SidePanelsConstAxisValueForModuleDir (- AB_SIDE_PANEL_HEI SidePanelsConstAxisValue)))
+							(_FSET (_ 'reversePanelForBackSide T))
+						)
+					)
+					
+					(_FSET (_ 'topPanelPointListForSide (_GETHOLEPOINTLIST operationName 
+						(_ (- AB_TOP_PANEL_HEI topClearanceSide) topPanelConstAxisValueForModuleDir topPanelZValue "X")
+						(_ 0.0 topClearanceSide T AB_TOP_PANEL_HEI)
+						(_ FITTING_PARAMETERS nil))))
+					
+					(_HOLEGROUP operationName AB_TOP_PANEL_OP_FACE topPanelPointListForSide (_ topPanelOrientTypeForSide "Y-") connectorParams)
+					
+					(_FSET (_ 'topPanelPointListForBack (_GETHOLEPOINTLIST operationName 
+						(_ (- AB_TOP_PANEL_WID topClearanceBack) topPanelConstAxisValue topPanelZValue "Y")
+						(_ topClearanceBack 0.0 reversePanelForBackSide AB_TOP_PANEL_WID)
+						(_ FITTING_PARAMETERS nil))))
+					
+					(_HOLEGROUP operationName AB_TOP_PANEL_OP_FACE topPanelPointListForBack (_ topPanelOrientTypeForBack "X-") connectorParams)
+				
+					(if (_EXISTPANEL AB_SIDE_PANEL_CODE)
+						(progn
+							(_FSET (_ 'sidePanelPointListForTop (_GETHOLEPOINTLIST operationName 
+							(_ (- AB_SIDE_PANEL_WID sideClearance)  SidePanelsConstAxisValueForModuleDir SidePanelsZValue "X")
+							(_ 0.0 sideClearance nil AB_SIDE_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+						
+							(_HOLEGROUP operationName AB_SIDE_PANEL_CODE sidePanelPointListForTop (_ SidePanelOrientType "Y-") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL AB_BACK_PANEL_CODE)
+						(progn
+							(_FSET (_ 'backPanelPointListForTop (_GETHOLEPOINTLIST operationName 
+							(_ (- AB_BACK_PANEL_WID backClearance) (- AB_BACK_PANEL_HEI BackPanelsConstAxisValue) BackPanelsZValue "X")
+							(_ 0.0 backClearance reversePanelForBackSide AB_BACK_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+						
+							(_HOLEGROUP operationName AB_BACK_PANEL_CODE backPanelPointListForTop (_ BackPanelOrientType "Y+") connectorParams)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

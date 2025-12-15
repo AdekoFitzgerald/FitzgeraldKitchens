@@ -1,0 +1,101 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+; __DIVx_SHELFTYPE contains three possibilities
+; __DIVx_SHELFTYPE					STATE
+;		0					Adjustable shelf - Divider
+;		1				Glass adjustable shelf - Divider
+;		2						 Hidden drawer
+
+; IMPORTANT INFORMATION
+; 	In drawings always right side surface is shown for dividers -> Acts like a left panel
+
+(_FSET (_ 'divisionCounter 0))
+(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+(_FSET (_ 'numberOfDividers (length (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS"))))))
+(_FSET (_ 'numberOfShelves (length (_S2V (_& (_ currentDivision "_SHELVESOFFSETS"))))))
+; For each division which recipe will be performed is determined
+(while (_S2V currentDivision)
+	(_FSET (_ 'currentDivShelfType (_S2V (_& (_ currentDivision "_SHELFTYPE")))))
+	(if (not (equal currentDivShelfType 2))
+		(progn
+			; Material controls for current division
+			(if (and (null (_S2V (_& (_ currentDivision "_DOORSLIST")))) (equal g_iUnitShelfLayer 0))
+				(_FSET (_ 'shelfMaterial (_GETLAYERMAT "SHELVES")))
+				(_FSET (_ 'shelfMaterial __MODULBODYMAT))
+			)
+			(cond
+				((equal currentDivShelfType 0)
+					; Adjustable shelf - Divider
+					(_FSET (_ 'curDivShelfMAT shelfMaterial))
+					(_FSET (_ 'curDivDividerMAT shelfMaterial))
+					(_FSET (_ 'edgestripsAvailable T))
+				)
+				((equal currentDivShelfType 1)
+					; Glass adjustable shelf - Divider
+					(_FSET (_ 'curDivShelfMAT (_GETLAYERMAT "SHELVES_GLASS")))
+					(_FSET (_ 'curDivDividerMAT shelfMaterial))
+					(_FSET (_ 'edgestripsAvailable nil))
+				)
+			)
+			; Edgestrip material controls
+			(if (null SHELVES_LEFT_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_LEFT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+			(if (null SHELVES_RIGHT_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_RIGHT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+			(if (null SHELVES_TOP_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_TOP_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+			(if (null SHELVES_BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_BOTTOM_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+			
+			(if (equal divisionCounter 0)
+				(_ADDPARTMAT2EDGESTRIPS (_ 'SHELVES_LEFT_EDGESTRIP_MAT 'SHELVES_RIGHT_EDGESTRIP_MAT 'SHELVES_TOP_EDGESTRIP_MAT 'SHELVES_BOTTOM_EDGESTRIP_MAT) curDivShelfMAT ADD_PART_MATERIAL)
+			)
+			; Width of edgestrips are taken from database
+			(_FSET (_ 'SHELVES_LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_LEFT_EDGESTRIP_MAT)))
+			(_FSET (_ 'SHELVES_RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_RIGHT_EDGESTRIP_MAT)))
+			(_FSET (_ 'SHELVES_TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_TOP_EDGESTRIP_MAT)))
+			(_FSET (_ 'SHELVES_BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_BOTTOM_EDGESTRIP_MAT)))
+			; Rotation variables are set
+			(if (null SHELVES_CUTLIST_ROTATION) (_FSET (_ 'SHELVES_CUTLIST_ROTATION __MODULBODYMATROT)))
+			(if (null SHELVES_DXF_ROTATION) (_FSET (_ 'SHELVES_DXF_ROTATION __MODULBODYMATROT)))
+			(_FSET (_ 'shelvesRotateList (_ SHELVES_MAIN_ROTATION SHELVES_CUTLIST_ROTATION SHELVES_DXF_ROTATION SHELVES_MIRRORING_AXIS)))
+			
+			(_FSET (_ 'shelvesInfo (_ numberOfShelves curDivShelfMAT shelvesRotateList edgestripsAvailable)))
+			; Which kind of recipe will be called is determined in here
+			(cond 
+				((> numberOfDividers 0)
+					; Edgestrip material controls
+					(if (null DIVIDERS_LEFT_EDGESTRIP_MAT) (_FSET (_ 'DIVIDERS_LEFT_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+					
+					(_ADDPARTMAT2EDGESTRIPS (_ 'DIVIDERS_LEFT_EDGESTRIP_MAT 'DIVIDERS_RIGHT_EDGESTRIP_MAT 'DIVIDERS_TOP_EDGESTRIP_MAT 'DIVIDERS_BOTTOM_EDGESTRIP_MAT) curDivDividerMAT ADD_PART_MATERIAL)
+					; Width of edgestrips are taken from database
+					(_FSET (_ 'DIVIDERS_LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB DIVIDERS_LEFT_EDGESTRIP_MAT)))
+					(_FSET (_ 'DIVIDERS_RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB DIVIDERS_RIGHT_EDGESTRIP_MAT)))
+					(_FSET (_ 'DIVIDERS_TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB DIVIDERS_TOP_EDGESTRIP_MAT)))
+					(_FSET (_ 'DIVIDERS_BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB DIVIDERS_BOTTOM_EDGESTRIP_MAT)))
+					; It is sure that there is at least one divider in current division
+					(if (null DIVIDERS_CUTLIST_ROTATION) (_FSET (_ 'DIVIDERS_CUTLIST_ROTATION __MODULBODYMATROT)))
+					(if (null DIVIDERS_DXF_ROTATION) (_FSET (_ 'DIVIDERS_DXF_ROTATION __MODULBODYMATROT)))
+					(_FSET (_ 'dividersRotateList (_ DIVIDERS_MAIN_ROTATION DIVIDERS_CUTLIST_ROTATION DIVIDERS_DXF_ROTATION DIVIDERS_MIRRORING_AXIS)))
+					
+					(_FSET (_ 'dividerInfo (_ numberOfDividers curDivDividerMAT dividersRotateList T)))
+					; Global data container for further operations is created here
+					(_FSET (_ 'DIVIDER_SHELF_DATA (_ divisionCounter shelvesInfo dividerInfo)))
+					
+					(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\ADJUSTABLE_SHELVES_AND_DIVIDERS" T "p2chelper")
+				)
+				((> numberOfShelves 0)
+					; There is no divider at all. It is sure that there is at least one adjustable shelf
+					; Global data container for further operations is created here
+					(_FSET (_ 'DIVIDER_SHELF_DATA (_ divisionCounter shelvesInfo nil)))
+					
+					(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\ADJUSTABLE_SHELVES" T "p2chelper")
+				)
+			)
+		)
+	)
+	; Parameters are set for next division
+	(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+	(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+	(_FSET (_ 'numberOfDividers (length (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS"))))))
+	(_FSET (_ 'numberOfShelves (length (_S2V (_& (_ currentDivision "_SHELVESOFFSETS"))))))
+)
+(_NONOTCH)

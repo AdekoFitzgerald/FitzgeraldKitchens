@@ -1,0 +1,43 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW (- unitH DD20_T1) 0.0) 
+		(list 0.0 (- unitH DD20_T1) 0.0) 
+	) 
+	nil
+	DD20_T1 
+	0.0
+	(d2r 90.0) 
+	(list 0.0 (- unitD) (+ dAltKot DD20_T1))
+	"DD20_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	DD20_T1
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.0 0.0 dAltKot)
+	"DD20_02"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+)
+		

@@ -1,0 +1,314 @@
+; DATA SHEET OF DIVIDER_SHELF_OP_DATA
+; Index			DATA
+; 0				Index of current division
+; 1				Whether code pattern will be changed or not
+; 2				Number of virtual divisions
+; 3				Number of shelves in current division
+; 4				Number of dividers in current division
+
+(if (not (> __NOTCHDIM1 __AD_PANELTHICK))
+	(progn
+		; Notch variables arent enough to perform operations on parts thats why original recipe is called again
+		(_FSET (_ 'GROUP_HOLES_FOR_NOTCH T))
+		(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_PIN" nil "p2chelper")
+	)
+	(progn
+		; DSOD prefix refers to DIVIDER_SHELF_OP_DATA
+		(_FSET (_ 'DSOD_curDivOrder (getnth 0 DIVIDER_SHELF_OP_DATA)))
+		(_FSET (_ 'DSOD_changeCodePattern (getnth 1 DIVIDER_SHELF_OP_DATA)))
+		(if (_NOTNULL DSOD_changeCodePattern)
+			(progn
+				(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (strcat (XSTR "DIVISION") " : " (itoa DSOD_curDivOrder)) "\n\n" 
+							   (XSTR "Notch operations aren't performed on divisions contains dividers!") "\n\n" "ASHELF_PIN -> " (itoa __NOTCHTYPE) ".p2chelper"))
+			)
+			(progn
+				; Permission granted for operation
+				(_FSET (_ 'DSOD_numberOfVirtualDivisions (getnth 2 DIVIDER_SHELF_OP_DATA)))
+				(_FSET (_ 'DSOD_numberOfShelves (getnth 3 DIVIDER_SHELF_OP_DATA)))
+				(_FSET (_ 'DSOD_numberOfDividers (getnth 4 DIVIDER_SHELF_OP_DATA)))
+				; Notch shares of sides are determined
+				(cond 
+					((equal GROOVE_STATE 3)
+						(_FSET (_ 'notchShareLEFT 0))
+						(_FSET (_ 'notchShareRIGHT __NOTCHDIM2))
+					)
+					((equal GROOVE_STATE 2)
+						(_FSET (_ 'notchShareLEFT (_= "__NOTCHDIM2 + GROOVE_DISTANCE_FOR_STATE2 - GROOVE_DISTANCE")))
+						(_FSET (_ 'notchShareRIGHT (_= "__NOTCHDIM2 + GROOVE_DISTANCE_FOR_STATE2 - GROOVE_DISTANCE")))
+					)
+					((equal GROOVE_STATE 1)
+						(_FSET (_ 'notchShareLEFT 0))
+						(_FSET (_ 'notchShareRIGHT 0))
+					)
+				)
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" DSOD_curDivOrder))))
+				(_FSET (_ 'virtualDivisionCounter 0))
+				(repeat DSOD_numberOfVirtualDivisions
+					(if (_NOTNULL DSOD_changeCodePattern)
+						(progn
+							; WARNING -> This branch of code is not performed in any condition
+							; Sure that there are virtual divisions. That means notch operation wont effect the adjustable shelves in current division
+							(_FSET (_ 'shelfCODEroot (XSTR "ADJUSTABLE_SHELF")))
+							(_FSET (_ 'rightSideRoot "ADJUSTABLE_SHELF_"))
+							(_FSET (_ 'rightSideEdge "HEI"))
+							(_FSET (_ 'virtualDivCode (_& (_ "_" virtualDivisionCounter "_"))))
+							(_FSET (_ 'connControl T))
+						)
+						(progn
+							; No divider no virtual division at all. That means notch operation will effect the adjustable shelves in current division
+							(if (equal GROOVE_STATE 3)
+								(progn
+									(_FSET (_ 'shelfCODEroot (XSTR "NOTCHED_ADJUSTABLE_SHELF")))
+									(_FSET (_ 'rightSideRoot "NOTCHED_ADJUSTABLE_SHELF_"))
+									(_FSET (_ 'rightSideEdge "DEP"))
+								)
+								(progn
+									; GROOVE_STATE equals to either 1 or 2
+									(_FSET (_ 'shelfCODEroot (XSTR "ADJUSTABLE_SHELF")))
+									(_FSET (_ 'rightSideRoot "ADJUSTABLE_SHELF_"))
+									(_FSET (_ 'rightSideEdge "HEI"))
+								)
+							)
+							(_FSET (_ 'virtualDivCode "_"))
+							(_FSET (_ 'connControl nil))
+						)
+					)
+					(_FSET (_ 'shelfCodeBody (_& (_ shelfCODEroot "_" DSOD_curDivOrder virtualDivCode))))
+					(_FSET (_ 'paramBodyBase (_& (_ rightSideRoot DSOD_curDivOrder virtualDivCode))))
+					(_FSET (_ 'holeCodeBodyBase (_& (_ rightSideRoot "HOLE_" DSOD_curDivOrder virtualDivCode))))
+					
+					; This variables prevents calling connection helper over and over in the same virtual division
+					(_FSET (_ 'CHECK_CONNECTIONS nil))
+					
+					(_FSET (_ 'centerGroupIndex (+ 1 SHELF_HOLES_EXTRA_DOWN)))
+					(_FSET (_ 'shelfCounter 1))
+					(repeat DSOD_numberOfShelves
+						(_FSET (_ 'currentShelfCODE (_& (_ shelfCodeBody shelfCounter))))
+						(if (_EXISTPANEL currentShelfCODE)
+							(progn
+								(_FSET (_ 'paramRoot (_& (_ paramBodyBase shelfCounter "_"))))
+								
+								(_FSET (_ 'shelfCONN (_S2V (_& (_ paramRoot "CONN")))))
+								(_FSET (_ 'curDivELEV (_S2V (_& (_ currentDivision "_STARTFROMBOTTOM")))))
+								; Global data container for connection helper is created here
+								(_FSET (_ 'GROUP_HOLES_DATA (_ DSOD_curDivOrder virtualDivisionCounter DSOD_numberOfDividers curDivELEV shelfCONN connControl (_ notchShareLEFT notchShareRIGHT))))
+								
+								; Connection helper is called for detecting current adjustable shelf will be connected which panels
+								(if (null CHECK_CONNECTIONS) (_RUNHELPERRCP (strcat "NOTCH\\NOTCH_HELPERS\\CONNECTION_HELPER\\" (itoa __NOTCHTYPE)) nil "p2chelper"))
+								
+								; DATA SHEET OF CONN_HELPER_DATA
+								; Index			DATA
+								; 0				Data required about LEFT side
+								; 1				Data required about RIGHT side
+								
+								(if (_NOTNULL CONN_HELPER_DATA)
+									(progn
+										; CHD prefix refers to CONN_HELPER_DATA
+										(_FSET (_ 'CHD_leftSideInfo (getnth 0 CONN_HELPER_DATA)))
+										(_FSET (_ 'CHD_rightSideInfo (getnth 1 CONN_HELPER_DATA)))
+										
+										; IMPORTANT INFORMATION
+										; Each side info consists of -> Panel Code, Elevation, Panel Width, Tolerance Share, Hole Code For Rafix, Width Difference*
+										; WARNING -> *
+										; Width difference parameter is not available in original recipe
+										
+										(_FSET (_ 'leftSideCODE (getnth 0 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideELEV (getnth 1 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideWID (getnth 2 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideTOLERANCE (getnth 3 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideWidthDIF (getnth 5 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideUPPEREXCESS (getnth 6 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideLOWEREXCESS (getnth 7 CHD_leftSideInfo)))
+										(_FSET (_ 'leftSideHEI (getnth 8 CHD_leftSideInfo)))
+										
+										(_FSET (_ 'rightSideCODE (getnth 0 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideELEV (getnth 1 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideWID (getnth 2 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideTOLERANCE (getnth 3 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideWidthDIF (getnth 5 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideUPPEREXCESS (getnth 6 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideLOWEREXCESS (getnth 7 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideHEI (getnth 8 CHD_rightSideInfo)))
+										(_FSET (_ 'rightSideSECONDARYPANELCHECK (getnth 9 CHD_rightSideInfo)))
+										
+										(_FSET (_ 'shelfLeftSideHEI (- (_S2V (_& (_ paramRoot "HEI"))) leftSideWidthDIF)))
+										(_FSET (_ 'shelfRightSideHEI (- (_S2V (_& (_ paramRoot rightSideEdge))) rightSideWidthDIF)))
+										(if (or (>= shelfLeftSideHEI LIMIT_FOR_MIDDLE_HOLE_GROUP) (_NOTNULL IS_MIDDLE_HOLE_GROUP_AVAILABLE))
+											(progn
+												(_FSET (_ 'thirdHoleGroup T))
+												(_FSET (_ 'thirdHoleGroupOffsetLEFT (+ (/ shelfLeftSideHEI 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+												(_FSET (_ 'thirdHoleGroupOffsetRIGHT (+ (/ shelfRightSideHEI 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+												(_FSET (_ 'holePosition_LM (+ leftSideTOLERANCE thirdHoleGroupOffsetLEFT)))
+												(_FSET (_ 'holePosition_RM (_= "rightSideWID - rightSideTOLERANCE - thirdHoleGroupOffsetRIGHT")))
+												
+												(_ITEMMAIN (if (equal currentShelfType 1) GLASS_SHELF_PIN_CODE SHELF_PIN_CODE) currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS 1.5) SHELF_PIN_UNIT))
+											)
+											(progn
+												(_FSET (_ 'thirdHoleGroup nil))
+												(_ITEMMAIN (if (equal currentDivShelfType 1) GLASS_SHELF_PIN_CODE SHELF_PIN_CODE) currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS) SHELF_PIN_UNIT))
+											)
+										)
+										(_FSET (_ 'activeShelfELEV (_S2V (_& (_ paramRoot "ELEV")))))
+										(_FSET (_ 'leftSideOffset_Y (- (+ leftSideELEV activeShelfELEV) (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))
+										(_FSET (_ 'rightSideOffset_Y (- (+ rightSideELEV activeShelfELEV) (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))	
+										
+
+										(if (equal BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM")
+											(progn
+												(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T)
+													(_FSET (_ 'secondaryRightSideOffset_Y (- (+ rightSideELEV activeShelfELEV) (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))	
+													(_FSET (_ 'secondaryRightSideOffset_Y (- (+ rightSideELEV activeShelfELEV __AD_PANELTHICK) (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))
+												)
+											)
+											(progn
+												(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T)
+													(_FSET (_ 'secondaryRightSideOffset_Y (- (+ rightSideELEV activeShelfELEV) __AD_PANELTHICK (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))
+													(_FSET (_ 'secondaryRightSideOffset_Y (- (+ rightSideELEV activeShelfELEV) (/ ASHELF_HOLE_DIAMETER 2.0) (- ASHELF_ELEVATION_VARIANCE))))
+												)
+											)
+										)
+										
+										(_FSET (_ 'holePosition_LF (+ leftSideTOLERANCE ASHELF_FRONT_HOLE_OFFSET LEFT_PANEL_FRONT_VARIANCE)))
+										(_FSET (_ 'holePosition_LB (_= "leftSideTOLERANCE + shelfLeftSideHEI - ASHELF_BACK_HOLE_OFFSET + LEFT_PANEL_FRONT_VARIANCE")))
+										(_FSET (_ 'holePosition_RF (_= "rightSideWID - rightSideTOLERANCE - ASHELF_FRONT_HOLE_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+										(_FSET (_ 'holePosition_RB (_= "rightSideWID - rightSideTOLERANCE - shelfRightSideHEI + ASHELF_BACK_HOLE_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+										
+										(_FSET (_ 'holePosition_SRM (/ SECONDARY_RIGHT_PANEL_WID 2)))
+										
+										(if IS_AVAILABLE_ASHELF_OVERALL_PIN_OP
+											(progn
+												(if (equal shelfCounter 1) 
+													(progn
+														(_FSET (_ 'maxOpSpaceLengthLeftSide (- leftSideHEI leftSideLOWEREXCESS leftSideUPPEREXCESS ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV ASHELF_OVERALL_PIN_OP_UPPER_ENDING_LIMIT)))
+														(_FSET (_ 'maxOpSpaceLengthRightSide (- rightSideHEI rightSideLOWEREXCESS rightSideUPPEREXCESS ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV ASHELF_OVERALL_PIN_OP_UPPER_ENDING_LIMIT)))
+														
+														(_FSET (_ 'stepValueLeft (+ (fix (/ maxOpSpaceLengthLeftSide HOLE_GROUP_DISTANCE)) 1)))
+														(_FSET (_ 'stepValueRight (+ (fix (/ maxOpSpaceLengthRightSide HOLE_GROUP_DISTANCE)) 1)))
+
+														(_FSET (_ 'leftSideHoleStarting_Y (+ ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV leftSideLOWEREXCESS)))
+														(_FSET (_ 'rightSideHoleStarting_Y (+ ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV rightSideLOWEREXCESS)))
+														
+														(_FSET (_ 'holePosition_L_Y leftSideHoleStarting_Y))
+														(_FSET (_ 'index 0))
+														(repeat stepValueLeft
+															(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  leftSideCODE (_ (_ holePosition_LF holePosition_L_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  leftSideCODE (_ (_ holePosition_LB holePosition_L_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															(if (_NOTNULL thirdHoleGroup)
+																(progn
+																	(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  leftSideCODE (_ (_ holePosition_LM holePosition_L_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+																)
+															)
+															(_FSET (_ 'holePosition_L_Y (+ holePosition_L_Y HOLE_GROUP_DISTANCE)))
+															(_FSET (_ 'index (+ index 1)))
+														)
+														
+														(_FSET (_ 'index 0))
+														(_FSET (_ 'holePosition_R_Y rightSideHoleStarting_Y))
+														(repeat stepValueRight
+															(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  rightSideCODE (_ (_ holePosition_RF holePosition_R_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  rightSideCODE (_ (_ holePosition_RB holePosition_R_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															
+															(if (_NOTNULL thirdHoleGroup)
+																(progn
+																	(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  rightSideCODE (_ (_ holePosition_RM holePosition_R_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+																)
+															)
+															(_FSET (_ 'holePosition_R_Y (+ holePosition_R_Y HOLE_GROUP_DISTANCE)))
+															(_FSET (_ 'index (+ index 1)))
+														)
+														
+														(if rightSideSECONDARYPANELCHECK
+															(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+																(progn
+																	(_FSET (_ 'maxOpSpaceLengthRightSideSecondary (- SECONDARY_RIGHT_PANEL_HEI secondaryNotchedPanelStyleV2 secondaryNotchedPanelStyleV2 ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV ASHELF_OVERALL_PIN_OP_UPPER_ENDING_LIMIT)))
+																	(_FSET (_ 'stepValueRightSecondary (+ (fix (/ maxOpSpaceLengthRightSideSecondary HOLE_GROUP_DISTANCE)) 1)))
+																	(_FSET (_ 'rightSideSecondaryHoleStarting_Y (+ ASHELF_OVERALL_PIN_OP_LOWER_BEGINNING_ELEV secondaryNotchedPanelStyleV2)))
+																	
+																	(_FSET (_ 'holePositionSecondary_R_Y rightSideSecondaryHoleStarting_Y))
+																	(_FSET (_ 'index 0))
+
+																	(repeat stepValueRightSecondary
+																		(_HOLE (_& (_ "ADJUSTABLE_SHELF_PIN_HOLE" index))  SECONDARY_RIGHT_PANEL_CODE (_ (_ holePosition_SRM holePositionSecondary_R_Y 0.0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+
+																		(_FSET (_ 'holePositionSecondary_R_Y (+ holePositionSecondary_R_Y HOLE_GROUP_DISTANCE)))
+																		(_FSET (_ 'index (+ index 1)))
+																	)
+																)
+															)
+														)
+													)
+												)
+											)
+											(progn
+												; Center holes
+												(_FSET (_ 'holeCodeBody (_& (_ holeCodeBodyBase shelfCounter "_"))))
+												(_HOLE (_& (_ holeCodeBody centerGroupIndex "_LF")) leftSideCODE (_ (_ holePosition_LF leftSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+												(_HOLE (_& (_ holeCodeBody centerGroupIndex "_LB")) leftSideCODE (_ (_ holePosition_LB leftSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+												(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RF")) rightSideCODE (_ (_ holePosition_RF rightSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+												(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RB")) rightSideCODE (_ (_ holePosition_RB rightSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+												(_HOLE (_& (_ holeCodeBody centerGroupIndex "_SRM")) SECONDARY_RIGHT_PANEL_CODE (_ (_ holePosition_SRM secondaryRightSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+												
+												(if (_NOTNULL thirdHoleGroup)
+													(progn
+														(_HOLE (_& (_ holeCodeBody centerGroupIndex "_LM")) leftSideCODE (_ (_ holePosition_LM leftSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+														(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RM")) rightSideCODE (_ (_ holePosition_RM rightSideOffset_Y 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													)
+												)
+												; Upper-than-center holes
+												(_FSET (_ 'stepCounter 1))
+												(repeat SHELF_HOLES_EXTRA_UP
+													(_FSET (_ 'currentStepHEI_LEFT (+ leftSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentStepHEI_RIGHT (+ rightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentStepHEI_SECONDARY_RIGHT (+ secondaryRightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentHoleIndex (+ centerGroupIndex stepCounter)))
+													
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LF")) leftSideCODE (_ (_ holePosition_LF currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LB")) leftSideCODE (_ (_ holePosition_LB currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) rightSideCODE (_ (_ holePosition_RF currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) rightSideCODE (_ (_ holePosition_RB currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_SRM")) SECONDARY_RIGHT_PANEL_CODE (_ (_ holePosition_SRM currentStepHEI_SECONDARY_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													
+													(if (_NOTNULL thirdHoleGroup)
+														(progn
+															(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LM")) leftSideCODE (_ (_ holePosition_LM currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RM")) rightSideCODE (_ (_ holePosition_RM currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+														)
+													)
+													(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+												)
+												; Lower-than-center holes
+												(_FSET (_ 'stepCounter 1))
+												(repeat SHELF_HOLES_EXTRA_DOWN
+													(_FSET (_ 'currentStepHEI_LEFT (- leftSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentStepHEI_RIGHT (- rightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentStepHEI_SECONDARY_RIGHT (- secondaryRightSideOffset_Y (* stepCounter HOLE_GROUP_DISTANCE))))
+													(_FSET (_ 'currentHoleIndex (- centerGroupIndex stepCounter)))
+													
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LF")) leftSideCODE (_ (_ holePosition_LF currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LB")) leftSideCODE (_ (_ holePosition_LB currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) rightSideCODE (_ (_ holePosition_RF currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) rightSideCODE (_ (_ holePosition_RB currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(_HOLE (_& (_ holeCodeBody currentHoleIndex "_SRM")) SECONDARY_RIGHT_PANEL_CODE (_ (_ holePosition_SRM currentStepHEI_SECONDARY_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+													(if (_NOTNULL thirdHoleGroup)
+														(progn
+															(_HOLE (_& (_ holeCodeBody currentHoleIndex "_LM")) leftSideCODE (_ (_ holePosition_LM currentStepHEI_LEFT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+															(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RM")) rightSideCODE (_ (_ holePosition_RM currentStepHEI_RIGHT 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+														)
+													)
+													(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+						(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					; Next virtual division
+					(_FSET (_ 'virtualDivisionCounter (+ 1 virtualDivisionCounter)))
+				)
+			)
+		)
+	)
+)

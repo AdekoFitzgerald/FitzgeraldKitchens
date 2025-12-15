@@ -1,0 +1,11 @@
+
+;tip   : A= Duz kapak B=Camli C=Cekmece D=Ic Kivrik
+;        E=Dis Kivrik F=Serit Camli G=Stor Z=Z kapak(=> EN='(en wid1 wid2 deltaY))
+;kulp  : Kulp yonu (K)uzey KD (D)ogu GD (G)uney (O)rta (K2) Kuzeyde 2 (O2) Ortada 2
+;(setq doorId (kapak_ciz tipAndModel kulp ox oy oz en boy orient rotang))
+
+;(setq doorId (kapak_ciz "A" "G-" 0.0 0.0 0.0 20.0 30.0 nil 0.0))
+(setq doorId (kapak_ciz (list "A") "0-"  unitD (- unitW2 (* akd90_doorWidth1 0.5 ) 1.25) ( * g_ClearWallZBtwn 0.5) (- unitW2 unitD  g_ClearBaseXSide g_ClearBaseXSide) (- unitH g_ClearBaseZTop) nil 90))
+
+;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+(setq doorsPropList (cons (list 0.0  (- unitH g_ClearBaseZTop) (- unitW2 unitD  g_ClearBaseXSide g_ClearBaseXSide) "0-" "A" nil 0 doorId)  doorsPropList))

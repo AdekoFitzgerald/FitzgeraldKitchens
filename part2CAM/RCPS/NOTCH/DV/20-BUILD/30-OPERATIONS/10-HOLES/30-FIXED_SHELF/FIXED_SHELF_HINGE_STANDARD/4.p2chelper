@@ -1,0 +1,58 @@
+(if (not (> __NOTCHDIM3 __AD_PANELTHICK))
+	(progn
+		; Termination case - Notch operation is not valid so original recipe is called back
+		(_FSET (_ 'FIXED_SHELF_SHINGE_FOR_NOTCH T))
+		(_RUNHELPERRCP "DV\\20-BUILD\\30-OPERATIONS\\10-HOLES\\30-FIXED_SHELF\\FIXED_SHELF_HINGE_STANDARD" nil "p2chelper")
+	)
+	(progn
+		(if (and (null HINGE_CODE) (null HINGE_UNIT))
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(_FSET (_ 'QUANTITY_OF_ITEM 1))
+		)
+		(_FSET (_ 'distOfConnHolesToCenter HINGE_PARAM_VER))
+		(_FSET (_ 'connHolesHorDiff HINGE_PARAM_HOR))
+		
+		(_FSET (_ 'tempShelfHEI (+ (_S2V (_& (_ "__DIV" __CURDIVORDER "_STARTFROMBOTTOM"))) __CURDIVINSIDEHEI)))
+		(_FSET (_ 'notchedHEIofModule (_= "__HEI - __NOTCHDIM3 - __AD_PANELTHICK")))
+		(if (and (equal GROOVE_STATE 3) (<= notchedHEIofModule tempShelfHEI))
+			(progn
+				; GROOVE_STATE equals 3 --- NOTCH
+				(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "NOTCHED_FIXED_SHELF") "_" __CURDIVORDER))))
+				(_FSET (_ 'paramBody (_& (_ "NOTCHED_FIXED_SHELF_" __CURDIVORDER "_"))))
+			)
+			(progn
+				; GROOVE_STATE equals to 1 or 2 --- NO NOTCH
+				(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FIXED_SHELF") "_" __CURDIVORDER))))
+				(_FSET (_ 'paramBody (_& (_ "FIXED_SHELF_" __CURDIVORDER "_"))))
+			)
+		)
+		(_FSET (_ 'fixedShelfHHC (_S2V (_& (_ "FIXED_SHELF_" __CURDIVORDER "_" SHINGE_OPERATION_VAL "HHC")))))
+		(_FSET (_ 'currentDoorCODE (_S2V (_& (_ "FIXED_SHELF_" __CURDIVORDER "_" SHINGE_OPERATION_VAL "DCODE")))))
+		(if (_NOTNULL currentDoorCODE)
+			(progn						
+				(if (_NOTNULL fixedShelfHHC) (_ITEMMAIN HINGE_CODES currentDoorCODE QUANTITY_PARAMS))
+				(if (null NO_NEED_HINGE_CONN_HOLES)
+					(progn
+						(_FSET (_ 'currentShelfWID (_S2V (_& (_ paramBody "WID")))))
+						(_FSET (_ 'doorShare (- __AD_PANELTHICK __DOORSSIDECLEAR)))
+						
+						(_FSET (_ 'offsetOnAxisX_F HINGE_CONNECTION_HOLES_OFFSET))
+						(_FSET (_ 'offsetOnAxisX_S (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff)))
+						; Meaning of shorcuts
+						; L -> Left, R -> Right, F -> First, S -> Second
+						(_FSET (_ 'offsetOnAxisY_LF (_= "currentShelfWID + doorShare - HINGE_DOWN_DISTANCE + distOfConnHolesToCenter")))
+						(_FSET (_ 'offsetOnAxisY_LS (_= "currentShelfWID + doorShare - HINGE_DOWN_DISTANCE - distOfConnHolesToCenter")))
+						(_FSET (_ 'offsetOnAxisY_RF (_= "HINGE_UP_DISTANCE - doorShare + distOfConnHolesToCenter")))
+						(_FSET (_ 'offsetOnAxisY_RS (_= "HINGE_UP_DISTANCE - doorShare - distOfConnHolesToCenter")))
+
+						(_FSET (_ 'holeCodeBody (_& (_ paramBody "HINGE_CONN_HOLE_"))))
+						(_HOLE (_& (_ holeCodeBody "LF")) currentShelfCODE (_ (_ offsetOnAxisY_LF offsetOnAxisX_F 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "LS")) currentShelfCODE (_ (_ offsetOnAxisY_LS offsetOnAxisX_S 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "RF")) currentShelfCODE (_ (_ offsetOnAxisY_RF offsetOnAxisX_F 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "RS")) currentShelfCODE (_ (_ offsetOnAxisY_RS offsetOnAxisX_S 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+					)
+				)
+			)
+		)
+	)
+)

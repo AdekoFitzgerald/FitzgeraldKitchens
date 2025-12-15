@@ -1,0 +1,143 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OBLIQUE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (and (null USE_PROJECT_PRICING_RECIPES) (_NOTNULL OBLIQUE_UNIT_CONTROL))
+	(progn 
+		(if (and (null SHELF_PIN_CODE) (null SHELF_PIN_UNIT))
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(_FSET (_ 'QUANTITY_OF_ITEM 1))
+		)
+		(_FSET (_ 'centerGroupIndex (+ 1 SHELF_HOLES_EXTRA_DOWN)))
+		(_FSET (_ 'shelfCounter 1))
+		(repeat __SHELFNO
+			(_FSET (_ 'currentShelfCODE (_& (_ OBLIQUE_CODE_ROOT "_" (XSTR "ADJUSTABLE_SHELF") "_" shelfCounter))))
+			(if (_EXISTPANEL currentShelfCODE)
+				(progn
+					(_FSET (_ 'paramBody (_& (_ OBLIQUE_PARAM_ROOT "_ADJUSTABLE_SHELF_" shelfCounter "_"))))
+					; Unique variables of current adjustable shelf
+					(_FSET (_ 'currentShelfWID (_S2V (_& (_ paramBody "WID")))))
+					(_FSET (_ 'currentShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+					(_FSET (_ 'currentShelfHEI2 (_S2V (_& (_ paramBody "HEI2")))))
+					(_FSET (_ 'currentShelfELEV (- (_S2V (_& (_ paramBody "ELEV"))) bottomSideStyleV1 (/ ASHELF_HOLE_DIAMETER 2.0))))
+					(if (or (and (>= currentShelfHEI LIMIT_FOR_MIDDLE_HOLE_GROUP) (>= currentShelfHEI2 LIMIT_FOR_MIDDLE_HOLE_GROUP)) (_NOTNULL IS_MIDDLE_HOLE_GROUP_AVAILABLE))
+						(progn
+							; Front-back-middle hole groups are available
+							(_FSET (_ 'thirdHoleGroup T))
+							(_ITEMMAIN SHELF_PIN_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS 1.5) SHELF_PIN_UNIT))
+							
+							(_FSET (_ 'thirdHoleGroupLongSide (+ (/ currentShelfHEI 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+							(_FSET (_ 'thirdHoleGroupShortSide (+ (/ currentShelfHEI2 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+						)
+						(progn
+							; Only front-back hole groups are available
+							(_FSET (_ 'thirdHoleGroup nil))
+							(_ITEMMAIN SHELF_PIN_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS) SHELF_PIN_UNIT))
+						)
+					)
+					(_FSET (_ 'holeCodeBody (_& (_ OBLIQUE_PARAM_ROOT "_ADJUSTABLE_SHELF_" shelfCounter "_HOLE_"))))
+					(if (_EXISTPANEL UE_LONG_SIDE_PANEL_CODE)
+						(progn
+							(_FSET (_ 'ls_holePosFront (+ ASHELF_FRONT_OFFSET UE_ASHELF_FRONT_HOLE_OFFSET)))
+							(_FSET (_ 'ls_holePosBack (_= "ASHELF_FRONT_OFFSET + currentShelfHEI - UE_ASHELF_BACK_HOLE_OFFSET")))
+							(if (_NOTNULL thirdHoleGroup)
+								(_FSET (_ 'ls_holePosMiddle (+ ASHELF_FRONT_OFFSET thirdHoleGroupLongSide)))
+							)
+									
+							(_FSET (_ 'ls_holePosFront (+ ASHELF_FRONT_OFFSET UE_ASHELF_FRONT_HOLE_OFFSET)))
+							(_FSET (_ 'ls_holePosBack (_= "ASHELF_FRONT_OFFSET + currentShelfHEI - UE_ASHELF_BACK_HOLE_OFFSET")))
+							(if (_NOTNULL thirdHoleGroup)
+								(_FSET (_ 'ls_holePosMiddle (+ ASHELF_FRONT_OFFSET thirdHoleGroupLongSide)))
+							)
+							
+							; Center holes
+							(_HOLE (_& (_ holeCodeBody centerGroupIndex "_FRONT")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosFront currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							(_HOLE (_& (_ holeCodeBody centerGroupIndex "_BACK")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosBack currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							(if (_NOTNULL thirdHoleGroup)
+								(_HOLE (_& (_ holeCodeBody centerGroupIndex "_MIDDLE")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosMiddle currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							)
+							; Upper-than-center holes
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_UP
+								(_FSET (_ 'currentGroupIndex (+ centerGroupIndex stepCounter)))
+								(_FSET (_ 'currentHoleELEV (+ currentShelfELEV (* stepCounter HOLE_GROUP_DISTANCE))))
+								
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_FRONT")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosFront currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_BACK")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosBack currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(if (_NOTNULL thirdHoleGroup)
+									(_HOLE (_& (_ holeCodeBody currentGroupIndex "_MIDDLE")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosMiddle currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+								
+								(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+							)
+							; Lower-than-center holes
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_DOWN
+								(_FSET (_ 'currentGroupIndex (- centerGroupIndex stepCounter)))
+								(_FSET (_ 'currentHoleELEV (- currentShelfELEV (* stepCounter HOLE_GROUP_DISTANCE))))
+								
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_FRONT")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosFront currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_BACK")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosBack currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(if (_NOTNULL thirdHoleGroup)
+									(_HOLE (_& (_ holeCodeBody currentGroupIndex "_MIDDLE")) UE_LONG_SIDE_PANEL_CODE (_ (_ ls_holePosMiddle currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+								
+								(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+							)
+						)
+					)
+					(if (_EXISTPANEL UE_SHORT_SIDE_PANEL_CODE)
+						(progn
+							(_FSET (_ 'ss_holePosFront (+ ASHELF_FRONT_OFFSET UE_ASHELF_FRONT_HOLE_OFFSET)))
+							(_FSET (_ 'ss_holePosBack (_= "ASHELF_FRONT_OFFSET + currentShelfHEI2 - UE_ASHELF_BACK_HOLE_OFFSET")))
+							(if (_NOTNULL thirdHoleGroup)
+								(_FSET (_ 'ss_holePosMiddle (+ ASHELF_FRONT_OFFSET thirdHoleGroupShortSide)))
+							)
+							
+							(_FSET (_ 'currentShelfELEV (- UE_SHORT_SIDE_PANEL_HEI currentShelfELEV)))
+							
+							; Center holes
+							(_HOLE (_& (_ holeCodeBody centerGroupIndex "_FRONT")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosFront currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							(_HOLE (_& (_ holeCodeBody centerGroupIndex "_BACK")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosBack currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							(if (_NOTNULL thirdHoleGroup)
+								(_HOLE (_& (_ holeCodeBody centerGroupIndex "_MIDDLE")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosMiddle currentShelfELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+							)
+							; Upper-than-center holes
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_UP
+								(_FSET (_ 'currentGroupIndex (+ centerGroupIndex stepCounter)))
+								(_FSET (_ 'currentHoleELEV (+ currentShelfELEV (* stepCounter HOLE_GROUP_DISTANCE))))
+								
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_FRONT")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosFront currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_BACK")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosBack currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(if (_NOTNULL thirdHoleGroup)
+									(_HOLE (_& (_ holeCodeBody currentGroupIndex "_MIDDLE")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosMiddle currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+								
+								(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+							)
+							; Lower-than-center holes
+							(_FSET (_ 'stepCounter 1))
+							(repeat SHELF_HOLES_EXTRA_DOWN
+								(_FSET (_ 'currentGroupIndex (- centerGroupIndex stepCounter)))
+								(_FSET (_ 'currentHoleELEV (- currentShelfELEV (* stepCounter HOLE_GROUP_DISTANCE))))
+								
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_FRONT")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosFront currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(_HOLE (_& (_ holeCodeBody currentGroupIndex "_BACK")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosBack currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								(if (_NOTNULL thirdHoleGroup)
+									(_HOLE (_& (_ holeCodeBody currentGroupIndex "_MIDDLE")) UE_SHORT_SIDE_PANEL_CODE (_ (_ ss_holePosMiddle currentHoleELEV 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+								)
+								
+								(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+							)
+						)
+					)
+				)
+			)
+			(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+		)
+	)
+)
+(_NONOTCH)

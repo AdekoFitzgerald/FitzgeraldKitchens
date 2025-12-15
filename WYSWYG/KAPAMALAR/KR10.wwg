@@ -1,0 +1,237 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD KR10_T1) 0.0 0.0) 
+		(list (- unitD KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- unitD YL11_D1) (- unitH KR10_T1) 0.0) 
+		(list (- unitD YL11_D1) unitH 0.0) 
+		(list 0.0 unitH 0.0)
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	KR10_T1 
+	0.0 
+	0.0 
+	
+	(list (- unitW KR10_T1) 0.0 0.0)
+	
+	"KR10_03" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_SAG_YAN")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD KR10_T1) 0.0 0.0) 
+		(list (- unitD KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- unitD YL11_D1) (- unitH KR10_T1) 0.0) 
+		(list (- unitD YL11_D1) unitH 0.0) 
+		(list 0.0 unitH 0.0)
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	KR10_T1 
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 0.0)
+	
+	"KR10_02" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_SOL_YAN")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW KR10_T1 KR10_T1) 0.0 0.0) 
+		(list (- unitW KR10_T1 KR10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	KR10_T1 
+	0.0
+	(d2r 90.0) 
+	(list KR10_T1 (- KR10_T1) 0.0)
+	"ARKA_PANEL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "ARKA_PANEL")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW KR10_T1 KR10_T1) 0.0 0.0) 
+		(list (- unitW KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list 0.0 (- unitH KR10_T1) 0.0) 
+	) 
+	nil
+	KR10_T1 
+	0.0
+	(d2r 90.0) 
+	(list KR10_T1 (+ (- unitD) KR10_T1) 0.0)
+	"ON_PANEL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "ON_PANEL")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1 )) KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1 )) KR10_T1 KR10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0)
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	KR10_T1 
+	0.0 
+	0.0 
+	
+	(list (+ (/ unitW 4) KR10_T1) (- KR10_T1) 0.0)
+	
+	"KR10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1)) KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1)) KR10_T1 KR10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0)
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	KR10_T1 
+	0.0 
+	0.0 
+	
+	(list (+ (* (/ unitW 4) 2) KR10_T1) (- KR10_T1) 0.0)
+	
+	"KR10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) 0.0 0.0) 
+		(list (- unitD KR10_T1 KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1)) KR10_T1 KR10_T1) (- unitH KR10_T1) 0.0) 
+		(list (- (- unitD (- YL11_D1 KR10_T1)) KR10_T1 KR10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0)
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	KR10_T1 
+	0.0 
+	0.0 
+	
+	(list (+ (* (/ unitW 4) 3) KR10_T1) (- KR10_T1) 0.0)
+	
+	"KR10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+)
+
+	
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YL11_D1 0.0 0.0) 
+				(list (- YL11_D1 YL11_T1) YL11_T1 0.0) 
+				(list 0.0 YL11_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -90.0)
+			
+			(d2r -90.0)
+			
+			
+			(list 0.0 (+ (- unitD) YL11_D1) (- (+ 0.0 unitH) YL11_T1))
+			
+			"YL11_01" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 unitH 0.0) 
+				(list YL11_T1 (- unitH YL11_T1) 0.0) 
+				(list YL11_T1 0.0 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 180.0)
+			
+			
+			(list unitW (- unitD) 0.0)
+			
+			"YL11_02" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			;"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(reverseMatRot (entlast))
+
+
+

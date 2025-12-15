@@ -1,0 +1,218 @@
+(if (_NOTNULL CURRENT_DRAWER_DATA)
+	(progn
+		(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+		(if (equal currentDrawerOrder __CURDIVORDER)
+			(progn
+				(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+				(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+				
+				(_FSET (_ 'SINKU_DRAWER_BOTTOM_PANEL_CODE (_& (_ codeBody (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT")))))
+				(if (_EXISTPANEL SINKU_DRAWER_BOTTOM_PANEL_CODE)
+					(progn
+						(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+						; GROOVE_MODE_FOR_BODY_ASSEMBLY determines the behaviour of operation recipe
+						(cond 
+							((equal GROOVE_MODE_FOR_BODY_ASSEMBLY "BOTH")
+								(_FSET (_ 'grooveOnWID T))
+								(_FSET (_ 'grooveOnHEI T))
+							)
+							((equal GROOVE_MODE_FOR_BODY_ASSEMBLY "HEI")
+								(_FSET (_ 'grooveOnWID nil))
+								(_FSET (_ 'grooveOnHEI T))
+							)
+							((equal GROOVE_MODE_FOR_BODY_ASSEMBLY "WID")
+								(_FSET (_ 'grooveOnWID T))
+								(_FSET (_ 'grooveOnHEI nil))
+							)
+						)
+						(_FSET (_ 'totalLossWID 0))
+						(_FSET (_ 'totalLossHEI 0))
+						(_FSET (_ 'totalLossSIDEWID 0))
+						(_FSET (_ 'totalLossSINKHEI 0))
+						(_FSET (_ 'totalLossSINKWID 0))
+						(_FSET (_ 'panelDepthAfterGroove (- DRAWER_BODY_THICKNESS DBA_GROOVE_DEPTH)))
+						; Validation for groove operation
+						(_FSET (_ 'grooveOperationControl (and (> DBA_GROOVE_WID 0) (> DBA_GROOVE_DEPTH 0) (< DBA_GROOVE_DEPTH DRAWER_BODY_THICKNESS))))
+						
+						(if (_NOTNULL grooveOperationControl)
+							(progn
+								; BACK AND FRONT PANEL
+								(if (_NOTNULL grooveOnHEI)
+									(progn
+										(_FSET (_ 'grooveCenterDistance (- (+ (/ DBA_GROOVE_WID 2.0) DBA_GROOVE_DISTANCE) DRAWER_PANELS_HEI_DIFF_BOTTOM)))
+										
+										; BACKSIDE OPERATIONS
+										(_FSET (_ 'SINKU_DRAWER_BACK_PANEL_EXISTS (_S2V (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT"))))))
+										(if (and (_NOTNULL SINKU_DRAWER_BACK_PANEL_EXISTS) (>= DBA_GROOVE_DISTANCE DRAWER_PANELS_HEI_DIFF_BOTTOM))
+											(progn
+												(_FSET (_ 'totalLossHEI (+ totalLossHEI panelDepthAfterGroove)))
+												(_FSET (_ 'totalLossSIDEWID (+ totalLossSIDEWID panelDepthAfterGroove)))
+												(_FSET (_ 'totalLossSINKWID (_= "totalLossSINKWID - panelDepthAfterGroove - panelDepthAfterGroove")))
+												
+												(if (_NOTNULL PERFORM_GROOVE_ON_PANELS)
+													(progn
+														(_FSET (_ 'sbpCodeRoot (_& (_ codeBody (XSTR "SINK_UNIT_BACK_PANEL") "_"))))
+														(_FSET (_ 'sbpParamRoot (_& (_ paramRoot "SINKU_BACK_PANEL_"))))
+														; LEFT PART
+														(_FSET (_ 'SBP_LeftCODE (_& (_ sbpCodeRoot (XSTR "LEFT")))))
+														(_FSET (_ 'SBP_LeftWID (_S2V (_& (_ sbpParamRoot "LEFT_WID")))))
+														
+														(_GROOVE (_& (_ SBP_LeftCODE "_GROOVE")) SBP_LeftCODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																													(_ SBP_LeftWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+														; MIDDLE-LEFT PART
+														(_FSET (_ 'SBP_MiddleLeftCODE (_& (_ sbpCodeRoot (XSTR "MIDDLE_LEFT")))))
+														(_FSET (_ 'SBP_MiddleLeftWID (_S2V (_& (_ sbpParamRoot "MIDDLE_LEFT_WID")))))
+														
+														(_GROOVE (_& (_ SBP_MiddleLeftCODE "_GROOVE")) SBP_MiddleLeftCODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																																(_ SBP_MiddleLeftWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+														; MIDDLE PART
+														(_FSET (_ 'SBP_MiddleCODE (_& (_ sbpCodeRoot (XSTR "MIDDLE")))))
+														(_FSET (_ 'SBP_MiddleWID (_S2V (_& (_ sbpParamRoot "MIDDLE_WID")))))
+														
+														(_GROOVE (_& (_ SBP_MiddleCODE "_GROOVE")) SBP_MiddleCODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																														(_ SBP_MiddleWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+														; MIDDLE-RIGHT PART
+														(_FSET (_ 'SBP_MiddleRightCODE (_& (_ sbpCodeRoot (XSTR "MIDDLE_RIGHT")))))
+														(_FSET (_ 'SBP_MiddleRightWID (_S2V (_& (_ sbpParamRoot "MIDDLE_RIGHT_WID")))))
+														
+														(_GROOVE (_& (_ SBP_MiddleRightCODE "_GROOVE")) SBP_MiddleRightCODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																																  (_ SBP_MiddleRightWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+														; RIGHT PART
+														(_FSET (_ 'SBP_RightCODE (_& (_ sbpCodeRoot (XSTR "RIGHT")))))
+														(_FSET (_ 'SBP_RightWID (_S2V (_& (_ sbpParamRoot "RIGHT_WID")))))
+														
+														(_GROOVE (_& (_ SBP_RightCODE "_GROOVE")) SBP_RightCODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																													  (_ SBP_RightWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+													)
+												)
+												; Groove operations are performed on back panel properly
+												(_FSET (_ 'backSideGrooveShare panelDepthAfterGroove))
+											)
+											(_FSET (_ 'backSideGrooveShare 0))
+										)
+										; FRONTSIDE OPERATIONS
+										(_FSET (_ 'DRAWER_FRONT_PANEL_CODE (_& (_ codeBody (XSTR "FRONT_PANEL")))))
+										(cond
+											((_EXISTPANEL DRAWER_FRONT_PANEL_CODE)
+												(if (>= DBA_GROOVE_DISTANCE DRAWER_PANELS_HEI_DIFF_BOTTOM)
+													(progn
+														(_FSET (_ 'totalLossHEI (+ totalLossHEI panelDepthAfterGroove)))
+														
+														(if (_NOTNULL PERFORM_GROOVE_ON_PANELS)
+															(progn
+																(_FSET (_ 'dFrontPanelWID (_S2V (_& (_ paramRoot "FRONT_PANEL_WID")))))
+																
+																(_GROOVE (_& (_ DRAWER_FRONT_PANEL_CODE "_GROOVE")) DRAWER_FRONT_PANEL_CODE (_ (_ (_ 0 grooveCenterDistance 0) 
+																																				  (_ dFrontPanelWID grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+															)
+														)
+														(_FSET (_ 'frontSideGrooveShare panelDepthAfterGroove))
+													)
+													(_FSET (_ 'frontSideGrooveShare 0))
+												)
+											)
+											((_NOTNULL USE_DOOR_AS_DRAWER_FRONT_PANEL)
+												(_FSET (_ 'doorParamBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+												
+												(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ doorParamBody "TYPE")))))
+												(if (_NOTNULL currentDoorTYPE)
+													(progn
+														(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+														(if (and (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE))
+															(progn
+																(_FSET (_ 'totalLossHEI (- totalLossHEI DBA_GROOVE_DEPTH)))
+																
+																(if (_NOTNULL PERFORM_GROOVE_ON_PANELS)
+																	(progn
+																		(_FSET (_ 'currentDoorHEI (_S2V (_& (_ doorParamBody "HEI")))))
+																		(_FSET (_ 'currentDoorWID (_S2V (_& (_ doorParamBody "WID")))))
+																		(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ doorParamBody "FRAME")))))
+																		
+																		(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+																		(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+																		(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+																		
+																		(_FSET (_ 'railGapOneSide (/ DRAWER_TOTAL_GAP_WID 2.0)))
+																		
+																		(_FSET (_ 'drawerDoorLeftSidePoint (_= "currentDoorWID + leftFrameVAL + __DOORSSIDECLEAR - __AD_PANELTHICK - railGapOneSide - panelDepthAfterGroove")))
+																		(_FSET (_ 'drawerDoorRightSidePoint (_= "__AD_PANELTHICK + railGapOneSide + panelDepthAfterGroove - __DOORSSIDECLEAR - rightFrameVAL")))
+																		
+																		(_FSET (_ 'groovePosAxisY (_= "DRAWER_CABIN_ELEV - bottomFrameVAL + DRAWER_PANELS_HEI_DIFF_BOTTOM + grooveCenterDistance")))
+																		
+																		(_GROOVE (_& (_ currentDoorCODE "_GROOVE")) currentDoorCODE (_ (_ (_ drawerDoorLeftSidePoint groovePosAxisY 0)
+																																		  (_ drawerDoorRightSidePoint groovePosAxisY 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+																	)
+																)
+															)
+														)
+													)
+												)
+												(_FSET (_ 'frontSideGrooveShare 0))
+											)
+											(T
+												; There is no front panel to perform groove operations on
+												(_FSET (_ 'frontSideGrooveShare 0))
+											)
+										)
+									)
+									(progn
+										; There is no operation on drawers back and front panels
+										(_FSET (_ 'backSideGrooveShare 0))
+										(_FSET (_ 'frontSideGrooveShare 0))
+									)
+								)
+								; LEFT AND RIGHT PANEL
+								(if (_NOTNULL grooveOnWID)
+									(progn
+										(_FSET (_ 'grooveCenterDistance (+ (/ DBA_GROOVE_WID 2.0) DBA_GROOVE_DISTANCE)))
+										
+										(_FSET (_ 'totalLossSIDEWID (+ totalLossSIDEWID panelDepthAfterGroove)))
+										; LEFTSIDE OPERATIONS
+										(_FSET (_ 'DRAWER_LEFT_PANEL_CODE (_& (_ codeBody (XSTR "LEFT_PANEL")))))
+										(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+											(progn
+												(_FSET (_ 'totalLossWID (+ totalLossWID panelDepthAfterGroove)))
+												
+												(if (_NOTNULL PERFORM_GROOVE_ON_PANELS)
+													(progn
+														(_FSET (_ 'dLeftPanelWID (_S2V (_& (_ paramRoot "LEFT_PANEL_WID")))))
+														
+														(_FSET (_ 'leftPanelLeftDist frontSideGrooveShare))
+														(_FSET (_ 'leftPanelRightDist (- dLeftPanelWID backSideGrooveShare)))
+														
+														(_GROOVE (_& (_ DRAWER_LEFT_PANEL_CODE "_GROOVE")) DRAWER_LEFT_PANEL_CODE (_ (_ (_ leftPanelLeftDist grooveCenterDistance 0) 
+																																		(_ leftPanelRightDist grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+													)
+												)
+											)
+										)
+										; RIGHTSIDE OPERATIONS
+										(_FSET (_ 'DRAWER_RIGHT_PANEL_CODE (_& (_ codeBody (XSTR "RIGHT_PANEL")))))
+										(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+											(progn
+												(_FSET (_ 'totalLossWID (+ totalLossWID panelDepthAfterGroove)))
+												
+												(if (_NOTNULL PERFORM_GROOVE_ON_PANELS)
+													(progn
+														(_FSET (_ 'dRightPanelWID (_S2V (_& (_ paramRoot "RIGHT_PANEL_WID")))))
+														
+														(_FSET (_ 'rightPanelLeftDist backSideGrooveShare))
+														(_FSET (_ 'rightPanelRightDist (- dRightPanelWID frontSideGrooveShare)))
+														
+														(_GROOVE (_& (_ DRAWER_RIGHT_PANEL_CODE "_GROOVE")) DRAWER_RIGHT_PANEL_CODE (_ (_ (_ rightPanelLeftDist grooveCenterDistance 0) 
+																																		  (_ rightPanelRightDist grooveCenterDistance 0)) DBA_GROOVE_WID DBA_GROOVE_DEPTH))
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

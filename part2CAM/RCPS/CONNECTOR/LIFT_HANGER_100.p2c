@@ -1,0 +1,5 @@
+
+(_FSET (_ 'LIFT_HANGER_WIDTH (* 100 (getEntPro g_currentModulEnt 41))))
+(_ITEMMAIN "LIFT_HANGER" "LIFT_HANGER" (_ 1.0 "ad"))
+
+(_NONOTCH)

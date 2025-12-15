@@ -1,0 +1,21 @@
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list unitD 0.0 0.0) (list unitD unitH 0.0) (list 0.0 unitH 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list 0.0 0.0 dAltKot) "ornek1" "" nil "SIDE" (strcat kodBlock "_LEFT"))		
+
+
+	(createGPanel (list (list 0.0 0.0 0.0) (list unitD 0.0 0.0) (list unitD unitH 0.0) (list 0.0 unitH 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list (- unitW ad_et) 0.0 dAltKot) "ornek1" "" nil "SIDE" (strcat kodBlock "_RIGHT"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW ad_et ad_et) 0.0 0.0) (list (- unitW ad_et ad_et) unitD 0.0) (list 0.0 unitD 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list ad_et 0.0 dAltKot) "ornek1_bottom" "" nil "SHELF" (strcat kodBlock "_STRECHER"))
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  ad_et ad_et) 0.0 0.0) (list (- unitW  ad_et ad_et) 10.0 0.0) (list 0.0 10.0 0.0)) (list 0.0 0.0 0.0 0.0 ) ad_et (* -1 DEG_90) 00.0 (list ad_et (-  10.0 ad_et) (+ unitH dAltKot)) "ornek1" "" nil "SHELF" (strcat kodBlock "_NAILER"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  ad_et ad_et) 0.0 0.0) (list (- unitW  ad_et ad_et) 10.0 0.0) (list 0.0 10.0 0.0)) (list 0.0 0.0 0.0 0.0 ) ad_et 0.0 0.0 (list ad_et (+ 10 (* -1 unitD))  (+ (- unitH ad_et) dAltKot)) "body_bottom_panel00" "" nil "SHELF" (strcat kodBlock "_BOTTOM"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  0.9 0.9) 0.0 0.0) (list (- unitW  0.9 0.9) (- unitH 10.0  0.9) 0.0) (list 0.0 (- unitH 10.0  0.9) 0.0)) (list 0.0 0.0 0.0 0.0 ) 0.5 0.0 0.0 (list (* 0.5 ad_et) (* -0.5 ad_et)  (+ 0.9 dAltKot)) "general_back_panel" "" nil "PANEL" (strcat kodBlock "_BACK"))

@@ -1,0 +1,95 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0)
+		(list (- (+ unitD DT11_T1)DT11_T1) 0.0 0.0) 
+		(list (- unitD DT11_T1) DT11_T1 0.0) 
+		(list DT11_T1 DT11_T1 0.0) 
+		(list 0.0 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	(d2r 90.0) 
+	;0.0
+	(list (- unitW DT11_T1) (- (- unitD)0.0) dAltKot)
+	"DT11_04" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list (- UnitW DT11_T1) DT11_T1 0.0) 
+		(list DT11_T1 DT11_T1 0.0) 
+		(list 0.0 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	;(d2r 90.0) 
+	0.0
+	(list 0.0 (+ (- UnitD )DT11_T1) dAltKot)
+	"DT11_01" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list (- unitD DT11_T1) DT11_T1 0.0) 
+		(list DT11_T1 DT11_T1 0.0) 
+		(list (- unitD DT11_T1) DT11_T1 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	(d2r -90.0) 
+	;0.0
+	(list DT11_T1 (- unitD unitD) dAltKot)
+	"DT11_03" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list DT11_T1 0.0 0.0) 
+		(list (- unitW DT11_T1) 0.0 0.0) 
+		(list unitW DT11_T1 0.0) 
+		(list 0.0 DT11_T1 0.0) 
+		(list DT11_T1 0.0 0.0) 
+	) 
+	nil
+	unitH
+	0.0
+	;(d2r 90.0) 
+	0.0
+	(list 0.0 (- unitd unitd) dAltKot)
+	"DT11_02" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+

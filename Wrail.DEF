@@ -1,0 +1,4 @@
+("SKM40" cagberk_skm40 "CagberkRay")
+("ALT_UST_KANAL" horizontal_WGroove (QUOTE (1.4 1.1 4.0)) "Cabinet Top Bottom Groove")
+("SAG_SOL_KANAL" vertical_WGroove (QUOTE (1.4 1.1 4.0)) "Cabinet Left Right Groove")
+("SABIT_RAF_KANAL" fixShelf_WGroove_While (QUOTE (1.4 1.1 4.0)) "Cabinet Fixed Shelf Groove")

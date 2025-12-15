@@ -1,0 +1,170 @@
+; Variables related with dimensional position of connection holes
+(_FSET (_ 'distOfConnHolesToCenter HINGE_PARAM_VER))
+(_FSET (_ 'connHolesHorDiff HINGE_PARAM_HOR))
+
+(_FSET (_ 'doorCounter 0))
+(while (< doorCounter (length __CURDIVDOORSLIST))
+	(_FSET (_ 'doorCounter (+ 1 doorCounter)))
+	(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_" doorCounter "_"))))
+	
+	(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+	(if (not (_ISDOORDRAWER currentDoorTYPE))
+		(progn
+			; Unique door parameters
+			(_FSET (_ 'currentDoorStartFromBottom (_S2V (_& (_ paramBody "ELEV")))))
+			(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+			(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+			(_FSET (_ 'currentDoorOpenDirection (_S2V (_& (_ paramBody "ODIR")))))
+			(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ paramBody "FRAME")))))
+			
+			(if (not (apply 'OR currentDoorFRAME))
+				(progn
+					(_FSET (_ 'topSideFrameVAL 0))
+					(_FSET (_ 'rightSideFrameVAL 0))
+					(_FSET (_ 'bottomSideFrameVAL 0))
+					(_FSET (_ 'leftSideFrameVAL 0))
+				)
+				(progn
+					(_FSET (_ 'topSideFrameVAL (getnth 0 currentDoorFRAME)))
+					(_FSET (_ 'rightSideFrameVAL (getnth 1 currentDoorFRAME)))
+					(_FSET (_ 'bottomSideFrameVAL (getnth 2 currentDoorFRAME)))
+					(_FSET (_ 'leftSideFrameVAL (getnth 3 currentDoorFRAME)))
+				)
+			)
+			
+			; DOOR OPERATIONS
+			; Door operations are performed in original recipe
+			
+			; SIDE OPERATIONS
+			; Behavior of hinge operation on panels which will be connected to current door is determined in here
+			(_FSET (_ 'holeCodeBody "HINGE_CONN_HOLE_"))
+			(cond 
+				((_ISDOOROPENUP currentDoorTYPE)
+					(_FSET (_ 'formerDivIndex (- __CURDIVORDER 1)))
+					(cond 
+						((and (equal HF_BOTTOM_DOOR_ORDER __CURDIVORDER) (equal HF_TOP_DOOR_ORDER formerDivIndex))
+							; Aventos-HF top door operations are performed in original recipe
+						)
+						((equal __CURDIVORDER 0)
+							(_FSET (_ 'distanceToCenterLeft (- (+ HINGE_DOWN_DISTANCE __DOORSSIDECLEAR) (if (equal TOP_PANEL_JOINT_TYPE 1) 0.0 __AD_PANELTHICK))))
+							(_FSET (_ 'distanceToCenterRight (- (+ HINGE_UP_DISTANCE __DOORSSIDECLEAR) (if (equal TOP_PANEL_JOINT_TYPE 1) 0.0 __AD_PANELTHICK))))
+							(cond 
+								((_EXISTPANEL NOTCHED_TOP_PANEL_CODE)
+									(if (null NO_NEED_HINGE_CONN_HOLES)
+										(progn
+											(_FSET (_ 'offsetOnAxisX_F (- NOTCHED_TOP_PANEL_HEI HINGE_CONNECTION_HOLES_OFFSET)))
+											(_FSET (_ 'offsetOnAxisX_S (_= "NOTCHED_TOP_PANEL_HEI - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff")))
+											; Meaning of shortkeys	  L -> Left, R -> Right, F -> First, S -> Second
+											(_FSET (_ 'offsetOnAxisY_LF (_= "NOTCHED_TOP_PANEL_WID - distanceToCenterLeft + distOfConnHolesToCenter")))
+											(_FSET (_ 'offsetOnAxisY_LS (_= "NOTCHED_TOP_PANEL_WID - distanceToCenterLeft - distOfConnHolesToCenter")))
+											(_FSET (_ 'offsetOnAxisY_RF (+ distanceToCenterRight distOfConnHolesToCenter)))
+											(_FSET (_ 'offsetOnAxisY_RS (- distanceToCenterRight distOfConnHolesToCenter)))
+											
+											(_HOLE (_& (_ holeCodeBody "LF")) NOTCHED_TOP_PANEL_CODE (_ (_ offsetOnAxisX_F offsetOnAxisY_LF 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "LS")) NOTCHED_TOP_PANEL_CODE (_ (_ offsetOnAxisX_S offsetOnAxisY_LS 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "RF")) NOTCHED_TOP_PANEL_CODE (_ (_ offsetOnAxisX_F offsetOnAxisY_RF 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "RS")) NOTCHED_TOP_PANEL_CODE (_ (_ offsetOnAxisX_S offsetOnAxisY_RS 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										)
+									)
+								)
+								((_EXISTPANEL FRONT_TOP_STRECHER_CODE)
+									; Front top strecher operations are performed in original recipe
+								)
+							)
+						)
+						((equal (_S2V (_& (_ "__DIV" formerDivIndex "_TYPE"))) "FS")
+							(_FSET (_ 'fixedShelfCODE (_& (_ (XSTR "NOTCHED_FIXED_SHELF") "_" formerDivIndex))))
+							(if (_EXISTPANEL fixedShelfCODE)
+								(progn
+									(if (null NO_NEED_HINGE_CONN_HOLES)
+										(progn
+											(_FSET (_ 'paramBody (_& (_ "NOTCHED_FIXED_SHELF_" formerDivIndex "_"))))
+											; Variables of current fixed shelf
+											(_FSET (_ 'fixedShelfWID (_S2V (_& (_ paramBody "WID")))))									
+											(_FSET (_ 'fixedShelfROT (_S2V (_& (_ paramBody "ROT")))))
+											(_FSET (_ 'fixedShelfMAT (_S2V (_& (_ paramBody "MAT")))))
+											(_FSET (_ 'fixedShelfTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+											(_FSET (_ 'fixedShelfPDATA (_S2V (_& (_ paramBody "PDATA")))))
+											
+											(_FSET (_ 'currentShelfCode (_CREATESFACEMAIN fixedShelfCODE (_ fixedShelfPDATA fixedShelfROT fixedShelfMAT fixedShelfTHICKNESS "Y"))))
+											
+											(_FSET (_ 'distanceToCenterLeft (- HINGE_DOWN_DISTANCE (/ (- currentDoorWID fixedShelfWID) 2.0))))
+											(_FSET (_ 'distanceToCenterRight (- HINGE_UP_DISTANCE (/ (- currentDoorWID fixedShelfWID) 2.0))))
+											
+											(_FSET (_ 'offsetOnAxisX_F HINGE_CONNECTION_HOLES_OFFSET))
+											(_FSET (_ 'offsetOnAxisX_S (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff)))
+											; Meaning of shortkeys	  L -> Left, R -> Right, F -> First, S -> Second
+											(_FSET (_ 'offsetOnAxisY_LF (_= "fixedShelfWID - distanceToCenterLeft + distOfConnHolesToCenter")))
+											(_FSET (_ 'offsetOnAxisY_LS (_= "fixedShelfWID - distanceToCenterLeft - distOfConnHolesToCenter")))
+											(_FSET (_ 'offsetOnAxisY_RF (+ distanceToCenterRight distOfConnHolesToCenter)))
+											(_FSET (_ 'offsetOnAxisY_RS (- distanceToCenterRight distOfConnHolesToCenter)))
+											
+											(_HOLE (_& (_ holeCodeBody "LF")) currentShelfCode (_ (_ offsetOnAxisY_LF offsetOnAxisX_F 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "LS")) currentShelfCode (_ (_ offsetOnAxisY_LS offsetOnAxisX_S 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "RF")) currentShelfCode (_ (_ offsetOnAxisY_RF offsetOnAxisX_F 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+											(_HOLE (_& (_ holeCodeBody "RS")) currentShelfCode (_ (_ offsetOnAxisY_RS offsetOnAxisX_S 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+				((_ISDOOROPENDOWN currentDoorTYPE)
+					(_FSET (_ 'nextDivIndex (+ __CURDIVORDER 1)))
+					(cond
+						((equal (_S2V (_& (_ "__DIV" nextDivIndex "_TYPE"))) "FS")
+							; Fixed shelf operations are performed in original recipe
+						)
+						((null (_S2V (_& (_ "__DIV" nextDivIndex))))
+							(_FSET (_ 'distanceToCenter (_= "HINGE_UP_DISTANCE + __DOORSSIDECLEAR - bottomSideStyleV2")))
+							(cond 
+								((_EXISTPANEL BOTTOM_PANEL_CODE)
+									; Bottom panel operations are performed in original recipe
+								)
+							)
+						)
+					)
+				)
+				(T
+					(if (or (equal currentDoorOpenDirection "L") NEED_HINGE_CONN_HOLES_ON_TWO_SIDES)
+						(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+							(progn
+								(if (null NO_NEED_HINGE_CONN_HOLES)
+									(progn
+										; Meaning of Shortkeys
+										; DD -> Down down, DU -> Down up, UD -> Up down, UU -> Up up. First one is about the position of hole group, second is about the locally positioning of holes
+										;(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + HINGE_DOWN_DISTANCE + SIDES_ASPIRATOR_STRETCH - bottomSideStyleV1")))
+										(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + HINGE_DOWN_DISTANCE + LEFT_PANEL_LOWER_VARIANCE - bottomSideStyleV1")))
+										(_HOLE (_& (_ holeCodeBody "DD")) NOTCHED_LEFT_PANEL_CODE (_ (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff LEFT_PANEL_FRONT_VARIANCE) (- doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "DU")) NOTCHED_LEFT_PANEL_CODE (_ (_ (+ HINGE_CONNECTION_HOLES_OFFSET LEFT_PANEL_FRONT_VARIANCE) (+ doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + currentDoorHEI + topSideFrameVAL + bottomSideFrameVAL - HINGE_UP_DISTANCE - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE")))
+										(_HOLE (_& (_ holeCodeBody "UD")) NOTCHED_LEFT_PANEL_CODE (_ (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff LEFT_PANEL_FRONT_VARIANCE) (- doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "UU")) NOTCHED_LEFT_PANEL_CODE (_ (_ (+ HINGE_CONNECTION_HOLES_OFFSET LEFT_PANEL_FRONT_VARIANCE) (+ doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+									)
+								)
+							)
+						)
+					)
+					(if (or (equal currentDoorOpenDirection "R") NEED_HINGE_CONN_HOLES_ON_TWO_SIDES)
+						(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+							(progn
+								(if (null NO_NEED_HINGE_CONN_HOLES)
+									(progn
+										;(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + HINGE_DOWN_DISTANCE + SIDES_ASPIRATOR_STRETCH - bottomSideStyleV1")))
+										(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + HINGE_DOWN_DISTANCE + RIGHT_PANEL_LOWER_VARIANCE - bottomSideStyleV1")))
+										(_HOLE (_& (_ holeCodeBody "DD")) NOTCHED_RIGHT_PANEL_CODE (_ (_ (_= "NOTCHED_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff - RIGHT_PANEL_FRONT_VARIANCE") (- doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "DU")) NOTCHED_RIGHT_PANEL_CODE (_ (_ (- NOTCHED_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET RIGHT_PANEL_FRONT_VARIANCE) (+ doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_FSET (_ 'doorRealELEV (_= "currentDoorStartFromBottom + currentDoorHEI + topSideFrameVAL + bottomSideFrameVAL - HINGE_UP_DISTANCE - bottomSideStyleV1 + RIGHT_PANEL_LOWER_VARIANCE")))
+										(_HOLE (_& (_ holeCodeBody "UD")) NOTCHED_RIGHT_PANEL_CODE (_ (_ (_= "NOTCHED_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff - RIGHT_PANEL_FRONT_VARIANCE") (- doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "UU")) NOTCHED_RIGHT_PANEL_CODE (_ (_ (- NOTCHED_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET RIGHT_PANEL_FRONT_VARIANCE) (+ doorRealELEV distOfConnHolesToCenter) 0) HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)

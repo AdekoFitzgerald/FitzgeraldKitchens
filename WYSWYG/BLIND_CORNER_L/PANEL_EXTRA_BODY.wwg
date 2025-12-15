@@ -1,0 +1,27 @@
+(setq akkgolaprofileH (1GolaLZHei))
+(setq akkgolaprofileD (1GolaLZDep))
+(setq akkgolaprofileZ (1GolaCBtwn))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+
+(createGPanel
+
+(list 
+(list 0.0 0.0 0.0)
+(list (- ADen2 ADDer ad_et) 0.0 0.0)
+(list (- ADen2 ADDer ad_et) (- unitH akkgolaprofileZ) 0.0)
+(list 0.0 (- unitH akkgolaprofileZ) 0.0)
+)
+nil
+ad_et
+0.0
+0.0
+(list  (- unitD2 (- ADEN1 unitW))(- (- unitD) ad_et) dAltKot)
+"PANEL_EXTRA_BODY"
+""
+nil
+"SIDE"
+(strcat kodBlock "_CAB_DOORS")
+"CAB_DOORS"
+"noedgedrawing"
+)

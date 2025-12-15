@@ -1,0 +1,25 @@
+(setq akkgolaprofileH (1GolaLZHei))
+(setq akkgolaprofileD (1GolaLZDep))
+(setq akkgolaprofileZ (1GolaCBtwn))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- aden1 gor_gen unitd2) 0.0 0.0)
+		(list (- aden1 gor_gen unitd2) (- unitH akkgolaprofileZ) 0.0)
+		(list 0 (- unitH akkgolaprofileZ) 0.0)
+	) 
+	nil
+	ad_et
+	0.0
+	(d2r 90.0)
+	(list (- (- unitW gor_GEN) (- aden1 gor_gen unitd2)) (- (- unitD) ad_et) dAltKot)
+	"PANEL_EXTRA_PART" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)

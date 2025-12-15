@@ -1,0 +1,76 @@
+; ASHELF_AND_DIVIDER_DEFAULT_LOADED has been set to nil, because another default set might have chosen in the division
+(_FSET (_ 'ASHELF_AND_DIVIDER_DEFAULT_LOADED nil))
+
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; Control for item variables
+		(if (equal DO_NOT_ADD_CONN_AS_ITEM T)
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(_FSET (_ 'QUANTITY_OF_ITEM 1))
+		)
+		; Upper case variables are used by other recipes
+		(_FSET (_ 'divisionCounter __CURDIVORDER))
+		(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+		(_FSET (_ 'numberOfDividers (length (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS"))))))
+		(_FSET (_ 'numberOfShelves (length (_S2V (_& (_ currentDivision "_SHELVESOFFSETS"))))))
+
+		(if (_S2V currentDivision)
+			(progn
+				; If current division shelf type is not hidden drawer operation will be performed
+				(_FSET (_ 'currentShelfType (_S2V (_& (_ currentDivision "_SHELFTYPE")))))
+				(if (not (equal currentShelfType 2))
+					(progn
+						(cond 
+							((> numberOfDividers 0)
+								(_FSET (_ 'codePattern T))
+								(_FSET (_ 'virtualDivisions (+ numberOfDividers 1)))
+								; This variable declares whether operation recipe is called by notch recipe or not
+								(_FSET (_ 'GROUP_HOLES_FOR_NOTCH nil))
+								(_FSET (_ 'performOperation T))
+							)
+							((> numberOfShelves 0)
+								(_FSET (_ 'codePattern nil))
+								(_FSET (_ 'virtualDivisions 1))
+								
+								(_FSET (_ 'GROUP_HOLES_FOR_NOTCH nil))
+								(_FSET (_ 'performOperation T))
+							)
+							(T
+								(_FSET (_ 'performOperation nil))
+							)
+						)
+						; Call for operation
+						(if (_NOTNULL performOperation)
+							(progn
+								; Global data container for further operations is created here
+								(_FSET (_ 'DIVIDER_SHELF_OP_DATA (_ divisionCounter codePattern virtualDivisions numberOfShelves numberOfDividers)))
+								
+								(cond
+									((equal ASHELF_OPERATION "PIN")
+										(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_PIN" T "p2chelper")
+									)
+									((equal ASHELF_OPERATION "RAFIX")
+										(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_RAFIX" T "p2chelper")
+									)
+									((equal ASHELF_OPERATION "DOWEL")
+										(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_DOWEL" T "p2chelper")
+									)
+									((equal ASHELF_OPERATION "MINIFIX")
+										(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_MINIFIX" T "p2chelper")
+									)
+									((equal ASHELF_OPERATION "CABINEO")
+										(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\50-ADJUSTABLE_SHELVES\\ASHELF_CABINEO" T "p2chelper")
+									)
+								)				
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

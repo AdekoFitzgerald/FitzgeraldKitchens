@@ -1,0 +1,107 @@
+(_RUNDEFAULTHELPERRCP "BLUMFIX_DEFAULT" nil "p2chelper")
+
+WARDROBE_BLUMFIX_VER_HOLE_DIA -> "Diameter of vertical wardrobe blumfix drill holes. Default value -> BLUMFIX_VER_DIAMETER"
+WARDROBE_BLUMFIX_VER_HOLE_DEPTH -> "Depth of vertical wardrobe blumfix drill holes. Default value -> BLUMFIX_VER_DEPTH"
+WARDROBE_BLUMFIX_HOR_HOLE_DIA -> "Diameter of horizontal wardrobe blumfix drill holes. Default value -> BLUMFIX_HOR_DIAMETER"
+WARDROBE_BLUMFIX_HOR_HOLE_DEPTH -> "Depth of horizontal wardrobe blumfix drill holes. Default value -> BLUMFIX_HOR_DEPTH"
+;prevars
+(_SETA 'WARDROBE_BLUMFIX_VER_HOLE_DIA BLUMFIX_VER_DIAMETER)
+(_SETA 'WARDROBE_BLUMFIX_VER_HOLE_DEPTH BLUMFIX_VER_DEPTH)
+(_SETA 'WARDROBE_BLUMFIX_HOR_HOLE_DIA BLUMFIX_HOR_DIAMETER)
+(_SETA 'WARDROBE_BLUMFIX_HOR_HOLE_DEPTH BLUMFIX_HOR_DEPTH)
+
+(if (not (equal BLUMFIX_DIA nil)) (_FSET (_ 'WARDROBE_BLUMFIX_VER_HOLE_DIA (convertLengthToSpecifiedUnit BLUMFIX_DIA (getvar "INSUNITS") 4))))
+(if (not (equal BLUMFIX_DEP nil)) (_FSET (_ 'WARDROBE_BLUMFIX_VER_HOLE_DEPTH (convertLengthToSpecifiedUnit BLUMFIX_DEP (getvar "INSUNITS") 4))))
+(if (not (equal BLUMFIX_DIA2 nil)) (_FSET (_ 'WARDROBE_BLUMFIX_HOR_HOLE_DIA (convertLengthToSpecifiedUnit BLUMFIX_DIA2 (getvar "INSUNITS") 4))))
+(if (not (equal BLUMFIX_DEP2 nil)) (_FSET (_ 'WARDROBE_BLUMFIX_HOR_HOLE_DEPTH (convertLengthToSpecifiedUnit BLUMFIX_DEP2 (getvar "INSUNITS") 4))))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			
+			(cond
+				((_ISVERTICALFACE currentFaceNormal)
+			
+					(setq axisToChange nil)
+					(foreach WPanelUsageSubType (splitStrTkn (ifnull (get_mdata g_currentConnectorEnt k:WPanelUsageSubTypes ) "") WPanelUsageSubTypes_SEPERATOR)
+						(if (checkStrInStr "axisToChange:" WPanelUsageSubType)
+							(progn
+								(setq axisToChange (cadr (splitStrTkn WPanelUsageSubType ":")))
+							)
+						)
+					)
+					(cond
+						((equal axisToChange "X+")
+							(setq holePosition (replace (+ (getnth 0 holePosition) BLUMFIX_DELTAC) 0 holePosition))
+						)
+						((equal axisToChange "X-")
+							(setq holePosition (replace (- (getnth 0 holePosition) BLUMFIX_DELTAC) 0 holePosition))
+						)
+						((equal axisToChange "Y+")
+							(setq holePosition (replace (+ (getnth 1 holePosition) BLUMFIX_DELTAC) 1 holePosition))
+						)
+						((equal axisToChange "Y-")
+							(setq holePosition (replace (- (getnth 1 holePosition) BLUMFIX_DELTAC) 1 holePosition))
+						)
+						( T ; FROM KOAT 
+							(setq blumfixConnectorRotationAngle (atof axisToChange))
+							(setq holePosition (VectorAdd holePosition (rotatepoint (_ 0.0 BLUMFIX_DELTAC 0.0) blumfixConnectorRotationAngle (_ 0 0 0) )))
+						)
+					)			
+
+					(setq holePosition (replace 0 2 holePosition))
+					; Type of current face is either 0 or 1 in this case
+					(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_BLUMFIX_CONN_HOLE"))))
+					(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_BLUMFIX_VER_HOLE_DIA WARDROBE_BLUMFIX_VER_HOLE_DEPTH holeOrient))
+
+				
+
+				)
+				((_ISHORIZONTALFACE currentFaceNormal)
+					(if (> (abs (getnth 2 holePosition)) (/ (cu2mm (min (get_mdata g_currentmodulent k:wid) (get_mdata g_currentmodulent k:hei) (get_mdata g_currentmodulent k:dep))) 2))
+						(progn
+							(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+							
+							(if (null (minusp (getnth 2 holePosition)))
+								(progn 
+									(setq panelThickness (cu2mm (min (get_mdata g_currentmodulent k:wid) (get_mdata g_currentmodulent k:hei) (get_mdata g_currentmodulent k:dep))))
+									(setq holePosition (replace (- (- panelThickness (convertLengthToSpecifiedUnit BLUMFIX_D (getvar "INSUNITS") 4)) panelThickness ) 2 holePosition))
+								)
+							)
+						)
+						(progn
+							(if (null (minusp (getnth 2 holePosition)))
+								(setq holePosition (replace (* (convertLengthToSpecifiedUnit BLUMFIX_D (getvar "INSUNITS") 4) -1) 2 holePosition))
+							)
+						)
+					)
+					; Type of current face either 2, 3, 4 or 5 in this case
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_BLUMFIX_HOR_HOLE"))))
+					(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_BLUMFIX_HOR_HOLE_DIA WARDROBE_BLUMFIX_HOR_HOLE_DEPTH holeOrient))
+				)
+			)
+			
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+	)
+)
+(_NONOTCH)

@@ -1,0 +1,24 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(_FSET (_ 'FIXED_SHELF_OP_CONTROL operationControl))
+		(_FSET (_ 'standardHingeControl (/ (rem FIXED_SHELF_OP_CONTROL (* SHINGE_OPERATION_VAL 10)) SHINGE_OPERATION_VAL)))
+		(_FSET (_ 'extraHingeControl (/ (rem FIXED_SHELF_OP_CONTROL (* EHINGE_OPERATION_VAL 10)) EHINGE_OPERATION_VAL)))
+		
+		(if (equal standardHingeControl 1)
+			(progn
+				; It means that there is a not finished standard hinge operation for current fixed shelf
+				(_RUNHELPERRCP "DV\\20-BUILD\\30-OPERATIONS\\10-HOLES\\30-FIXED_SHELF\\FIXED_SHELF_HINGE_STANDARD" T "p2chelper")
+			)
+		)
+		(if (equal extraHingeControl 1)
+			(progn
+				; It means that there is a not finished extra hinge operation for current fixed shelf
+				(_RUNHELPERRCP "DV\\20-BUILD\\30-OPERATIONS\\10-HOLES\\30-FIXED_SHELF\\FIXED_SHELF_HINGE_EXTRA" T "p2chelper")
+			)
+		)
+		
+	)
+)
+(_NONOTCH)

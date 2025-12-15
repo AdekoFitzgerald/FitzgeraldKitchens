@@ -1,0 +1,33 @@
+	(setq GOLA_PARTS1_PANEL_MAT	(cu2mm (getnth 3 currentGola)))
+	(setq gola_EItem1_CodeC	(strcat currentGolaCode "_EndItem_Corner_" GOLA_PARTS1_PANEL_MAT)) ; kose donus
+	(setq gola_EItem1_CodeL	(strcat currentGolaCode "_EndItem_Left_" GOLA_PARTS1_PANEL_MAT)) ; sol kapa
+	(setq gola_EItem1_CodeR	(strcat currentGolaCode "_EndItem_Right_" GOLA_PARTS1_PANEL_MAT)) ; sag kapa
+
+	(if (or currentGolaShareStart currentGolaShareEnd)
+		(progn
+			(if currentGolaShareEnd
+				(progn
+					(_ITEMMAIN gola_EItem1_CodeC gola_EItem1_CodeC (list 1 "pc"))
+					(_ITEMMAIN gola_EItem1_CodeL gola_EItem1_CodeL (list 1 "pc"))
+				)
+			)
+			(if currentGolaShareStart
+				(progn
+					(_ITEMMAIN gola_EItem1_CodeR gola_EItem1_CodeR (list 1 "pc"))
+				)
+			)
+		)
+		(progn
+			(_ITEMMAIN gola_EItem1_CodeL gola_EItem1_CodeL (list 1 "pc"))
+			(_ITEMMAIN gola_EItem1_CodeR gola_EItem1_CodeR (list 1 "pc"))
+		)
+	)
+	
+	(mapcar '(lambda (x) (set x nil)) '(
+		GOLA_PARTS1_PANEL_MAT
+		gola_EItem1_CodeC
+		gola_EItem1_CodeL
+		gola_EItem1_CodeR
+	))
+
+(_NONOTCH)

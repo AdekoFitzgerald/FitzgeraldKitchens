@@ -1,0 +1,35 @@
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list unitD 0.0 0.0) (list unitD unitH 0.0) (list 0.0 unitH 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list 0.0 0.0 dAltKot) "ornek1" "" nil "SIDE" (strcat kodBlock "_LEFT"))		
+
+
+	(createGPanel (list (list 0.0 0.0 0.0) (list unitD 0.0 0.0) (list unitD unitH 0.0) (list 0.0 unitH 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list (- unitW ad_et) 0.0 dAltKot) "ornek1" "" nil "SIDE" (strcat kodBlock "_RIGHT"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW ad_et ad_et) 0.0 0.0) (list (- unitW ad_et ad_et) unitD 0.0) (list 0.0 unitD 0.0)) (list 0.0 0.0 0.0 0.0) ad_et 0.0 0.0 (list ad_et 0.0 dAltKot) "ornek1_bottom" "" nil "SHELF" (strcat kodBlock "_STRECHER"))
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  ad_et ad_et) 0.0 0.0) (list (- unitW  ad_et ad_et) 10.0 0.0) (list 0.0 10.0 0.0)) (list 0.0 0.0 0.0 0.0 ) ad_et (* -1 DEG_90) 00.0 (list ad_et (-  10.0 ad_et) (+ unitH dAltKot)) "ornek1" "" nil "SHELF" (strcat kodBlock "_NAILER"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  ad_et ad_et) 0.0 0.0) (list (- unitW  ad_et ad_et) 10.0 0.0) (list 0.0 10.0 0.0)) (list 0.0 0.0 0.0 0.0 ) ad_et 0.0 0.0 (list ad_et (+ 10 (* -1 unitD))  (+ (- unitH ad_et) dAltKot)) "body_bottom_panel00" "" nil "SHELF" (strcat kodBlock "_BOTTOM"))
+	
+
+	
+	(createGPanel (list (list 0.0 0.0 0.0) (list (- unitW  0.9 0.9) 0.0 0.0) (list (- unitW  0.9 0.9) (- unitH 10.0  0.9) 0.0) (list 0.0 (- unitH 10.0  0.9) 0.0)) (list 0.0 0.0 0.0 0.0 ) 0.5 0.0 0.0 (list (* 0.5 ad_et) (* -0.5 ad_et)  (+ 0.9 dAltKot)) "general_back_panel" "" nil "PANEL" (strcat kodBlock "_BACK"))
+	
+	(mapcar 'set '(divType  divH   doorCount	divdoorH   divdoortype  divDoorName handledivpos  divShelfList   divDividerList  divShelfType drawerRcp divauxRcpsList divDwgParamsList divDoorAnimateScript) Parameters)
+	
+	
+	;tip   : A= Duz kapak B=Camli C=Cekmece D=Ic Kivrik
+	;        E=Dis Kivrik F=Serit Camli G=Stor Z=Z kapak(=> EN='(en wid1 wid2 deltaY))
+	;kulp  : Kulp yonu (K)uzey KD (D)ogu GD (G)uney (O)rta (K2) Kuzeyde 2 (O2) Ortada 2
+	;(setq doorId (kapak_ciz tipAndModel kulp ox oy oz en boy orient rotang))
+	;(setq doorId (kapak_ciz "A" "G-" 0.0 0.0 0.0 20.0 30.0 nil 0.0))
+	(setq doorId (kapak_ciz "S" "G-" (* 40.0 0.5) ADDer 0.0 40.0 15.0 nil 0.0))
+	
+	;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+	(setq doorsPropList (cons (list 0.0  15.0 40.0 "G-" "S" nil 0 doorId)  doorsPropList))
+	

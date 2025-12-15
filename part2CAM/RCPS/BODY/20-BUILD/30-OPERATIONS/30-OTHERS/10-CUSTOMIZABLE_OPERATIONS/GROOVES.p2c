@@ -1,0 +1,42 @@
+; Modul connectors defaults
+PANEL_CODE_LIST -> "Panel code list to be grooved. Format: (_ CODE1 CODE2 ...)"
+
+GROOVE_PARAMETERS_LIST -> "List of grooves and parameters. Format: (_ (_ (_ (_ (_ Groove_Start_X Groove_Start_Y Groove_Start_Z) (_ Groove_Stop_X Groove_Stop_Y Groove_Stop_Z) Groove_Width Groove_Depth) ...))) Ex: (_ (_ (_ (_ (_ 0 20 0) (_ 10 20 0) 9 8.0) ...)))"
+
+;prefvars
+(_SETA 'PANEL_CODE_LIST (_ "SOL_PANEL" "SAG_PANEL" ))
+
+(setq panelCounter 0)
+(while (< panelCounter (length PANEL_CODE_LIST))
+
+	(_FSET (_ 'PANEL_CODE (getnth panelCounter PANEL_CODE_LIST)))
+	
+	; Operations
+	(if (_EXISTPANEL PANEL_CODE)
+		(progn
+			; Panel dimensions info
+			(_FSET (_ 'PANELINFO (getBBox (_EXISTPANEL PANEL_CODE))))
+			(_FSET (_ 'WID (getnth 2 PANELINFO)))
+			(_FSET (_ 'HEI (getnth 3 PANELINFO)))
+
+			(_SETA 'GROOVE_PARAMETERS_LIST (_ (_ (_ (_ (_ 0 (- HEI 2.5) 0) (_ WID (- HEI 2.5) 0)) 5 6.5))
+												(_ (_ (_ (_ 0 (- HEI 2.5) 0) (_ WID (- HEI 2.5) 0)) 5 6.5)) ))
+
+			; Hole operations
+			(_FSET (_ 'grooveCounter 0))
+			(while (< grooveCounter (length (getnth panelCounter GROOVE_PARAMETERS_LIST)))
+				(_FSET (_ 'currentGroove (getnth grooveCounter (getnth panelCounter GROOVE_PARAMETERS_LIST))))
+
+				(_GROOVE (_& (_ "CUSTOMIZED_GROOVE_" (+ grooveCounter 1))) PANEL_CODE currentGroove)
+				
+				(_FSET (_ 'grooveCounter (+ 1 grooveCounter)))
+			)
+		)
+	)
+
+	(setq panelCounter (+ 1 panelCounter))
+)
+
+(_NONOTCH)
+
+

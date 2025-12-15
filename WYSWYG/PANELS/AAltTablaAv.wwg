@@ -1,0 +1,21 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW 3.6) 0.0 0.0) 
+(list (- unitW 3.6) unitD 0.0) 
+(list 0.0 unitD 0.0) 
+) 
+nil
+ad_et
+0.0
+;(d2r 90.0)
+0.0
+(list ad_et 0.0 dAltKot)
+"ALT_TABLA"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+)

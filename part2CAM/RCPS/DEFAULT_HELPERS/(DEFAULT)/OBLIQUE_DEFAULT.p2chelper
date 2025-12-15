@@ -1,0 +1,28 @@
+;prefvars
+(_IFNULLSET 'IRREGULAR_EDGE_LAYER nil)
+		
+; Standard Values, IRREGULAR_EDGE_LAYER nil
+; According to module type parameters related with oblique unit parts are changed
+(cond 
+	((equal __MODULTYPE "BE")
+		(_FSET (_ 'OBLIQUE_UNIT_CONTROL T))
+		
+		(_FSET (_ 'OBLIQUE_CODE_ROOT (XSTR "TALL_OBLIQUE")))
+		(_FSET (_ 'OBLIQUE_PARAM_ROOT "TALL_OBLIQUE"))
+		(_FSET (_ 'OBLIQUE_UNIT_DEF "TO"))
+		(_FSET (_ 'OBLIQUE_DOOR_PARAM_ROOT "TO_CDOOR"))
+	)
+	((equal __MODULTYPE "UE")
+		(_FSET (_ 'OBLIQUE_UNIT_CONTROL T))
+		
+		(_FSET (_ 'OBLIQUE_CODE_ROOT (XSTR "WALL_OBLIQUE")))
+		(_FSET (_ 'OBLIQUE_PARAM_ROOT "WALL_OBLIQUE"))
+		(_FSET (_ 'OBLIQUE_UNIT_DEF "WO"))
+		(_FSET (_ 'OBLIQUE_DOOR_PARAM_ROOT "WO_CDOOR"))
+	)
+	(T
+		(_FSET (_ 'OBLIQUE_UNIT_CONTROL nil))
+	)
+)
+
+(_NONOTCH)

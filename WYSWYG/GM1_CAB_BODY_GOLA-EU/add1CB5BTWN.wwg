@@ -1,0 +1,3 @@
+
+(setq modulgolaOrderList (append modulgolaOrderList (list (_ (gm1_divHei 5 (+ 1GolaCZBot (* ZBtwn 0.5))) "1gola_profileC" T))))
+															;(gm1_divHei bölümnumarasý yukarýkaldýrma) "profilismi")		;^ en sondaki T parametresi gola aradamý diye belirtir.

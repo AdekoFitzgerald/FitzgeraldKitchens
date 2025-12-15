@@ -1,0 +1,3 @@
+GENERAL_BACK_PANEL_THICKNESS -> "Thickness of back panels"
+GENERAL_BACK_PANEL_MATERIAL -> "Material of back panels"
+BACK_PANEL_MAT_EXTENSION -> "Merge material of back panel with material of module body"

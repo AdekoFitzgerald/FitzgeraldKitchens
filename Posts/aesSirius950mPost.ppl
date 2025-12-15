@@ -1,0 +1,1042 @@
+(setq doSirius950mHOLECam nil)
+(defun doSirius950mHOLECam (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia mHoleDepth tempHoleDepth tempHolePos  
+																				  opOpName opTool opFeedRate tempHolePosWorld ikiyuzon sideOrigin
+																				   tempPanelLength tempPanelWidth tempHolePosSide  
+																				    )
+	(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+	(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq ikiyuzon (getEntPro tempEnt 210))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opTool (nth 1 tempCAMStyle));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 tempCAMStyle))
+	(setq opFeedRate (nth 3 tempCAMStyle))
+	(cond
+		((equal "TOP" (substr entLayerName 1 3))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 3))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 3))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 3))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 3))
+			
+			;optimition of preload wheel if machine moving along X axis up preload whell
+			(if (not (equal (nth 0 AESSiriusCurrentPos)(nth 0 tempHolePos)))
+				(princ "\nM85" ancFile) ;MULTIDRILLs UUP
+			)
+			
+			(princ (sprintf "\nG0 X~s Y~s" (list mHoleX mHoleY)) file)
+			(princ (sprintf "\nM~s" (list opTool)) file)
+			(princ (sprintf "\nG1 Z-~s ~s" (list mHoleDepth opFeedRate)) file)
+			;if diameter bigger den 15mm add the delay 
+			(if (> mHoleDia 15.0) (princ (sprintf "\nG04 F~s" (_ (lmm_convertNumtoStringWithDigit aesSirius_waitBottomOfHole 1))) file)) ; Eðer delik çapý 15 den büyükse delik sonunda biraz bekle
+			(princ (sprintf "\nG0 Z~s" (_ (lmm_convertNumtoStringWithDigit aesSirius_safetyPlane 3))) file)
+			(setq AESSiriusCurrentPos (_ (nth 0 tempHolePos) (nth 1 tempHolePos) aesSirius_safetyPlane))
+		)
+		((equal "LEF" (substr entLayerName 1 3))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempHolePos (VectorAdd (list  0.0 (nth 1 tempHolePos)  (nth 2 tempHolePos)) (list (- aesSirius_approachSideHoleDistance) 0.0 0.0 )))	
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 3))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 3))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 3))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 3))
+			(princ (sprintf "\nG0 X~s Y~s" (list mHoleX mHoleY)) file)
+			(princ (sprintf "\nM~s" (list opTool)) file)
+			(princ (sprintf "\nG0 Z~s" (list mHoleZ)) file)
+			(princ (sprintf "\nG1 X~s ~s" (list mHoleDepth opFeedRate)) file)
+			(princ (sprintf "\nG0 X~s" (list mHoleX)) file)
+			(setq AESSiriusCurrentPos tempHolePos)
+		)
+		((equal "RIG" (substr entLayerName 1 3))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempHolePos (VectorAdd (list  tempPanelLength (nth 1 tempHolePos) (nth 2 tempHolePos)) (list aesSirius_approachSideHoleDistance 0.0 0.0 )))	
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 3))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 3))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 3))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 3))
+			(princ (sprintf "\nG0 X~s Y~s" (list mHoleX mHoleY)) file)
+			(princ (sprintf "\nM~s" (list opTool)) file)
+			(princ (sprintf "\nG0 Z~s" (list mHoleZ)) file)
+			(princ (sprintf "\nG1 X~s ~s" (list (lmm_convertNumtoStringWithDigit (- tempPanelLength tempHoleDepth) 3) opFeedRate)) file)
+			(princ (sprintf "\nG0 X~s" (list mHoleX)) file)
+			(setq AESSiriusCurrentPos tempHolePos)
+		)
+		((equal "REA" (substr entLayerName 1 3))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempHolePos (VectorAdd (list  (nth 0 tempHolePos) tempPanelWidth (nth 2 tempHolePos)) (list 0.0 aesSirius_approachSideHoleDistance 0.0 )))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 3))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 3))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 3))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 3))
+			(princ (sprintf "\nG0 X~s Y~s" (list mHoleX mHoleY)) file)
+			(princ (sprintf "\nM~s" (list opTool)) file)
+			(princ (sprintf "\nG0 Z~s" (list mHoleZ)) file)
+			(princ (sprintf "\nG1 Y~s ~s" (list (lmm_convertNumtoStringWithDigit (- tempPanelWidth tempHoleDepth) 3) opFeedRate)) file)
+			(princ (sprintf "\nG0 Y~s" (list mHoleY)) file)
+			(setq AESSiriusCurrentPos tempHolePos)
+		)
+		((equal "FRO" (substr entLayerName 1 3))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempHolePos (VectorAdd (list  (nth 0 tempHolePos) 0.0 (nth 2 tempHolePos)) (list 0.0 (- aesSirius_approachSideHoleDistance) 0.0 )))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 3))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 3))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 3))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 3))
+			(princ (sprintf "\nG0 X~s Y~s" (list mHoleX mHoleY)) file)
+			(princ (sprintf "\nM~s" (list opTool)) file)
+			(princ (sprintf "\nG0 Z~s" (list mHoleZ)) file)
+			(princ (sprintf "\nG1 Y~s ~s" (list mHoleDepth opFeedRate)) file)
+			(princ (sprintf "\nG0 Y~s" (list mHoleY)) file)
+			(setq AESSiriusCurrentPos tempHolePos)
+		)
+		;; AES Sirius can not do bottom drill
+	)
+	;(princ (sprintf "\n\"-->> X~s Y~s Z~s" (list (lmm_convertNumtoStringWithDigit (getnth 0 AESSiriusCurrentPos) 3) 
+	;										(lmm_convertNumtoStringWithDigit (getnth 1 AESSiriusCurrentPos) 3) 
+	;										(lmm_convertNumtoStringWithDigit (getnth 2 AESSiriusCurrentPos) 3))) file)
+	(princ)
+)
+
+(setq divideGroveByMaxXVal nil)
+(defun divideGroveByMaxXVal (val /  startPoint endPoint step0 step1 step2 funcReturn)
+	(setq 	startPoint (nth 0 val)
+			endPoint (nth 1 val)
+			step0 nil
+			step1 nil
+			step2 nil )
+	
+	(setq step0 (list startPoint ))
+	
+	(if (> (nth 0 endPoint)  (+ PUSHERPOSITION 640.0))
+		(progn
+			(setq step0 (append step0 (list (list (+ PUSHERPOSITION 640.0) (nth 1 endPoint) 0.0))))
+			(if (> (nth 0 endPoint)  (+ PUSHERPOSITION 1950.0))
+				(progn
+					(setq step1 (list (last step0)))
+					(setq step1 (append step1 (list (list (+ PUSHERPOSITION 1950.0) (nth 1 endPoint) 0.0))))
+				)
+				(progn
+					(setq step2 (list (last step1)))
+					(setq step2 (append step1 (list endPoint)))
+				)
+			)
+		)
+		(progn
+			(setq step0 (append step0 (list endPoint)))
+		)
+	)
+	
+	(setq funcReturn (list step0))	
+	(if step1  (setq funcReturn (append funcReturn (list step1))) )
+	(if step2  (setq funcReturn (append funcReturn (list step2))) )
+	funcReturn
+)
+
+
+(setq isPLinePointsAlongByXAxis nil)
+(defun isPLinePointsAlongByXAxis ( plentity / tempPoints startPoint tempPoint polylineIsStraitAlongByXAxis)
+	
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq tempPoints (lmm_getPolylinePoints plentity))
+	(setq startPoint (nth 0 tempPoints))
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+				;(setq errMessage (strcat (lmm_getLMMdata cPnl lmm-k-customCode) " Paneline Testere iþelemi uygulayamadým. \n Testere X ekseni Boyunce deðil.\nPaneli çevirmeyi deneyiniz." ))
+			)
+		)
+	)
+	polylineIsStraitAlongByXAxis
+)
+
+; this function does not scrooleble operation . you need to be sure current entity points are does not overflow the current working field (it mean (R172=1) or (R172=2))
+(setq doSirius950mSAWAlongX nil)
+(defun doSirius950mSAWAlongX (currentEnt entLayerName tempCAMStyle currentPanel file / polylineIsStraitAlongByXAxis tempPoints  startPoint
+															tempPoint endPoint tempEndPoint tempDepth  errMessage
+															    groovesTempPoints iter)
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq tempPoints (lmm_getPolylinePoints currentEnt))
+	(setq startPoint (nth 0 tempPoints))
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+				(setq errMessage (strcat (lmm_getLMMdata cPnl lmm-k-customCode) " Paneline Testere iþelemi uygulayamadým. \n Testere X ekseni Boyunce deðil.\nPaneli çevirmeyi deneyiniz." ))
+			)
+		)
+	)
+	
+	(if (and (< (nth 1 startPoint) 70.0) polylineIsStraitAlongByXAxis)
+		(progn
+			(setq polylineIsStraitAlongByXAxis nil)		
+			(setq errMessage (strcat (lmm_getLMMdata cPnl lmm-k-customCode) " Paneline Testere iþelemi uygulayamadým.\n Testere iþlemi çenelere çarpýyor. \nPaneli çevirmeyi deneyiniz." ))
+		)
+	)
+
+	(if polylineIsStraitAlongByXAxis
+		(progn
+			(setq endPoint (last tempPoints))
+			(if (> (nth 0 startPoint) (nth 0 endpoint))
+				(progn
+					(setq tempEndPoint endPoint)
+					(setq endPoint startPoint)
+					(setq startPoint tempEndPoint)
+				)
+			)
+			(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+			(cond 
+				( (equal "CENTER" (nth 3 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (nth 7 tempCAMStyle)))
+					(setq endPoint (VectorAdd endPoint (nth 7 tempCAMStyle)))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "INSIDE" (nth 3 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (* (nth 4 tempCAMStyle) -1) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (* (nth 4 tempCAMStyle) -1) 0) ))
+					(setq startPoint (VectorAdd startPoint (nth 7 tempCAMStyle)))
+					(setq endPoint (VectorAdd endPoint (nth 7 tempCAMStyle)))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "OUTSIDE" (nth 3 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (nth 4 tempCAMStyle) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (nth 4 tempCAMStyle) 0) ))
+					(setq startPoint (VectorAdd startPoint (nth 7 tempCAMStyle)))
+					(setq endPoint (VectorAdd endPoint (nth 7 tempCAMStyle)))
+					(setq tempPoints (list startPoint endPoint))
+				)
+			)
+			(setq groovesTempPoints (list (list startPoint endPoint) ))
+			
+			(princ "\nM85" file)
+			(princ "\nM87" file)
+			(princ (sprintf "\nM06T~s" (list (nth 1 tempCAMStyle))) file)
+			(princ "\nM16" file)
+			(princ "\nG0 Z30.000" file)
+
+			(foreach step groovesTempPoints
+				(setq startPoint (nth 0 step))
+				(setq endPoint (nth 1 step))
+				(princ (sprintf "\nG0 X~s Y~s" (list  (lmm_convertNumtoStringWithDigit (getnth 0 startPoint) 3)
+														(lmm_convertNumtoStringWithDigit (getnth 1 startPoint) 3) )) file)
+				(princ (sprintf "\nM~s" (list  (nth 1 tempCAMStyle))) file)
+				(princ (sprintf "\nG1 Z~s ~s" (list (lmm_convertNumtoStringWithDigit (+ (- tempDepth) (getnth 2 startPoint)) 3) 
+														(nth 6 tempCAMStyle))) file)
+				(princ (sprintf "\nG1 X~s Y~s Z~s ~s" (list  (lmm_convertNumtoStringWithDigit (getnth 0 endPoint) 3)
+																(lmm_convertNumtoStringWithDigit (getnth 1 endPoint) 3) 
+																(lmm_convertNumtoStringWithDigit (+ (- tempDepth) (getnth 2 startPoint)) 3)
+																(nth 5 tempCAMStyle) )) file)
+				(princ "\nG0 Z30.000" file)
+				(princ "\nM85" file)
+			)
+		)
+		(progn
+			(alert errMessage)
+		)
+	)
+	
+	(princ)
+)
+
+(setq doSirius950mSAWAlongY nil)
+(defun doSirius950mSAWAlongY (currentEnt entLayerName tempCAMStyle currentPanel file / )
+	(princ)
+)
+
+(setq doSirius950mCONTOURCam nil)
+(defun doSirius950mCONTOURCam (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								tempDepth stepOfPasses bottomZComponent topZComponent stepZComponets
+								spindleSpeed cutFeedRate plungeFeedRate currentTool iteration tempPoint
+								currentZLevel tempPoints tempPointsWB bulgeOfSegment firstPoint secondPoint firstSecondNormal 
+								fieldPoint deleteHelper ijkOfSegment helperEntity)
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq spindleSpeed (nth 9 tempCAMStyle))
+	(setq cutFeedRate (nth 10 tempCAMStyle))
+	(setq plungeFeedRate (nth 11 tempCAMStyle))
+	(setq currentTool (nth 1 tempCAMStyle))
+	(cond
+		( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints  (lmm_getPolylinePoints currentEnt) )
+			(setq helperEntity currentEnt)
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	
+	(if (not (equal lastUsedTool currentTool))
+		(progn
+			(princ "\nM05" file)
+			(princ (sprintf "\nM6T~s" (list currentTool)) file)
+			(princ "\nG0 Z20.000" file)
+			(princ "\n$M39" file)
+			(princ (sprintf "\n~s M03" (list spindleSpeed)) file)
+			(setq lastUsedTool currentTool)
+		)
+	)
+	(princ (sprintf "\nG0 Z~s" (list (lmm_convertNumtoStringWithDigit aesSirius_safetyPlane 3))) file)
+	(foreach currentZLevel stepZComponets
+		(setq iteration 1)
+		(foreach tempPoint tempPoints
+			
+			(cond
+				; first move 
+				( (equal 1 iteration)
+					(princ (sprintf "\nG0 X~s Y~s" (list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+														 (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+													)) 
+					file)
+					(princ "\nM23" file)
+					(princ (sprintf "\nG1 Z30.000 ~s" (list plungeFeedRate )) file)
+					(princ (sprintf "\nG1 Z~s ~s" (list (lmm_convertNumtoStringWithDigit currentZLevel 3) plungeFeedRate )) file)
+				)
+				
+				; middle moves
+				( (and (< 1 iteration) (> (length tempPoints) iteration))
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal 0.0 bulgeOfSegment)
+							(princ (sprintf "\nG1 X~s Y~s Z~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq ijkOfSegment (nth 1 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+							(princ (sprintf "\nG2 X~s Y~s Z~s I~s J~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															(lmm_convertNumtoStringWithDigit (nth 0 ijkOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 ijkOfSegment) 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq ijkOfSegment (nth 1 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+							(princ (sprintf "\nG3 X~s Y~s Z~s I~s J~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															(lmm_convertNumtoStringWithDigit (nth 0 ijkOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 ijkOfSegment) 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+					)
+					
+					
+				)
+				
+				; last moves
+				( (equal (length tempPoints) iteration)
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal 0.0 bulgeOfSegment)
+							(princ (sprintf "\nG1 X~s Y~s Z~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq ijkOfSegment (nth 1 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+							(princ (sprintf "\nG2 X~s Y~s Z~s I~s J~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															(lmm_convertNumtoStringWithDigit (nth 0 ijkOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 ijkOfSegment) 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq ijkOfSegment (nth 1 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+							(princ (sprintf "\nG3 X~s Y~s Z~s I~s J~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															(lmm_convertNumtoStringWithDigit currentZLevel 3)
+															(lmm_convertNumtoStringWithDigit (nth 0 ijkOfSegment) 3)
+															(lmm_convertNumtoStringWithDigit (nth 1 ijkOfSegment) 3)
+															cutFeedRate
+													)) 
+							file)
+						)
+					)
+					
+					(princ "\nG0 Z30.000" file)
+				)
+			)
+			(setq iteration (+ 1 iteration))
+			(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+		)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+	(princ )
+	
+)
+
+(setq PUSHERPOSITION 0.0)
+(setq aesSirius_safetyPlane 30.0) ; üst deliklere, testere ve freze yaklaþma mesafesi
+(setq aesSirius_approachSideHoleDistance 30.0) ; yandeliklere yaklaþma mesafesi
+(setq aesSirius_waitBottomOfHole 0.3) ; 0.3 saniye büyük delikler 
+
+(setq aesSirius950Fields nil)
+(setq pusherSizes (list 125 25)) ; x,y
+
+
+(defun directlyAddIfNoNeedToSplit ( geoEnt fields / field fieldBuff fieldsBuff tempPoints x0 x1 point addToField inndex)
+	(setq tempPoints (lmm_getPolylinePoints geoEnt))
+	(setq fieldsBuff fields)
+	(setq inndex 0)
+	(foreach field fields
+		(setq x0 (car (car field)))
+		(setq x1 (cadr (car field)))
+		(setq addToField T)
+		(foreach point tempPoints
+			(if addToField
+				(if (not (and (<= x0 (nth 0 point)) (>= x1 (nth 0 point))))
+					(setq addToField nil)
+				)
+			)
+		)
+		(if addToField
+			(progn
+				(setq entList (cadr field))
+				(setq newField (_ (car field) (append entList (_ geoEnt)) ))
+				(setq fieldsBuff (subst newField (nth inndex fieldsBuff) fieldsBuff))
+			)
+		)
+		(setq inndex (1+ inndex))
+	)
+	fieldsBuff
+)
+
+(defun splitGrooveForScrollMilling ( groove fields / field newfield tempPoints x0 x1 point fieldIndex pointIndex newGrooves 
+													lineStartPoint LineEndPoint fieldLineList buffLineList addLine )
+	;check grove type must be single line
+	(setq tempPoints (lmm_getPolylinePoints groove))
+	(setq fieldLineList nil)
+	(foreach field fields
+		(setq fieldLineList (append fieldLineList (_ (_ ))))
+	)
+	(setq pointIndex 0)
+	(foreach point tempPoints
+		(if (< pointIndex (1- (length tempPoints))) ; each line
+			(progn
+				(setq fieldIndex 0)
+				(foreach field fields
+					(setq lineStartPoint (nth pointIndex tempPoints)
+						LineEndPoint (nth (1+ pointIndex) tempPoints)
+					)
+					(setq x0 (car (car field)))
+					(setq x1 (cadr (car field)))
+					(setq addLine T)
+					(cond 
+						((equal fieldIndex 0) ; firsth field
+							(if (and (> (car lineStartPoint) x1) (> (car lineEndPoint) x1)) 
+								(setq addLine nil)
+								(progn
+									(if (> (car lineStartPoint) x1); line end point in the first field
+										(setq lineStartPoint (_ x1 (nth 1 lineStartPoint) (nth 2 lineStartPoint) ))
+									)
+									(if (> (car lineEndPoint) x1) ; line start point in the first field
+										(setq lineEndPoint (_ x1 (nth 1 lineEndPoint) (nth 2 lineEndPoint) ))
+									)
+								)
+							)							
+						)
+						((equal fieldIndex (1- (length fields))) ; last filed
+							(if (and (< (car lineStartPoint) x0) (< (car lineEndPoint) x0)) 
+								(setq addLine nil)
+								(progn
+									(if (< (car lineStartPoint) x0) ; line end point in the first field
+										(setq lineStartPoint (_ x0 (nth 1 lineStartPoint) (nth 2 lineStartPoint) ))
+									)
+									(if (< (car lineEndPoint) x0) ; line start point in the first field
+										(setq lineEndPoint (_ x0 (nth 1 lineEndPoint) (nth 2 lineEndPoint) ))
+									)
+								)
+							)
+						)
+						( T
+							(if (or (and (< (car lineStartPoint) x0) (< (car lineEndPoint) x0)) 
+										(and (> (car lineStartPoint) x1) (> (car lineEndPoint) x1)))
+								(setq addLine nil)
+								(progn
+									(if (> (car lineStartPoint) x1)  
+										(setq lineStartPoint (_ x1 (nth 1 lineStartPoint) (nth 2 lineStartPoint) ))
+									)
+									(if (< (car lineStartPoint) x0)  
+										(setq lineStartPoint (_ x0 (nth 1 lineStartPoint) (nth 2 lineStartPoint) ))
+									)
+									(if (< (car lineEndPoint) x0)
+										(setq lineEndPoint (_ x0 (nth 1 lineEndPoint) (nth 2 lineEndPoint) ))
+									)
+									(if (> (car lineEndPoint) x1)
+										(setq lineEndPoint (_ x1 (nth 1 lineEndPoint) (nth 2 lineEndPoint) ))
+									)
+								)
+							)
+						)
+					)
+					(if addLine
+						(progn
+							(if (equal (nth fieldIndex fieldLineList) nil)
+								(progn
+									(setq buffLineList nil)
+									(setq buffLineList (append buffLineList (_ lineStartPoint )))
+									(setq buffLineList (append buffLineList (_ lineEndPoint )))
+									(setq fieldLineList(replace buffLineList fieldIndex fieldLineList))
+								)
+								(progn
+									(setq buffLineList (nth fieldIndex fieldLineList))
+									(setq buffLineList (append buffLineList (_ lineEndPoint )))
+									(setq fieldLineList (replace buffLineList fieldIndex fieldLineList))
+								)
+							)
+						)
+					)
+					
+					(setq fieldIndex (1+ fieldIndex))
+				)
+			)
+		)
+		(setq pointIndex (1+ pointIndex))
+	)
+	;(AES_lmm_setPolylinePoints groove (nth))
+	;(entmake (entget newTempEnt (list "*")))
+	(setq stepOfAdditing 0)
+	(foreach points fieldLineList
+		(if points
+			(progn
+				(setq fieldIndex (selectFieldToAdd points fields))
+				(if (equal 0 stepOfAdditing)
+					(progn
+						(AES_lmm_setPolylinePoints groove points)
+						(setq boundX0X1 (car (nth fieldIndex fields)))
+						(setq buffEntities (cadr (nth fieldIndex fields)))
+						(setq buffEntities (append buffEntities (_ groove)))
+						(setq fields (subst  (_ boundX0X1 buffEntities)  (nth fieldIndex fields) fields))
+					)
+					(progn
+						(entmake (entget groove (list "*")))
+						(AES_lmm_setPolylinePoints (entlast) points)
+						(setq boundX0X1 (car (nth fieldIndex fields)))
+						(setq buffEntities (cadr (nth fieldIndex fields)))
+						(setq buffEntities (append buffEntities (_ (entlast))))
+						(setq fields (subst  (_ boundX0X1 buffEntities)  (nth fieldIndex fields) fields))
+					)
+				)
+				(setq stepOfAdditing (1+ stepOfAdditing))
+			)
+		)
+	)
+	fields
+)
+
+(defun selectFieldToAdd (line F / x1 x2 x3 x4 selectedFieldIndex fi fieldIndex)
+	(setq fieldIndex 0)
+	(setq x3 (nth 0 (nth 0 line)))
+	(setq x4 (nth 0 (nth 1 line)))
+	(foreach fi F
+		(setq x1 (nth 0 (nth 0 fi)))
+		(setq x2 (nth 1 (nth 0 fi)))
+		;((x1 <= x3 ) and (x2 >= x3)) and ((x1 <= x4 ) and (x2 >= x4))
+		(if (and (and (<= x1 x3) (>= x2 x3)) (and (<= x1 x4) (>= x2 x4)))
+			(setq selectedFieldIndex fieldIndex)
+		)
+		
+		(setq fieldIndex (1+ fieldIndex))
+	)
+	selectedFieldIndex
+)
+
+(defun divideFields ( cPnl / tempPanelLength tempPanelSS tempPanelSSList tempDerivedLayerName isRightHoleExist
+							 rtnVal buffRtnVal tempEntLmmKType ikiyuzon tempHolePos x0 x1
+							fieldBound fiedEntities index field)
+							
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	; examine panel if has right hole extend panel legth with side hole approach distance
+	(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(setq isRightHoleExist nil)
+	(foreach tempEnt tempPanelSSList
+		(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+			(progn 
+				(setq tempDerivedLayerName (aesInterpretHoleLayerName tempEnt))
+				(if (equal (substr tempDerivedLayerName 1 5) "RIGHT") (setq isRightHoleExist T))
+			)
+		)
+	)
+	(if isRightHoleExist (setq tempPanelLength (+ tempPanelLength aesSirius_approachSideHoleDistance)))
+	; here is the dividing
+	(if (< tempPanelLength 1040.0) (setq rtnVal (_ (_ (_ 0.0 1040.0 )))))
+	(if (and (>= tempPanelLength 1040.0)  (< tempPanelLength 2350.0) )
+		(setq rtnVal (_ (_ (_ 0.0 1040.0))
+						(_ (_ 1040.0 2350.0)) ))
+	)
+	(if (>= tempPanelLength 2350.0) 
+		(setq rtnVal (_  (_ (_ 0.0 1040.0)) 
+						 (_ (_ 1040.0 2350.0)) 
+						 (_ (_ 2350.0 3200.0)) 	))
+	)
+	(if (> tempPanelLength 3200.0) (setq rtnVal nil))
+	
+	;split up the entities to fields
+	(if rtnVal
+		(progn
+			(foreach tempEnt tempPanelSSList
+				;get actual layer names
+				(setq tempEntLmmKType (lmm_getLMMdata tempEnt lmm-k-type))
+				(if (equal tempEntLmmKType "HOLE")
+					(progn 
+						(setq tempDerivedLayerName (aesInterpretHoleLayerName tempEnt))
+					)
+					(progn 
+						(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+					)
+				)
+				(cond
+					((equal tempEntLmmKType "HOLE")
+						(cond
+							;direcly add first filed
+							((equal (substr tempDerivedLayerName 1 4) "LEFT")
+								(setq fieldBound (car (car rtnVal)))
+								(setq fiedEntities (cadr (car rtnVal)))
+								(setq fiedEntities (append fiedEntities (_ tempEnt)))
+								(setq rtnVal (subst (_ fieldBound fiedEntities) (car rtnVal)  rtnVal))
+							)
+							
+							;direcly add last filed
+							((equal (substr tempDerivedLayerName 1 5) "RIGHT")
+								(setq fieldBound (car (nth (1- (length rtnVal)) rtnVal)))
+								(setq fiedEntities (cadr (nth (1- (length rtnVal)) rtnVal)))
+								(setq fiedEntities (append fiedEntities (_ tempEnt)))
+								(setq rtnVal (subst (_ fieldBound fiedEntities) (nth (1- (length rtnVal)) rtnVal)  rtnVal))
+							)
+							
+							; top rear and back holes are split up according to teir world positions
+							; todo: check hole positions are crashing with pusher
+							( T
+								(setq tempHolePos (getEntPro tempEnt 10))
+								(setq ikiyuzon (getEntPro tempEnt 210))
+								(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+								(setq index 0)
+								(setq buffRtnVal rtnVal)
+								(foreach field buffRtnVal
+									(setq fieldBound (car field))
+									(setq x0 (car  fieldBound))
+									(setq x1 (cadr fieldBound))
+									(if (and (>= (car tempHolePos) x0) (< (car tempHolePos) x1))
+										(progn
+											(setq fiedEntities (cadr (nth index rtnVal)))
+											(setq fiedEntities (append fiedEntities (_ tempEnt)))
+											(setq rtnVal (subst (_ fieldBound fiedEntities) (nth index rtnVal)  rtnVal))
+										)
+									)
+									(setq index (1+ index))
+								)
+							)
+						)
+					)
+					( (equal tempEntLmmKType "GROOVE")
+						(setq rtnVal (splitGrooveForScrollMilling  tempEnt rtnVal))
+					)
+					( (equal tempEntLmmKType "PANEL_SIZING")
+						(setq rtnVal (splitGrooveForScrollMilling  tempEnt rtnVal))
+					)
+					( (equal tempEntLmmKType "POCKET")
+						(setq rtnVal (directlyAddIfNoNeedToSplit tempEnt rtnVal))
+					)
+				)
+				(princ "\n" )				
+			)
+		)
+	)
+	
+	rtnVal
+)
+
+(setq lastUsedTool nil)
+(setq sendAESSirius950m nil)
+(setq AESSiriusActiveGMCodes nil) ;format =  (_ "M??" "M??")
+(setq AESSiriusCurrentPos (list 0.0 0.0 0.0))
+(setq layerrrr "")
+
+(defun sendAESSirius950m (cPnl machineProcedures / machineName ancFilesPath tempPanelName tempPanelDepth tempPanelLength
+												tempPanelWidth tempPanelWidthOverrided ancFile currentOp previousOpLayer tempEnt tempOpLayerName tempOpOpName tempPanelSS 
+												tempPanelSSList tempDerivedLayerName tempPoints  field fieldIndex fieldSS
+												)
+	(setq aesSirius950Fields nil)
+	(setq AESSiriusActiveGMCodes nil)
+	(setq AESSiriusCurrentPos (list 0.0 0.0 0.0))
+	(setq machineName "AES_Sirius950m")
+	(setq ancFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	(setq aesSirius950Fields (divideFields cPnl))
+	
+	(if aesSirius950Fields
+		(progn 
+			(createDir (strcat ancFilesPath machineName "\\" ))
+			(setq ancFile (open (strcat ancFilesPath machineName "\\" (lmm_getDXFFileNameByFileMode (list cPnl)) ) "w"))
+			(princ (sprintf "(R170=~s)" (list (lmm_convertNumtoStringWithDigit tempPanelLength 2))) ancFile) ;-> LENGTH
+			;Eðer witdh 150 den düþükse parçanýn witdhini 150 ye çekmek gerekiyor aksi takdirde cnc duruyor. (AES den gelen bilgi)
+			(if (< tempPanelWidth 150)
+				(setq tempPanelWidthOverrided 150) 
+				(setq tempPanelWidthOverrided tempPanelWidth)
+			)
+			(princ (sprintf "\n(R169=~s)" (list (lmm_convertNumtoStringWithDigit tempPanelWidthOverrided 2))) ancFile) ;-> WIDTH
+			
+			(if (< tempPanelLength 800)
+				(setq PUSHERPOSITION 200) 
+				(setq PUSHERPOSITION 400)
+			)
+			(princ (sprintf "\n(R173=~s)" (list  (lmm_convertNumtoStringWithDigit PUSHERPOSITION 2) )) ancFile);->PUSHER POSITION
+			(princ "\nL M7" ancFile) ;-> Starting position
+			(setq AESSiriusActiveGMCodes (_ "M7"))
+			(princ "\nM12" ancFile) ;-> open dust motor
+			(setq AESSiriusActiveGMCodes (append AESSiriusActiveGMCodes (_ "M12")))
+			(princ "\nM85" ancFile) ;->CANCELED ACTIVE DRILL HEAD(UP) 
+			(setq AESSiriusActiveGMCodes (append AESSiriusActiveGMCodes (_ "M85")))
+			
+			(setq fieldIndex 0)
+			(foreach field aesSirius950Fields
+			
+				(if (or (equal fieldIndex 1) (equal fieldIndex 2))
+					(progn
+						(if (< (nth 2 AESSiriusCurrentPos) aesSirius_safetyPlane)
+							(princ (sprintf "\nG0 Z~s" (_ (lmm_convertNumtoStringWithDigit aesSirius_safetyPlane 3))) ancFile)
+							(setq AESSiriusCurrentPos (_ (nth 0 AESSiriusCurrentPos) (nth 1 AESSiriusCurrentPos) aesSirius_safetyPlane))
+						)
+						;check M85 (multidrill up) check M88 multidrill motor off
+						(if (member "M87" AESSiriusActiveGMCodes)
+							(progn 
+								(princ "\nM85" ancFile)
+								(setq AESSiriusActiveGMCodes (subst "M85" "M87" AESSiriusActiveGMCodes))
+							)
+						)
+					)
+				)
+				
+				(cond 
+					((equal fieldIndex 1)
+						(setq lastUsedTool nil)
+						(princ "\n(R172=1)" ancFile)
+						(princ "\nLLOAD" ancFile)
+					)
+					((equal fieldIndex 2)
+						(setq lastUsedTool nil)
+						(princ "\n(R172=2)" ancFile)
+						(princ "\nLLOAD" ancFile)
+					)
+				)
+				(foreach currentOp machineProcedures
+					(setq tempOpLayerName (nth 0 currentOp))
+					(setq layerrrr tempOpLayerName)
+					(setq tempOpOpName (nth 2 currentOp))
+					(setq fieldSS (cadr field))
+					(foreach tempEnt fieldSS
+						(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+							(progn 
+								(setq tempDerivedLayerName (aesInterpretHoleLayerName tempEnt))
+							)
+							(progn 
+								(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+							)
+						)
+						
+						;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+						(if (not (member tempDerivedLayerName ad_AESIgnoreLayerNameList))
+							(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) ad_AllEntities))
+								(setq ad_AllEntities (append ad_AllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+							)
+						)
+						
+						(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+							(progn
+								(cond
+									((member  tempOpOpName (list "LEFT_HOLE" "FRONT_HOLE" "RIGHT_HOLE" "REAR_HOLE" "TOP_HOLE" ))
+										(setq lastUsedTool nil)
+										(if (not (equal previousOpLayer tempOpLayerName)) 
+											(progn
+												;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+												(if (not (member "M85" AESSiriusActiveGMCodes))
+													(progn
+														(princ "\nM85" ancFile) ;MULTIDRILLs UUP
+														(setq AESSiriusActiveGMCodes (subst "M85" "M87" AESSiriusActiveGMCodes))
+													)
+												)
+												(princ "\nM87" ancFile) ;MULTIDRILL MOTOR ON & PISTON DOWN
+												(setq AESSiriusActiveGMCodes (subst "M87" "M85" AESSiriusActiveGMCodes))
+												(princ (sprintf "\nM06T~s" (list (nth 1 currentOp))) ancFile)
+												(princ "\nM16" ancFile)
+												(princ "\nG0 Z40.00" ancFile)
+												(setq AESSiriusCurrentPos (_ (nth 0 AESSiriusCurrentPos) (nth 1 AESSiriusCurrentPos) 40.0))
+												(setq previousOpLayer tempOpLayerName)
+											)
+										)
+										(doSirius950mHOLECam tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+										
+										;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+										(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									) 
+									((equal tempOpOpName "SAWX") ;testere iþlemi
+										(setq lastUsedTool nil)
+										(if (not (equal previousOpLayer tempOpLayerName)) 
+											(progn
+												;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+												(princ "\nM85" ancFile)
+												(setq previousOpLayer tempOpLayerName)
+											)
+										)
+										; Eðer entity noktlarý y si  150 mm den küçükse veya entity noktlarý X ekseni boyunca deðilse testere yanaþmýyor onun yerine freze ile iþleyelim
+										(setq tempPoints (lmm_getPolylinePoints tempEnt))
+										(if (or (not (isPLinePointsAlongByXAxis tempEnt)) (< (nth 1 (car tempPoints)) 150))
+											(doSirius950mCONTOURCam tempEnt tempDerivedLayerName ad_alternativeMillingOperation cPnl ancFile)
+											(doSirius950mSAWAlongX tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+										)
+										;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+										(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+									)
+									((equal tempOpOpName "CONTOUR") ;freze iþlemi
+										(if (not (equal previousOpLayer tempOpLayerName)) 
+											(progn
+												;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+												(princ "\nM85" ancFile)
+												(setq previousOpLayer tempOpLayerName)
+											)
+										)
+										(doSirius950mCONTOURCam tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+										;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+										(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+									)
+								)
+							)
+						)
+						
+					)
+					(if (member (substr tempOpLayerName 1 3) (list "LEF" "RIG" "REA" "FRO" "TOP") )
+						(progn
+							(if (equal previousOpLayer tempOpLayerName)
+								(princ "\nG0 Z40.00" ancFile)
+								(setq AESSiriusCurrentPos (_ (nth 0 AESSiriusCurrentPos) (nth 1 AESSiriusCurrentPos) 40.0))
+							)
+						)
+					)
+				)
+				
+				(setq fieldIndex (1+ fieldIndex))
+			)
+			
+			(princ "\nM85" ancFile)
+			(princ "\nM88" ancFile)
+			(princ "\nM05" ancFile)
+			(princ "\nL GFINPRO.ISC" ancFile)
+			(princ "\nM02" ancFile)
+			(close ancFile)
+		)
+		(progn 
+			(alert (strcat tempPanelName " paneli tek sefede islemek icin cok buyuk.\nPanel Boyu > 3200 olmamali." ))
+		)
+	)
+	
+	
+	;(if (< tempPanelLength 1030)
+	;(progn
+	;	(createDir (strcat ancFilesPath machineName "\\" ))
+	;	(setq ancFile (open (strcat ancFilesPath machineName "\\" (lmm_getDXFFileNameByFileMode (list cPnl)) ) "w"))
+	;	(princ (sprintf "(R170=~s)" (list (lmm_convertNumtoStringWithDigit tempPanelLength 2))) ancFile) ;-> LENGTH
+	;	
+	;	;Eðer witdh 150 den düþükse parçanýn witdhini 150 ye çekmek gerekiyor aksi takdirde cnc duruyor. (AES den gelen bilgi)
+	;	(if (< tempPanelWidth 150)
+	;		(setq tempPanelWidthOverrided 150) 
+	;		(setq tempPanelWidthOverrided tempPanelWidth)
+	;	)
+	;	(princ (sprintf "\n(R169=~s)" (list (lmm_convertNumtoStringWithDigit tempPanelWidthOverrided 2))) ancFile) ;-> WIDTH
+	;	
+	;	(if (< tempPanelLength 1000)
+	;		(setq PUSHERPOSITION 200) 
+	;		(setq PUSHERPOSITION 400)
+	;	)
+	;	
+	;	(princ (sprintf "\n(R173=~s)" (list  (lmm_convertNumtoStringWithDigit PUSHERPOSITION 2) )) ancFile);->PUSHER POSITION
+	;	
+	;	(princ "\nL M7" ancFile) ;-> Starting position
+	;	(princ "\nM12" ancFile) ;-> open dust motor
+	;	(princ "\nM85" ancFile) ;->CANCELED ACTIVE DRILL HEAD(UP)
+	;	
+	;	(setq previousOpLayer nil)
+	;	(foreach currentOp machineProcedures
+	;		(setq tempOpLayerName (nth 0 currentOp))
+	;		;(setq tempOpToolName (nth 1 currentOp))
+	;		(setq tempOpOpName (nth 2 currentOp))
+	;		(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	;		(setq tempPanelSSList (convertSStolist tempPanelSS))
+	;		
+	;		(foreach tempEnt tempPanelSSList
+	;			(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+	;				(progn 
+	;					(setq tempDerivedLayerName (aesInterpretHoleLayerName tempEnt))
+	;				)
+	;				(progn 
+	;					(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+	;				)
+	;			)
+	;			
+	;			;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+	;			(if (not (member tempDerivedLayerName ad_AESIgnoreLayerNameList))
+	;				(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) ad_AllEntities))
+	;					(setq ad_AllEntities (append ad_AllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+	;				)
+	;			)
+	;			
+	;			
+	;			(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+	;				(progn
+	;					(cond 
+	;						((member  tempOpOpName (list "LEFT_HOLE" "FRONT_HOLE" "RIGHT_HOLE" "REAR_HOLE" "TOP_HOLE" ))
+	;							(if (not (equal previousOpLayer tempOpLayerName)) 
+	;								(progn
+	;									;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+	;									(princ "\nM85" ancFile) ;MULTIDRILL MOTOR ON & PISTON DOWN
+	;									(princ "\nM87" ancFile) ;MULTIDRILL MOTOR ON & PISTON DOWN
+	;									(princ (sprintf "\nM06T~s" (list (nth 1 currentOp))) ancFile)
+	;									(princ "\nM16" ancFile)
+	;									(princ "\nG0 Z40.00" ancFile)
+	;									(setq previousOpLayer tempOpLayerName)
+	;								)
+	;							)
+	;							(doSirius950mHOLECam tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+	;							
+	;							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+	;							(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+	;						) 
+	;						((equal tempOpOpName "SAWX") ;testere iþlemi
+	;							(if (not (equal previousOpLayer tempOpLayerName)) 
+	;								(progn
+	;									;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+	;									(princ "\nM85" ancFile)
+	;								)
+	;							)
+	;							; Eðer entity noktlarý y si  150 mm den küçükse veya entity noktlarý X ekseni boyunca deðilse testere yanaþmýyor onun yerine freze ile iþleyelim
+	;							(setq tempPoints (lmm_getPolylinePoints tempEnt))
+	;							(if (or (not (isPLinePointsAlongByXAxis tempEnt)) (< (nth 1 (car tempPoints)) 150))
+	;								(doSirius950mCONTOURCam tempEnt tempDerivedLayerName ad_alternativeMillingOperation cPnl ancFile)
+	;								(doSirius950mSAWAlongX tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+	;							)
+	;							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+	;							(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+	;						)
+	;						((equal tempOpOpName "SAWY") ;testere iþlemi
+	;							(if (not (equal previousOpLayer tempOpLayerName)) 
+	;								(progn
+	;									;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+	;									(princ "\nM85" ancFile)
+	;								)
+	;							)
+	;							(doSirius950mSAWAlongY tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+	;							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+	;							(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+	;						)
+	;						((equal tempOpOpName "CONTOUR") ;freze iþlemi
+	;							(if (not (equal previousOpLayer tempOpLayerName)) 
+	;								(progn
+	;									;(princ (sprintf "\n;~s katman isleniyor" (_ tempOpLayerName )) ancFile)
+	;									(princ "\nM85" ancFile)
+	;								)
+	;							)
+	;							(doSirius950mCONTOURCam tempEnt tempDerivedLayerName currentOp cPnl ancFile)
+	;							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+	;							(setq ad_NotFreeEntities (append ad_NotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+	;						)
+	;					)
+	;				)
+	;			)
+	;		
+	;		)
+	;		
+	;		(if (member (substr tempOpLayerName 1 3) (list "LEF" "RIG" "REA" "FRO" "TOP") )
+	;			(progn
+	;				(if (equal previousOpLayer tempOpLayerName)
+	;					(princ "\nG0 Z40.00" ancFile)
+	;				)
+	;			)
+	;		)
+	;		
+	;		
+	;	)
+	;	
+	;	
+	;	(princ "\nM85" ancFile)
+	;	(princ "\nM88" ancFile)
+	;	(princ "\nM05" ancFile)
+	;	(princ "\nL GFINPRO.ISC" ancFile)
+	;	(princ "\nM02" ancFile)
+	;	(close ancFile)
+	;	
+	;)
+	;(progn
+	;	(alert (strcat tempPanelName " paneli tek sefede iþlemek için çok büyük.\n" ))
+	;)
+	;)
+)
+
+(defun AES_lmm_setPolylinePoints (polylineent newPointList / tempentlist pointList i result)
+	(changeEntPro polylineent 90 (length newPointList))
+	(setq tempentlist (entget polylineent (list "*")) result nil i 0 pointList (list nil))
+	(foreach point newPointList
+		(Setq pointList (append (reverse (list (cons 10 point) (cons 40 0.0) (cons 41 0.0) (cons 42 0.0))) pointlist))
+	)
+	(mapcar '(lambda (x) (if (or (equal (car x) 10)  (equal (car x) 40) (equal (car x) 41) (equal (car x) 42)) (setq tempentlist (remove x tempentlist)) ))  tempentlist)
+	(mapcar '(lambda (x) (setq i (+ i 1)) (if (equal (car x) 210) (setq resultInsertIndex  i))) tempentlist)		
+	(mapcar '(lambda (x) (if x (setq tempentlist  (insmemb x (+ 0 resultInsertIndex) tempentlist)))) pointList)	
+	(entmod tempentlist) 
+)
+
+(princ)

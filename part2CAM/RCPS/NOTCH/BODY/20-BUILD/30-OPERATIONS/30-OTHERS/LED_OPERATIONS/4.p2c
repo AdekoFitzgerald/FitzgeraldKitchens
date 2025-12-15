@@ -1,0 +1,24 @@
+(if LED_GROOVE_IS_AVAILABLE
+	(progn
+		(if (equal BOTTOM_PANEL_JOINT_TYPE 0)
+			(progn
+				(if (and (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE))
+					(progn
+						(_FSET (_ 'grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (/ WID_OF_LED_GROOVE 2))))
+
+						(_GROOVE "LEFT_PANEL_LED_GROOVE" NOTCHED_LEFT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS 0 0) 
+																						(_ grooveDistanceBTS DEPTH_OF_LED_GROOVE 0)) WID_OF_LED_GROOVE LEFT_PANEL_THICKNESS))	
+					)
+				)
+				(if (and (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE))
+					(progn
+						(_FSET (_ 'grooveDistanceBTS (+ RIGHT_PANEL_BACK_VARIANCE DIST_OF_LED_GROOVE (/ WID_OF_LED_GROOVE 2))))
+
+						(_GROOVE "RIGHT_PANEL_LED_GROOVE" NOTCHED_RIGHT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS 0 0) 
+																							(_ grooveDistanceBTS DEPTH_OF_LED_GROOVE 0)) WID_OF_LED_GROOVE RIGHT_PANEL_THICKNESS))	
+					)
+				)
+			)
+		)
+	)
+)

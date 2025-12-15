@@ -1,0 +1,24 @@
+(setq wwg_kayitEni (cm 10.0))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) wwg_kayitEni 0.0) 
+		(list 0.0 wwg_kayitEni 0.0) 
+	) 
+	nil
+	ad_et
+	(d2r 90.0)
+	0.0
+	;0.0
+	(list ad_et (- ad_et) (+ dAltKot (cm 54.0)))
+	"PANEL_TOP_NAILER"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)

@@ -1,0 +1,24 @@
+(setq golaPatternList (if modulgolaOrderList (_GETGOLAORDER (ifnull modulgolaOrderList  "gola_horizProfileOrder_CAB_BODY")))
+(setq isThereGolaProfile (if golaPatternList (_GETGOLACLEARANCE golaPatternList ad_adh) 0.0)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list 
+		(list ad_et 0.0 0.0) 
+		(list (- unitW ad_et) 0.0 0.0) 
+		(list (- unitW ad_et) (- unitD isThereGolaProfile) 0.0) 
+		(list ad_et (- unitD isThereGolaProfile) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	0.0
+	(list 0.0 0.0 (+ dAltKot (- ad_adh ad_et)))
+	"PANEL_FIX_SHELF"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_" gm1:layerName)
+	gm1:layerName
+	"noedgedrawing"
+)

@@ -1,0 +1,53 @@
+;prefvars
+(_IFNULLSET 'BACK_PANEL_TILL_END nil)
+
+; CONTINGENCIES
+; BACK_PANEL_TILL_END
+(if (null (member BACK_PANEL_TILL_END (_ nil T))) (_FSET (_ 'BACK_PANEL_TILL_END T)))
+		
+; Standard Values, BACK_PANEL_TILL_END nil
+; PRILIMINARY CONTROLS
+(cond
+	((equal __MODULTYPE "AB")
+		(_FSET (_ 'ENDING_UNIT_CONTROL T))
+		; For now there is no specific parameters for module type
+		; Like oblique unit modules, parameters will be created in here
+	)
+	((equal __MODULTYPE "UB")
+		(_FSET (_ 'ENDING_UNIT_CONTROL T))
+		; For now there is no specific parameters for module type
+		; Like oblique unit modules, parameters will be created in here
+	)
+	(T
+		(_FSET (_ 'ENDING_UNIT_CONTROL nil))
+	)
+)
+; If module type is valid then preliminary controls are performed
+(if (_NOTNULL ENDING_UNIT_CONTROL)
+	(progn
+		; Sub-type of ending unit is determined via AB_EXTRA_SIDE_AVAILABLE parameter
+		(_FSET (_ 'AB_EXTRA_SIDE_AVAILABLE nil))
+		(if (_NOTNULL __CURDIVDOORSLIST)
+			(progn
+				(_FSET (_ 'currentDoorType (getnth 4 (getnth 0 __CURDIVDOORSLIST))))
+				(if (or (equal currentDoorType "E") (equal currentDoorType "K"))
+					(_FSET (_ 'AB_EXTRA_SIDE_AVAILABLE T))
+				)
+			)
+		)
+		; According to existance of extra side we can determine the global variables of ending unit
+		(if (_NOTNULL AB_EXTRA_SIDE_AVAILABLE)
+			(progn
+				; WES is the shortage of With Extra Side
+				(_FSET (_ 'AB_MODULE_SUBTYPE "WES"))
+			)
+			(progn
+				; NES is the shortage of No Extra Side
+				(_FSET (_ 'AB_MODULE_SUBTYPE "NES"))
+			)
+		)
+	)
+)
+; If there is no preference used in current module then preliminary controls are not performed again
+
+(_NONOTCH)

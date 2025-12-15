@@ -1,0 +1,75 @@
+(_RUNDEFAULTHELPERRCP "HINGE_DEFAULT" nil "p2chelper")
+
+WARDROBE_DOWN_HINGE_CODE -> "Wardrobe door hinge code for open down door"
+
+WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER -> "Diameter of big hinge hole. Default value -> BIG_HOLE_DIAMETER"
+WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER -> "Diameter of small hinge hole. Default value -> SMALL_HOLES_DIAMETER"
+WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X -> "Offset from big hole center to small hole center. Default value -> BIG_TO_SMALLS_OFFSET_X"
+WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET -> "Offset between center of small holes. Default value -> SMALL_TO_SMALL_OFFSET"
+WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH -> "Depth of big hinge hole. Default value -> BIG_HOLE_DEPTH"
+WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH -> "Depth of small hinge hole. Default value -> SMALL_HOLES_DEPTH"
+
+;prevars
+(_SETA 'WARDROBE_DOWN_HINGE_CODE "HINGE_STANDARD")
+
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER BIG_HOLE_DIAMETER)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER SMALL_HOLES_DIAMETER)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X BIG_TO_SMALLS_OFFSET_X)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET SMALL_TO_SMALL_OFFSET)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH BIG_HOLE_DEPTH)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH SMALL_HOLES_DEPTH)
+
+(if (not (equal HINGE_DIA1 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER (convertLengthToSpecifiedUnit HINGE_DIA1 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DIA2 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER (convertLengthToSpecifiedUnit HINGE_DIA2 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_X11 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X (convertLengthToSpecifiedUnit HINGE_X11 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_Y11 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET (convertLengthToSpecifiedUnit HINGE_Y11 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DEP1 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH (convertLengthToSpecifiedUnit HINGE_DEP1 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DEP2 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH (convertLengthToSpecifiedUnit HINGE_DEP2 (getvar "INSUNITS") 4))))
+(_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_Y (/ WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET 2.0)))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (equal (length targetPanels) 1)
+	(progn
+		(_FSET (_ 'tPanelInfo (getnth 0 targetPanels)))
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+		(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+		(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+		(_FSET (_ 'hingeDirection "Y-"))
+
+		(if (_ISVERTICALFACE currentFaceNormal)
+			(progn
+				(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+					(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+					(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+				)
+				(setq holePosition (replace 0 2 holePosition))	; z axis
+				
+				(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "HINGE_CUP_DOWN_HOLE"))))
+				
+				(if (setq CURRENT_DOOR_FRAMES  (eval (read (strcat (dfetch 5 g_currentModulEnt) "_FRAME"))))
+					(progn
+						(if	(setq CURRENT_DOOR_FRAME_LEFT (getnth 3 CURRENT_DOOR_FRAMES))
+							(setq holePosition (polar holePosition DEG_180 CURRENT_DOOR_FRAME_LEFT))
+						)
+						(if	(setq CURRENT_DOOR_FRAME_BOTTOM (getnth 2 CURRENT_DOOR_FRAMES))
+							(setq holePosition (polar holePosition DEG_270 CURRENT_DOOR_FRAME_BOTTOM))
+						)
+					)
+				)
+				
+				(if (not (equal VARS1.HINGE_DO_NOT_DRILL_DOOR_HOLES 1))
+					(_HINGEMAIN holeCodeBody  connectedFaceCode (_ holePosition hingeDirection WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_Y WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH))
+				)
+				
+				(_ITEMMAIN WARDROBE_DOWN_HINGE_CODE connectedFaceCode (_ 1 HINGE_UNIT))
+				
+			)
+		)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

@@ -1,0 +1,24 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitD ad_et) 0.0 0.0) 
+(list (- unitD ad_et) unitW 0.0) 
+(list 0.0 unitW 0.0 ) 
+) 
+nil
+
+ad_et 
+0.0 
+(d2r 90.0)
+
+(list 0.0 (- unitD) dAltKot)
+
+"KAPAMA_ALTI" 
+"" 
+nil 
+"SHELF" 
+(strcat kodBlock "_CAB_BODY_WALL")
+"CAB_BODY_WALL"
+"noedgedrawing"
+)

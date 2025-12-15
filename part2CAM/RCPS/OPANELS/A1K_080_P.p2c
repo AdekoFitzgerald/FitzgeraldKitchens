@@ -1,0 +1,4 @@
+(_PANEL (lmm_readEvalIfSet "#KAYIT") (_ (lmm_convertToRealIfReal (lmm_readEvalIfSet "11")) (lmm_convertToRealIfReal (lmm_readEvalIfSet "22")) 0.0 (lmm_readEvalIfSet "__MODULBODYMAT") (lmm_convertToRealIfReal (lmm_readEvalIfSet "5")))) 
+(_EDGELEFT "EDGESTRIP_1" (lmm_readEvalIfSet "#KAYIT") (_ (lmm_readEvalIfSet "PVC1mm")  (lmm_convertToRealIfReal (lmm_readEvalIfSet "1")))) 
+(_USEPREMADEDRAWS)
+(_NONOTCH)

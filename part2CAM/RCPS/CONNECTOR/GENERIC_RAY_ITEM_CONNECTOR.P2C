@@ -1,0 +1,12 @@
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (> (length targetPanels) 0)
+	(progn
+		(_SETCURMODUL (car (car targetPanels)))
+		(if (setq k_code (get_mdata g_currentConnectorEnt k:code))
+			(_ITEMMAIN k_code k_code (list 0.5 "tkm"))
+		)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

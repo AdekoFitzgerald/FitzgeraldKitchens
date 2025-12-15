@@ -1,0 +1,154 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+
+(if IS_THINNING_OP_AVAILABLE_FOR_BOTTOM
+	(progn
+		(if (null USE_PROJECT_PRICING_RECIPES)
+			(progn
+				(if (and (_NOTNULL CURRENT_DRAWER_DATA) (> THINNING_WIDTH_BOTTOM 0) (> THINNING_DEPTH_BOTTOM 0))
+					(progn
+						(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+						(if (equal currentDrawerOrder __CURDIVORDER)
+							(progn
+								(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+								(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+								(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+								; Bottom panel of drawer is determined
+								(cond 
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BOTTOM_PANEL"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBottomPanelCODE (_& (_ codeBody (XSTR "BOTTOM_PANEL")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "BOTTOM_PANEL_"))))
+									)
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBottomPanelCODE (_& (_ codeBody (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BOTTOM_PANEL_"))))
+									)
+									(T
+										(_FSET (_ 'performOperation nil))
+									)
+								)
+								(if (_NOTNULL performOperation)
+									(progn
+										(_FSET (_ 'dBottomPanelHEI (_S2V (_& (_ paramBody "HEI")))))
+										(_FSET (_ 'dBottomPanelWID (_S2V (_& (_ paramBody "WID")))))
+										
+										(cond
+											((equal DRAWER_PANELS_THINNING_OP_TYPE "MILLING")
+												; Left side thinning
+												(_GROOVE (_& (_ paramBody "LEFT_THINNING")) drawerBottomPanelCODE (_ (_ (_ (+ THINNING_DISTANCE_BOTTOM (/ THINNING_WIDTH_BOTTOM 2)) 0 0)
+																														(_ (+ THINNING_DISTANCE_BOTTOM (/ THINNING_WIDTH_BOTTOM 2)) dBottomPanelHEI 0)) THINNING_WIDTH_BOTTOM THINNING_DEPTH_BOTTOM))
+												; Right side thinning
+												(_GROOVE (_& (_ paramBody "RIGHT_THINNING")) drawerBottomPanelCODE (_ (_ (_ (- dBottomPanelWID (/ THINNING_WIDTH_BOTTOM 2) THINNING_DISTANCE_BOTTOM) 0 0)
+																												 (_ (- dBottomPanelWID (/ THINNING_WIDTH_BOTTOM 2) THINNING_DISTANCE_BOTTOM) dBottomPanelHEI 0)) THINNING_WIDTH_BOTTOM THINNING_DEPTH_BOTTOM))
+											)
+											((equal DRAWER_PANELS_THINNING_OP_TYPE "POCKETING")
+												(_FSET (_ 'tempPolylineDataLeft (list (list THINNING_DISTANCE_BOTTOM (/ dBottomPanelHEI 2) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BOTTOM (+ dBottomPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ THINNING_WIDTH_BOTTOM THINNING_DISTANCE_BOTTOM) (+ dBottomPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ THINNING_WIDTH_BOTTOM THINNING_DISTANCE_BOTTOM) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BOTTOM (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BOTTOM (/ dBottomPanelHEI 2) 0.0) 0.0)))
+																 
+												(_POLYLINEHOLE (_& (_ paramBody "LEFT_THINNING")) drawerBottomPanelCODE (_ tempPolylineDataLeft THINNING_DEPTH_BOTTOM "PK"))
+												
+												(_FSET (_ 'tempPolylineDataRight (list (list (- dBottomPanelWID THINNING_DISTANCE_BOTTOM) (/ dBottomPanelHEI 2) 0.0) 0.0
+																					   (list (- dBottomPanelWID THINNING_DISTANCE_BOTTOM) (+ dBottomPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBottomPanelWID THINNING_WIDTH_BOTTOM THINNING_DISTANCE_BOTTOM) (+ dBottomPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBottomPanelWID THINNING_WIDTH_BOTTOM THINNING_DISTANCE_BOTTOM) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBottomPanelWID THINNING_DISTANCE_BOTTOM) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBottomPanelWID THINNING_DISTANCE_BOTTOM) (/ dBottomPanelHEI 2) 0.0) 0.0)))
+																					  
+												(_POLYLINEHOLE (_& (_ paramBody "RIGHT_THINNING")) drawerBottomPanelCODE (_ tempPolylineDataRight THINNING_DEPTH_BOTTOM "PK"))
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(if IS_SHAVING_OP_AVAILABLE_FOR_BOTTOM
+	(progn
+		(if (null USE_PROJECT_PRICING_RECIPES)
+			(progn
+				(setq SHAVING_DISTANCE_BOTTOM 0 SHAVING_DEPTH_BOTTOM (- DRAWER_BOTTOM_PANEL_THICKNESS SHAVING_TARGET_PANEL_THICKNESS))
+				(if (and (_NOTNULL CURRENT_DRAWER_DATA) (> SHAVING_WIDTH_BOTTOM 0) (> SHAVING_DEPTH_BOTTOM 0))
+					(progn
+						(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+						(if (equal currentDrawerOrder __CURDIVORDER)
+							(progn
+								(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+								(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+								(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+								; Bottom panel of drawer is determined
+								(cond 
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BOTTOM_PANEL"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBottomPanelCODE (_& (_ codeBody (XSTR "BOTTOM_PANEL")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "BOTTOM_PANEL_"))))
+									)
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBottomPanelCODE (_& (_ codeBody (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BOTTOM_PANEL_"))))
+									)
+									(T
+										(_FSET (_ 'performOperation nil))
+									)
+								)
+								(if (_NOTNULL performOperation)
+									(progn
+										(_FSET (_ 'dBottomPanelHEI (_S2V (_& (_ paramBody "HEI")))))
+										(_FSET (_ 'dBottomPanelWID (_S2V (_& (_ paramBody "WID")))))
+										(cond
+											((equal DRAWER_PANELS_SHAVING_OP_TYPE "MILLING")
+												; Left side SHAVING
+												(_GROOVE (_& (_ paramBody "LEFT_SHAVING")) drawerBottomPanelCODE (_ (_ (_ (+ SHAVING_DISTANCE_BOTTOM (/ SHAVING_WIDTH_BOTTOM 2)) 0 0)
+																														(_ (+ SHAVING_DISTANCE_BOTTOM (/ SHAVING_WIDTH_BOTTOM 2)) dBottomPanelHEI 0)) SHAVING_WIDTH_BOTTOM SHAVING_DEPTH_BOTTOM))
+												; Right side SHAVING
+												(_GROOVE (_& (_ paramBody "RIGHT_SHAVING")) drawerBottomPanelCODE (_ (_ (_ (- dBottomPanelWID (/ SHAVING_WIDTH_BOTTOM 2) SHAVING_DISTANCE_BOTTOM) 0 0)
+																												 (_ (- dBottomPanelWID (/ SHAVING_WIDTH_BOTTOM 2) SHAVING_DISTANCE_BOTTOM) dBottomPanelHEI 0)) SHAVING_WIDTH_BOTTOM SHAVING_DEPTH_BOTTOM))
+											)
+											((equal DRAWER_PANELS_SHAVING_OP_TYPE "POCKETING")
+												(_FSET (_ 'tempPolylineDataLeft (list (list SHAVING_DISTANCE_BOTTOM (/ dBottomPanelHEI 2) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BOTTOM (+ dBottomPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ SHAVING_WIDTH_BOTTOM SHAVING_DISTANCE_BOTTOM) (+ dBottomPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ SHAVING_WIDTH_BOTTOM SHAVING_DISTANCE_BOTTOM) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BOTTOM (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BOTTOM (/ dBottomPanelHEI 2) 0.0) 0.0)))
+																 
+												(_POLYLINEHOLE (_& (_ paramBody "LEFT_SHAVING")) drawerBottomPanelCODE (_ tempPolylineDataLeft SHAVING_DEPTH_BOTTOM "PK"))
+												
+												(_FSET (_ 'tempPolylineDataRight (list (list (- dBottomPanelWID SHAVING_DISTANCE_BOTTOM) (/ dBottomPanelHEI 2) 0.0) 0.0
+																					   (list (- dBottomPanelWID SHAVING_DISTANCE_BOTTOM) (+ dBottomPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBottomPanelWID SHAVING_WIDTH_BOTTOM SHAVING_DISTANCE_BOTTOM) (+ dBottomPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBottomPanelWID SHAVING_WIDTH_BOTTOM SHAVING_DISTANCE_BOTTOM) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBottomPanelWID SHAVING_DISTANCE_BOTTOM) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBottomPanelWID SHAVING_DISTANCE_BOTTOM) (/ dBottomPanelHEI 2) 0.0) 0.0)))
+																					  
+												(_POLYLINEHOLE (_& (_ paramBody "RIGHT_SHAVING")) drawerBottomPanelCODE (_ tempPolylineDataRight SHAVING_DEPTH_BOTTOM "PK"))
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(_NONOTCH)

@@ -1,0 +1,30 @@
+(_FSET (_ 'lmm-defaultRcpName "(DEFAULT)"))
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(setq wwg_grooveWid (mm GROOVE_WID))
+(setq wwg_grooveDist (mm GROOVE_DISTANCE))
+(setq wwg_grooveDep (mm GROOVE_DEPTH))
+
+(setq wwg_kayitEni (cm 8.0))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) wwg_kayitEni 0.0) 
+		(list 0.0 wwg_kayitEni 0.0) 
+	) 
+	nil
+	ad_et
+	(d2r 180.0)
+	0.0
+	(list ad_et (- (+ (+ wwg_grooveDist wwg_grooveWid) wwg_kayitEni)) (+ dAltKot unitH))
+	"PANEL_TOP_NAILER"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)

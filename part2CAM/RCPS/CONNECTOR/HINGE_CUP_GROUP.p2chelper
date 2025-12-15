@@ -1,0 +1,45 @@
+(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+(_FSET (_ 'currentDoorOpenDirection (get_mdata g_currentModulEnt k:myon)))
+(cond
+	((equal currentDoorOpenDirection "L")
+		(_FSET (_ 'hingeDirection "X-"))
+	)
+	((equal currentDoorOpenDirection "R")
+		(_FSET (_ 'hingeDirection "X+"))
+	)
+)
+
+(if (_ISVERTICALFACE currentFaceNormal)
+	(progn
+		(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+			(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+		)
+		(setq holePosition (replace 0 2 holePosition))	; z axis
+		(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "HINGE_CUP_HOLE"))))
+		
+		
+		(if (setq CURRENT_DOOR_FRAMES  (eval (read (strcat (dfetch 5 g_currentModulEnt) "_FRAME"))))
+			(progn
+				(if	(setq CURRENT_DOOR_FRAME_LEFT (getnth 3 CURRENT_DOOR_FRAMES))
+					(setq holePosition (polar holePosition DEG_180 CURRENT_DOOR_FRAME_LEFT))
+				)
+				(if	(setq CURRENT_DOOR_FRAME_BOTTOM (getnth 2 CURRENT_DOOR_FRAMES))
+					(setq holePosition (polar holePosition DEG_270 CURRENT_DOOR_FRAME_BOTTOM))
+				)
+			)
+		)
+		(if (_EXISTPANEL connectedFaceCode)
+			(progn
+				(if (not (equal VARS1.HINGE_DO_NOT_DRILL_DOOR_HOLES 1))
+					(_HINGEMAIN holeCodeBody  connectedFaceCode (_ holePosition hingeDirection WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_Y WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH))
+				)
+				(_ITEMMAIN wardrobeHingeCode connectedFaceCode (_ 1 HINGE_UNIT))
+			)
+		)			
+	)
+)
+(_RESETCURMODUL)
+
+(_NONOTCH)

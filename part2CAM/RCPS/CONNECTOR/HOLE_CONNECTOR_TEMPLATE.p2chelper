@@ -1,0 +1,51 @@
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(_FSET (_ 'numberOfTargetPanels (length targetPanels)))
+
+(if (> 3 numberOfTargetPanels)
+	(progn
+		(_FSET (_ 'panelCounter 0)) 
+		(_FSET (_ 'connCounter 0))
+		(repeat numberOfTargetPanels
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (multiop * 1 (getnth 7 tPanelInfo)))))
+			(setq holePosition (replace (- (getnth 2 holePosition) __AD_PANELTHICK) 2 holePosition))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			
+			(cond 
+				((_ISVERTICALFACE currentFaceNormal)
+					; Type of current face is either 0 or 1 in this case
+					(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(_FSET (_ 'holeCodebody (_& (_ connectedFaceCode "_" HOLE_CONN_PARAM_ROOT "_HOLE"))))
+					(_HOLE holeCodebody connectedFaceCode (_ holePosition WARDROBE_HOLE_CONN_DIAMETER WARDROBE_HOLE_CONN_PROFILE_FACE_DEPTH holeOrient))
+					
+					(_FSET (_ 'connCounter (+ 1 connCounter)))
+				)
+				((_ISHORIZONTALFACE currentFaceNormal)
+					; Type of current face is either 2, 3, 4 or 5 in this case
+					(_FSET (_ 'holeCodebody (_& (_ connectedFaceCode "_" HOLE_CONN_PARAM_ROOT "_HOLE"))))
+					(_HOLE holeCodebody connectedFaceCode (_ holePosition WARDROBE_HOLE_CONN_DIAMETER WARDROBE_HOLE_CONN_SIDE_FACE_DEPTH holeOrient))
+					
+					(_FSET (_ 'connCounter (+ 1 connCounter)))
+				)
+			)
+			
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		(if (equal connCounter numberOfTargetPanels) (_ITEMMAIN HOLE_CONN_CODE WARDROBE_PANELS_GENERAL_CODE (_ 1 HOLE_CONN_UNIT)))
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

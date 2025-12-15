@@ -1,0 +1,5 @@
+BOTTOM_PANEL_JOINT_TYPE -> "Bottom Panel manufacturing type. 0->between, 1->out, 2->45Degree"
+TOP_PANEL_JOINT_TYPE -> "Top panel manufacturing type. 0->between, 1->out, 2->45Degree"
+THERE_IS_NO_TOP_PANEL -> "There is no top panel"
+DOMINANT_SIDE_FOR_TOP_JOINT -> "Dominant panel for top joint type: 0->Top, 1->Sides"
+DOMINANT_SIDE_FOR_BOTTOM_JOINT -> "Dominant panel for bottom joint type: 0->Bottom, 1->Sides"

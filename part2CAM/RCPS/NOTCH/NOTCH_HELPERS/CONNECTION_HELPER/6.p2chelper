@@ -1,0 +1,129 @@
+; IMPORTANT INFORMATION
+
+; ADJUSTABLE_SHELF_x_y_CONN contains four cases
+;		  VALUE						CASES FOR ADJUSTABLE SHELF CONNECTIONS
+;	 	   -1  							Left panel <-> Right panel
+;	  		0							Left panel <-> First divider
+;	 0 < value < LastDiv*					Divider	<-> Divider
+;		  LastDiv						Last Divider <-> Right Panel
+
+; * -> LastDiv value is the index value of last virtual division**
+; ** -> Virtual division is a division which is created in real division of modules by dividers
+
+; DATA SHEET OF GROUP_HOLES_DATA
+; Index			DATA
+; 0				Index of current division
+; 1				Index of current virtual division
+; 2				Number of dividers in current division
+; 3				Elevation of current division
+; 4				Connection parameter of shelves
+
+; GHA prefix refers to GROUP_HOLES_DATA
+(_FSET (_ 'GHD_curDivOrder (getnth 0 GROUP_HOLES_DATA)))
+(_FSET (_ 'GHD_activeVirtualDiv (getnth 1 GROUP_HOLES_DATA)))
+(_FSET (_ 'GHD_lastVirtualDiv (getnth 2 GROUP_HOLES_DATA)))
+(_FSET (_ 'GHD_curDivElev (getnth 3 GROUP_HOLES_DATA)))
+(_FSET (_ 'GHD_connParam (getnth 4 GROUP_HOLES_DATA)))
+
+(_FSET (_ 'nextVirtualDiv (+ GHD_activeVirtualDiv 1)))
+(cond 
+	((equal GHD_connParam -1)
+		; LEFT PANEL <-> RIGHT PANEL
+		; Connection Control
+		(if (and (_NOTNULL LEFT_PANEL_CODE) (_NOTNULL RIGHT_PANEL_CODE))
+			(progn
+				(_FSET (_ 'leftSideDATA (_ LEFT_PANEL_CODE (+ (- GHD_curDivElev bottomSideStyleV1) LEFT_PANEL_LOWER_VARIANCE) LEFT_PANEL_WID ASHELF_FRONT_OFFSET "LEFT_PANEL_RAFIX_HOLE_" (+ topSideStyleV2 LEFT_PANEL_UPPER_VARIANCE) (+ bottomSideStyleV2 LEFT_PANEL_LOWER_VARIANCE) LEFT_PANEL_HEI T)))
+				(_FSET (_ 'rightSideDATA (_ RIGHT_PANEL_CODE (+ (- GHD_curDivElev bottomSideStyleV1) RIGHT_PANEL_LOWER_VARIANCE) RIGHT_PANEL_WID ASHELF_FRONT_OFFSET "RIGHT_PANEL_RAFIX_HOLE_" (+ topSideStyleV2 RIGHT_PANEL_UPPER_VARIANCE) (+ bottomSideStyleV2 RIGHT_PANEL_LOWER_VARIANCE) RIGHT_PANEL_HEI T)))
+				
+				(_FSET (_ 'CONN_HELPER_DATA (_ leftSideDATA rightSideDATA)))
+			)
+			(_FSET (_ 'CONN_HELPER_DATA nil))
+		)
+	)
+	((equal GHD_connParam 0)
+		; LEFT PANEL <-> FIRST DIVIDER
+		(_FSET (_ 'rightSideCODE (_& (_ (XSTR "DIVIDER") "_" GHD_curDivOrder "_" nextVirtualDiv))))
+		(if (_EXISTPANEL rightSideCODE)
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "DIVIDER_" GHD_curDivOrder "_" nextVirtualDiv "_"))))
+				
+				(_FSET (_ 'dividerPDATA (_S2V (_& (_ paramBody "PDATA")))))
+				(_FSET (_ 'dividerROT (_S2V (_& (_ paramBody "ROT")))))
+				(_FSET (_ 'dividerMAT (_S2V (_& (_ paramBody "MAT")))))
+				(_FSET (_ 'dividerTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+				
+				(_FSET (_ 'rightSideCODE (_CREATESFACEMAIN rightSideCODE (_ dividerPDATA dividerROT dividerMAT dividerTHICKNESS "Y"))))
+			)
+			(_FSET (_ 'rightSideCODE nil))
+		)
+		; Connection Control
+		(if (and (_NOTNULL LEFT_PANEL_CODE) (_NOTNULL rightSideCODE))
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "DIVIDER_" GHD_curDivOrder "_" nextVirtualDiv "_"))))
+				
+				(_FSET (_ 'leftSideDATA (_ LEFT_PANEL_CODE (+ (- GHD_curDivElev bottomSideStyleV1) LEFT_PANEL_LOWER_VARIANCE) LEFT_PANEL_WID ASHELF_FRONT_OFFSET "LEFT_PANEL_RAFIX_HOLE_" (+ topSideStyleV2 LEFT_PANEL_UPPER_VARIANCE) (+ bottomSideStyleV2 LEFT_PANEL_LOWER_VARIANCE) LEFT_PANEL_HEI T)))
+				(_FSET (_ 'rightSideDATA (_ rightSideCODE 0 (_S2V (_& (_ paramBody "WID"))) 0 (_& (_ paramBody "RAFIX_HOLE_")) 0.0 0.0 (_S2V (_& (_ paramBody "HEI"))) nil)))
+				
+				(_FSET (_ 'CONN_HELPER_DATA (_ leftSideDATA rightSideDATA)))
+			)
+			(_FSET (_ 'CONN_HELPER_DATA nil))
+		)
+	)
+	((and (> GHD_connParam 0) (> GHD_lastVirtualDiv GHD_connParam))
+		; DIVIDER <-> DIVIDER
+		(_FSET (_ 'leftSideCODE (_& (_ (XSTR "DIVIDER") "_" GHD_curDivOrder "_" GHD_activeVirtualDiv))))
+		(if (not (_EXISTPANEL leftSideCODE)) (_FSET (_ 'leftSideCODE nil)))
+		
+		(_FSET (_ 'rightSideCODE (_& (_ (XSTR "DIVIDER") "_" GHD_curDivOrder "_" nextVirtualDiv))))
+		(if (_EXISTPANEL rightSideCODE)
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "DIVIDER_" GHD_curDivOrder "_" nextVirtualDiv "_"))))
+				
+				(_FSET (_ 'dividerPDATA (_S2V (_& (_ paramBody "PDATA")))))
+				(_FSET (_ 'dividerROT (_S2V (_& (_ paramBody "ROT")))))
+				(_FSET (_ 'dividerMAT (_S2V (_& (_ paramBody "MAT")))))
+				(_FSET (_ 'dividerTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+				
+				(_FSET (_ 'rightSideCODE (_CREATESFACEMAIN rightSideCODE (_ dividerPDATA dividerROT dividerMAT dividerTHICKNESS "Y"))))
+			)
+			(_FSET (_ 'rightSideCODE nil))
+		)
+		; Connection Control
+		(if (and (_NOTNULL leftSideCODE) (_NOTNULL rightSideCODE))
+			(progn
+				(_FSET (_ 'paramBodyLEFT (_& (_ "DIVIDER_" GHD_curDivOrder "_" GHD_activeVirtualDiv "_"))))
+				(_FSET (_ 'paramBodyRIGHT (_& (_ "DIVIDER_" GHD_curDivOrder "_" nextVirtualDiv "_"))))
+				
+				(_FSET (_ 'leftSideDATA (_ leftSideCODE 0 (_S2V (_& (_ paramBodyLEFT "WID"))) 0 (_& (_ paramBodyLEFT "RAFIX_HOLE_")) 0.0 0.0 (_S2V (_& (_ paramBodyLEFT "HEI"))) nil)))
+				(_FSET (_ 'rightSideDATA (_ rightSideCODE 0 (_S2V (_& (_ paramBodyRIGHT "WID"))) 0 (_& (_ paramBodyRIGHT "RAFIX_HOLE_")) 0.0 0.0 (_S2V (_& (_ paramBodyRIGHT "HEI"))) nil)))
+				
+				(_FSET (_ 'CONN_HELPER_DATA (_ leftSideDATA rightSideDATA)))
+			)
+			(_FSET (_ 'CONN_HELPER_DATA nil))
+		)
+	)
+	((equal GHD_connParam GHD_lastVirtualDiv)
+		; LAST DIVIDER <-> RIGHT PANEL
+		(_FSET (_ 'leftSideCODE (_& (_ (XSTR "DIVIDER") "_" GHD_curDivOrder "_" GHD_activeVirtualDiv))))
+		(if (not (_EXISTPANEL leftSideCODE)) (_FSET (_ 'leftSideCODE nil)))
+		
+		; Connection Control
+		(if (and (_NOTNULL leftSideCODE) (_NOTNULL RIGHT_PANEL_CODE))
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "DIVIDER_" GHD_curDivOrder "_" GHD_activeVirtualDiv "_"))))
+				
+				(_FSET (_ 'leftSideDATA (_ leftSideCODE 0 (_S2V (_& (_ paramBody "WID"))) 0 (_& (_ paramBody "RAFIX_HOLE_")) 0.0 0.0 (_S2V (_& (_ paramBody "HEI"))) nil)))
+				(_FSET (_ 'rightSideDATA (_ RIGHT_PANEL_CODE (+ (- GHD_curDivElev bottomSideStyleV1) RIGHT_PANEL_LOWER_VARIANCE) RIGHT_PANEL_WID ASHELF_FRONT_OFFSET "RIGHT_PANEL_RAFIX_HOLE_" (+ topSideStyleV2 RIGHT_PANEL_UPPER_VARIANCE) (+ bottomSideStyleV2 RIGHT_PANEL_LOWER_VARIANCE) RIGHT_PANEL_HEI T)))
+				
+				(_FSET (_ 'CONN_HELPER_DATA (_ leftSideDATA rightSideDATA)))
+			)
+			(_FSET (_ 'CONN_HELPER_DATA nil))
+		)
+	)
+	(T
+		(_FSET (_ 'CONN_HELPER_DATA nil))
+	)
+)
+; To prevent from performing connection control in same virtual division again, CHECK_CONNECTIONS is set
+(_FSET (_ 'CHECK_CONNECTIONS T))
+(_NONOTCH)

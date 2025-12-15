@@ -1,0 +1,485 @@
+(initget (strcat (Xstr "1-Bölüm 2-Bölüm 3-Bölüm 4-Bölüm 5-Bölüm") " ~1 ~2 ~3 ~4 ~5"))
+(setq rafSayisi (atof (getkword (Xstr "\nGeniþlikten kaç bölüm olsun?"))))
+(initget (strcat (Xstr "1-Bölüm 2-Bölüm 3-Bölüm 4-Bölüm 5-Bölüm") " ~1 ~2 ~3 ~4 ~5"))
+(setq dikmeSayisi (atof (getkword (Xstr "\Yükseklikten kaç bölüm olsun?"))))
+(setq profilen aprPq) ;Profilin eni
+(setq bolumwq rafSayisi)
+(setq bolumwq (atoi (rtos bolumwq 2 0))) ;Bölüm sayýsý geniþlik
+(setq profilwq (+ bolumwq 1)) ;Profil sayýsý geniþlik
+(setq bolumW (/ (- unitW (* profilwq profilen) bolumwq) bolumwq) ) ;Bölüm genisligi
+(setq bolumhq dikmeSayisi)
+(setq bolumhq (atoi (rtos bolumhq 2 0))) ;Bölüm sayýsý yükseklik
+(setq profilhq (+ bolumhq 1)) ;Profil sayýsý yükseklik
+(setq bolumH (/ (- unitH (* profilhq profilen)) bolumhq) ) ;Bölüm genisligi
+(setq indexH 0)
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+
+;__________________________ANA PROFÝL GÖVDE_____________________________________________________________________________
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list profilen 0.0 0.0) 
+		(list profilen (+ unitH ad_bazaH) 0.0) 
+		(list 0.0 (+ unitH ad_bazaH) 0.0) 
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	
+	profilen
+	0.0 
+	0.0 
+	(list (- unitW profilen) (+ (- unitD) profilen) 0.0)
+	
+	"SAG ON PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list profilen 0.0 0.0) 
+		(list profilen (+ unitH ad_bazaH) 0.0) 
+		(list 0.0 (+ unitH ad_bazaH) 0.0) 
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	
+	profilen
+	0.0 
+	0.0 
+	(list 0.0 (+ (- unitD) profilen) 0.0)
+	
+	"SOL ON PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list profilen 0.0 0.0) 
+		(list profilen (+ unitH ad_bazaH) 0.0) 
+		(list 0.0 (+ unitH ad_bazaH) 0.0) 
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	
+	profilen
+	0.0 
+	0.0 
+	(list 0.0 0.0 0.0)
+	
+	"SOL ARKA PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list profilen 0.0 0.0) 
+		(list profilen (+ unitH ad_bazaH) 0.0) 
+		(list 0.0 (+ unitH ad_bazaH) 0.0) 
+	) 
+	(list 0.0 0.0 0.0 0.0 0.0 0.0) 
+	
+	profilen
+	0.0 
+	0.0 
+	(list (- unitW profilen) 0.0 0.0)
+	
+	"SAG ARKA PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW profilen profilen) 0.0 0.0) 
+		(list (- unitW profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list profilen (+ (- unitD ) profilen) (+ (- unitH profilen) ad_bazaH))
+	"UST ON PROFIL"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW profilen profilen) 0.0 0.0) 
+		(list (- unitW profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list profilen 0.0 (+ (- unitH profilen) ad_bazaH))
+	"UST ARKA PROFIL"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW profilen profilen) 0.0 0.0) 
+		(list (- unitW profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list profilen (+ (- unitD ) profilen) ad_bazaH)
+	"ALT ON PROFIL"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW profilen profilen) 0.0 0.0) 
+		(list (- unitW profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list profilen 0.0 ad_bazaH)
+	"ALT ARKA PROFIL"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD profilen profilen) 0.0 0.0) 
+		(list (- unitD profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen 
+	0.0 
+	0.0 
+	
+	(list 0.0 (- profilen) (+ (- unitH profilen) ad_bazaH))
+	
+	"SOL UST ARA PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD profilen profilen) 0.0 0.0) 
+		(list (- unitD profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen 
+	0.0 
+	0.0 
+	
+	(list (- unitW profilen) (- profilen) ad_bazaH)
+	
+	"SAG ALT ARA PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD profilen profilen) 0.0 0.0) 
+		(list (- unitD profilen profilen) profilen 0.0) 
+		(list 0.0 profilen 0.0) 
+	) 
+	nil
+	profilen 
+	0.0 
+	0.0 
+	
+	(list (- unitW profilen) (- profilen) (+ (- unitH profilen) ad_bazaH))
+	
+	"SAG UST ARA PROFIL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "PROFIL")
+	"PROFIL"
+	"noedgedrawing"
+)
+
+;__________________________YANA DOÐRU TEKRARLANAN PROFIL GRUBU_____________________________________________________________________________
+
+ 
+(repeat bolumwq
+	
+	(setq profilW (* indexH (+ profilen bolumW)))
+
+
+
+
+;__________________________________________________________________________________________________________________________________________
+	(createGPanel 
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list profilen 0.0 0.0) 
+			(list profilen (- unitH profilen profilen) 0.0) 
+			(list 0.0 (- unitH profilen profilen) 0.0) 
+		) 
+		nil
+		profilen 
+		0.0 
+		0.0 
+		
+		(list profilW (+ (- unitD) profilen) (+ profilen ad_bazaH))
+		 
+		"ON ARA DIKEY PARCA" 
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "PROFIL")
+		"PROFIL"
+		"noedgedrawing"
+	)
+;__________________________________________________________________________________________________________________________________________
+	(createGPanel 
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list profilen 0.0 0.0) 
+			(list profilen (- unitH profilen profilen) 0.0) 
+			(list 0.0 (- unitH profilen profilen) 0.0) 
+		) 
+		nil
+		profilen 
+		0.0 
+		0.0 
+		
+		(list profilW 0.0 (+ profilen ad_bazaH))
+		
+		"ARKA ARA DIKEY PARCA" 
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "PROFIL")
+		"PROFIL"
+		"noedgedrawing"
+	)
+;__________________________________________________________________________________________________________________________________________
+	(createGPanel 
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list (- unitD profilen profilen) 0.0 0.0) 
+			(list (- unitD profilen profilen) profilen 0.0) 
+			(list 0.0 profilen 0.0) 
+		)		 	
+		nil
+		profilen 
+		0.0 
+		0.0 
+		
+		(list profilW (- profilen) ad_bazaH)
+		
+		"ARA PROFIL ALT" 
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "PROFIL")
+		"PROFIL"
+		"noedgedrawing"
+	)
+;__________________________________________________________________________________________________________________________________________
+	(createGPanel 
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list (- unitD profilen profilen) 0.0 0.0) 
+			(list (- unitD profilen profilen) profilen 0.0) 
+			(list 0.0 profilen 0.0) 
+		)		 	
+		nil
+		profilen 
+		0.0 
+		0.0 
+		
+		(list profilW (- profilen) (+ (- unitH profilen) ad_bazaH))
+		
+		"ARA PROFIL UST" 
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "PROFIL")
+		"PROFIL"
+		"noedgedrawing"
+	)
+	
+	(setq indexW 0)
+	(repeat bolumhq
+		(setq profilH (* indexW (+ profilen bolumH)))
+		
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD profilen profilen) 0.0 0.0) 
+				(list (- unitD profilen profilen) profilen 0.0) 
+				(list 0.0 profilen 0.0) 
+			)		 	
+			nil
+			profilen 
+			0.0 
+			0.0 
+			
+			(list profilW (- profilen) (+ profilH ad_bazaH))
+			
+			"ARA PROFILLER" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "PROFIL")
+			"PROFIL"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW (/ profilen 4)) 0.0 0.0) 
+				(list (- unitW (/ profilen 4)) (- unitD (/ profilen 4)) 0.0) 
+			(list 0.0 (- unitD (/ profilen 4)) 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		;(d2r 90.0)
+		0.0
+		(list (/ (/ profilen 4) 2) (- (/ (/ profilen 4) 2)) (+ profilH ad_bazaH ad_et))
+		"ALT_TABLA"
+		""
+		nil
+		"SHELF"
+		(strcat kodBlock "_CAB_DOORS")
+		"CAB_DOORS"
+		"noedgedrawing"
+		)
+		
+		(if (equal (- bolumwq 1) indexH)
+			(progn
+				(createGPanel 
+					(list 
+						(list 0.0 0.0 0.0) 
+						(list (- unitD profilen profilen) 0.0 0.0) 
+						(list (- unitD profilen profilen) profilen 0.0) 
+						(list 0.0 profilen 0.0) 
+					)		 	
+					nil
+					profilen 
+					0.0 
+					0.0 
+					
+					(list (- unitW profilen) (- profilen) (+ profilH ad_bazaH))
+					
+					"ARA PROFIL UST" 
+					"" 
+					nil 
+					"SIDE" 
+					(strcat kodBlock "PROFIL")
+					"PROFIL"
+					"noedgedrawing"
+				)
+			)
+		)
+	
+		(setq indexW (1+ indexW))
+	)
+	
+	(setq indexH (1+ indexH))
+)
+
+	
+	
+;__________________________________________________________________________________________________________________________________________
+
+	

@@ -1,0 +1,26 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		; According to position of front top strecher side panel holes are calibrated 
+		(if (_EXISTPANEL FRONT_TOP_STRECHER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForFrontTopStrecherAndNotchedRight (_CALCULATEPANELSINTERSECTIONLENGTH FRONT_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForFrontTopStrecherAndNotchedRight (car lengthParametersForFrontTopStrecherAndNotchedRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'notchedRightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName (_ lengthForFrontTopStrecherAndNotchedRight (- NOTCHED_RIGHT_PANEL_HEI FRONT_STRECHER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") (_ (- (+ FRONT_STRECHER_FRONT_OFFSET FRONT_TOP_STRECHER_HEI RIGHT_PANEL_FRONT_VARIANCE 0) NOTCHED_RIGHT_PANEL_WID) 0 T FRONT_TOP_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName NOTCHED_RIGHT_PANEL_CODE notchedRightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

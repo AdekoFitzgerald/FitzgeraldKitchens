@@ -1,0 +1,481 @@
+(setq doMWMachine1HOLECam nil)
+(defun doMWMachine1HOLECam (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia mHoleDepth tempHoleDepth tempHolePos
+																				  opOpName opSuitableTool opFeedRate tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq ikiyuzon (getEntPro tempEnt 210))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opSuitableTool (nth 1 tempCAMStyle));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 tempCAMStyle))
+	(setq opFeedRate (nth 3 tempCAMStyle))
+	(cond 
+		((equal "TOP" (substr entLayerName 1 3))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(princ (sprintf "\nG100 X~s Y~s Z~s ~s ~s" (list mHoleX mHoleY mHoleDepth opFeedRate opSuitableTool)) file)
+		)
+		((equal "LEF" (substr entLayerName 1 3))
+			;G182  HORIZONTAL HOLES IN WORKPIECE LEFT FACE
+			;		X Hole co-ordinate
+			;		Y        " 
+			;		Z        " 
+			;		K Offset on axis X
+			;		F Boring speed
+			;		T Tool number
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (- (abs tempPanelWidth) (abs (getnth 1 tempHolePos))) ) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(princ (sprintf "\nG182 X~s Y~s Z~s ~s ~s" (list mHoleDepth mHoleY mHoleZ opFeedRate opSuitableTool)) file)
+		)
+		((equal "RIG" (substr entLayerName 1 3))
+			;G183  HORIZONTAL HOLES IN WORKPIECE RIGHT FACE
+			;      X Hole co-ordinate
+			;      Y        " 
+			;      Z        " 
+			;      K Offset on axis X
+			;      F Boring speed
+			;      T Tool number
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (- (abs tempPanelWidth) (abs (getnth 1 tempHolePos))) ) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(princ (sprintf "\nG183 X~s Y~s Z~s ~s ~s" (list mHoleDepth mHoleY mHoleZ opFeedRate opSuitableTool)) file)
+		)
+		((equal "REA" (substr entLayerName 1 3))
+			;G184  HORIZONTAL HOLES IN WORKPIECE REAR FACE
+			;      X Hole co-ordinate
+			;      Y        " 
+			;      Z        " 
+			;      K Offset on axis Y
+			;      F Boring speed
+			;      T Tool number
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(princ (sprintf "\nG184 X~s Y~s Z~s ~s ~s" (list mHoleX mHoleDepth mHoleZ opFeedRate opSuitableTool)) file)
+		)
+		((equal "FRO" (substr entLayerName 1 3))
+			;G185  HORIZONTAL HOLES IN WORKPIECE FRONT FACE
+			;      X Hole co-ordinate
+			;      Y        " 
+			;      Z        " 
+			;      K Offset on axis Y
+			;      F Boring speed
+			;      T Tool number
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs(getnth 2 tempHolePos)) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(princ (sprintf "\nG185 X~s Y~s Z~s ~s ~s" (list mHoleX mHoleDepth mHoleZ opFeedRate opSuitableTool)) file)
+		)
+		;; Masterwood can not do bottom drill
+	)
+)
+
+(setq doMWMachine1SAWAlongX nil)
+(defun doMWMachine1SAWAlongX (currentEnt entLayerName tempCAMStyle currentPanel file / tempEndPoint startPoint endPoint tempPoints 
+								tempDepth stepOfPasses bottomZComponent topZComponent currentZLevel stepZComponets tempBBox currentPanelMiddlePoint tempPanelWidth
+								toolCorrectionVector polylineIsStraitAlongByXAxis)
+	(setq tempPoints (lmm_getPolylinePoints currentEnt))
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq startPoint (nth 0 tempPoints))
+	
+	;Confirm polyline is along by x axis or not
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+			)
+		)
+	)
+	
+	(if polylineIsStraitAlongByXAxis
+		(progn
+			(setq tempBBox (getBBox currentPanel))
+			(setq tempPanelWidth (getnth 3 tempBBox))
+			(setq currentPanelMiddlePoint (VectorScale (VectorAdd (nth 0 tempBBox) (nth 1 tempBBox)) 0.5))
+			(setq endPoint (last tempPoints))
+			(if (> (nth 0 startPoint) (nth 0 endpoint))
+				(progn
+					(setq tempEndPoint endPoint)
+					(setq endPoint startPoint)
+					(setq startPoint tempEndPoint)
+				)
+			)
+			(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+			(setq stepOfPasses 	(nth 3 tempCAMStyle))
+			(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+			(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+			(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+			(cond 
+				( (equal "CENTER" (nth 7 tempCAMStyle))
+					(princ)
+				)
+				( (equal "INSIDE" (nth 7 tempCAMStyle))
+					(setq toolCorrectionVector (list 0.0 
+					(* (nth 8 tempCAMStyle) (/ (- (nth 1 currentPanelMiddlePoint) (nth 1 startPoint)) (abs (- (nth 1 currentPanelMiddlePoint) (nth 1 startPoint)))))
+													0.0
+					))
+					(setq startPoint (VectorAdd startPoint toolCorrectionVector ))
+					(setq endPoint (VectorAdd endPoint toolCorrectionVector ))
+				)
+				( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+					(setq toolCorrectionVector (list 0.0 
+					(* (nth 8 tempCAMStyle) (/ (- (nth 1 startPoint) (nth 1 currentPanelMiddlePoint)) (abs (- (nth 1 startPoint) (nth 1 currentPanelMiddlePoint)))))
+													0.0
+					))
+					(setq startPoint (VectorAdd startPoint toolCorrectionVector ))
+					(setq endPoint (VectorAdd endPoint toolCorrectionVector ))
+				)
+			)
+			(princ (sprintf "\n#902=#911-(~s)" (list (lmm_convertNumtoStringWithDigit (nth 1 startPoint) 2))) file)
+			(princ "\n( ---------- " file)
+			(princ (sprintf "\nG172 X~s Y=#902 Z~s ~s ~s ~s" (list (lmm_convertNumtoStringWithDigit (nth 0 startPoint) 2) 
+																	(lmm_convertNumtoStringWithDigit (nth 2 startPoint) 2)
+																	(nth 9 tempCAMStyle)
+																	(nth 10 tempCAMStyle)
+																	(nth 1 tempCAMStyle)
+															)
+					) 
+			file)
+			(princ (sprintf "\nG180 X~s ~s ~s" (list (lmm_convertNumtoStringWithDigit (nth 0 endPoint) 2)
+													(nth 10 tempCAMStyle)
+													(nth 1 tempCAMStyle)
+												)
+					)
+			file)
+		)
+	)
+	(princ)
+)
+
+(setq doMWMachine1SAWAlongY nil)
+(defun doMWMachine1SAWAlongY (currentEnt entLayerName tempCAMStyle currentPanel file / tempEndPoint startPoint endPoint tempPoints 
+								tempDepth stepOfPasses bottomZComponent topZComponent currentZLevel stepZComponets tempBBox currentPanelMiddlePoint tempPanelWidth
+								toolCorrectionVector polylineIsStraitAlongByYAxis)
+	(setq tempPoints (lmm_getPolylinePoints currentEnt)),
+	(setq startPoint (nth 0 tempPoints))
+	(setq polylineIsStraitAlongByYAxis T)
+	
+	;Confirm polyline is along by y axis or not
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 0 startPoint) (nth 0 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByYAxis nil)
+			)
+		)
+	)
+	
+	(if polylineIsStraitAlongByYAxis
+		(progn
+			(setq tempBBox (getBBox currentPanel))
+			(setq tempPanelWidth (getnth 3 tempBBox))
+			(setq currentPanelMiddlePoint (VectorScale (VectorAdd (nth 0 tempBBox) (nth 1 tempBBox)) 0.5))
+			(setq endPoint (last tempPoints))
+				(if (> (nth 1 startPoint) (nth 1 endpoint))
+				(progn
+					(setq tempEndPoint endPoint)
+					(setq endPoint startPoint)
+					(setq startPoint tempEndPoint)
+				)
+			)
+			(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+			(setq stepOfPasses 	(nth 3 tempCAMStyle))
+			(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+			(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+			(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+			(cond 
+				( (equal "CENTER" (nth 7 tempCAMStyle))
+					(princ)
+				)
+				( (equal "INSIDE" (nth 7 tempCAMStyle))
+					(setq toolCorrectionVector (list (* (nth 8 tempCAMStyle) (/ (- (nth 0 currentPanelMiddlePoint) (nth 0 startPoint)) (abs (- (nth 0 currentPanelMiddlePoint) (nth 0 startPoint)))))
+													0.0
+													0.0
+					))
+					(setq startPoint (VectorAdd startPoint toolCorrectionVector ))
+					(setq endPoint (VectorAdd endPoint toolCorrectionVector ))
+				)
+				( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+					(setq toolCorrectionVector (list (* (nth 8 tempCAMStyle) (/ (- (nth 0 startPoint) (nth 0 currentPanelMiddlePoint)) (abs (- (nth 0 startPoint) (nth 0 currentPanelMiddlePoint)))))
+													0.0
+													0.0
+					))
+					(setq startPoint (VectorAdd startPoint toolCorrectionVector ))
+					(setq endPoint (VectorAdd endPoint toolCorrectionVector ))
+				)
+			)
+			(princ (sprintf "\n#902=#911-(~s)" (list (lmm_convertNumtoStringWithDigit (nth 1 startPoint) 2))) file)
+			(princ "\n( ---------- " file)
+			(princ (sprintf "\nG172 X~s Y=#902 Z~s ~s ~s ~s" (list (lmm_convertNumtoStringWithDigit (nth 0 startPoint) 2) 
+																	(lmm_convertNumtoStringWithDigit (nth 2 startPoint) 2)
+																	(nth 9 tempCAMStyle)
+																	(nth 10 tempCAMStyle)
+																	(nth 1 tempCAMStyle)
+															)
+					) 
+			file)
+			(princ (sprintf "\n#902=#911-(~s)" (list  (lmm_convertNumtoStringWithDigit (nth 1 endPoint) 2))) file)
+			(princ (sprintf "\nG181 Y=#902 ~s ~s" (list (nth 10 tempCAMStyle)
+														(nth 1 tempCAMStyle)
+													)
+					)
+			file)
+		)
+	)
+	(princ)
+)
+
+
+(setq doMWMachine1SAWCam nil)
+(defun doMWMachine1SAWCam (currentEnt entLayerName tempCAMStyle currentPanel file / tempPoints startPoint
+															tempPoint polylineIsStraitAlongByYAxis polylineIsStraitAlongByXAxis)
+	(setq tempPoints (lmm_getPolylinePoints currentEnt))
+	(setq startPoint (nth 0 tempPoints))
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq polylineIsStraitAlongByYAxis T)
+	
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+			)
+		)
+	)
+	
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 0 startPoint) (nth 0 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByYAxis nil)
+			)
+		)
+	)
+	
+	(cond
+		(polylineIsStraitAlongByXAxis
+			(doMWMachine1SAWAlongX currentEnt entLayerName tempCAMStyle currentPanel file);; if machine doesnot support x axis saw operation please do command here
+		)
+		(polylineIsStraitAlongByYAxis 
+			(doMWMachine1SAWAlongY currentEnt entLayerName tempCAMStyle currentPanel file);; if machine doesnot support y axis saw operation please do command here
+		)
+		( (and (not polylineIsStraitAlongByXAxis) (not polylineIsStraitAlongByYAxis))
+			(princ "(---CANNOT CREATE SAW OPERATION" file)
+		)
+	)
+	
+)
+
+
+;(list 	"GROOVE" 
+;		"T41" 
+;		"CONTOUR" 
+;		1  ;stepOfPasses
+;		0  ;bottomZComponent (+) distance from entity thickness 
+;		0  ;topZComponent (+) distance from safety plane (0.0)
+;		0  ;lastPass Val (+) 
+;		"CENTER" ;tool correction G40 G41 G42 stuff
+;		0        ;reserved 
+;		"S18"     ;spindle 
+;		"F10"	;cut feedrate	
+;		"E20"	;plunge feedrate	
+;)
+(setq doMWMachine1CONTOURCam nil)
+(defun doMWMachine1CONTOURCam (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								radiusCorrection tempPoints tempDepth stepOfPasses tempPanelDepth stepZComponets currentZLevel
+								bottomZComponent topZComponent spindleSpeed cutFeedRate plungeFeedRate iteration tempPoint currentTool
+							)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq spindleSpeed (nth 9 tempCAMStyle))
+	(setq cutFeedRate (nth 10 tempCAMStyle))
+	(setq plungeFeedRate (nth 11 tempCAMStyle))
+	(setq currentTool (nth 1 tempCAMStyle))
+	(cond
+		((equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq radiusCorrection nil) ;DISABLES TOOL RADIUS CORRECTION
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "G41");ENABLES TOOL RADIUS CORRECTION ON THE LEFT
+				(setq radiusCorrection "G42");ENABLES TOOL RADIUS CORRECTION ON THE RIGHT
+			)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "G42");ENABLES TOOL RADIUS CORRECTION ON THE RIGHT
+				(setq radiusCorrection "G41");ENABLES TOOL RADIUS CORRECTION ON THE LEFT
+			)
+		)
+	)
+	
+	(foreach currentZLevel stepZComponets
+		(setq iteration 0)
+		(foreach tempPoint tempPoints
+			(if (equal 0 iteration)
+				(progn
+					(if radiusCorrection
+						(princ (sprintf "\n~s" (list radiusCorrection)) file)
+						(princ "\nG40" file)
+					)
+					(princ (sprintf "\n#902=#911-(~s)" (list (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) ) file)
+					(princ "\n( ---------- " file)
+					(princ (sprintf "\nG172 X~s Y=#902 Z~s ~s ~s ~s" (list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+																		;(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+																		(lmm_convertNumtoStringWithDigit currentZLevel 2)
+											 							spindleSpeed
+											 							plungeFeedRate
+																		currentTool
+					)) file)
+				)
+				(progn
+					(princ (sprintf "\n#902=#911-(~s)" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+					(princ (sprintf "\nG101 X~s Y=#902 Z~s ~s" (list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+																	 ;(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+																	 (lmm_convertNumtoStringWithDigit currentZLevel 2)
+																	 cutFeedRate
+					)) file)
+				)
+			)
+			(setq iteration (+ 1 iteration))
+		)
+	)
+	(princ "\nG40" file)
+)
+
+
+
+
+(defun createMWMachine1Stages ( cPnl  / tempPanelName tempPanelDepth tempPanelLength
+										tempPanelWidth )
+	(setq machineLimits (list 1100.0 1000.0 40.0))
+	(setq clampWith 100.0)
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	;(if (<))
+	
+	
+	
+)
+
+;entities that are can be applied operation "mwNotFreeEntities"
+(setq sendMWMachine1 nil)
+(defun sendMWMachine1 (cPnl machineProcedures / mwMachineName prgFilesPath tempPanelName tempPanelDepth tempPanelLength
+												tempPanelWidth prgFile mwEntitiKType tempDerivedLayerName  
+												tempItem currentOp tempEnt
+						)
+	(setq machineName "mwMakinesi1")
+	(setq prgFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	(createDir (strcat prgFilesPath machineName "\\" ))
+	(setq prgFile (open (strcat prgFilesPath machineName "\\" (lmm_getDXFFileNameByFileMode (list cPnl)) ".prg") "w"))
+	(setq tempPanelLength (lmm_convertNumtoStringWithDigit tempPanelLength 2))
+	(setq tempPanelWidth (lmm_convertNumtoStringWithDigit tempPanelWidth 2))
+	(setq tempPanelDepth (lmm_convertNumtoStringWithDigit tempPanelDepth 2))
+	(princ "%" prgFile)
+	(princ "\n|1 Adeko-generated project" prgFile)
+	(princ "\n|2 0" prgFile)
+	(princ "\n|3 1" prgFile)
+	(princ (sprintf "\n|4 ~s" (list tempPanelLength)) prgFile)
+	(princ (sprintf "\n|5 ~s" (list tempPanelDepth)) prgFile)
+	(princ (sprintf "\n|6 ~s" (list tempPanelWidth)) prgFile)
+	(princ "\n|7 0 0 0 0" prgFile)
+	(princ "\n|8 0" prgFile)
+	(princ "\n|9 " prgFile)
+	(princ "\n|10 " prgFile)
+	(princ "\n|11 0" prgFile)
+	(princ "\n|12 " prgFile)
+	(princ "\n|13 " prgFile)
+	(princ "\n|14 " prgFile)
+	(princ "\n|44 0" prgFile)
+	(princ "\n:1" prgFile)
+	(princ "\nG120 K1" prgFile)
+	(princ "\n#910=DX" prgFile)
+	(princ "\n#911=DY" prgFile)
+	(foreach currentOp machineProcedures
+		(setq tempOpLayerName (nth 0 currentOp))
+		;(setq tempOpToolName (nth 1 currentOp))
+		(setq tempOpOpName (nth 2 currentOp))
+		(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+		(setq tempPanelSSList (convertSStolist tempPanelSS))
+		(foreach tempEnt tempPanelSSList
+			(setq mwEntitiKType (lmm_getLMMdata tempEnt lmm-k-type))
+			(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+				(progn 
+					(setq tempDerivedLayerName (mwInterpretHoleLayerName tempEnt))
+				)
+				(progn 
+					(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+				)
+			)
+			
+			;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+			(if (not (member tempDerivedLayerName mwIgnoreLayerNameList))
+				(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) mwAllEntities))
+					(setq mwAllEntities (append mwAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+				)
+			)
+
+			(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+				(progn
+					(cond 
+						((equal tempOpOpName "HOLE")
+							(doMWMachine1HOLECam tempEnt tempDerivedLayerName currentOp cPnl prgFile)
+							
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq mwNotFreeEntities (append mwNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						) 
+						((equal tempOpOpName "SAWX") ;testere iþlemi
+							(doMWMachine1SAWAlongX tempEnt tempDerivedLayerName currentOp cPnl prgFile)
+							
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq mwNotFreeEntities (append mwNotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+						)
+						((equal tempOpOpName "SAWY") ;testere iþlemi
+							(doMWMachine1SAWAlongY tempEnt tempDerivedLayerName currentOp cPnl prgFile)
+							
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq mwNotFreeEntities (append mwNotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+						)
+						((equal tempOpOpName "CONTOUR") ;freze iþlemi
+							(doMWMachine1CONTOURCam tempEnt tempDerivedLayerName currentOp cPnl prgFile)
+							
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq mwNotFreeEntities (append mwNotFreeEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+						)
+					)
+				)
+			)
+		)
+	)
+	
+	(princ "\nM124 K1 D1" prgFile)
+	(princ "\n%" prgFile)
+	(close prgFile)
+)
+
+
+
+
+(princ)

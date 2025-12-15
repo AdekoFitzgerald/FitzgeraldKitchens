@@ -1,0 +1,71 @@
+SPECIAL_PANEL_COUNT -> "Count of special panel"
+SPECIAL_PANEL_CODE -> "Code of special panel"
+SPECIAL_PANEL_WID -> "Width of special panel"
+SPECIAL_PANEL_HEI -> "Height of special panel"
+SPECIAL_PANEL_MATERIAL -> "Material of special panel"
+SPECIAL_PANEL_THICKNESS -> "Thickness of special panel"
+
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+SPECIAL_PANEL_LABEL -> "Label of special panel"
+SPECIAL_PANEL_TAG -> "Tag of special panel"
+
+LEFT_EDGESTRIP_MAT -> "Material of left edgestrip"
+RIGHT_EDGESTRIP_MAT -> "Material of right edgestrip"
+TOP_EDGESTRIP_MAT -> "Material of top edgestrip"
+BOTTOM_EDGESTRIP_MAT -> "Material of bottom edgestrip"
+
+SPECIAL_PANEL_PERFORM_45_OPERATION_ON_TOP_SIDE -> "Perform 45 degree junction operation on top side of special panel"
+SPECIAL_PANEL_PERFORM_45_OPERATION_ON_BOTTOM_SIDE -> "Perform 45 degree junction operation on bottom side of special panel"
+SPECIAL_PANEL_PERFORM_45_OPERATION_ON_LEFT_SIDE -> "Perform 45 degree junction operation on left side of special panel"
+SPECIAL_PANEL_PERFORM_45_OPERATION_ON_RIGHT_SIDE -> "Perform 45 degree junction operation on right side of special panel"
+SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction operation on special panel"
+
+;OK
+(setq matinfo (get_visible_matInfo_PanelBlockinBlock g_currentModulEnt "DG11_05" "CAB_DOORS"))
+
+(_SETA 'SPECIAL_PANEL_COUNT 1)
+(_SETA 'SPECIAL_PANEL_CODE "DG11_05")
+(_SETA 'SPECIAL_PANEL_WID __HEI)
+(_SETA 'SPECIAL_PANEL_HEI (+ (* DG11_D2 10) _45Pay))
+(_SETA 'SPECIAL_PANEL_MATERIAL (car matinfo))
+(_SETA 'SPECIAL_PANEL_THICKNESS (* DG11_T1 10))
+
+(_SETA 'PANEL_MAIN_ROTATION (cadr matinfo))
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'SPECIAL_PANEL_LABEL nil)
+(_SETA 'SPECIAL_PANEL_TAG nil)
+
+(_SETA 'LEFT_EDGESTRIP_MAT pvckpmAlt)
+(_SETA 'RIGHT_EDGESTRIP_MAT pvckpmUst)
+(_SETA 'TOP_EDGESTRIP_MAT pvckpmArka)
+(_SETA 'BOTTOM_EDGESTRIP_MAT pvckpm45)
+
+(_SETA 'SPECIAL_PANEL_PERFORM_45_OPERATION_ON_TOP_SIDE nil)
+(_SETA 'SPECIAL_PANEL_PERFORM_45_OPERATION_ON_BOTTOM_SIDE "TYPE45_SF")
+(_SETA 'SPECIAL_PANEL_PERFORM_45_OPERATION_ON_LEFT_SIDE nil)
+(_SETA 'SPECIAL_PANEL_PERFORM_45_OPERATION_ON_RIGHT_SIDE nil)
+(_SETA 'SPECIAL_PANEL_45_OPERATION_LAYER_NAME "TYPE45_SF")
+; Standard Values, SPECIAL_PANEL_CODE SPECIAL_PANEL, SPECIAL_PANEL_WID __WID, SPECIAL_PANEL_HEI __HEI, SPECIAL_PANEL_MATERIAL __MODULBODYMAT, SPECIAL_PANEL_THICKNESS __AD_PANELTHICK
+; Standard Values, PANEL_MAIN_ROTATION nil, PANEL_CUTLIST_ROTATION nil, PANEL_DXF_ROTATION nil, PANEL_MIRRORING_AXIS nil
+; Standard Values, SPECIAL_PANEL_LABEL nil, SPECIAL_PANEL_TAG nil
+; Standard Values, LEFT_EDGESTRIP_MAT nil, RIGHT_EDGESTRIP_MAT nil, TOP_EDGESTRIP_MAT nil, BOTTOM_EDGESTRIP_MAT nil
+(if (or (equal SPECIAL_PANEL_COUNT nil) (equal (type SPECIAL_PANEL_COUNT) 'STR)) (_FSET (_ 'SPECIAL_PANEL_COUNT 1)))
+(_FSET (_ 'tempSpecialPanelCode SPECIAL_PANEL_CODE))
+(_FSET (_ 'index 1))
+(repeat SPECIAL_PANEL_COUNT
+	(if (not(equal SPECIAL_PANEL_COUNT 1))
+		(_FSET (_ 'SPECIAL_PANEL_CODE (_& (_ tempSpecialPanelCode "$" index))))
+	)
+		(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\PRIMITIVE_UNITS\\SPECIAL_PANEL" T "p2chelper")
+		(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\PRIMITIVE_UNITS\\SPECIAL_PANEL_45_OPERATION" T "p2chelper")
+		
+	(_FSET (_ 'index (+ index 1)))
+)
+(_NONOTCH)

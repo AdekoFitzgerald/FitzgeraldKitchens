@@ -1,0 +1,191 @@
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(if (and (> __NOTCHDIM1 __AD_PANELTHICK) (equal GROOVE_STATE 3))
+	(if (_EXISTPANEL NOTCHED_TOP_PANEL_CODE)
+		(progn
+			(if DEDUCT_GROOVE_SHARE_FROM_BACK
+				(setq DEDUCTION_VALUE (* -1 (+ GROOVE_WID GROOVE_DISTANCE)))
+				(setq DEDUCTION_VALUE 0)
+			)
+
+			;notched top-right touching length
+			(_FSET (_ 'lengthParametersForTopAndRight (_CALCULATEPANELSINTERSECTIONLENGTH  __DEP (_ TOP_PANEL_FRONT_VARIANCE TOP_PANEL_BACK_VARIANCE RIGHT_PANEL_FRONT_VARIANCE RIGHT_PANEL_BACK_VARIANCE))))
+			(mapcar '_SETA '(lengthForTopAndRight frontStartingPointTopR backStartingPointTopR frontStartingPointRight backStartingPointRight) lengthParametersForTopAndRight)
+			
+			;notched top-left touching length
+			(_FSET (_ 'lengthParametersForTopAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ TOP_PANEL_FRONT_VARIANCE TOP_PANEL_BACK_VARIANCE LEFT_PANEL_FRONT_VARIANCE LEFT_PANEL_BACK_VARIANCE))))
+			(mapcar '_SETA '(lengthForTopAndLeft frontStartingPointTopL backStartingPointTopL frontStartingPointLeft backStartingPointLeft) lengthParametersForTopAndLeft)
+			
+			(_FSET (_ 'index 0))
+			(foreach operationParams OPERATION_LIST
+				(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+				(cond
+					((equal TOP_PANEL_JOINT_TYPE 0)
+						(_FSET (_ 'RightPanelOrientType nil))
+						(_FSET (_ 'LeftPanelOrientType nil))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForRight "Y+"))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForLeft "Y-"))
+						
+						(_FSET (_ 'PrimarySidePanelZValue 0.0))
+						(_FSET (_ 'NotchedTopPanelZValueForPrimarySides (car horizontalHolePos)))
+						
+						(_FSET (_ 'PrimarySidePanelConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForPrimarySides 0.0))
+					)
+					((equal TOP_PANEL_JOINT_TYPE 1)
+						(_FSET (_ 'RightPanelOrientType "Y-"))
+						(_FSET (_ 'LeftPanelOrientType "Y-"))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForRight nil))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForLeft nil))
+						
+						(_FSET (_ 'PrimarySidePanelZValue (car horizontalHolePos)))
+						(_FSET (_ 'NotchedTopPanelZValueForPrimarySides 0.0))
+						
+						(_FSET (_ 'PrimarySidePanelConstAxisValue 0.0))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForPrimarySides (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+					)
+				)
+				
+				(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T)
+					(progn
+						;Orient Types
+						(_FSET (_ 'SecondaryRightPanelOrientType "Y-"))
+						(_FSET (_ 'SecondaryLeftPanelOrientType "Y-"))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForSecondaryRight nil))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForSecondaryLeft nil))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelOrientType "Y-"))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForNotchedMiddleBack nil))
+						
+						;Panel's Z Values
+						(_FSET (_ 'SecondarySidePanelZValue (car horizontalHolePos)))
+						(_FSET (_ 'NotchedTopPanelZValueForSecondarySides nil))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelZValue (car horizontalHolePos)))
+						(_FSET (_ 'NotchedTopPanelZValueForNotchedMiddleBack nil))
+						
+						;Const Axises
+						(_FSET (_ 'SecondarySidePanelConstAxisValue 0.0))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForSecondarySides (cadr horizontalHolePos)))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelConstAxisValue 0.0))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForNotchedMidlleBack (cadr horizontalHolePos)))
+					)
+					(progn
+						;Orient Types
+						(_FSET (_ 'SecondaryRightPanelOrientType nil))
+						(_FSET (_ 'SecondaryLeftPanelOrientType nil))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForSecondaryRight "Y-"))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForSecondaryLeft "Y+"))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelOrientType nil))
+						(_FSET (_ 'NotchedTopPanelOrientTypeForNotchedMiddleBack "X+"))
+						
+						;Panel's Z Values
+						(_FSET (_ 'SecondarySidePanelZValue 0.0))
+						(_FSET (_ 'NotchedTopPanelZValueForSecondarySides (car horizontalHolePos)))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelZValue nil))
+						(_FSET (_ 'NotchedTopPanelZValueForNotchedMiddleBack (car horizontalHolePos)))
+						
+						;Const Axises
+						(_FSET (_ 'SecondarySidePanelConstAxisValue (cadr horizontalHolePos)))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForSecondarySides 0.0))
+						
+						(_FSET (_ 'NotchedMiddleBackPanelConstAxisValue (cadr horizontalHolePos)))
+						(_FSET (_ 'NotchedTopPanelConstAxisValueForNotchedMidlleBack 0.0))
+					)
+				)
+				
+				;LEFT
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'topPanelPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+							(_ lengthForTopAndLeft (- NOTCHED_TOP_PANEL_WID TOP_PANEL_LEFT_VARIANCE NotchedTopPanelConstAxisValueForPrimarySides) NotchedTopPanelZValueForPrimarySides "X") 
+							(_ frontStartingPointTopL backStartingPointTopL T NOTCHED_TOP_PANEL_HEI) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForLeftSide (_ NotchedTopPanelOrientTypeForLeft "Y+") connectorParams)
+					
+						(_FSET (_ 'leftPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+						(_ lengthForTopAndLeft (- LEFT_PANEL_HEI PrimarySidePanelConstAxisValue LEFT_PANEL_UPPER_VARIANCE)  PrimarySidePanelZValue "X") 
+						(_ frontStartingPointLeft backStartingPointLeft nil LEFT_PANEL_WID)
+						(_ FITTING_PARAMETERS nil))))
+						
+						(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForTopPanel (_ LeftPanelOrientType "Y+") connectorParams)
+					)
+				)
+				
+				;SECONDARY_LEFT
+				(if (_EXISTPANEL SECONDARY_LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'topPanelPointListForSecondaryLeftSide (_GETHOLEPOINTLIST operationName 
+							(_ SECONDARY_LEFT_PANEL_WID (_= "NOTCHED_TOP_PANEL_WID + topSideStyleV2 - TOP_PANEL_LEFT_VARIANCE - __NOTCHDIM3 + secondaryNotchedPanelStyleV2 + NotchedTopPanelConstAxisValueForSecondarySides") NotchedTopPanelZValueForSecondarySides "X") 
+							(_ (_= "NOTCHED_TOP_PANEL_HEI - TOP_PANEL_BACK_VARIANCE - __NOTCHDIM2") TOP_PANEL_BACK_VARIANCE T NOTCHED_TOP_PANEL_HEI) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForSecondaryLeftSide (_ NotchedTopPanelOrientTypeForSecondaryLeft "Y-") connectorParams)
+						
+						(_FSET (_ 'secondaryLeftPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+							(_ SECONDARY_LEFT_PANEL_WID (- SECONDARY_LEFT_PANEL_HEI SecondarySidePanelConstAxisValue) SecondarySidePanelZValue "X") 
+							(_ (_= "SECONDARY_LEFT_PANEL_WID - __NOTCHDIM2") 0.0 nil SECONDARY_LEFT_PANEL_WID) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName SECONDARY_LEFT_PANEL_CODE secondaryLeftPanelPointListForTopPanel (_ SecondaryLeftPanelOrientType "Y+") connectorParams)
+					)
+				)
+				
+				;RIGHT
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'topPanelPointListForRightSide (_GETHOLEPOINTLIST operationName 
+							(_ lengthForTopAndRight (+ TOP_PANEL_RIGHT_VARIANCE NotchedTopPanelConstAxisValueForPrimarySides) NotchedTopPanelZValueForPrimarySides "X") 
+							(_ frontStartingPointTopR backStartingPointTopR T NOTCHED_TOP_PANEL_HEI) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForRightSide (_ NotchedTopPanelOrientTypeForRight "Y-") connectorParams)
+					
+						(_FSET (_ 'rightPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+							(_ lengthForTopAndRight (- RIGHT_PANEL_HEI PrimarySidePanelConstAxisValue RIGHT_PANEL_UPPER_VARIANCE)  PrimarySidePanelZValue "X") 
+							(_ frontStartingPointRight backStartingPointRight T RIGHT_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForTopPanel (_ RightPanelOrientType "Y+") connectorParams)
+					)
+				)
+				
+				;SECONDARY_RIGHT
+				(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'topPanelPointListForSecondaryRightSide (_GETHOLEPOINTLIST operationName 
+							(_ SECONDARY_RIGHT_PANEL_WID (_= "NOTCHED_TOP_PANEL_WID + topSideStyleV2 - TOP_PANEL_LEFT_VARIANCE - __NOTCHDIM3 - __NOTCHDIM1 - secondaryNotchedPanelStyleV2 - NotchedTopPanelConstAxisValueForSecondarySides") NotchedTopPanelZValueForSecondarySides "X") 
+							(_ (_= "NOTCHED_TOP_PANEL_HEI - TOP_PANEL_BACK_VARIANCE - __NOTCHDIM2") TOP_PANEL_BACK_VARIANCE T NOTCHED_TOP_PANEL_HEI) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForSecondaryRightSide (_ NotchedTopPanelOrientTypeForSecondaryRight "Y+") connectorParams)
+						
+						(_FSET (_ 'secondaryRightPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+							(_ SECONDARY_RIGHT_PANEL_WID (- SECONDARY_RIGHT_PANEL_HEI SecondarySidePanelConstAxisValue) SecondarySidePanelZValue "X") 
+							(_ (_= "SECONDARY_RIGHT_PANEL_WID - __NOTCHDIM2") 0.0 T SECONDARY_RIGHT_PANEL_WID) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE secondaryRightPanelPointListForTopPanel (_ SecondaryRightPanelOrientType "Y+") connectorParams)
+					)
+				)
+				
+				;NOTCHED_MIDDLE_BACK
+				(if (and (_EXISTPANEL NOTCHED_MIDDLE_BACK_PANEL_CODE) (equal ARE_SECONDARY_NOTCHED_BACK_PANELS_DATA_SAME_WITH_NOTCHED_BACK_PANEL nil))
+					(progn
+						(_FSET (_ 'topPanelPointListForNotchedMiddleBackSide (_GETHOLEPOINTLIST operationName 
+							(_ NOTCHED_MIDDLE_BACK_PANEL_WID (_= "TOP_PANEL_BACK_VARIANCE + __NOTCHDIM2 + NotchedTopPanelConstAxisValueForNotchedMidlleBack + secondaryNotchedPanelStyleV2") NotchedTopPanelZValueForSecondarySides "Y") 
+							(_ (_= "NOTCHED_TOP_PANEL_WID + topSideStyleV2 - TOP_PANEL_LEFT_VARIANCE - __NOTCHDIM3 - __NOTCHDIM1 - __AD_PANELTHICK") (_= "TOP_PANEL_LEFT_VARIANCE - topSideStyleV2 + __NOTCHDIM3 + __NOTCHDIM1 + __AD_PANELTHICK - NOTCHED_MIDDLE_BACK_PANEL_WID") nil NOTCHED_TOP_PANEL_WID)
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForNotchedMiddleBackSide (_ NotchedTopPanelOrientTypeForNotchedMiddleBack "X-") connectorParams)
+						
+						(_FSET (_ 'notchedMiddleBackPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+							(_ NOTCHED_MIDDLE_BACK_PANEL_WID (- NOTCHED_MIDDLE_BACK_PANEL_HEI NotchedMiddleBackPanelConstAxisValue) NotchedMiddleBackPanelZValue "X") 
+							(_ 0.0 0.0 T NOTCHED_MIDDLE_BACK_PANEL_WID) 
+							(_ FITTING_PARAMETERS nil))))
+						(_HOLEGROUP operationName NOTCHED_MIDDLE_BACK_PANEL_CODE notchedMiddleBackPanelPointListForTopPanel (_ NotchedMiddleBackPanelOrientType "Y+") connectorParams)
+					)
+				)
+				(_FSET (_ 'index (+ index 1)))
+			)
+		)
+	)
+)

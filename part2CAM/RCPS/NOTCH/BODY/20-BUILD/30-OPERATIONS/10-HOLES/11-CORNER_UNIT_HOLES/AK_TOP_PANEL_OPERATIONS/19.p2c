@@ -1,0 +1,297 @@
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(if (_EXISTPANEL AK_NOTCHED_TOP_PANEL_CODE)
+			(progn
+				(_FSET (_ 'lengthParametersForTopAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH (- __DEP2 __NOTCHDIM1) (_ AK_TOP_PANEL_FRONT_VARIANCE 0 LEFT_PANEL_FRONT_VARIANCE 0))))
+				(mapcar '_SETA '(lengthForTopAndLeft frontStartingPointTopL backStartingPointTopL frontStartingPointLeft backStartingPointLeft) lengthParametersForTopAndLeft)
+
+				(_FSET (_ 'lengthParametersForTopAndRight (_CALCULATEPANELSINTERSECTIONLENGTH (- __DEP __NOTCHDIM2) (_ AK_TOP_PANEL_FRONT_VARIANCE 0 RIGHT_PANEL_FRONT_VARIANCE 0))))
+				(mapcar '_SETA '(lengthForTopAndRight frontStartingPointTopR backStartingPointTopR frontStartingPointRight backStartingPointRight) lengthParametersForTopAndRight)
+				
+				(_FSET (_ 'lengthParametersForNotchedTopAndSecondaryTopRight (_CALCULATEPANELSINTERSECTIONLENGTH SECONDARY_TOP_RIGHT_PANEL_WID (_ 0 0 0 0))))
+				(_SETA 'lengthForNotchedTopAndSecondaryTopRight (getnth 0 lengthParametersForNotchedTopAndSecondaryTopRight))
+				
+				(_FSET (_ 'lengthParametersForNotchedTopAndSecondaryTopLeft (_CALCULATEPANELSINTERSECTIONLENGTH SECONDARY_TOP_LEFT_PANEL_WID (_ 0 0 0 0))))
+				(_SETA 'lengthForNotchedTopAndSecondaryTopLeft (getnth 0 lengthParametersForNotchedTopAndSecondaryTopLeft))	
+				
+				(_FSET (_ 'lengthParametersForSecondaryTopRightAndSecondaryTopLeft (_CALCULATEPANELSINTERSECTIONLENGTH SECONDARY_TOP_RIGHT_PANEL_HEI (_ 0 0 0 0))))
+				(_SETA 'lengthForSecondaryTopRightAndSecondaryTopLeft (getnth 0 lengthParametersForSecondaryTopRightAndSecondaryTopLeft))	
+				
+				(_FSET (_ 'lengthParametersForSecondaryLeftTopWidth (_CALCULATEPANELSINTERSECTIONLENGTH SECONDARY_LEFT_TOP_PANEL_WID (_ 0 0 0 0))))
+				(_SETA 'lengthForSecondaryLeftTopWidth (getnth 0 lengthParametersForSecondaryLeftTopWidth))	
+
+				(_FSET (_ 'lengthParametersForSecondaryRightTopWidth (_CALCULATEPANELSINTERSECTIONLENGTH SECONDARY_RIGHT_TOP_PANEL_HEI (_ 0 0 0 0))))
+				(_SETA 'lengthForSecondaryRightTopWidth (getnth 0 lengthParametersForSecondaryRightTopWidth))	
+				
+				; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+				; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+				; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+				
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(cond
+						((equal TOP_PANEL_JOINT_TYPE 1)
+							(_FSET (_ 'LeftPanelOrientType "X+"))
+							(_FSET (_ 'topPanelOrientTypeForLeft nil))
+							(_FSET (_ 'RightPanelOrientType "X-"))
+							(_FSET (_ 'topPanelOrientTypeForRight nil))
+							
+							(_FSET (_ 'SidePanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'topPanelZValue 0.0))
+							
+							(_FSET (_ 'LeftPanelsConstAxisValue LEFT_PANEL_LOWER_VARIANCE))
+							(_FSET (_ 'RightPanelsConstAxisValue RIGHT_PANEL_LOWER_VARIANCE))
+							(_FSET (_ 'topPanelConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+						)
+						((equal TOP_PANEL_JOINT_TYPE 0)
+							(_FSET (_ 'LeftPanelOrientType nil))
+							(_FSET (_ 'topPanelOrientTypeForLeft "X-"))
+							(_FSET (_ 'RightPanelOrientType nil))
+							(_FSET (_ 'topPanelOrientTypeForRight "Y+"))
+							
+							(_FSET (_ 'SidePanelsZValue 0.0))
+							(_FSET (_ 'topPanelZValue (car horizontalHolePos)))
+							
+							(_FSET (_ 'LeftPanelsConstAxisValue (+ LEFT_PANEL_UPPER_VARIANCE (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'RightPanelsConstAxisValue (+ RIGHT_PANEL_UPPER_VARIANCE  (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'topPanelConstAxisValue 0.0))
+						)
+					)
+					
+					(if (equal INTERSECTION_OF_BACK_PANELS "L")
+						(progn
+							;Orient Types
+							(_FSET (_ 'SecondaryRightPanelOrientType "X-"))
+							(_FSET (_ 'SecondaryLeftPanelOrientType nil))
+							
+							;Panel's Z Values
+							(_FSET (_ 'SecondaryRightPanelPanelZValue (car horizontalHolePos)))
+							(_FSET (_ 'SecondaryLeftPanelPanelZValue 0))
+							
+							;Const Axises
+							(_FSET (_ 'SecondaryRightPanelConstAxisValue 0.0))
+							(_FSET (_ 'SecondaryLeftPanelConstAxisValue (cadr horizontalHolePos)))
+						)
+						(progn
+							;Orient Types
+							(_FSET (_ 'SecondaryRightPanelOrientType nil))
+							(_FSET (_ 'SecondaryLeftPanelOrientType "X+"))
+							
+							;Panel's Z Values
+							(_FSET (_ 'SecondaryRightPanelPanelZValue 0))
+							(_FSET (_ 'SecondaryLeftPanelPanelZValue (car horizontalHolePos)))
+							
+							;Const Axises
+							(_FSET (_ 'SecondaryRightPanelConstAxisValue (cadr horizontalHolePos)))
+							(_FSET (_ 'SecondaryLeftPanelConstAxisValue 0))
+						)
+					)
+
+					;------------------------ Notched Top And Notched Left Panels Holes -------------------------------
+					
+					;Notched top panel - Notched left panel operations
+					(_FSET (_ 'topPanelPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+						(_ lengthForTopAndLeft (- AK_NOTCHED_TOP_PANEL_HEI __NOTCHDIM2 topPanelConstAxisValue) topPanelZValue "Y") 
+						(_ (+ frontStartingPointTopL (- AK_NOTCHED_TOP_PANEL_WID AK_NOTCHED_TOP_PANEL_DEP2)) (+ backStartingPointTopL __NOTCHDIM1) nil AK_NOTCHED_TOP_PANEL_WID) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForLeftSide (_ topPanelOrientTypeForLeft "X+") connectorParams)
+					
+					(if (_EXISTPANEL AK_NOTCHED_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForTopAndLeft leftPanelsConstAxisValue SidePanelsZValue "Y") 
+								(_ frontStartingPointLeft (+ backStartingPointLeft __NOTCHDIM1) nil AK_NOTCHED_LEFT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_LEFT_PANEL_CODE leftPanelPointListForTopPanel (_ LeftPanelOrientType "X-") connectorParams)
+							
+							; Secondary top right panel connections
+							(_FSET (_ 'leftPanelPointListForSecondaryTopRight (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft (- AK_NOTCHED_LEFT_PANEL_WID __NOTCHDIM1 (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)) 0 "X") 
+								(_ (* -1 topSideStyleV2) 0 T SECONDARY_TOP_RIGHT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_LEFT_PANEL_CODE leftPanelPointListForSecondaryTopRight (_ nil "Y+") connectorParams)
+				
+							; Secondary left top panel connections
+							(_FSET (_ 'leftPanelPointListForSecondaryLeftTop (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryLeftTopWidth (- (+ __NOTCHDIM3 (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)) topSideStyleV1) 0 "Y") 
+								(_ (- AK_NOTCHED_LEFT_PANEL_WID __NOTCHDIM1) 0 nil AK_NOTCHED_LEFT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_LEFT_PANEL_CODE leftPanelPointListForSecondaryLeftTop (_ nil "X-") connectorParams)
+						)
+					)
+					;-----------------------------------------------------------------------------------
+					
+					;------------------------ Notched Top And Notched Right Panels Holes -------------------------------		
+					
+					;Notched top panel - Notched right panel operations
+					(_FSET (_ 'topPanelPointListForRightSide (_GETHOLEPOINTLIST operationName 
+						(_ lengthForTopAndRight topPanelConstAxisValue topPanelZValue "X") 
+						(_ (+ frontStartingPointTopR __NOTCHDIM2) backStartingPointTopR T AK_NOTCHED_TOP_PANEL_DEP) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_NOTCHED_TOP_PANEL_OP_FACE topPanelPointListForRightSide (_ topPanelOrientTypeForRight "Y-") connectorParams)
+					
+					(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForTopAndRight (- AK_NOTCHED_RIGHT_PANEL_HEI RightPanelsConstAxisValue) SidePanelsZValue "Y") 
+								(_ frontStartingPointRight (+ backStartingPointRight __NOTCHDIM2) nil AK_NOTCHED_RIGHT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_RIGHT_PANEL_CODE rightPanelPointListForTopPanel (_ RightPanelOrientType "X+") connectorParams)
+											
+							; Secondary top left panel connections
+							(_FSET (_ 'rightPanelPointListForSecondaryTopLeft (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft (- AK_NOTCHED_RIGHT_PANEL_WID __NOTCHDIM2 (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)) 0 "X") 
+								(_ (- AK_NOTCHED_RIGHT_PANEL_HEI SECONDARY_TOP_LEFT_PANEL_HEI topSideStyleV2) topSideStyleV2 nil AK_NOTCHED_RIGHT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_RIGHT_PANEL_CODE rightPanelPointListForSecondaryTopLeft (_ nil "Y+") connectorParams)
+						
+							; Secondary right top panel connections
+							(_FSET (_ 'rightPanelPointListForSecondaryRightTop (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryRightTopWidth (- (+ AK_NOTCHED_RIGHT_PANEL_HEI topSideStyleV1) __NOTCHDIM3 (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)) 0 "Y") 
+								(_ 0 (- AK_NOTCHED_RIGHT_PANEL_WID __NOTCHDIM2) T AK_NOTCHED_RIGHT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_NOTCHED_RIGHT_PANEL_CODE rightPanelPointListForSecondaryRightTop (_ nil "X+") connectorParams)
+						)
+					)
+					;-----------------------------------------------------------------------------------
+					
+					;------------------------ Secondary Top Panels Holes -------------------------------
+					
+					;Secondary left top panel operations					
+					(if (_EXISTPANEL SECONDARY_LEFT_TOP_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryLeftTopPanelPointListForNotchedLeft (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryLeftTopWidth 0 (car horizontalHolePos) "Y") 
+								(_ 0 0 nil SECONDARY_LEFT_TOP_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_LEFT_TOP_PANEL_CODE secondaryLeftTopPanelPointListForNotchedLeft (_ "X+" "X-") connectorParams)
+											
+							; Secondary bottom left panel connections
+							(_FSET (_ 'secondaryLeftTopPanelPointListForSecondaryBottomLeft (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryLeftTopWidth (- SECONDARY_LEFT_TOP_PANEL_HEI (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES) 0 "Y") 
+								(_ 0 0 nil SECONDARY_LEFT_TOP_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_LEFT_TOP_PANEL_CODE secondaryLeftTopPanelPointListForSecondaryBottomLeft (_ nil "X+") connectorParams)
+						)
+					)
+					
+					;Secondary bottom left panel operations
+					(if (_EXISTPANEL SECONDARY_BOTTOM_LEFT_PANEL_CODE)
+						(progn
+							;Secondary left top panel operations
+							(_FSET (_ 'secondaryBottomLeftPanelPointListForSecondaryLeftTop (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryLeftTopWidth 0 (car horizontalHolePos) "Y") 
+								(_ 0 0 T SECONDARY_BOTTOM_LEFT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_BOTTOM_LEFT_PANEL_CODE secondaryBottomLeftPanelPointListForSecondaryLeftTop (_ "X+" nil) connectorParams)
+						)
+					)
+				
+					;Secondary right top panel operations					
+					(if (_EXISTPANEL SECONDARY_RIGHT_TOP_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryRightTopPanelPointListForNotchedRight (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryRightTopWidth SECONDARY_RIGHT_TOP_PANEL_WID (car horizontalHolePos) "Y") 
+								(_ 0 0 nil SECONDARY_RIGHT_TOP_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_RIGHT_TOP_PANEL_CODE secondaryRightTopPanelPointListForNotchedRight (_ "X-" "X+") connectorParams)
+											
+							; Secondary bottom right panel connections
+							(_FSET (_ 'secondaryRightTopPanelPointListForSecondaryBottomRight (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryRightTopWidth (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES) 0 "Y") 
+								(_ 0 0 nil SECONDARY_RIGHT_TOP_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_RIGHT_TOP_PANEL_CODE secondaryRightTopPanelPointListForSecondaryBottomRight (_ nil "X-") connectorParams)
+						)
+					)
+					
+					;Secondary bottom right panel operations
+					(if (_EXISTPANEL SECONDARY_BOTTOM_RIGHT_PANEL_CODE)
+						(progn
+							;Secondary right top panel operations
+							(_FSET (_ 'secondaryBottomRightPanelPointListForSecondaryRightTop (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryRightTopWidth SECONDARY_BOTTOM_RIGHT_PANEL_WID (car horizontalHolePos) "Y") 
+								(_ rightPanelShare 0 T SECONDARY_BOTTOM_RIGHT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_BOTTOM_RIGHT_PANEL_CODE secondaryBottomRightPanelPointListForSecondaryRightTop (_ "X-" nil) connectorParams)
+						)
+					)	
+					
+					;Notched top panel - Secondary top right panel operations
+					(_FSET (_ 'notchedTopPanelPointListForSecondaryTopRight (_GETHOLEPOINTLIST operationName 
+						(_ lengthForNotchedTopAndSecondaryTopRight (- AK_NOTCHED_TOP_PANEL_WID __NOTCHDIM1 (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)) 0 "X") 
+						(_ leftPanelShare topSideStyleV1 nil (- AK_NOTCHED_TOP_PANEL_HEI __NOTCHDIM2)) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_NOTCHED_TOP_PANEL_OP_FACE notchedTopPanelPointListForSecondaryTopRight (_ nil "Y+") connectorParams)
+					
+					(if (_EXISTPANEL SECONDARY_TOP_RIGHT_PANEL_CODE)
+						(progn
+							; Notched top panel connections
+							(_FSET (_ 'secondaryTopRightPointListForNotchedTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForNotchedTopAndSecondaryTopRight SECONDARY_TOP_RIGHT_PANEL_HEI (car horizontalHolePos) "X") 
+								(_ 0 0 nil SECONDARY_TOP_RIGHT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_RIGHT_PANEL_CODE secondaryTopRightPointListForNotchedTopPanel (_ "Y-" "Y+") connectorParams)
+							
+							; Secondary top panel connections
+							(_FSET (_ 'secondaryTopRightPointListForSecondaryTopLeft (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft (- SECONDARY_TOP_RIGHT_PANEL_WID SecondaryRightPanelConstAxisValue) SecondaryRightPanelPanelZValue "Y") 
+								(_ 0 0 nil SECONDARY_TOP_RIGHT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_RIGHT_PANEL_CODE secondaryTopRightPointListForSecondaryTopLeft (_ SecondaryRightPanelOrientType "X+") connectorParams)
+						
+							; Notched left panel connections
+							(_FSET (_ 'secondaryTopRightPointListForNotchedLeft (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft 0 (car horizontalHolePos) "Y") 
+								(_ 0 0 nil SECONDARY_TOP_RIGHT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_RIGHT_PANEL_CODE secondaryTopRightPointListForNotchedLeft (_ "X+" "X-") connectorParams)
+						
+						)
+					)					
+					
+					;Notched top panel - Secondary top left panel operations
+					(_FSET (_ 'notchedTopPanelPointListForSecondaryTopLeft (_GETHOLEPOINTLIST operationName 
+						(_ lengthForNotchedTopAndSecondaryTopLeft (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES) 0 "Y") 
+						(_ rightPanelShare topSideStyleV1 T (- AK_NOTCHED_TOP_PANEL_WID __NOTCHDIM1)) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_NOTCHED_TOP_PANEL_OP_FACE notchedTopPanelPointListForSecondaryTopLeft (_ nil "X-") connectorParams)
+					
+					(if (_EXISTPANEL SECONDARY_TOP_LEFT_PANEL_CODE)
+						(progn
+							; Notched top panel connections
+							(_FSET (_ 'secondaryTopLeftPointListForNotchedTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForNotchedTopAndSecondaryTopLeft SECONDARY_TOP_LEFT_PANEL_HEI (car horizontalHolePos) "X") 
+								(_ 0 0 nil SECONDARY_TOP_LEFT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_LEFT_PANEL_CODE secondaryTopLeftPointListForNotchedTopPanel (_ "Y-" "Y+") connectorParams)
+							
+							; Secondary top panel connections
+							(_FSET (_ 'secondaryTopLeftPointListForSecondaryTopRight (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft SecondaryLeftPanelConstAxisValue SecondaryLeftPanelPanelZValue "Y") 
+								(_ 0 0 nil SECONDARY_TOP_LEFT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_LEFT_PANEL_CODE secondaryTopLeftPointListForSecondaryTopRight (_ SecondaryLeftPanelOrientType "X-") connectorParams)
+
+							; Notched right panel connections
+							(_FSET (_ 'secondaryTopLeftPointListForNotchedRight (_GETHOLEPOINTLIST operationName 
+								(_ lengthForSecondaryTopRightAndSecondaryTopLeft SECONDARY_TOP_LEFT_PANEL_WID (car horizontalHolePos) "Y") 
+								(_ 0 0 nil SECONDARY_TOP_LEFT_PANEL_HEI) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_TOP_LEFT_PANEL_CODE secondaryTopLeftPointListForNotchedRight (_ "X-" "X+") connectorParams)
+						)
+					)
+
+					
+					(_FSET (_ 'index (+ index 1)))
+				)				
+			)
+		)
+	)
+)
+
+
+(_NONOTCH)

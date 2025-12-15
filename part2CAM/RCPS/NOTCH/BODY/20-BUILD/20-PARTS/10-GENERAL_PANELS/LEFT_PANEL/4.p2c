@@ -1,0 +1,134 @@
+; -------------------------------------------------- DEFAULT RECIPES ---------------------------------------------------------
+(_RUNDEFAULTHELPERRCP "NOTCHED_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (and (> __NOTCHDIM3 __AD_PANELTHICK) (equal GROOVE_STATE 3))
+	(progn
+		(_DELPANEL LEFT_PANEL_CODE)
+		; Global variables of notched left panel
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_HEI LEFT_PANEL_HEI))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_WID  LEFT_PANEL_WID))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_DEP (+ (- NOTCHED_LEFT_PANEL_HEI __NOTCHDIM3 secondaryNotchedPanelStyleV2 LEFT_PANEL_UPPER_VARIANCE) topSideStyleV1)))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_DEP2 (- NOTCHED_LEFT_PANEL_WID __NOTCHDIM2 secondaryNotchedPanelStyleV2 LEFT_PANEL_BACK_VARIANCE)))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_ROT LEFT_PANEL_ROT))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_MAT LEFT_PANEL_MAT))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_THICKNESS LEFT_PANEL_THICKNESS))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_LABEL LEFT_PANEL_LABEL))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_TAG LEFT_PANEL_TAG))
+		(_FSET (_ 'NOTCHED_LEFT_PANEL_CODE (XSTR "NOTCHED_LEFT_PANEL")))
+
+		;;;;;;;;;;; GOLA_PREFERENCES;;;;;;;;;;;;;;;;
+		(cond 
+			( (and GOLA_PATTERN (not (equal GOLA_CLEARANCE 0.0))  (equal __DOOR0_OPENDIRECTION "L")) ;;;defined vertical gola
+				(_FSET (_ 'NOTCHED_LEFT_PANEL_PDATA (_ (_ GOLA_CLEARANCE 0.0 0.0) 0 
+												   (_ GOLA_CLEARANCE NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_DEP2 NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_DEP2 NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_WID NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_WID 0.0 0.0) 0 
+												   (_ GOLA_CLEARANCE 0.0 0.0) 0)))
+				(_FSET (_ 'NOTCHED_LEFT_PANEL_EDGESTRIPS (_ (getnth 0 LEFT_PANEL_EDGESTRIPS)
+														(getnth 1 LEFT_PANEL_EDGESTRIPS)
+														(getnth 2 LEFT_PANEL_EDGESTRIPS)
+														(getnth 1 LEFT_PANEL_EDGESTRIPS)
+														(getnth 2 LEFT_PANEL_EDGESTRIPS)
+														(getnth 3 LEFT_PANEL_EDGESTRIPS))))
+			)
+			((and GOLA_OP_AVAILABLE GOLA_PATTERN (equal GOLA_CLEARANCE 0.0) ) ;;;defined horizontal gola
+				(setq gCavityShift (_ 0 (_= "0 - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE") 0));;if necessary, offsetting cavity. Domestic or Euro styles for example
+				(setq nCavityShift (_ 0 (_= "0 - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE") 0))
+				(setq PanelInformations (_GENERATEPDATAV2 NOTCHED_LEFT_PANEL_WID 
+											   NOTCHED_LEFT_PANEL_HEI 
+											   0.0 
+											   gCavityShift
+											   nCavityShift
+											   GOLA_CAVITY_ORDER
+											   (_ (_ __HEI __NOTCHDIM3 __NOTCHDIM2) )  ))
+				(setq GolaPData (nth 0 PanelInformations))
+				(setq GolaEdgeStrips (mapcar '(lambda (item) 
+													(if (equal item 0) (setq item (_ " " 0)))
+													(if (equal item 1) (setq item (_ VISIBLE_EDGESTRIP_MAT VISIBLE_EDGESTRIP_WID)))
+													(if (equal item 2) (setq item (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)))
+													(if (equal item 3) (setq item (_ HIDDEN_EDGESTRIP_MAT HIDDEN_EDGESTRIP_WID)))
+													(if (equal item 4) (setq item (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)))
+													item ) (nth 1 PanelInformations)))
+				(setq golaControlPoints (nth 2 PanelInformations))
+				(setq golaEdgeTrimCtrlPts (nth 4 PanelInformations))
+				
+				; if you want to draw for notching 
+				;(setq golaControlPoints (append golaControlPoints (nth 3 PanelInformations)))
+				;(setq golaEdgeTrimCtrlPts (append golaEdgeTrimCtrlPts (nth 5 PanelInformations)))
+
+				
+				; milling approach lines adding 
+				(if (or (equal GOLA_DRAW_APPROACH_OUTSIDE 1) (equal GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE 1))
+					(progn
+						(_GENERATEMILLINGAPPROACH NOTCHED_LEFT_PANEL_CODE 
+												  golaControlPoints                                                      ; definition of up L , down L , U cavities control points 
+												  GOLA_DRAW_APPROACH_OUTSIDE											 ; Draw top approach lines
+												  GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE      						 ; Draw bottom approach lies
+												  GOLA_MIRROR_SFACE_GEOMETRIES											 ; Mirror bottom approach lines. it needed for biesse cam			
+												  GOLA_APPROACH_DISTANCE 												 ; Desired approach distance from the outside of panels
+												  GOLA_INNER_RADIUS														 ; Definition of the cavities concave corner radius
+												  (_ (_ 0.0 (/ NOTCHED_LEFT_PANEL_HEI 2) 0.0) (_ 1.0 (/ NOTCHED_LEFT_PANEL_HEI 2) 0.0) )); Mirror axis
+						(_GENERATEEDGEMILLING NOTCHED_LEFT_PANEL_CODE 
+											  golaEdgeTrimCtrlPts 						; definition of up L , down L , U cavities control points list. firsth and last points are create the line to be cut
+											  GOLA_EDGE_TRIM_GEO_OFFSET_DISTANCE		; cutoff line, outward offset
+											  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE		; extension of offseted cutoff line from start point
+											  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE2)	; extension of offseted cutoff line to end point
+					)
+				)
+																
+				(if (equal GOLA_DRAW_PATTERN 1)
+					(progn
+						(_FSET (_ 'NOTCHED_LEFT_PANEL_PDATA GolaPData))												
+						(_FSET (_ 'NOTCHED_LEFT_PANEL_EDGESTRIPS GolaEdgeStrips))
+					)
+				)
+				(if GOLA_DRAW_RECT_GEOMETRY (generate_special_golaRectPattern NOTCHED_LEFT_PANEL_CODE golaControlPoints))
+			)
+		)								
+
+		(if (equal NOTCHED_LEFT_PANEL_PDATA nil)
+			(_FSET (_ 'NOTCHED_LEFT_PANEL_PDATA (_ (_ 0.0 0.0 0.0) 0 
+												   (_ 0.0 NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_DEP2 NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_DEP2 NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_WID NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ NOTCHED_LEFT_PANEL_WID 0.0 0.0) 0 
+												   (_ 0.0 0.0 0.0) 0)))
+		)
+		(if (equal NOTCHED_LEFT_PANEL_EDGESTRIPS nil)	
+			(_FSET (_ 'NOTCHED_LEFT_PANEL_EDGESTRIPS (_ (_ VISIBLE_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB VISIBLE_EDGESTRIP_MAT)) ;ÖN
+														(if (equal TOP_PANEL_JOINT_TYPE 1)
+															(_ "" 0 )
+															(_ UPCAST_EDGES_MAT (_GETEDGESTRIPWIDFROMDB UPCAST_EDGES_MAT))
+														) ;KERTÝK ÜST
+														(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T)
+															(_ WALLSIDE_EDGES_MAT (_GETEDGESTRIPWIDFROMDB WALLSIDE_EDGES_MAT))
+															(_ "" 0)
+														); ÝKÝNCÝL ARKA
+														(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T)
+															(_ WALLSIDE_EDGES_MAT (_GETEDGESTRIPWIDFROMDB WALLSIDE_EDGES_MAT))
+															(_ "" 0)
+														);ÝKÝNCÝL ÜST
+														(_ WALLSIDE_EDGES_MAT (_GETEDGESTRIPWIDFROMDB WALLSIDE_EDGES_MAT)) ; KERTÝK ARKA
+														(if (equal BOTTOM_PANEL_JOINT_TYPE 1)
+															(_ "" 0 )
+															(_ SIDES_BOTTOM_EDGES_MAT (_GETEDGESTRIPWIDFROMDB SIDES_BOTTOM_EDGES_MAT))
+														)))) ;ALT
+		)
+		(_PANELMAIN NOTCHED_LEFT_PANEL_CODE (_ NOTCHED_LEFT_PANEL_PDATA NOTCHED_LEFT_PANEL_ROT NOTCHED_LEFT_PANEL_MAT NOTCHED_LEFT_PANEL_THICKNESS))
+		(if (equal __MODULBODYMAT NOTCHED_LEFT_PANEL_MAT)
+			(_CREATEEDGESTRIPS NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_EDGESTRIPS)
+		)
+		(_PUTLABEL NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_LABEL)
+		(if (equal __SIDELNO 1)
+			(progn
+				(_PUTSOURCETAG NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_CODE "INSOURCE")
+				(_PUTUSAGETYPETAG NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_CODE "GYAN")
+			)
+		)
+		(_PUTTAG NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_CODE NOTCHED_LEFT_PANEL_TAG)
+	)
+)

@@ -1,0 +1,48 @@
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+;(if (equal (length targetPanels) 1)
+;	(progn
+		(_FSET (_ 'panelCounter 0))
+		(_FSET (_ 'connCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+
+			; (cond
+				; ((_ISVERTICALFACE currentFaceNormal)
+					(setq WARDROBE_INDEPENDENT_HOLE_INFO (splitstr (parseRGT (dfetch 2 g_currentConnectorEnt) "$$") "_"))
+					; Type of current face is either 0 or 1 in this case
+					(setq holePosition (replace 0 2 holePosition))
+					(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_INDEPENDENT_HOLE"))))
+
+					(cond 
+						((equal (getnth 0 WARDROBE_INDEPENDENT_HOLE_INFO) "1") ;circle
+							(_HOLE holeCodeBody connectedFaceCode (_ holePosition (cu2mm (atof (getnth 1 WARDROBE_INDEPENDENT_HOLE_INFO))) (cu2mm (atof (getnth 2 WARDROBE_INDEPENDENT_HOLE_INFO))) holeOrient))
+						)
+						((equal (getnth 0 WARDROBE_INDEPENDENT_HOLE_INFO) "2") ;polyline
+							(_POLYLINECIRCLE holeCodeBody connectedFaceCode "POCKET" (_ holePosition (cu2mm (atof (getnth 1 WARDROBE_INDEPENDENT_HOLE_INFO))) (cu2mm (atof (getnth 2 WARDROBE_INDEPENDENT_HOLE_INFO))) holeOrient))
+						)
+					)
+				; )
+			; )
+			
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		(_RESETCURMODUL)
+;	)
+;)
+(_NONOTCH)

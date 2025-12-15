@@ -1,0 +1,42 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(defun hareketliRafYerlestirici (rafPozisyonu / )
+	(createGPanel 
+	(list 
+	(list 0.0 0.0 0.0) 
+	(list (- unitW2 (* 2 ad_et)) 0.0 0.0) 
+	(list (- unitW2 (* 2 ad_et)) (- unitD (* 1 ad_et)) 0.0) 
+	(list (- unitD (* 1 ad_et)) (- unitD (* 1 ad_et)) 0.0 ) 
+	(list (- unitD (* 1 ad_et)) (- unitW (* 2 ad_et)) 0.0 ) 
+	(list 0.0 (- unitW (* 2 ad_et)) 0.0 ) 
+	)
+	nil
+	ad_et 
+	0.0 
+	(d2r 270.00)
+	(list (- unitW ad_et) (- 0 ad_et) (+ rafPozisyonu dAltKot ad_et))
+	"BK_SHELF"
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+	)
+)
+
+(defun rafListesiYapilandirici (mevcutListe / sonEleman yeniListe)
+  (setq sonEleman 0)
+  (setq yeniListe (list))
+  (foreach listeElemanı mevcutListe
+    (setq sonEleman (+ sonEleman listeElemanı))
+    (setq yeniListe (append yeniListe (list sonEleman)))
+  )
+  yeniListe
+)
+
+(setq yapilandirilmisRafListesi (rafListesiYapilandirici (ifnull raflist raf_list)))
+;;Raf listesi AK2'den raflist UK2'den raf_list degiskeni ile geliyor
+
+(foreach listeElemanı yapilandirilmisRafListesi
+  (hareketliRafYerlestirici listeElemanı)
+)

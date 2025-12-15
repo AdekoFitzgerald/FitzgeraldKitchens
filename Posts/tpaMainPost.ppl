@@ -1,0 +1,88 @@
+;******************************************
+;*     TPA CAD TCN POST PROCESSOR FILE	  *
+;*            a.k.a PART2CAM              *
+;*       Cr.Aut:Eyüp Cr.Year:2019	      *
+;******************************************
+;Can be arranged cam operations using  (tpaMachinePointVitap.ppl-> fillTPACAMOperationList) subroutine
+;
+;
+;
+
+(setq ad_tpaCAMOperationList nil)
+(setq tpaAllEntities nil)
+(setq tpaNotFreeEntities nil)
+(setq tpaEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq tpaIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+(setq lmm_exportTPANCCodesCodesDesiredCAMOp nil)
+(defun lmm_exportTPANCCodesCodesDesiredCAMOp ( / allPanelsList tempPanel ) 
+	(setq tpaAllEntities nil)
+	(setq tpaNotFreeEntities nil)
+	(setq tpaEntitiesThatCanNotBeCAM nil)
+	
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(sendTpaPointVitapMachine tempPanel )
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem tpaAllEntities
+		(if (and (not (member tempItem tpaNotFreeEntities)) (not (member tempItem tpaEntitiesThatCanNotBeCAM)))
+			(setq tpaEntitiesThatCanNotBeCAM (append tpaEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if tpaEntitiesThatCanNotBeCAM
+		(progn
+			(setq tpaEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) tpaEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length tpaEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter tpaEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat "TPATCNOUT\n" alertMsg (nth tempIter tpaEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+	
+	
+)
+
+;returns a temporarily layer name by geometry UCS
+; TPA SIDES TOP SIDE 1, BOTTOM SIDE 2, LEFT SIDE 6 , RIGHT SIDE 4, FRONT SIDE 3 , REAR SIDE 5
+(defun tpaInterpretHoleLayerName ( tempEnt / currentReturn tempHoleDia tempHoleDepth)
+	(cond 
+		( ;Z - 
+			(equal (getnth 2 (getEntPro tempEnt 210)) 1.00000)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	currentReturn
+)
+
+(princ)

@@ -1,0 +1,16 @@
+(setq entselFrom (entlast))
+
+	(drawMeshKanat "KORL63" (* gor_Gen 2) z
+		(list
+			(list "GOLAPROFILE"
+				nil
+				'()
+				'(36 35 34 33 32 31 30 29 28 27 26 25)
+				'()
+				'()
+			)
+		)
+	)
+
+(setq moveBodyPoints (collectMents entselFrom))
+(command "_MOVE" moveBodyPoints    "" (list 0 0 0) (list  (- unitD2 (+ (- ADEN1 unitW)) ad_et)  1.0 ad_bazaH))

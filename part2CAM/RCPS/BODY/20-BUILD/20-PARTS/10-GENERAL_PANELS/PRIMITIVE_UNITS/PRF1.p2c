@@ -1,0 +1,47 @@
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+CORNICE_THICKNESS -> "Material thickness of cornice"
+CORNICE_FRONT_HEI -> "Height of cornice front part"
+CORNICE_BOTTOM_HEI -> "Height of cornice bottom part"
+;prefvars
+(_SETA 'PANEL_MAIN_ROTATION nil)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'CORNICE_THICKNESS (cu2mm PRF1_T1))
+(_SETA 'CORNICE_FRONT_HEI (cu2mm PRF1_D1))
+(setq currentCornicePartEXTRA 0) ;extra length
+
+; Standard Values, PANEL_MAIN_ROTATION nil, PANEL_CUTLIST_ROTATION nil, PANEL_DXF_ROTATION nil, PANEL_MIRRORING_AXIS nil
+; Standard Values, CORNICE_THICKNESS 18, CORNICE_FRONT_HEI 60, CORNICE_BOTTOM_HEI 100
+(_RUNDEFAULTHELPERRCP "CORNICE_PLINTH_DEFAULT" nil "p2chelper")
+
+
+(_FSET (_ 'corniceROT (_ PANEL_MAIN_ROTATION PANEL_CUTLIST_ROTATION PANEL_DXF_ROTATION PANEL_MIRRORING_AXIS)))
+(_FSET (_ 'corniceCounter 0))
+(repeat (length __CORNICESPARTSLIST)
+	(setq currentCornicesPartMaterial (cadr (getnth corniceCounter __CORNICESPARTSLIST)))
+	(_FSET (_ 'currentCornicePart (* (car (getnth corniceCounter __CORNICESPARTSLIST)) 10)))
+	(_FSET (_ 'corniceCounter (+ 1 corniceCounter)))
+	
+	(_FSET (_ 'partCounter 1))
+	(if (_NOTNULL CORNICE_LENGTH_LIMIT)
+		(progn
+			(while (> currentCornicePart CORNICE_LENGTH_LIMIT)
+				(_FSET (_ 'panelCodeRoot (_& (_ (XSTR "CORNICE") "_" corniceCounter "_" partCounter "_"))))
+				(_PANEL (_& (_ panelCodeRoot (XSTR "FRONT"))) (_ CORNICE_LENGTH_LIMIT CORNICE_FRONT_HEI corniceROT currentCornicesPartMaterial CORNICE_THICKNESS))
+				
+				(_FSET (_ 'currentCornicePart (- currentCornicePart CORNICE_LENGTH_LIMIT)))
+				(_FSET (_ 'partCounter (+ 1 partCounter)))
+			)
+		)
+	)
+	(_FSET (_ 'panelCodeRoot (_& (_ (XSTR "CORNICE") "_" corniceCounter "_" partCounter "_"))))
+	(_PANEL (_& (_ panelCodeRoot (XSTR "FRONT"))) (_ (+ currentCornicePart currentCornicePartEXTRA) CORNICE_FRONT_HEI corniceROT currentCornicesPartMaterial CORNICE_THICKNESS))
+	(_PUTUSAGETYPETAG (_& (_ panelCodeRoot (XSTR "FRONT"))) (_& (_ panelCodeRoot (XSTR "FRONT"))) "CORNICE")
+)
+(_NONOTCH)

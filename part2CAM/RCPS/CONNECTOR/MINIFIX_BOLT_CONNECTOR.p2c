@@ -1,0 +1,65 @@
+(_RUNDEFAULTHELPERRCP "MINIFIX_DEFAULT" nil "p2chelper")
+
+WARDROBE_MDRILL_VER_HOLE_DIA -> "Diameter of vertical wardrobe minifix drill holes. Default value -> MINIFIX_DIAMETER_FOR_SIDES"
+WARDROBE_MDRILL_VER_HOLE_DEPTH -> "Depth of vertical wardrobe minifix drill holes. Default value -> MINIFIX_DEPTH_FOR_SIDES"
+WARDROBE_MDRILL_HOR_HOLE_DIA -> "Diameter of horizontal wardrobe minifix drill holes. Default value -> MINIFIX_HOR_DIAMETER"
+WARDROBE_MDRILL_HOR_HOLE_DEPTH -> "Depth of horizontal wardrobe minifix drill holes. Default value -> MINIFIX_HOR_DEPTH"
+;prevars
+(_SETA 'WARDROBE_MDRILL_VER_HOLE_DIA MINIFIX_DIAMETER_FOR_SIDES)
+(_SETA 'WARDROBE_MDRILL_VER_HOLE_DEPTH MINIFIX_DEPTH_FOR_SIDES)
+(_SETA 'WARDROBE_MDRILL_HOR_HOLE_DIA MINIFIX_HOR_DIAMETER)
+(_SETA 'WARDROBE_MDRILL_HOR_HOLE_DEPTH MINIFIX_HOR_DEPTH)
+
+(if (not (equal MINIFIX_DIA3 nil)) (_FSET (_ 'WARDROBE_MDRILL_VER_HOLE_DIA (convertLengthToSpecifiedUnit MINIFIX_DIA3 (getvar "INSUNITS") 4))))
+(if (not (equal MINIFIX_DEP2 nil)) (_FSET (_ 'WARDROBE_MDRILL_VER_HOLE_DEPTH (convertLengthToSpecifiedUnit MINIFIX_DEP2 (getvar "INSUNITS") 4))))
+(if (not (equal MINIFIX_DIA2 nil)) (_FSET (_ 'WARDROBE_MDRILL_HOR_HOLE_DIA (convertLengthToSpecifiedUnit MINIFIX_DIA2 (getvar "INSUNITS") 4))))
+(if (and (not (equal MINIFIX_X1 nil)) (not (equal MINIFIX_CONN_DIST nil))) (_FSET (_ 'WARDROBE_MDRILL_HOR_HOLE_DEPTH (convertLengthToSpecifiedUnit (- MINIFIX_X1 MINIFIX_CONN_DIST) (getvar "INSUNITS") 4))))
+
+; Standard Values, WARDROBE_MDRILL_VER_HOLE_DIA MINIFIX_DIAMETER_FOR_SIDES, WARDROBE_MDRILL_VER_HOLE_DEPTH MINIFIX_DEPTH_FOR_SIDES
+; Standard Values, WARDROBE_MDRILL_HOR_HOLE_DIA MINIFIX_HOR_DIAMETER, WARDROBE_MDRILL_HOR_HOLE_DEPTH MINIFIX_HOR_DEPTH
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			
+			(cond
+				((_ISVERTICALFACE currentFaceNormal)
+					(setq holePosition (replace 0 2 holePosition))
+					; Type of current face is either 0 or 1 in this case
+					(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_MINIFIX_CONN_HOLE"))))
+					(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_MDRILL_VER_HOLE_DIA WARDROBE_MDRILL_VER_HOLE_DEPTH holeOrient))
+				)
+				((_ISHORIZONTALFACE currentFaceNormal)
+					; Type of current face either 2, 3, 4 or 5 in this case
+					(if (null (minusp (getnth 2 holePosition)))
+						(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+					)
+					
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_MINIFIX_HOR_HOLE"))))
+					(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_MDRILL_HOR_HOLE_DIA WARDROBE_MDRILL_HOR_HOLE_DEPTH holeOrient))
+				)
+			)
+			
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+	)
+)
+(_NONOTCH)

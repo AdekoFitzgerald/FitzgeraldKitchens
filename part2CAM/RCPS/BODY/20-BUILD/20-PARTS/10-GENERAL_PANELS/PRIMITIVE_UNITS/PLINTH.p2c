@@ -1,0 +1,66 @@
+(_RUNDEFAULTHELPERRCP "CORNICE_PLINTH_DEFAULT" nil "p2chelper")
+
+
+(setq matsListName "lmm-s-runningMeterMats")
+(setq matsList (eval (read (iniread ad_MOD-INI "lmm-Sets" matsListName nil))))
+
+(setq currentPlinthWidEXTRA 0)	;extra length
+(setq currentPlinthHeiEXTRA 0)	;extra hei
+
+(_FSET
+	(_ 'PLINTH_PANEL_EDGESTRIPS	
+		(_
+			(_ "PVC04mm" 0.0)
+			(_ "PVC04mm" 0.0)
+			(_ "PVC04mm" 0.0)
+			(_ "PVC04mm" 0.0)
+		)
+	)
+)
+
+(cond 
+	((member __MODULBODYMAT  matsList)
+	;((equal __MODULBODYMAT "ALUMINUM")
+		; Plinth's material is aluminum
+		; It is sure that there is at least a list
+		(if (_NOTNULL __PLINTHWIDS)
+			(progn
+				(_FSET (_ 'plinthCounter 0))
+				(repeat (length __PLINTHWIDS)
+					(_FSET (_ 'currentPlinthWid (getnth plinthCounter __PLINTHWIDS)))
+					; Item added
+					(_ITEMMAIN (parse$ __MODULCODE) (parse$ __MODULCODE) (_ (/ currentPlinthWid 100.0) "mt"))
+					
+					(_FSET (_ 'plinthCounter (+ 1 plinthCounter)))
+				)
+			)
+		)
+	)
+	((and (_NOTNULL __PLINTHWIDS) (> __PLINTHHEI 0))
+		(progn
+			(_FSET (_ 'plinthCounter 0))
+			(repeat (length __PLINTHWIDS)
+				(_FSET (_ 'currentPlinthWid (* (getnth plinthCounter __PLINTHWIDS) 10)))
+				(_FSET (_ 'plinthCounter (+ 1 plinthCounter)))
+				
+				(_FSET (_ 'partCounter 1))
+				(if (_NOTNULL PLINTH_LENGTH_LIMIT)
+					(progn
+						(while (> currentPlinthWid PLINTH_LENGTH_LIMIT)
+							(_FSET (_ 'plinthCode (_& (_ (XSTR "PLINTH") "_" plinthCounter "_" partCounter))))
+							(_PANEL plinthCode (_ PLINTH_LENGTH_LIMIT __PLINTHHEI 0 __MODULBODYMAT __AD_PANELTHICK))
+							(_CREATEEDGESTRIPS plinthCode PLINTH_PANEL_EDGESTRIPS)
+							
+							(_FSET (_ 'currentPlinthWid (- currentPlinthWid PLINTH_LENGTH_LIMIT)))
+							(_FSET (_ 'partCounter (+ 1 partCounter)))
+						)
+					)
+				)
+				(_FSET (_ 'plinthCode (_& (_ (XSTR "PLINTH") "_" plinthCounter "_" partCounter))))
+				(_PANEL plinthCode (_ (+ currentPlinthWid currentPlinthWidEXTRA) (+ __PLINTHHEI currentPlinthHeiEXTRA) 0 __MODULBODYMAT __AD_PANELTHICK))
+				(_CREATEEDGESTRIPS plinthCode PLINTH_PANEL_EDGESTRIPS)
+			)
+		)
+	)
+)
+(_NONOTCH)

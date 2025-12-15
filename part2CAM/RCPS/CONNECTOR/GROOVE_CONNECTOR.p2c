@@ -1,0 +1,111 @@
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+; We assumed default value of wardrobeBackPanelGrooveWidth is panel thickness of back panel. But if users want to change groove width  they can change tolerance value.
+(setq bodyBackToleranceManufactureExtra (cu2mm (atof (iniread ad_WARDROBE-INI "dialog_defaults" "bodyBackToleranceManufactureExtra"  "0.0"))))
+(setq bodyBackDistanceManufactureExtra (cu2mm (atof (iniread ad_WARDROBE-INI "dialog_defaults" "bodyBackDistanceManufactureExtra" "0.0"))))
+(setq bodyBackLengthManufactureExtra (cu2mm (atof (iniread ad_WARDROBE-INI "dialog_defaults" "bodyBackLengthManufactureExtra" "0.0"))))
+
+(_FSET (_ 'wardrobeBackPanelGrooveWidth (+ __PANELTHICKNESS bodyBackDistanceManufactureExtra)))
+(_FSET (_ 'interferenceInfo (_GETINTERFERENCES)))
+(_FSET (_ 'targetPanels (getnth 2 interferenceInfo)))
+(_FSET (_ 'panelCounter 0))
+
+(repeat (length targetPanels)
+		(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+		
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+		(_FSET (_ 'currentFaceNormal (getnth 2 tPanelInfo)))
+		(_FSET (_ 'currentPanelCode WARDROBE_PANELS_GENERAL_CODE))
+		(_FSET (_ 'wardrobeBackPanelGrooveDepth (+ (cu2mm (getnth 3 tPanelInfo)) bodyBackToleranceManufactureExtra)))
+
+		(_FSET (_ 'groovePointOne (mapcar '(lambda (x) (cu2mm (round x 15))) (getnth 4 tPanelInfo))))
+		(_FSET (_ 'groovePointTwo (mapcar '(lambda (x) (cu2mm (round x 15))) (getnth 5 tPanelInfo))))
+		
+		(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-usePosesIfPossible" "0") "1")
+			(progn
+				(if (not (or (equal (lmm_getGroupPoseIfPossibleByModuleCode (getnth 0 tPanelInfo)) nil) (equal (lmm_getGroupPoseIfPossibleByModuleCode (getnth 0 tPanelInfo)) "0")))
+					(setq tempModulCode (strcat (lmm_getPoseIfPossibleByModulCode (getnth 0 tPanelInfo)) "_" (lmm_getGroupPoseIfPossibleByModuleCode (getnth 0 tPanelInfo))))
+					(setq tempModulCode (lmm_getPoseIfPossibleByModulCode (getnth 0 tPanelInfo)))
+				)
+			)
+			(setq tempModulCode (getnth 0 tPanelInfo))
+		)
+
+		(setq tempEntity (lmm_getComponentFromCodes WARDROBE_PANELS_GENERAL_CODE WARDROBE_PANELS_GENERAL_CODE tempModulCode ))
+		(setq tempIntersectionPoints nil)
+		(if (not (null tempEntity))
+			(progn		
+				(setq tempEntityPolylineData (lmm_getPolylinePoints tempEntity))
+				(setq tempIntersectionPoints (interspaths tempEntityPolylineData 1 (_ groovePointOne groovePointTwo) 1))
+
+				(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+					(_FSET (_ 'currentPanelCode (_& (_ currentPanelCode "!!SFACE"))))
+				)
+			)
+		)
+		
+		; If groove depth is so small, there is no need to open groove
+		(setq panelEntity (_EXISTPANEL currentPanelCode))
+		(if (and panelEntity (> wardrobeBackPanelGrooveDepth 0.01))	
+			(progn
+				(cond
+					((equal (length tempIntersectionPoints) 0 )
+					;;;;;;;;;;;;;;;;;;;;;;;;;rafý yada dikmeyi arkalýða daya dediðimizde oluþan deðme problemi için geçici bir çözüm (Hasan 03.09.2018);;;;;;;;;;;;;;;;;;;;;;;
+						(cond
+							((equal (getEntPro g_currentModulEnt 8) "SHELVES")
+								(if (> (getnth 1 groovePointOne) (getnth 1 groovePointTwo))
+									(_FSET (_ 'tempControlDistance (getnth 1 groovePointOne)))
+									(_FSET (_ 'tempControlDistance (getnth 1 groovePointTwo)))
+								)
+							)
+							((equal (getEntPro g_currentModulEnt 8) "PANELS_SIDE")
+								(if (> (getnth 0 groovePointOne) (getnth 0 groovePointTwo))
+									(_FSET (_ 'tempControlDistance (getnth 0 groovePointOne)))
+									(_FSET (_ 'tempControlDistance (getnth 0 groovePointTwo)))
+								)
+							)
+						)
+						(_FSET (_ 'tempControlPanelLength (cu2mm (get_mdata g_currentModulEnt k:DEP))))
+						(if (and (or (> tempControlPanelLength tempControlDistance) (equal tempControlPanelLength tempControlDistance)) (and (checkIfPointInsidePanelBoundaries panelEntity groovePointOne) (checkIfPointInsidePanelBoundaries panelEntity groovePointTwo)))
+							(progn
+								(if tempEntity (calculateGroovePointsByExtras tempEntityPolylineData bodyBackDistanceManufactureExtra bodyBackLengthManufactureExtra 'groovePointOne 'groovePointTwo))
+								(_GROOVE "BACK_PANEL_INTERFERENCE_GROOVE" currentPanelCode (_ (_ groovePointOne groovePointTwo) wardrobeBackPanelGrooveWidth wardrobeBackPanelGrooveDepth))
+							)
+						)
+					;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+					)
+					((equal (length tempIntersectionPoints) 1 )
+						(setq calculatedPt (getnth 0 tempIntersectionPoints))
+
+						(setq tempintersP1 (interspaths tempEntityPolylineData 1 (_ groovePointOne groovePointTwo) 2))
+						(if (> (length tempintersP1) (length tempIntersectionPoints))
+							(progn
+								(if tempEntity (calculateGroovePointsByExtras tempEntityPolylineData bodyBackDistanceManufactureExtra bodyBackLengthManufactureExtra 'calculatedPt 'groovePointOne))
+								(_GROOVE "BACK_PANEL_INTERFERENCE_GROOVE" currentPanelCode (_ (_ calculatedPt groovePointOne ) wardrobeBackPanelGrooveWidth wardrobeBackPanelGrooveDepth))
+							)
+						)
+						
+						(setq tempintersP2 (interspaths tempEntityPolylineData 1 (_ groovePointOne groovePointTwo) 3))
+						(if (> (length tempintersP2) (length tempIntersectionPoints))
+							(progn
+								(if tempEntity (calculateGroovePointsByExtras tempEntityPolylineData bodyBackDistanceManufactureExtra bodyBackLengthManufactureExtra 'calculatedPt 'groovePointTwo))
+								(_GROOVE "BACK_PANEL_INTERFERENCE_GROOVE" currentPanelCode (_ (_ calculatedPt groovePointTwo) wardrobeBackPanelGrooveWidth wardrobeBackPanelGrooveDepth))
+							)
+						)
+					)
+					((equal (length tempIntersectionPoints) 2 )
+						(progn
+							(setq calculatedPt1 (getnth 0 tempIntersectionPoints))
+							(setq calculatedPt2 (getnth 1 tempIntersectionPoints))
+							(if tempEntity (calculateGroovePointsByExtras tempEntityPolylineData bodyBackDistanceManufactureExtra bodyBackLengthManufactureExtra 'calculatedPt1 'calculatedPt2))
+							(_GROOVE "BACK_PANEL_INTERFERENCE_GROOVE" currentPanelCode (_ (_ calculatedPt1 calculatedPt2) wardrobeBackPanelGrooveWidth wardrobeBackPanelGrooveDepth))
+						)
+					)
+				)
+			)
+		)
+
+		(_RESETCURMODUL)
+		(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+)
+
+(_NONOTCH)

@@ -1,0 +1,135 @@
+; Groove state controls for AK modules
+; Intersection of side panels are determined
+(if (equal INTERSECTION_OF_BACK_PANELS "L")
+	(progn
+		(_FSET (_ 'AK_LEFT_BACK_SHARE 0))
+		(_FSET (_ 'AK_RIGHT_BACK_SHARE GROOVE_WID))
+	)
+	(progn
+		(_FSET (_ 'AK_LEFT_BACK_SHARE GROOVE_WID))
+		(_FSET (_ 'AK_RIGHT_BACK_SHARE 0))
+	)
+)
+; Statue of __NOTCHDIM1 is determined
+(if (> __NOTCHDIM1 (+ GROOVE_WID GROOVE_DISTANCE))
+	(_FSET (_ 'notchDimState1 3))
+	(progn
+		(if (< __NOTCHDIM1 GROOVE_DISTANCE)
+			(_FSET (_ 'notchDimState1 1))
+			(_FSET (_ 'notchDimState1 2))
+		)
+	)
+)
+; Statue of __NOTCHDIM2 is determined
+(if (> __NOTCHDIM2 (+ GROOVE_WID GROOVE_DISTANCE))
+	(_FSET (_ 'notchDimState2 3))
+	(progn
+		(if (< __NOTCHDIM2 GROOVE_DISTANCE)
+			(_FSET (_ 'notchDimState2 1))
+			(_FSET (_ 'notchDimState2 2))
+		)
+	)
+)
+; Groove state is determined
+(if (equal notchDimState1 notchDimState2)
+	(progn
+		(_FSET (_ 'AK_GROOVE_STATE notchDimState1))
+		(_FSET (_ 'STATE_FOR_DISTANCE 0))
+	)
+	(progn
+		(if (< notchDimState1 notchDimState2)
+			(progn
+				(_FSET (_ 'AK_GROOVE_STATE notchDimState1))
+				(_FSET (_ 'STATE_FOR_DISTANCE 1))
+			)
+			(progn
+				(_FSET (_ 'AK_GROOVE_STATE notchDimState2))
+				(_FSET (_ 'STATE_FOR_DISTANCE 2))
+			)
+		)
+	)
+)
+; Gain and loss variables of back panels. If there is no modification on them, they are set with 0 value
+(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_LOSS 0))
+(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_GAIN 0))
+(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_LOSS 0))
+(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_GAIN 0))
+; Global variables of AK_GROOVE_STATE are set 
+(cond
+	((equal AK_GROOVE_STATE 1)
+		(_FSET (_ 'AK_GROOVE_SHARE_LEFT (+ GROOVE_WID GROOVE_DISTANCE)))
+		(_FSET (_ 'AK_GROOVE_SHARE_RIGHT (+ GROOVE_WID GROOVE_DISTANCE)))
+		(_FSET (_ 'AK_SECONDARY_PANELS_SHARE 0))
+		; Gain and loss variables are determined in these conditions
+		(cond
+			((equal STATE_FOR_DISTANCE 0)
+				(if (equal INTERSECTION_OF_BACK_PANELS "R")
+					(progn
+						; These variables used for determining the width of back panels
+						(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM2))
+						(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM1))
+					)
+					(progn
+						; These variables used for determining the width of back panels
+						(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM2))
+						(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM1))
+					)
+				)
+			)
+			((equal STATE_FOR_DISTANCE 1)
+				; These variables used for determining the width of back panels
+				(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM2))
+				(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM1))
+			)
+			((equal STATE_FOR_DISTANCE 2)
+				; These variables used for determining the width of back panels
+				(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM2))
+				(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM1))
+			)
+		)
+	)
+	((equal AK_GROOVE_STATE 2)
+		(cond
+			((equal STATE_FOR_DISTANCE 0)
+				; According to which side is dominant one, position of groove is changed
+				(if (equal INTERSECTION_OF_BACK_PANELS "R")
+					(progn
+						(_FSET (_ 'AK_GROOVE_SHARE_LEFT (+ GROOVE_WID GROOVE_DISTANCE)))
+						(_FSET (_ 'AK_GROOVE_SHARE_RIGHT (_= "GROOVE_WID + GROOVE_DISTANCE_FOR_STATE2 + __NOTCHDIM2")))
+						; These variables used for determining the width of back panels
+						(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM2))
+						(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM1))
+					)
+					(progn
+						(_FSET (_ 'AK_GROOVE_SHARE_LEFT (_= "GROOVE_WID + GROOVE_DISTANCE_FOR_STATE2 + __NOTCHDIM1")))
+						(_FSET (_ 'AK_GROOVE_SHARE_RIGHT (+ GROOVE_WID GROOVE_DISTANCE)))
+						; These variables used for determining the width of back panels
+						(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM2))
+						(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM1))
+					)
+				)
+			)
+			((equal STATE_FOR_DISTANCE 1)
+				(_FSET (_ 'AK_GROOVE_SHARE_LEFT (_= "GROOVE_WID + GROOVE_DISTANCE_FOR_STATE2 + __NOTCHDIM1")))
+				(_FSET (_ 'AK_GROOVE_SHARE_RIGHT (+ GROOVE_WID GROOVE_DISTANCE)))
+				; These variables used for determining the width of back panels
+				(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM2))
+				(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM1))
+			)
+			((equal STATE_FOR_DISTANCE 2)
+				(_FSET (_ 'AK_GROOVE_SHARE_LEFT (+ GROOVE_WID GROOVE_DISTANCE)))
+				(_FSET (_ 'AK_GROOVE_SHARE_RIGHT (_= "GROOVE_WID + GROOVE_DISTANCE_FOR_STATE2 + __NOTCHDIM2")))
+				; These variables used for determining the width of back panels
+				(_FSET (_ 'LEFT_BACK_PANEL_NOTCH_LOSS __NOTCHDIM2))
+				(_FSET (_ 'RIGHT_BACK_PANEL_NOTCH_GAIN __NOTCHDIM1))
+			)
+		)
+		(_FSET (_ 'AK_SECONDARY_PANELS_SHARE 0))
+	)
+	((equal AK_GROOVE_STATE 3)
+		; Secondary panels are available in this state
+		(_FSET (_ 'AK_GROOVE_SHARE (+ GROOVE_WID GROOVE_DISTANCE)))
+		(_FSET (_ 'AK_SECONDARY_PANELS_SHARE __AD_PANELTHICK))
+		; There is no need for gain or loss variables in this case
+	)
+)

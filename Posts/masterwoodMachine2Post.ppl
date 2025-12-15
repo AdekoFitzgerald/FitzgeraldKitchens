@@ -1,0 +1,8 @@
+
+(setq sendMWMachine2 nil)
+(defun sendMWMachine2 (cPnl machineProcedures /  )
+	(princ)
+)
+
+
+(princ)

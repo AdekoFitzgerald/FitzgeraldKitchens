@@ -1,0 +1,144 @@
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "BOTTOM_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "TOP_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "AKK_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(if (_EXISTPANEL AKK_EXTRA_PART_CODE)
+			(progn
+				(_FSET (_ 'moduldirection (get_Mdata g_CurrentModulEnt k:CModulDirection)))
+
+				(if (_EXISTPANEL BOTTOM_PANEL_CODE)
+					(progn
+						(_FSET (_ 'halfOfBottomPanelThickness (/ BOTTOM_PANEL_THICKNESS 2)))
+						
+						(_FSET (_ 'paramBody (_& (_ "AKK_CDOOR_1_"))))
+						(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+						(_FSET (_ 'currentDoorWID (* __DOORSCOUNT (_S2V (_& (_ paramBody "WID"))))))
+
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+								
+							;bottom panel, extra part operations
+							(cond	
+								((equal moduldirection "L")
+									(_FSET (_ 'reverseExtraPartOP nil))
+									
+									(_FSET (_ 'bottomPanelPointListForExtraPart (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID 0.0 (* halfOfBottomPanelThickness -1) "Y")
+																				(_ (- (+ currentDoorWID BOTTOM_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) bottomSideStyleV2) (- BOTTOM_PANEL_WID (- (+ AKK_EXTRA_PART_WID currentDoorWID BOTTOM_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) bottomSideStyleV2)) nil BOTTOM_PANEL_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								)
+								((equal moduldirection "R")
+									(_FSET (_ 'reverseExtraPartOP T))
+									
+									(_FSET (_ 'bottomPanelPointListForExtraPart (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID 0.0 (* halfOfBottomPanelThickness -1) "Y")
+																				(_ (_= "BOTTOM_PANEL_LEFT_VARIANCE + __DOORSSIDECLEAR + __DOORSSIDECLEAR + currentDoorWID - bottomSideStyleV2") (_= "BOTTOM_PANEL_WID - BOTTOM_PANEL_LEFT_VARIANCE - AKK_EXTRA_PART_WID - __DOORSSIDECLEAR - __DOORSSIDECLEAR - currentDoorWID + bottomSideStyleV2") T BOTTOM_PANEL_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								
+								)
+							)
+							(_HOLEGROUP operationName BOTTOM_PANEL_CODE bottomPanelPointListForExtraPart (_ "X+" nil) connectorParams)
+							
+							; extra part, bottom side operations
+							(_FSET (_ 'extraPartPointListForBottomPanel (_GETHOLEPOINTLIST operationName
+																		(_ AKK_EXTRA_PART_WID (- halfOfBottomPanelThickness EXTRA_PART_LOSS_BOTTOM) 0.0 "X")
+																		(_ 0.0 0.0 reverseExtraPartOP AKK_EXTRA_PART_WID)
+																		(_ FITTING_PARAMETERS nil))))
+																		
+							(_HOLEGROUP operationName AKK_EXTRA_PART_CODE extraPartPointListForBottomPanel (_ nil "Y-") connectorParams)
+						)
+					)
+				)
+				(if (_EXISTPANEL TOP_PANEL_CODE)
+					(progn
+						(_FSET (_ 'halfOfTopPanelThickness (/ TOP_PANEL_THICKNESS 2)))
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+							
+							
+							;top panel, extra part operations
+							(cond	
+								((equal moduldirection "L")
+									(_FSET (_ 'reverseExtraPartOP nil))
+									
+									(_FSET (_ 'topPanelPointListForExtraPart (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID TOP_PANEL_HEI (* halfOfTopPanelThickness -1) "Y")
+																				(_ (- (+ currentDoorWID TOP_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) topSideStyleV2) (- TOP_PANEL_WID (- (+ AKK_EXTRA_PART_WID currentDoorWID TOP_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) topSideStyleV2)) nil TOP_PANEL_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								)
+								((equal moduldirection "R")
+									(_FSET (_ 'reverseExtraPartOP T))
+									
+									(_FSET (_ 'topPanelPointListForExtraPart    (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID TOP_PANEL_HEI (* halfOfBottomPanelThickness -1) "Y")
+																				(_ (_= "TOP_PANEL_LEFT_VARIANCE + __DOORSSIDECLEAR + __DOORSSIDECLEAR + currentDoorWID - topSideStyleV2") (_= "TOP_PANEL_WID - TOP_PANEL_LEFT_VARIANCE - AKK_EXTRA_PART_WID - __DOORSSIDECLEAR - __DOORSSIDECLEAR - currentDoorWID + topSideStyleV2") T TOP_PANEL_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								
+									
+								)
+							)
+							(_HOLEGROUP operationName TOP_PANEL_CODE topPanelPointListForExtraPart (_ "X-" nil) connectorParams)
+							
+							; extra part, top side operations
+							(_FSET (_ 'extraPartPointListForTopPanel (_GETHOLEPOINTLIST operationName
+																		(_ AKK_EXTRA_PART_WID (+ (- AKK_EXTRA_PART_HEI halfOfTopPanelThickness) EXTRA_PART_LOSS_TOP) 0.0 "X")
+																		(_ 0.0 0.0 reverseExtraPartOP AKK_EXTRA_PART_WID)
+																		(_ FITTING_PARAMETERS nil))))
+																		
+							(_HOLEGROUP operationName AKK_EXTRA_PART_CODE extraPartPointListForTopPanel (_ nil "Y+") connectorParams)
+						)
+					)
+				)
+				(if (_EXISTPANEL FRONT_TOP_STRECHER_CODE)
+					(progn
+						(_FSET (_ 'halfOfFrontTopStrechersThickness (/ FRONT_TOP_STRECHER_THICKNESS 2)))
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+							
+							;front top strecher, extra part operations
+							(cond	
+								((equal moduldirection "L")
+									(_FSET (_ 'reverseExtraPartOP nil))
+									
+									(_FSET (_ 'frontTopStrecherPointListForExtraPart (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID FRONT_TOP_STRECHER_HEI (* halfOfFrontTopStrechersThickness -1) "X")
+																				(_ (- (+ currentDoorWID __DOORSSIDECLEAR __DOORSSIDECLEAR) LEFT_PANEL_THICKNESS) (+ (- FRONT_TOP_STRECHER_WID (+ AKK_EXTRA_PART_WID currentDoorWID __DOORSSIDECLEAR __DOORSSIDECLEAR)) LEFT_PANEL_THICKNESS) nil FRONT_TOP_STRECHER_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								)
+								((equal moduldirection "R")
+									(_FSET (_ 'reverseExtraPartOP T))
+									
+									(_FSET (_ 'frontTopStrecherPointListForExtraPart    (_GETHOLEPOINTLIST operationName
+																				(_ AKK_EXTRA_PART_WID FRONT_TOP_STRECHER_HEI (* halfOfBottomPanelThickness -1) "X")
+																				(_ (_= " __DOORSSIDECLEAR + __DOORSSIDECLEAR + currentDoorWID - RIGHT_PANEL_THICKNESS") (_= "FRONT_TOP_STRECHER_WID - RIGHT_PANEL_THICKNESS - AKK_EXTRA_PART_WID - __DOORSSIDECLEAR - __DOORSSIDECLEAR - currentDoorWID") T FRONT_TOP_STRECHER_WID)
+																				(_ FITTING_PARAMETERS nil))))
+								
+									
+								)
+							)
+							(_HOLEGROUP operationName FRONT_TOP_STRECHER_CODE frontTopStrecherPointListForExtraPart (_ "Y-" nil) connectorParams)
+							
+							; extra part, front top strecher operations
+							(_FSET (_ 'extraPartPointListForFrontTopStrecher (_GETHOLEPOINTLIST operationName
+																		(_ AKK_EXTRA_PART_WID (+ (- AKK_EXTRA_PART_HEI halfOfFrontTopStrechersThickness) EXTRA_PART_LOSS_TOP) 0.0 "X")
+																		(_ 0.0 0.0 reverseExtraPartOP AKK_EXTRA_PART_WID)
+																		(_ FITTING_PARAMETERS nil))))
+																		
+							(_HOLEGROUP operationName AKK_EXTRA_PART_CODE extraPartPointListForFrontTopStrecher (_ nil "Y+") connectorParams)
+						
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

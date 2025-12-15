@@ -1,0 +1,63 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(_FSET (_ 'currentDivision (_& (_ "__DIV" __CURDIVORDER))))
+		
+		(_FSET (_ 'currentShelfType (_S2V (_& (_ currentDivision "_SHELFTYPE")))))
+		(_FSET (_ 'numberOfHiddenDrawers (length (_S2V (_& (_ currentDivision "_SHELVESOFFSETS"))))))
+		(_FSET (_ 'hDrawerConnMechanism (_& (_ "HIDDEN_DRAWER_CONN_MECHANISM_" __CURDIVORDER))))
+		
+		(if (and (equal currentShelfType 2) (> numberOfHiddenDrawers 0) (null (_S2V hDrawerConnMechanism)))
+			(progn
+				(_FSET (_ (read hDrawerConnMechanism) T))
+				(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+		
+				(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+				(if (_NOTNULL currentDoorTYPE)
+					(progn
+						(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+						(if (and (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE))
+							(progn
+								(_FSET (_ 'halfOfHoleDia (/ HDRAWER_DOOR_CONN_HOLE_DIAMETER 2.0)))
+								(_FSET (_ 'innerBoundry (+ HDRAWER_DOOR_CONN_HOLE_DISTANCE halfOfHoleDia)))
+								(_FSET (_ 'outerBoundry (- HDRAWER_DOOR_CONN_HOLE_DISTANCE halfOfHoleDia)))
+								
+								(_FSET (_ 'frameControlTOP (_CONTROLFRAME paramBody currentDoorTYPE innerBoundry outerBoundry 0)))
+								
+								(if (null frameControlTOP)
+									(progn
+										(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (XSTR "DOOR CODE") " : " currentDoorCODE "\n" "\n" 
+													   (XSTR "Drawer door-hidden drawer connection mechanism hole operation can not be performed on door frame with current parameters!") "\n"))
+									)
+									(progn
+										(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+										(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+										(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ paramBody "FRAME")))))
+										
+										(_FSET (_ 'topFrameVAL (getnth 0 currentDoorFRAME)))
+										(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+										(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+										
+										(_FSET (_ 'halfOftotalDoorWID (/ (_= "currentDoorWID + rightFrameVAL + leftFrameVAL") 2.0)))
+										
+										(_FSET (_ 'offsetOnAxisX (- halfOftotalDoorWID rightFrameVAL)))
+										(_FSET (_ 'offsetOnAxisY (_= "currentDoorHEI + topFrameVAL - HDRAWER_DOOR_CONN_HOLE_DISTANCE")))
+										
+										(_HOLE "HIDDEN_DRAWER_CONNECTION_MECHANISM_HOLE" currentDoorCODE (_ (_ offsetOnAxisX offsetOnAxisY 0) HDRAWER_DOOR_CONN_HOLE_DIAMETER HDRAWER_DOOR_CONN_HOLE_DEPTH))
+										
+										(_ITEMMAIN HDRAWER_DOOR_CONN_MECHANISM_CODE currentDoorCODE (_ 1 HDRAWER_DOOR_CONN_MECHANISM_UNIT))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

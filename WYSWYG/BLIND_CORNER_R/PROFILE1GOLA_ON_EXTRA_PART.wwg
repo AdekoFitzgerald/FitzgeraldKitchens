@@ -1,0 +1,27 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(setq golaPatternList (_GETGOLAORDER (ifnull modulgolaOrderList  "gola_horizProfileOrder_CAB_BODY")))
+(setq akk1golaprofileH (1GolaLZHei))
+(setq akk1golaprofileD (1GolaLZDep))
+(setq akk1golaprofileZ (1GolaCBtwn))
+;profiller
+(foreach item golaPatternList
+	(setq profileInfo  (nth 1 item) )
+	(setq heightGola  (- (nth 0 item) (nth 0 (nth 2 profileInfo) ) ))
+	(setq profilePoints (_CREATEGOLAPROFILEPOINTS profileInfo))
+	
+	(createGPanel 
+		(nth 0 profilePoints) 
+		(nth 1 profilePoints)
+		(+ (- ADEN1 ADDer ad_et) 4.4)
+		0.0
+		(d2r 270.0)
+		(list (+ gor_Gen (- aden2 gor_gen unitd2) akk1golaprofileD) (+ (- unitD) akk1golaprofileD) (_= " dAltKot + heightGola "))
+		(nth 0 profileInfo)
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "_" (nth 0 profileInfo))
+		"GOLAPROFILE"
+		"noedgedrawing"
+	)
+)

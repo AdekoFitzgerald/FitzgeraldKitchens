@@ -1,0 +1,156 @@
+(_RUNDEFAULTHELPERRCP "BACK_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "BOTTOM_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (null PERFORM_GROOVES)
+	(progn
+		; In this branch it is known that parameters which are related with grooves are not valid to perform operations. Thats why there is no need to perform notch operations as well
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'backUpFor_UPPR USE_PROJECT_PRICING_RECIPES))
+		(_FSET (_ 'USE_PROJECT_PRICING_RECIPES nil)) 
+		; Only if there is a back panel then groove standard operation works
+		(if (or (_EXISTPANEL upperPartCODE) (_EXISTPANEL lowerPartCODE) (_EXISTPANEL BACK_PANEL_CODE))
+			(progn
+				(_FSET (_ 'grooveCenterDistance (+ (/ GROOVE_WID 2.0) GROOVE_DISTANCE)))
+				(_FSET (_ 'panelDepthAfterGroove (- __AD_PANELTHICK GROOVE_DEPTH)))
+				
+				(if (_EXISTPANEL BOTTOM_PANEL_CODE)
+					(progn
+						;(_FSET (_ 'BACK_PANEL_HEI (_= "BACK_PANEL_HEI - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						;(_FSET (_ 'BACK_PANEL_ELEV (_= "BACK_PANEL_ELEV + panelDepthAfterGroove + backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (and (null USE_PROJECT_PRICING_RECIPES) (>= BOTTOM_PANEL_HEI __DEP))
+							(progn
+								(_FSET (_ 'grooveDistanceBP (+ (- BOTTOM_PANEL_HEI grooveCenterDistance) BOTTOM_PANEL_BACK_OFFSET)))
+								
+								(if (equal BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM") 
+									(progn
+										(_FSET (_ 'bottomPanelLeftDist (- BOTTOM_PANEL_WID panelDepthAfterGroove)))
+										(_FSET (_ 'bottomPanelRightDist panelDepthAfterGroove))
+									)
+									(progn
+										(_FSET (_ 'bottomPanelLeftDist BOTTOM_PANEL_WID))
+										(_FSET (_ 'bottomPanelRightDist 0))
+									)
+								)
+								
+								(_GROOVE "BOTTOM_PANEL_GROOVE" BOTTOM_PANEL_CODE (_ (_ (_ grooveDistanceBP bottomPanelLeftDist 0) 
+																					   (_ grooveDistanceBP bottomPanelRightDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+						
+						(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FIXED_SHELF") "_" __CURDIVORDER))))
+						(if (_EXISTPANEL currentShelfCODE)
+							(progn
+								;(_FSET (_ 'BACK_PANEL_WID (_= "BACK_PANEL_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+								
+								(if (null USE_PROJECT_PRICING_RECIPES)
+									(progn
+										(_FSET (_ 'grooveDistanceLP (+ (- currentShelfHEI grooveCenterDistance) BOTTOM_PANEL_BACK_OFFSET)))
+										
+										(_FSET (_ 'leftPanelTopDist currentShelfWID))
+										(_FSET (_ 'leftPanelBottomDist 0))
+										
+										(_GROOVE (_& (_ "FIXED_SHELF_GROOVE")) currentShelfCODE (_ (_ (_ grooveDistanceLP leftPanelTopDist 0) 
+																										(_ grooveDistanceLP leftPanelBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+									)
+								)
+							)
+						)
+						(_FSET (_ 'noBottomPanel nil))
+					)
+					(_FSET (_ 'noBottomPanel T))
+				)
+				
+				
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						;(_FSET (_ 'BACK_PANEL_WID (_= "BACK_PANEL_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceLP (_= "LEFT_PANEL_WID - grooveCenterDistance - LEFT_PANEL_BACK_VARIANCE")))
+								; If there is no top side panel such as top panel or back top strecher then groove starts from point 0.
+								; Also if the assembly style is 45 degrees then groove operation starts from zero point
+								(if (or (_NOTNULL notPerformedOnTopside) (equal GENERAL_ASSEMBLY_TYPE 4)) 
+									(_FSET (_ 'topStyleOffset 0))
+									(_FSET (_ 'topStyleOffset (- LEFT_PANEL_HEI __CURDIVELEV GROOVE_DEPTH)))
+								)
+								(if (and (equal BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES") (not (equal GENERAL_ASSEMBLY_TYPE 4)) (null noBottomPanel))
+									(_FSET (_ 'bottomStyleOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomStyleOffset 0))
+								)
+								(if (equal TOPSIDE_STYLE  "TOP_ON_SIDES")
+									(progn 
+										(_FSET (_ 'leftPanelTopDist LEFT_PANEL_HEI))
+									)
+									(progn 
+											(if (null GROOVE_STOP_DISTANCE_LEFT_TOP)
+													(_FSET (_ 'leftPanelTopDist (_= "LEFT_PANEL_HEI - topStyleOffset - bottomSideStyleV1")))
+													(_FSET (_ 'leftPanelTopDist (_= "LEFT_PANEL_HEI - GROOVE_STOP_DISTANCE_LEFT_TOP")))
+											)
+									)
+								)
+											
+								(if (null GROOVE_STOP_DISTANCE_LEFT_BOTTOM)
+									(_FSET (_ 'leftPanelBottomDist bottomStyleOffset))
+									(_FSET (_ 'leftPanelBottomDist GROOVE_STOP_DISTANCE_LEFT_BOTTOM))
+								)
+								
+								(_GROOVE "LEFT_PANEL_GROOVE" LEFT_PANEL_CODE (_ (_ (_ grooveDistanceLP leftPanelTopDist 0) 
+																			       (_ grooveDistanceLP leftPanelBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						;(_FSET (_ 'BACK_PANEL_WID (_= "BACK_PANEL_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceRP (+ grooveCenterDistance RIGHT_PANEL_BACK_VARIANCE)))
+								; If there is no top side panel such as top panel or back top strecher then groove starts from point 0.
+								; Also if the assembly style is 45 degrees then groove operation starts from zero point
+								(if (or (_NOTNULL notPerformedOnTopside) (equal GENERAL_ASSEMBLY_TYPE 4))
+									(_FSET (_ 'topStyleOffset 0))
+									(_FSET (_ 'topStyleOffset (- RIGHT_PANEL_HEI __CURDIVELEV GROOVE_DEPTH)))
+								)
+								(if (and (equal BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES") (not (equal GENERAL_ASSEMBLY_TYPE 4)) (null noBottomPanel))
+									(_FSET (_ 'bottomStyleOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomStyleOffset 0))
+								)
+								(if (equal TOPSIDE_STYLE  "TOP_ON_SIDES")
+									(progn 
+										(_FSET (_ 'rightPanelTopDist RIGHT_PANEL_HEI))
+									)
+									(progn 
+										(if (null GROOVE_STOP_DISTANCE_RIGHT_TOP)
+											(_FSET (_ 'rightPanelTopDist (_= "RIGHT_PANEL_HEI - topStyleOffset - bottomSideStyleV1")))
+											(_FSET (_ 'rightPanelTopDist (_= "RIGHT_PANEL_HEI - GROOVE_STOP_DISTANCE_RIGHT_TOP")))
+										)
+									)
+								)
+								(if (null GROOVE_STOP_DISTANCE_RIGHT_BOTTOM)
+									(_FSET (_ 'rightPanelBottomDist bottomStyleOffset))
+									(_FSET (_ 'rightPanelBottomDist GROOVE_STOP_DISTANCE_RIGHT_BOTTOM))
+								)
+								
+								(_GROOVE "RIGHT_PANEL_GROOVE" RIGHT_PANEL_CODE (_ (_ (_ grooveDistanceRP rightPanelTopDist 0) 
+																					 (_ grooveDistanceRP rightPanelBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+					)
+				)
+				; Old back panel is deleted and new one created with width and height values which were restored by groove operations
+				;(_DELPANEL BACK_PANEL_CODE)
+				;(_FSET (_ 'BACK_PANEL_PDATA (_GENERATEPDATA BACK_PANEL_WID BACK_PANEL_HEI)))
+				;(_PANELMAIN BACK_PANEL_CODE (_ BACK_PANEL_PDATA BACK_PANEL_ROT BACK_PANEL_MATERIAL BACK_PANEL_THICKNESS))
+			)
+		)
+		(_FSET (_ 'USE_PROJECT_PRICING_RECIPES backUpFor_UPPR))
+	)
+)

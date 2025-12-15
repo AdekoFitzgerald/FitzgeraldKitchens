@@ -1,0 +1,13 @@
+(setq ptlst 
+	(Kgovde_ciz ADEN1 ADEN2 ADH (list Der1 Der2) ad_bazaH "CAB_BODY_BASE"
+							(if pah (- pah) 0.0)
+							(if pah (- pah) 0.0)
+							"90"
+							nil
+							raflist
+							(if kapak_tip (if (zerop g_iUnitShelfLayer) "SHELVES" "CAB_BODY_BASE") "CAB_BODY_BASE") ;rafLayer
+							ad_ET                           ;rafOfset
+							notch_type
+							notch_dims
+							) ;90 ak2
+)

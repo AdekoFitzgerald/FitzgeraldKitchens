@@ -1,0 +1,103 @@
+
+(setq gola_pattern_buffer (get_Mdata g_currentModulEnt k:modulgolaprofiles)); if modul does have modulgolaprofiles get it 
+
+;prefvars
+(_SETA 'GOLA_SIDE_SELECTION (golaBlindSideOpDetection))
+(_SETA 'GOLA_DRAW_PATTERN 1)
+(_SETA 'GOLA_PATTERN nil)
+(_SETA 'GOLA_DRAW_APPROACH_OUTSIDE 1)
+(_SETA 'GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE nil)
+(_SETA 'GOLA_MIRROR_SFACE_GEOMETRIES 1)
+(_SETA 'GOLA_APPROACH_DISTANCE 5) ; bicak yari capi
+(_SETA 'GOLA_INNER_RADIUS nil)
+(_SETA 'GOLA_DRAW_EDGE_TRIM_GEO 0)
+(_SETA 'GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE (* -0.5 GOLA_APPROACH_DISTANCE))
+(_SETA 'GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE2 (* -0.5 GOLA_APPROACH_DISTANCE))
+(_SETA 'GOLA_EDGE_TRIM_GEO_OFFSET_DISTANCE (* 0.5 GOLA_APPROACH_DISTANCE))
+(_SETA 'DISTANCE_FROM_END_POINT_OF_RADIUS 25)
+(_SETA 'GOLA_DRAW_RECT_GEOMETRY nil)
+
+(_SETA 'GOLA_AKK_TOP_PANEL_ADDITIONAL_NOTCH_AFTER_DOOR_ENDING 15.0)
+(_SETA 'GOLA_BOTTOM_OP_AVAILABLE nil)
+(_SETA 'GOLA_TOP_OP_AVAILABLE nil)
+(_SETA 'GOLA_VSIDE_OP_AVAILABLE nil)
+
+(setq GOLA_PATTERN (ifnull gola_pattern_buffer GOLA_PATTERN)) ;wyswyg overwrites user inputs 
+(if	(not (null GOLA_PATTERN))
+	(progn
+		(setq golaOrderList (_GETGOLAORDER GOLA_PATTERN))
+		
+		(setq GOLA_OP_AVAILABLE nil)
+		(mapcar '(lambda (X) 
+			(if (not (getnth 2 X))
+				(setq GOLA_OP_AVAILABLE T)
+			)
+		) golaOrderList )
+		;(if (not GOLA_OP_AVAILABLE) (setq GOLA_PATTERN nil))
+		
+		(setq gola (nth 0 golaOrderList))
+		(setq tip (nth 1 (nth 1 gola)))
+		(if (or  (equal tip "L_BOY") (equal tip "C_BOY"))
+				(progn
+					(setq d (* 10 (nth 1 (nth 2 (nth 1 gola)) )) )
+					(_FSET (_ 'GOLA_CLEARANCE d))
+				)
+				(progn
+					(_FSET (_ 'GOLA_CLEARANCE 0.0))
+				)
+		)
+		; CONTINGENCIES
+		(if (not (null GOLA_PATTERN))
+			(progn
+				;;;apply unit convertion to pattern and fil GOLA_CAVITY_ORDER
+				(setq golaOrderList (mapcar 
+											'(lambda ( item / gh tip H W a b bottomR topR profile profileInfo resultItem)
+												(setq gh (* 10 (nth 0 item)))
+												(setq profile (nth 1 item))
+												(setq tip (nth 1 profile))
+												(setq profileInfo (mapcar '(lambda (a) (* 10 a) ) (nth 2 profile) ))
+												(setq H (nth 0 profileInfo))
+												(setq W (nth 1 profileInfo))
+												(setq a (nth 2 profileInfo))
+												(setq b (nth 3 profileInfo))
+												(setq bottomR (nth 4 profileInfo))
+												(setq topR (nth 5 profileInfo))
+												(setq resultItem (_ gh tip H W a b bottomR topR (getnth 2 item)))
+											)
+										golaOrderList))
+
+				(_FSET (_ 'GOLA_CAVITY_ORDER golaOrderList ))
+			)
+		)
+	)
+)
+
+(if (and GOLA_PATTERN (not GOLA_INNER_RADIUS)) ;rastlanana gore radius
+	(progn
+		(cond 
+			(	(setq GOLA_INNER_RADIUS (_GETGOLACLEARANCEPROFILE (_GETGOLAORDER GOLA_PATTERN) AD_ADH))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	(setq GOLA_INNER_RADIUS (_GETGOLACLEARANCEPROFILE (_GETGOLAORDER GOLA_PATTERN) (* 0.5 AD_ADH)))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	(setq GOLA_INNER_RADIUS (_GETGOLACLEARANCEPROFILE (_GETGOLAORDER GOLA_PATTERN) (mm2cu __HEI)))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	(setq GOLA_INNER_RADIUS (_GETGOLACLEARANCEPROFILE (_GETGOLAORDER GOLA_PATTERN) (* 0.5 (mm2cu __HEI))))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	(setq GOLA_INNER_RADIUS (_GETGOLACLEARANCEPROFILE (_GETGOLAORDER GOLA_PATTERN) 0.0))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	(setq GOLA_INNER_RADIUS (read (iniread ad_MOD-INI "golaProfiles" (getnth 1 (getnth 0 (read GOLA_PATTERN))))))
+				(setq GOLA_INNER_RADIUS (cu2mm (getnth 4 (getnth 2 GOLA_INNER_RADIUS))))
+			)
+			(	T
+				(setq GOLA_INNER_RADIUS 0.0)
+			)
+		)
+	)
+)
+
+(_NONOTCH)

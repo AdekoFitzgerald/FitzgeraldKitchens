@@ -1,0 +1,236 @@
+
+; ------->>>>>>> Post Procesoru kullanmadan once aþaðýdaki ayarlarý yapnýz
+;Raporlar -> imalat DXF AYARLAR -> DXF/NC ->  Yan delikleri panel alt noktasý Z sýfýrda gibi çiz TÝKLÝ OLMASIN.
+
+(setq ad_cixCAMOperationList (list
+	(list "TOP_DIA8.0" "" "HOLE" "")
+	(list "TOP_DIA15.0" "" "HOLE" "")
+	(list "TOP_DIA35.0" "" "HOLE" "")
+	;(list "TOP_DIA5.0" "5MTKP" "HOLE" "")
+	(list "TOP_DIA5.0" "" "HOLE" "")
+	(list "TOP_DIA10.0" "" "HOLE" "")
+	;(list "NOTCH" "18TEMIZSOLDIA" "CONTOUR_REVERSE_APPROACH" 2 2 15 0 "INSIDE" 8.6 "16000" "4200" "18TEMIZSAGDIA" nil)
+	;(list "NOTCH" "18TEMIZSOLDIA" "CONTOUR" 2 2 15 15 "INSIDE" 8.6 "16000" "4200" "18TEMIZSAGDIA" nil)
+	(list "NOTCH" "F6DUZ" "CONTOUR" 2 0 0 0 "INSIDE" 3 "20000" "6000" T)
+	(list "LEFT_DIA8.0" "" "HOLE" "")	;kavela delikleri delme operasyonu
+	(list "RIGHT_DIA8.0" "" "HOLE" "")
+	(list "REAR_DIA8.0" "" "HOLE" "")
+	(list "FRONT_DIA8.0" "" "HOLE" "")
+	(list "GROOVE_5" "5MMFRZ" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "4000" nil)
+	(list "GROOVE_6" "6MMFRZ" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "4000" nil)
+	(list "GROOVE_9" "9MMFRZ" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "4000" nil)
+	;(list "GROOVE_16" "10_MMFRZ" "CONTOUR_V2" 1 0 0 0 "INSIDE" 3.5 "18000" "4000" nil)
+	;(list "GROOVE_16" "10_MMFRZ" "CONTOUR_V2" 1 0 0 0 "OUTSIDE" 3.5 "18000" "4000" nil)
+	
+	;Kanal belirli bir miktar (fonsiyonun içinde tanýmlý) içeride ise yap veya yapma
+	;(list "GROOVE_4" "" "SAWX_IF_HALF" 0 0 0 0 "CENTER" 4 "3" "")
+	(list "TYPE45" "TYPE45" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil)
+	(list "POLYLINE_CIRCLE" "10MMFRZ" "CONTOUR" 1 0 0 0 "INSIDE" 0 "16000" "3000" nil)
+	;(list "BOTTOM_8.0" "T1" "BO")
+	;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+	;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil)
+	;(list "GOLA_LAYER_TOP_1" "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "16000" "3000" nil)
+	;(list "GOLA_LAYER_TOP_2 " "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "16000" "3000" nil)
+	
+ ))
+
+
+(setq cixAllEntities nil)
+(setq cixNotFreeEntities nil)
+(setq cixEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq cixIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+(setq CIXPROGRAMID 1000) 
+(setq CIXGEOMETRYID 1000) 
+
+
+(setq lmm_exportcixFilesDesiredCAMOp nil)
+(defun lmm_exportcixFilesDesiredCAMOp ( /  allPanelsList tempPanel  currentMachine alertMsg tempIter) 
+	(setq cixAllEntities nil)
+	(setq cixNotFreeEntities nil)
+	(setq cixEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+	
+	
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(sendBiesseMachine tempPanel ad_cixCAMOperationList)
+	)
+	
+	
+	
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem cixAllEntities
+		(if (and (not (member tempItem cixNotFreeEntities)) (not (member tempItem cixEntitiesThatCanNotBeCAM)))
+			(setq cixEntitiesThatCanNotBeCAM (append cixEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if cixEntitiesThatCanNotBeCAM
+		(progn
+			(setq cixEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) cixEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length cixEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter cixEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter cixEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun cixInterpretHoleLayerName ( tempEnt / currentReturn tempHoleDia tempHoleDepth)
+	(cond 
+		( ;Z - 
+			(equal (getnth 2 (getEntPro tempEnt 210)) 1.00000)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	currentReturn
+)
+
+(defun drawCixGeometry (panel entity cixFile / segmentIndex tempPoints tempPointsWB previousSegment segPoint lengthOfSegment 
+											segBulge tempPanelWidth segmentID maxSegDistance secondPoint arcValues centerOfSegment
+											totalRadOfSegment stepVal buffRadVec deltaAngle bufferPoint )
+	(princ "\n\nBEGIN MACRO" cixFile)
+	(princ "\nNAME=GEO"cixFile)
+	(princ "\n\tPARAM,NAME=LAY,VALUE=\"Layer 0\""cixFile)
+	(setq CIXGEOMETRYID (1+ CIXGEOMETRYID))
+	(princ (sprintf "\n\tPARAM,NAME=ID,VALUE=\"G1001.~s\"" (_ (lmm_convertNumtoStringWithDigit CIXGEOMETRYID 0))) cixFile)
+	(princ "\n\tPARAM,NAME=SIDE,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=CRN,VALUE=\"1\""  cixFile)
+	(princ "\n\tPARAM,NAME=DP,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=RTY,VALUE=2"  cixFile)
+	(princ "\n\tPARAM,NAME=NRP,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=DX,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=DY,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=RV,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=COW,VALUE=0"  cixFile)
+	(princ "\n\tPARAM,NAME=CRC,VALUE=0"  cixFile)
+	(princ "\nEND MACRO"  cixFile)
+	(setq tempPanelWidth (getnth 3 (getBBox panel)))
+	(cond 
+		( (equal "LWPOLYLINE" (getEntPro entity 0))
+			  (setq tempPoints (lmm_getPolylinePoints entity))
+			  (setq tempPointsWB (lmm_getPolylineDataAsProfile entity (_ 0.0 0.0 0.0)))
+			  (setq maxSegDistance 1.0)
+			  (setq segmentIndex 0)
+			  (setq segmentID 100)
+			  (foreach segPoint tempPoints
+				(if (equal segmentIndex 0) 
+					(progn
+						(princ "\n\nBEGIN MACRO" cixFile)
+						(princ "\n\tNAME=START_POINT" cixFile)
+						(princ "\n\tPARAM,NAME=LAY,VALUE=\"Layer 0\"" cixFile)
+						(princ (sprintf "\n\tPARAM,NAME=X,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (car segPoint) 2))) cixFile)
+						(princ (sprintf "\n\tPARAM,NAME=Y,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (- tempPanelWidth (cadr segPoint)) 2))) cixFile)
+						(princ "\nEND MACRO" cixFile)
+					)
+					(progn
+						(princ "\n\nBEGIN MACRO" cixFile)
+						(princ "\n\tNAME=LINE_EP" cixFile)
+						(princ "\n\tPARAM,NAME=LAY,VALUE=\"Layer 0\"" cixFile)
+						(princ (sprintf "\n\tPARAM,NAME=ID,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit segmentID 0)) ) cixFile)
+						(princ (sprintf "\n\tPARAM,NAME=XE,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (car segPoint) 2)) ) cixFile)
+						(princ (sprintf "\n\tPARAM,NAME=YE,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (- tempPanelWidth (cadr segPoint)) 2)) ) cixFile)
+						(princ "\n\tPARAM,NAME=ZS,VALUE=0" cixFile)
+						(princ "\n\tPARAM,NAME=ZE,VALUE=0" cixFile)
+						(princ "\n\tPARAM,NAME=FD,VALUE=0" cixFile)
+						(princ "\n\tPARAM,NAME=SP,VALUE=0" cixFile)
+						(princ "\n\tPARAM,NAME=MVT,VALUE=0" cixFile)
+						(princ "\nEND MACRO" cixFile)
+					)
+				)
+				(setq segBulge (nth (+ (* 2 segmentIndex) 1) tempPointsWB))
+				;son point deðilse ve bulge varsa
+				(if (and (not (equal segmentIndex (- (length tempPoints) 1))) (not (equal segBulge 0)))
+					(progn
+						(setq secondPoint (nth (1+ segmentIndex) tempPoints))
+						(setq arcValues (calculatePolylineSegmentRadius segPoint secondPoint segBulge))
+						(setq centerOfSegment (nth 2 arcValues))
+						(setq lengthOfSegment (nth 3 arcValues))
+						(setq totalRadOfSegment (nth 4 arcValues))
+						(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+						(setq buffRadVec (VectorSub segPoint centerOfSegment))
+						(if (> 0.0 segBulge)
+							(setq deltaAngle (* -1 (/ totalRadOfSegment stepVal)))
+							(setq deltaAngle (/ totalRadOfSegment stepVal))
+						)
+
+						(setq stepVal (- stepVal 2))
+						(repeat (1+ stepVal)
+							(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+							(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+							(princ "\n\nBEGIN MACRO" cixFile)
+							(princ "\n\tNAME=LINE_EP" cixFile)
+							(princ "\n\tPARAM,NAME=LAY,VALUE=\"Layer 0\"" cixFile)
+							(princ (sprintf "\n\tPARAM,NAME=ID,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit segmentID 0)) ) cixFile)
+							(princ (sprintf "\n\tPARAM,NAME=XE,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (car bufferPoint) 2)) ) cixFile)
+							(princ (sprintf "\n\tPARAM,NAME=YE,VALUE=~s" (_ (lmm_convertNumtoStringWithDigit (- tempPanelWidth (cadr bufferPoint)) 2)) ) cixFile)
+							(princ "\n\tPARAM,NAME=ZS,VALUE=0" cixFile)
+							(princ "\n\tPARAM,NAME=ZE,VALUE=0" cixFile)
+							(princ "\n\tPARAM,NAME=FD,VALUE=0" cixFile)
+							(princ "\n\tPARAM,NAME=SP,VALUE=0" cixFile)
+							(princ "\n\tPARAM,NAME=MVT,VALUE=0" cixFile)
+							(princ "\nEND MACRO" cixFile)
+							(setq segmentID (1+ segmentID))
+						)
+		
+					)
+					
+				)
+				(setq previousSegment segPoint)
+				(setq segmentIndex (1+ segmentIndex))
+		  )
+		)
+		( (equal "CIRCLE" (getEntPro entity 0))
+			(princ "\n\nBEGIN MACRO" cixFile)
+			(princ "\n\tNAME=CIRCLE_CR" cixFile)
+			(princ "\n\tPARAM,NAME=LAY,VALUE=\"Layer 0\"" cixFile)
+			(princ (sprintf "\n\tPARAM,NAME=XC,VALUE=~s" (lmm_convertNumtoStringWithDigit (nth 0 (getEntPro entity 10)) 2)) cixFile)
+			(princ (sprintf "\n\tPARAM,NAME=YC,VALUE=~s" (lmm_convertNumtoStringWithDigit (nth 1 (getEntPro entity 10)) 2))cixFile)
+			(princ (sprintf "\n\tPARAM,NAME=R,VALUE=~s" (lmm_convertNumtoStringWithDigit (getEntPro entity 40) 2)) cixFile)
+			(princ "\n\tPARAM,NAME=AS,VALUE=90" cixFile)
+			(princ "\n\tPARAM,NAME=DIR,VALUE=2" cixFile)
+			(princ "\n\tPARAM,NAME=FD,VALUE=0" cixFile)
+			(princ "\n\tPARAM,NAME=SP,VALUE=0" cixFile)
+			(princ "\nEND MACRO" cixFile)
+		
+		)
+	)
+	
+	(princ "\n\n\nBEGIN MACRO" cixFile)
+	(princ "\n\tNAME=ENDPATH" cixFile)
+	(princ "\nEND MACRO" cixFile)
+	CIXGEOMETRYID
+)
+
+(princ)

@@ -1,0 +1,301 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MISCELLANEOUS_DEFAULT" nil "p2chelper")
+
+(setq earlyLedFinALT 0) ; kenarlardan kisaltir ve yan panele operasyon yaptirmaz
+(setq DIST_OF_LED_GROOVE (- (* 0.5 __DEP) (* 0.5 WID_OF_LED_GROOVE))) ; mesafe override
+(setq ledItemCodeOverride "LED")
+;(setq DIST_OF_LED_CROSS 150) ; led cross X axis
+
+(if USE_PROJECT_PRICING_RECIPES
+	(progn
+		(_NONOTCH)
+	)
+	(progn
+		(cond
+			((_EXISTPANEL BOTTOM_PANEL_CODE)
+				(ifnull (_EXISTPANEL (strcat BOTTOM_PANEL_CODE "!!SFACE"))
+					(_CREATESFACEMAIN BOTTOM_PANEL_CODE (_ BOTTOM_PANEL_PDATA BOTTOM_PANEL_ROT BOTTOM_PANEL_MAT BOTTOM_PANEL_THICKNESS "Y"))
+				)
+				(setq halfOfThicknessBottom (* 0.5 BOTTOM_PANEL_THICKNESS))
+					(progn
+						(setq grooveDistanceBTS (- BOTTOM_PANEL_HEI BOTTOM_PANEL_BACK_VARIANCE DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+						(setq currentLedGroove (_ (_ grooveDistanceBTS earlyLedFinALT 0) (_ grooveDistanceBTS (- BOTTOM_PANEL_WID earlyLedFinALT) 0)))
+						(if LED_GROOVE_IS_AVAILABLE (_GROOVE "BOTTOM_PANEL_LED_GROOVE" (strcat BOTTOM_PANEL_CODE "!!SFACE") (_ currentLedGroove WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+						(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 currentLedGroove) (getnth 1 currentLedGroove))) "m")))
+						
+						(if (and LED_GROOVE_IS_AVAILABLE (not DIST_OF_LED_CROSS) (<= earlyLedFinALT 0) (equal BOTTOM_PANEL_JOINT_TYPE 0))
+							(progn
+								(if (and (_EXISTPANEL LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE) (equal __SIDELNO 0))
+									(progn
+										(setq grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE "LEFT_PANEL_LED_GROOVE" LEFT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS earlyLedFinALT 0) 
+																							 (_ grooveDistanceBTS (- DEPTH_OF_LED_GROOVE earlyLedFinALT) 0)) (+ WID_OF_LED_GROOVE (- earlyLedFinALT)) LEFT_PANEL_THICKNESS))	
+									)
+								)
+								(if (and (_EXISTPANEL RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE) (equal __SIDERNO 0))
+									(progn
+										(setq grooveDistanceBTS (+ RIGHT_PANEL_BACK_VARIANCE DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE "RIGHT_PANEL_LED_GROOVE" RIGHT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS earlyLedFinALT 0) 
+																							 (_ grooveDistanceBTS (- DEPTH_OF_LED_GROOVE earlyLedFinALT) 0)) (+ WID_OF_LED_GROOVE (- earlyLedFinALT)) RIGHT_PANEL_THICKNESS))	
+									)
+								)
+							)
+						)
+						(if	(and LED_GROOVE_IS_AVAILABLE DIST_OF_LED_CROSS (<= earlyLedFinALT 0) (equal BOTTOM_PANEL_JOINT_TYPE 0))
+							(cond
+								(	(and (_EXISTPANEL LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE) (equal __SIDELNO 0))
+									(progn
+										(ifnull
+											(_EXISTPANEL (setq PANEL_CODE (strcat LEFT_PANEL_CODE "!!SFACE")))
+											(_CREATESFACEMAIN LEFT_PANEL_CODE (_ LEFT_PANEL_PDATA LEFT_PANEL_ROT LEFT_PANEL_MAT LEFT_PANEL_THICKNESS "Y"))
+										)
+										(setq grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE
+											"LEFT_PANEL_LED_GROOVE_2"
+											PANEL_CODE
+											(_
+												(_
+													(_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 		 			;1. nokta x y
+													(_ (- __DEP (* 0.5 __AD_PANELTHICK)) DIST_OF_LED_CROSS 0)			;2. nokta x y
+												)
+												6.0 ;cap
+												8.0 ;der
+											)
+										)
+										(setq HOLE_PARAMETERS_LIST
+											(_ 
+												(_ (_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 8 18 nil)			;1. nokta x y
+												(_ (_ (- __DEP (* 0.5 __AD_PANELTHICK)) DIST_OF_LED_CROSS 0) 8 18 nil)	;2. nokta x y
+											)
+										)
+										(setq holeCounter 0)
+										(while (< holeCounter (length HOLE_PARAMETERS_LIST))
+											(setq currentHole (getnth holeCounter HOLE_PARAMETERS_LIST))
+											(cond
+												((equal HOLE_GEOMETRY "POLYLINE")
+													(_POLYLINECIRCLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE nil currentHole)
+														
+												)
+												(T
+													(_HOLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE currentHole)
+												)
+											)
+											(setq holeCounter (+ 1 holeCounter))
+										)
+									)
+								)
+								(	(and (_EXISTPANEL RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE) (equal __SIDERNO 0))
+									(progn
+										(ifnull
+											(_EXISTPANEL (setq PANEL_CODE (strcat RIGHT_PANEL_CODE "!!SFACE")))
+											(_CREATESFACEMAIN RIGHT_PANEL_CODE (_ RIGHT_PANEL_PDATA RIGHT_PANEL_ROT RIGHT_PANEL_MAT RIGHT_PANEL_THICKNESS "Y"))
+										)
+										(setq grooveDistanceBTS (- (+ __DEP RIGHT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE
+											"RIGHT_PANEL_LED_GROOVE_2"
+											PANEL_CODE
+											(_
+												(_
+													(_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 		 			;1. nokta x y
+													(_ (* 0.5 __AD_PANELTHICK) DIST_OF_LED_CROSS 0)						;2. nokta x y
+												)
+												6.0 ;cap
+												8.0 ;der
+											)
+										)
+										(setq HOLE_PARAMETERS_LIST
+											(_ 
+												(_ (_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 8 18 nil)			;1. nokta x y
+												(_ (_ (* 0.5 __AD_PANELTHICK) DIST_OF_LED_CROSS 0) 8 18 nil)			;2. nokta x y
+											)
+										)
+										(setq holeCounter 0)
+										(while (< holeCounter (length HOLE_PARAMETERS_LIST))
+											(setq currentHole (getnth holeCounter HOLE_PARAMETERS_LIST))
+											(cond
+												((equal HOLE_GEOMETRY "POLYLINE")
+													(_POLYLINECIRCLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE nil currentHole)
+														
+												)
+												(T
+													(_HOLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE currentHole)
+												)
+											)
+											(setq holeCounter (+ 1 holeCounter))
+										)
+									)
+								)
+							)
+						)
+					)
+				
+				(if BACK_SIDE_LED_HOLES_ARE_AVAILABLE																			
+					(progn
+						(setq holeCodeBody "BOTTOM_BACK_SIDE_LED_HOLE_")
+						(_HOLE (_& (_ holeCodeBody "RIGHT")) (strcat BOTTOM_PANEL_CODE "!!SFACE") (_ (_ BOTTOM_PANEL_HEI BACK_SIDE_LED_HOLES_OFFSET (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X-"))
+						(_HOLE (_& (_ holeCodeBody "LEFT")) (strcat BOTTOM_PANEL_CODE "!!SFACE") (_ (_ BOTTOM_PANEL_HEI (- BOTTOM_PANEL_WID BACK_SIDE_LED_HOLES_OFFSET) (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X-"))
+					)
+				)
+				(if MIDDLE_LED_HOLE_IS_AVAILABLE																			
+					(progn
+						(setq holeCodeBody "BOTTOM_PANEL_MIDDLE_LED_HOLE")
+						(_HOLE holeCodeBody (strcat BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (+ (* 0.5 __DEP) BOTTOM_PANEL_FRONT_VARIANCE) (- (+ (* 0.5 __WID) BOTTOM_PANEL_RIGHT_VARIANCE) bottomSideStyleV2) 0.0) MIDDLE_LED_HOLE_DIA MIDDLE_LED_HOLE_DEPTH))
+					)
+				)
+			)
+			((_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+				(ifnull (_EXISTPANEL (strcat AK_BOTTOM_PANEL_CODE "!!SFACE"))
+					(_CREATESFACEMAIN AK_BOTTOM_PANEL_CODE (_ AK_BOTTOM_PANEL_PDATA AK_BOTTOM_PANEL_ROT AK_BOTTOM_PANEL_MAT AK_BOTTOM_PANEL_THICKNESS "Y"))
+				)
+				(setq halfOfThicknessBottom (* 0.5 AK_BOTTOM_PANEL_THICKNESS))
+				(if LED_GROOVE_IS_AVAILABLE
+					(progn
+						(setq grooveDistanceBTS (+ AK_BOTTOM_PANEL_BACK_VARIANCE DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)))
+
+						(setq currentLedGroove (_ (_ grooveDistanceBTS earlyLedFinALT 0) (_ grooveDistanceBTS (- AK_BOTTOM_PANEL_WID earlyLedFinALT) 0)))
+						(_GROOVE "BOTTOM_PANEL_LED_GROOVE" (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ currentLedGroove WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE))
+						(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 currentLedGroove) (getnth 1 currentLedGroove))) "m")))
+						
+						(setq currentLedGroove (_ (_ earlyLedFinALT grooveDistanceBTS 0) (_ (- AK_BOTTOM_PANEL_HEI earlyLedFinALT) grooveDistanceBTS 0)))
+						(_GROOVE "BOTTOM_PANEL_LED_GROOVE" (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ currentLedGroove WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE))
+						(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 currentLedGroove) (getnth 1 currentLedGroove))) "m")))
+
+						(if (and (not DIST_OF_LED_CROSS) (<= earlyLedFinALT 0) (equal BOTTOM_PANEL_JOINT_TYPE 0))
+							(progn
+								(if (and (_EXISTPANEL AK_LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE) (equal __SIDERNO 0))
+									(progn
+										(setq grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE "LEFT_PANEL_LED_GROOVE" AK_LEFT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS earlyLedFinALT 0) 
+																									(_ grooveDistanceBTS (- DEPTH_OF_LED_GROOVE earlyLedFinALT) 0)) (+ WID_OF_LED_GROOVE (- earlyLedFinALT)) AK_LEFT_PANEL_THICKNESS))	
+									)
+								)
+								(if (and (_EXISTPANEL AK_RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE) (equal __SIDERNO 0))
+									(progn
+										(setq grooveDistanceBTS (+ RIGHT_PANEL_BACK_VARIANCE DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										(_GROOVE "RIGHT_PANEL_LED_GROOVE" AK_RIGHT_PANEL_CODE (_ (_ 	(_ grooveDistanceBTS earlyLedFinALT 0) 
+																							 (_ grooveDistanceBTS (- DEPTH_OF_LED_GROOVE earlyLedFinALT) 0)) (+ WID_OF_LED_GROOVE (- earlyLedFinALT)) AK_RIGHT_PANEL_THICKNESS))	
+									)
+								)
+							)
+						)		
+
+						(if	(and DIST_OF_LED_CROSS (<= earlyLedFinALT 0) (equal BOTTOM_PANEL_JOINT_TYPE 0))
+							(cond
+								(	(and (_EXISTPANEL AK_LEFT_PANEL_CODE) (equal 0.0 LEFT_PANEL_LOWER_VARIANCE) (equal __SIDELNO 0))
+									(progn
+										(ifnull
+											(_EXISTPANEL (setq PANEL_CODE (strcat AK_LEFT_PANEL_CODE "!!SFACE")))
+											(_CREATESFACEMAIN AK_LEFT_PANEL_CODE (_ AK_LEFT_PANEL_PDATA AK_LEFT_PANEL_ROT AK_LEFT_PANEL_MAT AK_LEFT_PANEL_THICKNESS "Y"))
+										)
+										
+										(setq grooveDistanceBTS (- (+ __DEP LEFT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										
+										(_GROOVE
+											"LEFT_PANEL_LED_GROOVE_2"
+											PANEL_CODE
+											(_
+												(_
+													(_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 		 			;1. nokta x y
+													(_ (- __DEP (* 0.5 __AD_PANELTHICK)) DIST_OF_LED_CROSS 0)			;2. nokta x y
+												)
+												6.0 ;cap
+												8.0 ;der
+											)
+										)
+									
+										(setq HOLE_PARAMETERS_LIST
+											(_ 
+												(_ (_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 8 18 nil)			;1. nokta x y
+												(_ (_ (- __DEP (* 0.5 __AD_PANELTHICK)) DIST_OF_LED_CROSS 0) 8 18 nil)	;2. nokta x y
+											)
+										)
+										(setq holeCounter 0)
+										(while (< holeCounter (length HOLE_PARAMETERS_LIST))
+											(setq currentHole (getnth holeCounter HOLE_PARAMETERS_LIST))
+											(cond
+												((equal HOLE_GEOMETRY "POLYLINE")
+													(_POLYLINECIRCLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE nil currentHole)
+														
+												)
+												(T
+													(_HOLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE currentHole)
+												)
+											)
+											(setq holeCounter (+ 1 holeCounter))
+										)
+									)
+								)
+								(	(and (_EXISTPANEL AK_RIGHT_PANEL_CODE) (equal 0.0 RIGHT_PANEL_LOWER_VARIANCE) (equal __SIDERNO 0))
+									(progn
+										(ifnull
+											(_EXISTPANEL (setq PANEL_CODE (strcat AK_RIGHT_PANEL_CODE "!!SFACE")))
+											(_CREATESFACEMAIN AK_RIGHT_PANEL_CODE (_ AK_RIGHT_PANEL_PDATA AK_RIGHT_PANEL_ROT AK_RIGHT_PANEL_MAT AK_RIGHT_PANEL_THICKNESS "Y"))
+										)
+										
+										(setq grooveDistanceBTS (- (+ __DEP RIGHT_PANEL_FRONT_VARIANCE) DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE )))
+										
+										(_GROOVE
+											"RIGHT_PANEL_LED_GROOVE_2"
+											PANEL_CODE
+											(_
+												(_
+													(_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 		 			;1. nokta x y
+													(_ (* 0.5 __AD_PANELTHICK) DIST_OF_LED_CROSS 0)						;2. nokta x y
+												)
+												6.0 ;cap
+												8.0 ;der
+											)
+										)
+									
+										(setq HOLE_PARAMETERS_LIST
+											(_ 
+												(_ (_ grooveDistanceBTS (* 0.5 __AD_PANELTHICK) 0) 8 18 nil)			;1. nokta x y
+												(_ (_ (* 0.5 __AD_PANELTHICK) DIST_OF_LED_CROSS 0) 8 18 nil)			;2. nokta x y
+											)
+										)
+										(setq holeCounter 0)
+										(while (< holeCounter (length HOLE_PARAMETERS_LIST))
+											(setq currentHole (getnth holeCounter HOLE_PARAMETERS_LIST))
+											(cond
+												((equal HOLE_GEOMETRY "POLYLINE")
+													(_POLYLINECIRCLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE nil currentHole)
+														
+												)
+												(T
+													(_HOLE (_& (_ "CUSTOMIZED_HOLE_" (+ holeCounter 1))) PANEL_CODE currentHole)
+												)
+											)
+											(setq holeCounter (+ 1 holeCounter))
+										)
+									)
+								)
+							)
+						)
+						
+					)
+				)
+				(if BACK_SIDE_LED_HOLES_ARE_AVAILABLE																			
+					(progn
+						(setq holeCodeBody "BOTTOM_BACK_SIDE_LED_HOLE_")
+						(_HOLE (_& (_ holeCodeBody "LEFT_1")) (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ BACK_SIDE_LED_HOLES_OFFSET 0.0 (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "Y+"))
+						(_HOLE (_& (_ holeCodeBody "LEFT_1")) (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (- AK_BOTTOM_PANEL_WID BACK_SIDE_LED_HOLES_OFFSET) 0.0 (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "Y+"))
+						(_HOLE (_& (_ holeCodeBody "RIGHT_1")) (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ 0.0 BACK_SIDE_LED_HOLES_OFFSET (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X+"))
+						(_HOLE (_& (_ holeCodeBody "RIGHT_1")) (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ 0.0 (- AK_BOTTOM_PANEL_HEI BACK_SIDE_LED_HOLES_OFFSET) (* halfOfThicknessBottom -1)) BACK_SIDE_LED_HOLES_DIA BACK_SIDE_LED_HOLES_DEPTH "X+"))
+					)
+				)
+				
+				(if MIDDLE_LED_HOLE_IS_AVAILABLE																			
+					(progn
+						(setq holeCodeBody "BOTTOM_PANEL_MIDDLE_LED_HOLE")
+						(_HOLE holeCodeBody (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (- (+ (* 0.5 __DEP2) AK_BOTTOM_PANEL_BACK_VARIANCE) bottomSideStyleV2) (- (+ (* 0.5 __DEP) AK_BOTTOM_PANEL_BACK_VARIANCE) bottomSideStyleV2) 0.0) MIDDLE_LED_HOLE_DIA MIDDLE_LED_HOLE_DEPTH))
+					)
+				)
+			)
+		)
+	)
+)
+
+(setq currentLedGroove nil)
+(setq earlyLedFinALT nil)
+
+(_NONOTCH)

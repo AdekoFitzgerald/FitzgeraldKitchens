@@ -1,0 +1,124 @@
+(initget (strcat (Xstr "Top Bottom") " ~_Top ~_Bottom"))
+(setq kpmTB (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Top/Bottom: ")))
+(cond
+	
+	((equal kpmTB "Bottom")	
+	
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YL10_D1 0.0 0.0) 
+				(list YL10_D1 YL10_T1 0.0) 
+				(list 0.0 YL10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -90.0)
+			
+			(d2r -90.0)
+			
+			
+			(list 0.0 (+ (- unitD) YL10_D1) (- (+ dAltKot unitH) YL10_T1))
+			
+			"YL10_01" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 (- unitH YL10_T1) 0.0) 
+				(list YL10_T1 (- unitH YL10_T1) 0.0) 
+				(list YL10_T1 0.0 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 180.0)
+			
+			
+			(list unitW (- unitD) dAltKot)
+			
+			"YL10_02" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			;"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)	
+	(T
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YL10_D1 0.0 0.0) 
+				(list YL10_D1 YL10_T1 0.0) 
+				(list 0.0 YL10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -270.0)
+			
+			(d2r -90.0)
+			
+			
+			(list unitW (+ (- unitD) YL10_D1) (+ dAltKot YL10_T1))
+			
+			"YL10_01" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 (- unitH YL10_T1) 0.0) 
+				(list YL10_T1 (- unitH YL10_T1) 0.0) 
+				(list YL10_T1 0.0 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 180.0)
+			
+			
+			(list unitW (- unitD) (+ dAltKot YL10_T1))
+			
+			"YL10_02" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			;"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)	
+)

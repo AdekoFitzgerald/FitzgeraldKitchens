@@ -1,0 +1,114 @@
+(setq golaPatternList (_GETGOLAORDER modulgolaOrderList))
+
+;profiller
+(foreach item golaPatternList
+	(setq profileInfo  (nth 1 item) )
+	(setq heightGola  (- (nth 0 item) (nth 0 (nth 2 profileInfo) ) ))
+	(setq profilePoints (_CREATEGOLAPROFILEPOINTS profileInfo))
+	
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel 
+		(nth 0 profilePoints) 
+		(nth 1 profilePoints)
+		(if (getnth 2 item) (- unitW (* 2 ad_et)) unitW)
+		0.0
+		0.0
+		(list (if (getnth 2 item) ad_et 0.0) (+ (- unitD) (nth 1 (nth 2 profileInfo))) (+ dAltKot heightGola))
+		(nth 0 profileInfo)
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "_" (nth 0 profileInfo))
+		(if (>= (length ad_GolaLayers) 2) ad_GolaLayer_2 (car ad_GolaLayers))
+		"noedgedrawing"
+	)
+)
+
+
+
+
+
+;profileInfo:(tip	( H W a b topR botR))
+;profileInfo:(tip	( prfhei prfdep prfTopBotThick prfBackSideThick topRadius botRadius))
+;PROFILEINFO:(C_PRFL	C	(6.80000 1.80000 0.620000 0.940000 1 1))
+;item:(72.0000 	(L_PRFL	L 	(5.30000 1.80000 0.620000 0.940000 1 1)))
+;(NTH 0 ITEM):72.0000
+;(NTH 0 (NTH 2 PROFILEINFO)):	5.30000
+;(- (NTH 0 ITEM) (NTH 0 (NTH 2 PROFILEINFO))):	66.7000
+;
+;;panel profilleri ayrý ayrý çiz
+;(foreach item golaPatternList
+;	(setq profileInfo  (nth 1 item) )
+;	(setq heightGola  (- (nth 0 item) (nth 0 (nth 2 profileInfo) ) ))
+;	(setq profilePoints (_CREATEGOLAPROFILEPOINTS profileInfo))
+;
+;	(createGPanel 
+;		(list
+;			(list 0.0 0.0 0.0)
+;			(list unitW 0.0  0.0)
+;			(list unitW (NTH 0 (NTH 2 PROFILEINFO)) 0.0)
+;			(list 0.0 (NTH 0 (NTH 2 PROFILEINFO)) 0.0)
+;		)
+;		nil
+;		(NTH 3 (NTH 2 PROFILEINFO))
+;		(d2r 0.0)
+;		(d2r 90.0)
+;		(list 0.0 (+ (- unitD) (- (nth 1 (nth 2 profileInfo)) (nth 3 (nth 2 profileInfo)))) (+ dAltKot heightGola))
+;		(nth 0 profileInfo)
+;		""
+;		nil
+;		"SIDE"
+;		(strcat kodBlock "_" (nth 0 profileInfo))
+;		"GOLAPROFILE"
+;		"noedgedrawing"
+;	)
+;	
+;	(if	(not (equal (nth 1 (nth 2 profileInfo)) (nth 3 (nth 2 profileInfo))) )	; eðer profil derinliði ile arka kalýnlýðý eþit deðilse çizdir
+;		(progn
+;			(createGPanel 
+;				(list
+;					(list 0.0 0.0 0.0)
+;					(list unitW 0.0  0.0)
+;					(list unitW (- (NTH 1 (NTH 2 PROFILEINFO)) (NTH 3 (NTH 2 PROFILEINFO))) 0.0)
+;					(list 0.0 (- (NTH 1 (NTH 2 PROFILEINFO)) (NTH 3 (NTH 2 PROFILEINFO))) 0.0)
+;				)
+;				nil
+;				(NTH 2 (NTH 2 PROFILEINFO))
+;				(d2r 270.0)
+;				(d2r 90.0)
+;				(list 0.0 (+ (- unitD) (- (nth 1 (nth 2 profileInfo)) (nth 3 (nth 2 profileInfo)))) (+ dAltKot heightGola))
+;				(nth 0 profileInfo)
+;				""
+;				nil
+;				"SIDE"
+;				(strcat kodBlock "_" (nth 0 profileInfo))
+;				"GOLAPROFILE"
+;				"noedgedrawing"
+;			)
+;			
+;			(if (equal (nth 1 profileInfo) "C")	; eðer C tipi ise çizdir
+;				(createGPanel 
+;					(list
+;						(list 0.0 0.0 0.0)
+;						(list unitW 0.0  0.0)
+;						(list unitW (- (NTH 1 (NTH 2 PROFILEINFO)) (NTH 3 (NTH 2 PROFILEINFO))) 0.0)
+;						(list 0.0 (- (NTH 1 (NTH 2 PROFILEINFO)) (NTH 3 (NTH 2 PROFILEINFO))) 0.0)
+;					)
+;					nil
+;					(NTH 2 (NTH 2 PROFILEINFO))
+;					(d2r 270.0)
+;					(d2r 90.0)
+;					(list 0.0 (+ (- unitD) (- (nth 1 (nth 2 profileInfo)) (nth 3 (nth 2 profileInfo)))) (+ dAltKot heightGola  (- (nth 0 (nth 2 profileInfo)) (nth 2 (nth 2 profileInfo)))  ))
+;					(nth 0 profileInfo)
+;					""
+;					nil
+;					"SIDE"
+;					(strcat kodBlock "_" (nth 0 profileInfo))
+;					"GOLAPROFILE"
+;					"noedgedrawing"
+;				)
+;			)
+;		)	
+;	)
+;)
+;

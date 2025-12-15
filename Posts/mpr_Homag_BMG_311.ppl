@@ -1,0 +1,459 @@
+
+
+;(list "TOP_DIA8.0" ;definition of hole Dia value must be one digit after the desimal point.  LEFT_DIA8.0, RIGHT_DIA8.0, REAR_DIA8.0,FRONT_DIA8.0  
+;		"60,61,62,90,91,92,150,190" ; which tools are suitable 
+;		"HOLE"  ; which operation
+;		""      ;rezerved
+;)
+(setq mpr_Homag_BMG_311_HoleCamOperation nil)
+(defun mpr_Homag_BMG_311_HoleCamOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opSuitableTools tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 tempCAMStyle))
+	(setq opSuitableTools (nth 1 tempCAMStyle));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 tempCAMStyle))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<102 \\Ust Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line "BM=\"LS\"" file) ; LS =0: slow-fast to depth ref-> mprx4_format_us.pdf page->20
+			(write-line (strcat "TI=\"" mHoleZ "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Sag Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"XM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Sol Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"XP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "REA" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Arka Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"YM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan On Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"YP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+
+		)
+	)
+)
+
+;(list "NOTCH"  ;layer name 
+;		"149"   ;tool number
+;		"CONTOUR" ;cam operation name 
+;		2 		; step count of z level	
+;		0 		;rezerved
+;		0		;rezerved
+;		0   	;rezerved
+;		"INSIDE" ; inside, outside or center of the geometry
+;		0 		 ; rezerved	
+;		"3"      ; milling speed
+;		"" 		;rezerved
+;)
+(setq mpr_Homag_BMG_311_ContourCAMOperation nil)
+(defun mpr_Homag_BMG_311_ContourCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								tempDepth stepOfPasses tempPanelDepth   
+								currentZLevel tempPoints firstPoint secondPoint firstSecondNormal  iteration 
+								previousPoint currentPoint absLinePiece radiusCorrection bottomZComponent) 
+	(setq iteration 0)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq bottomZComponent (+ (nth 4 tempCAMStyle) tempDepth))
+	;(setq topZComponent (nth 5 tempCAMStyle) )
+	;(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq radiusCorrection "NOWRK");NOWRK =0: Tool runs on programmed line
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "WRKL");WRKL =1: Tool runs left of programmed line
+				(setq radiusCorrection "WRKR");WRKR =2: Tool runs right of programmed line
+			)
+			
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "WRKR");WRKR =2: Tool runs right of programmed line
+				(setq radiusCorrection "WRKL");WRKL =1: Tool runs left of programmed line
+			)
+		)
+	)
+	
+	;(write-line "GIN G0" file)
+	;(write-line "F =1" file)
+	(setq iteration 0)
+	(foreach tempPoint tempPoints
+		(if (equal iteration 0)
+			(progn
+				(setq ad_HomagContourEntityIndex (+ 1 ad_HomagContourEntityIndex))
+				(write-line (strcat "]" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ) file)
+				(write-line (strcat "$E" (lmm_convertNumtoStringWithDigit iteration 0) ) file)
+				(write-line "KP" file)
+				(write-line (strcat "X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat "Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line "Z=0.0" file)
+				(write-line "KO=0" file)
+				(write-line (strcat ".X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat ".Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line ".Z=0.00" file)
+				(write-line ".KO=0" file)
+				(write-line "" file)
+				(setq previousPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+			)
+			(progn
+				;TODO: eðer polyline parçasý arc ise burda KA çizilmeli
+				(write-line (strcat "$E" (lmm_convertNumtoStringWithDigit iteration 0) ) file)
+				(write-line "KL" file)
+				(write-line (strcat "X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat "Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line (strcat ".X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat ".Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line ".Z=0.00" file)
+				(setq currentPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+				(setq absLinePiece (vectorsub currentPoint previousPoint))
+				(write-line (strcat ".WI=" (lmm_convertNumtoStringWithDigit (atan (nth 1 absLinePiece) (nth 0 absLinePiece)) 6)) file)
+				(write-line ".WZ=0.000000" file)
+				(write-line "" file)
+				(setq previousPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+			)
+		)
+		(setq iteration (+ 1 iteration))
+	)
+	(setq iteration (- iteration 1)) ; END ELEMENT INDEX
+	(write-line (strcat "<105 \\ Kontur frezeleme: " entLayerName "\\" ) file)
+	(write-line (strcat "EA=\"" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ":0\"" ) file) 
+	(write-line "MDA=\"SEN\"" file); Start mode TAN =0: tangential SEI =1: from side SEN =2: vertical
+	(if (> stepOfPasses 1)
+		(write-line "STUFEN=\"1\"" file)
+		(write-line "STUFEN=\"0\"" file)
+	)
+	(write-line "ZSTART=\"d-6\"" file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line (strcat "ANZZST=\"" (lmm_convertNumtoStringWithDigit stepOfPasses 0) "\"") file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line (strcat "RK=\"" radiusCorrection "\"" ) file)
+	(write-line (strcat "EE=\"" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ":" (lmm_convertNumtoStringWithDigit iteration 0) "\"" ) file)
+	(write-line "MDE=\"SEN_AB\"" file) ; TAN_AB =0: tangential SEI_AB =1: from side SEN_AB =2: vertical 
+	(write-line "EM=\"0\"" file) ;Insert mode 0: vertical dive 1: inserting in the move
+	(write-line "RI=\"1\"" file) ;Direction of processing 1: forward, i.e. in drawing direction of contour element 0: not forward, i.e. conter drawing direction of contour element
+	(write-line (strcat "TNO=\"" (nth 1 tempCAMStyle)  "\"") file)
+	(write-line "SM=\"0\"" file) ;Revolution mode 0: revolutions in percent 1: in RPM
+	(write-line "S_=\"STANDARD\"" file);Revolutions in percent
+	(write-line (strcat "F_=\"" (nth 9 tempCAMStyle)  "\"") file) ;Feedrate: contains either the concrete value in m/min or the key word STANDARD.By STANDARD theFeedrate of the Tooldatas will be used (default)
+	(write-line "AB=\"0\"" file) ;Distance from programmed contour. If distance is negative ist, material will be milled away.
+	(write-line "VLS=\"0\"" file) ;Extension at startpoint
+	(write-line "VLE=\"0\"" file) ;Extension at endpoint
+	(write-line (strcat "ZA=\"d-" (lmm_convertNumtoStringWithDigit bottomZComponent 2) "\"") file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line "HP=\"0\"" file) ;Hood position (default=0) 0 = Hood controlling automatically
+	(write-line "SP=\"0\"" file) ;Spindle controlling (default=0) 0 = Spindle controlling automatically
+	(write-line "YVE=\"0\"" file)
+	(write-line "WW=\"1,2,3\"" file)
+	(write-line "ASG=\"2\"" file) ;Exhauster 0 = Off 1 = On 2 = Automatic
+	(write-line "RSEL=\"0\"" file) ;set of rules selected (1) / not selected (0) (Techauto)
+	(write-line "RWID=\"0\"" file) ;selected set of rules identifier (Techauto)
+	(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+	(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+	(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+	(write-line "MXF=\"1\"" file) ;Measuring factor in X
+	(write-line "MYF=\"1\"" file) ;Measuring factor in X
+	(write-line "MZF=\"1\"" file) ;Measuring factor in X
+	(write-line "" file)
+)
+
+(defun sendBMG_311Machine (cPnl machineProcedures / machineName tempPanelName tempPanelDepth tempPanelLength tempPanelWidth mprFile
+													currentOp tempOpLayerName tempOpOpName tempPanelSS tempPanelSSList 
+													tempEnt tempDerivedLayerName mprFilesPath)
+	(setq machineName "HOMAG")
+	(setq mprFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	(createDir (strcat mprFilesPath machineName "\\" ))
+	;(setq mprFile (open (strcat mprFilesPath machineName "\\" (lmm_getDXFFileNameByFileMode (list tempPanelName)) ".mpr") "w"))
+	(setq mprFile (open (strcat mprFilesPath machineName "\\" tempPanelName ".mpr") "w"))
+	(setq tempPanelLength (lmm_convertNumtoStringWithDigit tempPanelLength 4))
+	(setq tempPanelWidth (lmm_convertNumtoStringWithDigit tempPanelWidth 4))
+	(setq tempPanelDepth (lmm_convertNumtoStringWithDigit tempPanelDepth 4))
+	(setq ad_HomagContourEntityIndex 0);her dosya için kontur elemaný sayýsý birden baþlasa iyi olur
+	(write-line "[H" mprFile)
+	(write-line "VERSION=\"4.0 Alpha\"" mprFile)
+	(write-line "WW=\"6.0.18\"" mprFile)
+	(write-line "HP=\"1\"" mprFile)
+	(write-line "IN=\"0\"" mprFile)
+	(write-line "GX=\"1\"" mprFile)
+	(write-line "BFS=\"1\"" mprFile)
+	(write-line "GY=\"0\"" mprFile)
+	(write-line "GXY=\"0\"" mprFile)
+	(write-line "UP=\"0\"" mprFile)
+	(write-line "FM=\"1\"" mprFile)
+	(write-line "FW=\"800\"" mprFile)
+	(write-line "HS=\"0\"" mprFile)
+	(write-line "OP=\"1\"" mprFile)
+	(write-line "MAT=\"WEEKE\"" mprFile)
+	(write-line "INCH=\"0\"" mprFile)
+	(write-line "VIEW=\"NOMIRROR\"" mprFile)
+	(write-line "ANZ=\"1\"" mprFile)
+	(write-line "BES=\"0\"" mprFile)
+	(write-line "ENT=\"0\"" mprFile)
+	(write-line (strcat "_BSX=" 
+						tempPanelLength) mprFile)
+	(write-line (strcat "_BSY=" 
+						tempPanelWidth) mprFile)
+	(write-line (strcat "_BSZ=" 
+						tempPanelDepth) mprFile)
+	(write-line "_FNX=0.000000" mprFile)
+	(write-line "_FNY=0.000000" mprFile)
+	(write-line "_RNX=0.000000" mprFile)
+	(write-line "_RNY=0.000000" mprFile)
+	(write-line "_RNZ=0.000000" mprFile)
+	(write-line (strcat "_RX=" 
+						tempPanelLength) mprFile)
+	(write-line (strcat "_RY=" 
+						tempPanelWidth) mprFile)
+	(write-line "" mprFile)
+	(write-line "[001" mprFile)
+	(write-line (strcat "l=\"" tempPanelLength "\"") mprFile)
+	(write-line "KM=\"X deki uzunluk\"" mprFile)
+	(write-line (strcat "b=\"" tempPanelWidth "\"") mprFile)
+	(write-line "KM=\"Y deki genislik\"" mprFile)
+	(write-line (strcat "d=\"" tempPanelDepth "\"") mprFile)
+	(write-line "KM=\"Z deki kalinlik\"" mprFile)
+	(write-line "" mprFile)
+	(write-line "<100 \\WerkStck\\" mprFile)
+	(write-line "LA=\"l\"" mprFile)
+	(write-line "BR=\"b\"" mprFile)
+	(write-line "DI=\"d\"" mprFile)
+	(write-line "FNX=\"0\"" mprFile)
+	(write-line "FNY=\"0\"" mprFile)
+	(write-line "AX=\"0\"" mprFile)
+	(write-line "AY=\"0\"" mprFile)
+	(write-line "" mprFile)
+	(write-line "<101 \\Kommentar\\" mprFile)
+	(write-line "KM=\"1 adet olacak \"" mprFile)
+	(write-line "KM=\"8 nolu yerde islenecek \"" mprFile)
+	(write-line "??=\"0\"" mprFile)
+	(foreach currentOp machineProcedures
+		(setq tempOpLayerName (nth 0 currentOp))
+		;(setq tempOpToolName (nth 1 currentOp))
+		(setq tempOpOpName (nth 2 currentOp))
+		(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+		(setq tempPanelSSList (convertSStolist tempPanelSS))
+		(foreach tempEnt tempPanelSSList
+			(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+				(progn 
+					(setq tempDerivedLayerName (mprInterpretHoleLayerName tempEnt))
+				)
+				(progn 
+					(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+				)
+			)
+			
+			(if (not (member tempDerivedLayerName mprIgnoreLayerNameList))
+				(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) mprAllEntities))
+					(setq mprAllEntities (append mprAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+				)
+			)
+			
+			(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+				(progn
+					(cond 
+						((equal tempOpOpName "HOLE") 
+							(mpr_Homag_BMG_311_HoleCamOperation tempEnt tempDerivedLayerName currentOp cPnl mprFile)
+							(setq mprNotFreeEntities (append mprNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						) 
+						((equal tempOpOpName "SAW") ;testere iþlemi
+							;boþ
+						)
+						((equal tempOpOpName "CONTOUR") ;freze iþlemi
+							(mpr_Homag_BMG_311_ContourCAMOperation tempEnt tempDerivedLayerName currentOp cPnl mprFile)
+							(setq mprNotFreeEntities (append mprNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						)
+					)
+				)
+			)
+		)
+	)
+	
+	(write-line "!" mprFile)
+	(close mprFile)
+)
+
+
+(princ)

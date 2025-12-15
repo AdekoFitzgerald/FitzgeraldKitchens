@@ -1,0 +1,3 @@
+(_PANEL (lmm_readEvalIfSet "#ARKA") (_ (lmm_convertToRealIfReal (lmm_readEvalIfSet "11")) (lmm_convertToRealIfReal (lmm_readEvalIfSet "22")) 0.0 (lmm_readEvalIfSet "__MODULBODYMAT") (lmm_convertToRealIfReal (lmm_readEvalIfSet "3")))) 
+(_USEPREMADEDRAWS)
+(_NONOTCH)

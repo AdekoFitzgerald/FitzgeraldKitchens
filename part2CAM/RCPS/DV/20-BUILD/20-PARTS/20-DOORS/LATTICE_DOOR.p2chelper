@@ -1,0 +1,165 @@
+; GLOBAL_DOOR_PARAMS are taken from original door recipes
+(_FSET (_ 'GDP_doorIndex (getnth 0 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_doorInfo (getnth 1 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_changeCodeFlag (getnth 2 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_moduleDef (getnth 3 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_divisionOrder (getnth 4 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_uniParamsPrefix (getnth 5 GLOBAL_DOOR_PARAMS)))
+
+(_FSET (_ 'currentDoorID (getnth 7 GDP_doorInfo)))
+; Material of related layers are taken 
+; GENERAL_DOORS_LAYER and DOOR_EDGEBANDS_LAYER are declared in DOORS_DEFAULT.p2chelper
+(_FSET (_ 'doorLayerMAT (_GETDOORMATS currentDoorID GENERAL_DOORS_LAYER)))
+(_FSET (_ 'doorEdgebandsLayerMAT (_GETDOORMATS currentDoorID DOOR_EDGEBANDS_LAYER)))
+
+(if (_NOTNULL doorLayerMAT)
+	(progn
+		(_FSET (_ 'currentDoorHEI (getnth 1 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorWID (getnth 2 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorMODEL (_GETDOORMODEL currentDoorID)))
+		(_FSET (_ 'currentDoorGROUP (getnth 4 (getnth 1 (getnth 3 (assoc currentDoorMODEL kapak:mlofl))))))
+		(_FSET (_ 'currentDoorTAGS (_GETDOORTAGS currentDoorID)))
+		(_FSET (_ 'currentDoorOpenDirection (getnth 5 GDP_doorInfo)))
+		
+		(_FSET (_ 'curDoorDATA (_ (getnth 0 GDP_doorInfo)
+								  currentDoorHEI
+								  currentDoorWID
+								  (getnth 4 GDP_doorInfo)
+								  (getnth 5 GDP_doorInfo)
+								  currentDoorID
+								  (_GETDOORMATROTS currentDoorID GENERAL_DOORS_LAYER)
+								  doorLayerMAT
+								  (_ 0.0 0.0 0.0 0.0)
+								  "INSOURCE")))
+		
+		(_FSET (_ 'paramBody (_GENERATEDOORPARAMS curDoorDATA GDP_divisionOrder GDP_doorIndex GDP_moduleDef GDP_uniParamsPrefix)))
+		
+		; FRAME PART
+		; Unique variables of frame of door
+		(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+		(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+		(_FSET (_ 'tempGRAIN (_& (_ paramBody "GRAIN"))))
+		(_FSET (_ 'tempTYPE (_& (_ paramBody "TYPE"))))
+		(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+		(_FSET (_ 'tempID (_& (_ paramBody "ID"))))
+		
+		; This parameter is not set by _GENERATEDOORPARAMS
+		(_FSET (_ (read (_& (_ paramBody "VIRTUAL"))) nil))
+		
+		; Unique code of doors frame
+		(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE (_S2V tempTYPE) GDP_divisionOrder GDP_doorIndex GDP_changeCodeFlag GDP_moduleDef)))
+		
+		(_FSET (_ 'doorGrain nil))
+		(if (equal lmm-s-doorDxfRotationIsNotImpressedByGrain "1")
+			(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) 0.0)))
+		)
+		(if (> (_S2V tempHEI) MIN_HEIGHT_FOR_DOOR_ROTATION) 
+			(if (equal currentDoorOpenDirection "L")
+				(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) DOOR_ROTATION_VALUE_FOR_LEFT_OPEN_DIR)))
+				(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) DOOR_ROTATION_VALUE_FOR_RIGHT_OPEN_DIR)))
+			)
+		)
+				
+		; IMPORTANT INFORMATION -> Frame of door is drawn and acts like it is a whole door
+		(_PANEL currentDoorCODE (_ (_S2V tempWID) (_S2V tempHEI) (ifnull doorGrain (_S2V tempGRAIN)) (_S2V tempMAT)))
+		
+		; Edgestrip controls
+		(if (_NOTNULL doorEdgebandsLayerMAT)
+			(progn
+				(_FSET (_ 'edgestripList (_GETDOORSTRIPS (_S2V tempID))))
+				(if (apply 'OR edgestripList)
+					(progn
+						(_FSET (_ 'topEdgestripMAT (getnth 0 edgestripList)))
+						(_FSET (_ 'rightEdgestripMAT (getnth 1 edgestripList)))
+						(_FSET (_ 'bottomEdgestripMAT (getnth 2 edgestripList)))
+						(_FSET (_ 'leftEdgestripMAT (getnth 3 edgestripList)))
+					)
+					(progn
+						; DOOR_EDGESTRIP_DEFAULT is declared in DOORS_DEFAULT.p2chelper
+						(_FSET (_ 'topEdgestripMAT DOOR_EDGESTRIP_DEFAULT))
+						(_FSET (_ 'rightEdgestripMAT DOOR_EDGESTRIP_DEFAULT))
+						(_FSET (_ 'bottomEdgestripMAT DOOR_EDGESTRIP_DEFAULT))
+						(_FSET (_ 'leftEdgestripMAT DOOR_EDGESTRIP_DEFAULT))
+					)
+				)
+				
+				(if GET_MATERIAL_COLOR_FROM_DOOR_LAYER
+					(_FSET (_ 'edgeBandMat doorLayerMAT))
+					(_FSET (_ 'edgeBandMat doorEdgebandsLayerMAT))
+				)
+				
+				; If user activates ADD_MATERIAL_COLOR feature in default helper then following operations are performed
+				(if (_NOTNULL ADD_MATERIAL_COLOR)
+					(progn
+						(if (_NOTNULL topEdgestripMAT) (_FSET (_ 'topEdgestripMAT (_& (_ topEdgestripMAT edgeBandMat)))))
+						(if (_NOTNULL rightEdgestripMAT) (_FSET (_ 'rightEdgestripMAT (_& (_ rightEdgestripMAT edgeBandMat)))))
+						(if (_NOTNULL bottomEdgestripMAT) (_FSET (_ 'bottomEdgestripMAT (_& (_ bottomEdgestripMAT edgeBandMat)))))
+						(if (_NOTNULL leftEdgestripMAT) (_FSET (_ 'leftEdgestripMAT (_& (_ leftEdgestripMAT edgeBandMat)))))
+					)
+				)
+				; Width of edgestrips are taken from database
+				(_FSET (_ 'leftEdgestripWID (_GETEDGESTRIPWIDFROMDB leftEdgestripMAT)))
+				(_FSET (_ 'rightEdgestripWID (_GETEDGESTRIPWIDFROMDB rightEdgestripMAT)))
+				(_FSET (_ 'topEdgestripWID (_GETEDGESTRIPWIDFROMDB topEdgestripMAT)))
+				(_FSET (_ 'bottomEdgestripWID (_GETEDGESTRIPWIDFROMDB bottomEdgestripMAT)))
+				
+				(_FSET (_ 'DOOR_EDGESTRIPS (_ (_ bottomEdgestripMAT bottomEdgestripWID)
+												(_ leftEdgestripMAT leftEdgestripWID)
+												(_ topEdgestripMAT topEdgestripWID)
+												(_ rightEdgestripMAT rightEdgestripWID))))	
+		
+				(_CREATEEDGESTRIPS currentDoorCODE DOOR_EDGESTRIPS)	
+						
+				; (_EDGELEFT "EDGESTRIP_1" currentDoorCODE (_ rightEdgestripMAT rightEdgestripWID))
+				; (_EDGERIGHT "EDGESTRIP_2" currentDoorCODE (_ leftEdgestripMAT leftEdgestripWID))
+				; (_EDGETOP "EDGESTRIP_3" currentDoorCODE (_ topEdgestripMAT topEdgestripWID))
+				; (_EDGEBOTTOM "EDGESTRIP_4" currentDoorCODE (_ bottomEdgestripMAT bottomEdgestripWID))
+			)
+		)
+		; Tag operations
+		(_PUTDOORSPECIFICATIONS
+			(list
+				currentDoorCODE
+				currentDoorTYPE
+				"INSOURCE"
+				currentDoorMODEL
+				doorCostType
+				currentDoorTAGS
+				(_GETDOORFORM currentDoorID)
+				(getDoorDirectionWithDoorPosition g_CurrentModulEnt currentDoorID)
+				(_GETHANDLEPOSINDEX currentDoorID)
+			)
+		)
+		
+		; LATTICE PART
+		(_FSET (_ 'frameThickness (_GETDOORFRAMETHICK currentDoorID)))
+		; FRAME_THICKNESS_DEFAULT is declared in DOORS_DEFAULT.p2chelper
+		(if (null frameThickness) (_FSET (_ 'frameThickness FRAME_THICKNESS_DEFAULT)))
+		
+		; Material control
+		(_FSET (_ 'latticeLayerMAT (_GETLAYERMAT LATTICE_DOOR_LAYER)))
+		(if (null latticeLayerMAT) (_FSET (_ 'latticeLayerMAT "LATTICE")))
+		
+		(_FSET (_ 'paramBody (_& (_ paramBody "LATTICE_"))))
+		; Unique variables of lattice part of door
+		(_FSET (_ 'latticeWID (_& (_ paramBody "WID"))))
+		(_FSET (_ 'latticeHEI (_& (_ paramBody "HEI"))))
+		(_FSET (_ 'latticeMAT (_& (_ paramBody "MAT"))))
+		(_FSET (_ 'latticeGRAIN (_& (_ paramBody "GRAIN"))))
+		(_FSET (_ 'latticeFRAME (_& (_ paramBody "FRAME"))))
+		
+		; WARNING -> While we producing code of lattice part we already know the type of door. Thats why there is no need for creating an unique variable for type
+		
+		(_FSET (_ (read latticeWID) (_= "currentDoorWID - frameThickness - frameThickness")))
+		(_FSET (_ (read latticeHEI) (_= "currentDoorHEI - frameThickness - frameThickness")))
+		(_FSET (_ (read latticeMAT) latticeLayerMAT))
+		; In design grain of lattice part can be changed but in here we assume there is no grain for lattice part
+		(_FSET (_ (read latticeGRAIN) 0))
+		(_FSET (_ (read latticeFRAME) (_ frameThickness frameThickness frameThickness frameThickness)))
+		
+		; Unique code of lattice part of door
+		(_FSET (_ 'latticePartCODE (_& (_ currentDoorCODE "_" (XSTR "LATTICE")))))
+		(_PANEL latticePartCODE (_ (_S2V latticeWID) (_S2V latticeHEI) (_S2V latticeGRAIN) (_S2V latticeMAT)))
+	)
+)
+(_NONOTCH)

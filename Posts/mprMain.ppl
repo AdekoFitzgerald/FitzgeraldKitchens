@@ -1,0 +1,629 @@
+
+; Üretim hattýnda ABD_150 , BMG_311 ve , WEEKE makineleri var 
+; delik iþlemleri panelin kenarlarýndan "maxOpDistanceFromEdge" mesafesi kadar olan panellerin hepsi ABD_150 makinesine diðer tüm paneller diðer iki makineye eþit bir þekilde paylaþtýrýlýyor. Bunu  "selectMachine" fonksiyonu yapaýyor.
+; Farklý baþka iþler için "selectMachine" fonsiyonu kiþiselleþtirlerek, makine sayýsý artýrýlabilir , azaltýlabilir, makineler için ayrý ayrý postlar geliþtirlebilir.
+
+(setq ad_mprCAMOperationList (list
+										;(list "TOP_DIA8.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA3.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA8.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA8.1" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA15.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA35.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA4.0" "" "HOLE" "")
+										;(list "TOP_DIA10.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA10.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "PK" "102" "CONTOUR" 1 0 0 0 "INSIDE" 0 "3" "")
+										(list "NOTCH" "105" "CONTOUR" 2 1 0 0 "INSIDE" 4.5 "3" "")
+										(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")	;kavela delikleri delme operasyonu
+										;(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "") ;kavela çakma operasyonu
+										;(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")	
+										(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "GROOVE_5" "114" "CONTOUR" 1 0 0 0 "INSIDE" 3 "3" "")
+										(list "GROOVE_6" "114" "CONTOUR" 1 0 0 0 "INSIDE" 3 "3" "")
+										(list "GROOVE_8" "105" "CONTOUR" 1 0 0 0 "INSIDE" 4.5 "3" "")
+										(list "GROOVE_9" "105" "CONTOUR" 1 0 0 0 "INSIDE" 4.5 "3" "")
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+										;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "F30")
+
+										
+ ))
+ (setq ad_mprCAMOperationListWEKE (list
+										;(list "TOP_DIA8.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA3.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA8.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA8.1" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA15.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA35.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										;(list "TOP_DIA5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA4.0" "" "HOLE" "")
+										;(list "TOP_DIA10.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA10.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "PK" "102" "CONTOUR" 1 0 0 0 "INSIDE" 0 "3" "")
+										(list "NOTCH" "1" "CONTOUR" 2 1 0 0 "INSIDE" 4 "3" "")
+										(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")	;kavela delikleri delme operasyonu
+										;(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "") ;kavela çakma operasyonu
+										;(list "LEFT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")	
+										(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "RIGHT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "REAR_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										;(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										;(list "FRONT_DIA8.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "GROOVE_5" "1" "CONTOUR_SPLIT" 1 0 0 0 "INSIDE" 3 "3" "")
+										(list "GROOVE_6" "1" "CONTOUR_SPLIT" 1 0 0 0 "INSIDE" 3 "3" "")
+										(list "GROOVE_8" "1" "CONTOUR_SPLIT" 1 0 0 0 "INSIDE" 4.5 "3" "")
+										(list "GROOVE_9" "1" "CONTOUR_SPLIT" 1 0 0 0 "INSIDE" 4.5 "3" "")
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+										;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "F30")
+
+										
+ ))
+ (setq ad_mprABD150CAMOperationList (list
+										(list "TOP_DIA8.0_DEPTH14.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA8.0_DEPTH12.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA15.0_DEPTH12.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA35.0_DEPTH12.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH1.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH12.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH13.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH14.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH5.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA5.0_DEPTH8.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA4.0_DEPTH12.0" "" "HOLE" "")
+										(list "TOP_DIA10.0_DEPTH14.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "TOP_DIA10.0_DEPTH13.0" "60,61,62,90,91,92,150,190" "HOLE" "")
+										(list "LEFT_DIA8.0_DEPTH25.0" "50,51,52,53,56,59,153" "ABD_DEU" "") ;kavela çakma operasyonu
+										(list "LEFT_DIA8.0_DEPTH32.0" "50,51,52,53,56,59,153" "HOLE" "")	
+										(list "RIGHT_DIA8.0_DEPTH25.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										(list "RIGHT_DIA8.0_DEPTH32.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "REAR_DIA8.0_DEPTH25.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										(list "REAR_DIA8.0_DEPTH32.0" "50,51,52,53,56,59,153" "HOLE" "")
+										(list "FRONT_DIA8.0_DEPTH25.0" "50,51,52,53,56,59,153" "ABD_DEU" "")
+										(list "FRONT_DIA8.0_DEPTH32.0" "50,51,52,53,56,59,153" "HOLE" "")
+ ))
+
+; kontur elemaný index li bir þekilde çaðrýlýyor her dosya için kontur elemaný 1 den baþlamalý
+(setq ad_HomagContourEntityIndex 0) 
+
+; BMG_311 ve WEEKE makineleri için panel daðitiýmnda kullanýlacak olan global deðiþkenler
+(setq BMG_311_PanelCount 0)
+(setq WEEKE_PanelCount 0)
+
+
+;(list "TOP_DIA8.0" ;definition of hole Dia value must be one digit after the desimal point.  LEFT_DIA8.0, RIGHT_DIA8.0, REAR_DIA8.0,FRONT_DIA8.0  
+;		"60,61,62,90,91,92,150,190" ; which tools are suitable 
+;		"HOLE"  ; which operation
+;		""      ;rezerved
+;)
+(setq mprHoleCamOperation nil)
+(defun mprHoleCamOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opSuitableTools tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opSuitableTools (nth 1 currentOp));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 currentOp))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<102 \\Ust Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line "BM=\"LS\"" file) ; LS =0: slow-fast to depth ref-> mprx4_format_us.pdf page->20
+			(write-line (strcat "TI=\"" mHoleZ "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Sag Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"XM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Sol Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"XP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "REA" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan Arka Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"YM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs (getnth 2 tempHolePos)) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<103 \\Yan On Delik\\" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line "ANA=\"20\"" file)
+			(write-line "BM=\"YP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"0\"" file) ;
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+
+		)
+	)
+)
+
+;(list "NOTCH"  ;layer name 
+;		"149"   ;tool number
+;		"CONTOUR" ;cam operation name 
+;		2 		; step count of z level	
+;		0 		;rezerved
+;		0		;rezerved
+;		0   	;rezerved
+;		"INSIDE" ; inside, outside or center of the geometry
+;		0 		 ; rezerved	
+;		"3"      ; milling speed
+;		"" 		;rezerved
+;)
+(setq mprContourCAMOperation nil)
+(defun mprContourCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								tempDepth stepOfPasses tempPanelDepth   
+								currentZLevel tempPoints firstPoint secondPoint firstSecondNormal  iteration 
+								previousPoint currentPoint absLinePiece radiusCorrection)
+	(setq iteration 0)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	;(setq bottomZComponent (+ (- tempPanelDepth tempDepth) (nth 4 tempCAMStyle) ) )
+	;(setq topZComponent (+ tempPanelDepth (nth 5 tempCAMStyle)) )
+	;(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq radiusCorrection "NOWRK");NOWRK =0: Tool runs on programmed line
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "WRKL");WRKL =1: Tool runs left of programmed line
+				(setq radiusCorrection "WRKR");WRKR =2: Tool runs right of programmed line
+			)
+			
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq radiusCorrection "WRKR");WRKR =2: Tool runs right of programmed line
+				(setq radiusCorrection "WRKL");WRKL =1: Tool runs left of programmed line
+			)
+		)
+	)
+	
+	;(write-line "GIN G0" file)
+	;(write-line "F =1" file)
+	(setq iteration 0)
+	(foreach tempPoint tempPoints
+		(if (equal iteration 0)
+			(progn
+				(setq ad_HomagContourEntityIndex (+ 1 ad_HomagContourEntityIndex))
+				(write-line (strcat "]" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ) file)
+				(write-line (strcat "$E" (lmm_convertNumtoStringWithDigit iteration 0) ) file)
+				(write-line "KP" file)
+				(write-line (strcat "X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat "Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line "Z=0.0" file)
+				(write-line "KO=0" file)
+				(write-line (strcat ".X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat ".Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line ".Z=0.00" file)
+				(write-line ".KO=0" file)
+				(write-line "" file)
+				(setq previousPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+			)
+			(progn
+				;TODO: eðer polyline parçasý arc ise burda KA çizilmeli
+				(write-line (strcat "$E" (lmm_convertNumtoStringWithDigit iteration 0) ) file)
+				(write-line "KL" file)
+				(write-line (strcat "X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat "Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line (strcat ".X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)) file)
+				(write-line (strcat ".Y=" (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)) file)
+				(write-line ".Z=0.00" file)
+				(setq currentPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+				(setq absLinePiece (vectorsub currentPoint previousPoint))
+				(write-line (strcat ".WI=" (lmm_convertNumtoStringWithDigit (atan (nth 1 absLinePiece) (nth 0 absLinePiece)) 6)) file)
+				(write-line ".WZ=0.000000" file)
+				(write-line "" file)
+				(setq previousPoint (list (nth 0 tempPoint) (nth 1 tempPoint) 0))
+			)
+		)
+		(setq iteration (+ 1 iteration))
+	)
+	(setq iteration (- iteration 1)) ; END ELEMENT INDEX
+	(write-line "<105 \\ Kontur frezeleme \\" file)
+	(write-line (strcat "EA=\"" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ":0\"" ) file) 
+	(write-line "MDA=\"SEN\"" file); Start mode TAN =0: tangential SEI =1: from side SEN =2: vertical
+	(write-line "STUFEN=\"1\"" file)
+	(write-line "ZSTART=\"9\"" file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line (strcat "ANZZST=\"" (lmm_convertNumtoStringWithDigit stepOfPasses 0) "\"") file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line (strcat "RK=\"" radiusCorrection "\"" ) file)
+	(write-line (strcat "EE=\"" (lmm_convertNumtoStringWithDigit ad_HomagContourEntityIndex 0) ":" (lmm_convertNumtoStringWithDigit iteration 0) "\"" ) file)
+	(write-line "MDE=\"SEN_AB\"" file) ; TAN_AB =0: tangential SEI_AB =1: from side SEN_AB =2: vertical 
+	(write-line "EM=\"0\"" file) ;Insert mode 0: vertical dive 1: inserting in the move
+	(write-line "RI=\"1\"" file) ;Direction of processing 1: forward, i.e. in drawing direction of contour element 0: not forward, i.e. conter drawing direction of contour element
+	(write-line (strcat "TNO=\"" (nth 1 tempCAMStyle)  "\"") file)
+	(write-line "SM=\"0\"" file) ;Revolution mode 0: revolutions in percent 1: in RPM
+	(write-line "S_=\"STANDARD\"" file);Revolutions in percent
+	(write-line (strcat "F_=\"" (nth 9 tempCAMStyle)  "\"") file) ;Feedrate: contains either the concrete value in m/min or the key word STANDARD.By STANDARD theFeedrate of the Tooldatas will be used (default)
+	(write-line "AB=\"0\"" file) ;Distance from programmed contour. If distance is negative ist, material will be milled away.
+	(write-line "VLS=\"0\"" file) ;Extension at startpoint
+	(write-line "VLE=\"0\"" file) ;Extension at endpoint
+	(write-line (strcat "ZA=\"(d-" (lmm_convertNumtoStringWithDigit tempDepth 2) ")\"") file) ; TODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝRTODO: BUNU BÝRKEZDAHA GÖZDEN GEÇÝR
+	(write-line "HP=\"0\"" file) ;Hood position (default=0) 0 = Hood controlling automatically
+	(write-line "SP=\"0\"" file) ;Spindle controlling (default=0) 0 = Spindle controlling automatically
+	(write-line "YVE=\"0\"" file)
+	(write-line "WW=\"1,2,3\"" file)
+	(write-line "ASG=\"2\"" file) ;Exhauster 0 = Off 1 = On 2 = Automatic
+	(write-line "RSEL=\"0\"" file) ;set of rules selected (1) / not selected (0) (Techauto)
+	(write-line "RWID=\"0\"" file) ;selected set of rules identifier (Techauto)
+	(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+	(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+	(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+	(write-line "MXF=\"1\"" file) ;Measuring factor in X
+	(write-line "MYF=\"1\"" file) ;Measuring factor in X
+	(write-line "MZF=\"1\"" file) ;Measuring factor in X
+	(write-line "" file)
+)
+
+(setq selectMachine nil)
+(defun selectMachine ( cPnl / maxOpDistanceFromEdge isSuitableForABD150 tempPanelSS tempPanelSSList 
+								tempEnt tempEntAxis tempHolePos tempHoleDia tempEntPosWorld machiningAreaABD_150 blindAreaABD_150_V1 blindAreaABD_150_V2 tempV xSign ySign 
+								EOLFlag itemIndex mrtn entLayerName)
+	(setq maxOpDistanceFromEdge 40.0) ;parameter maximum operation distance from edge for ABD 150 machine   
+	(setq isSuitableForABD150 T)
+	(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(setq machiningAreaABD_150 (getBBox cPnl))
+	
+	(if (or (>=  (* 2 maxOpDistanceFromEdge) (nth 2 machiningAreaABD_150)) (>=  (* 2 maxOpDistanceFromEdge) (nth 3 machiningAreaABD_150)) ) ; if Panel length or width bigger than 2*maxOpDistanceFromEdge no need calculate
+		(setq isSuitableForABD150 T)
+		(progn
+			(setq tempV (VectorSub (nth 1 machiningAreaABD_150) (nth 0 machiningAreaABD_150)))
+			(setq xSign (/ (nth 0 tempV) (abs (nth 0 tempV))) )
+			(setq ySign (/ (nth 1 tempV) (abs (nth 1 tempV))) )
+			(setq tempV (list (* xSign maxOpDistanceFromEdge) (* ySign maxOpDistanceFromEdge) 0 ))
+			(setq blindAreaABD_150_V1 (vectoradd (nth 0 machiningAreaABD_150) tempV))
+			(setq blindAreaABD_150_V2 (vectorsub (nth 1 machiningAreaABD_150) tempV))
+			
+			(setq EOLFlag T)
+			(setq itemIndex 0)
+			(while (and isSuitableForABD150 EOLFlag)
+				(setq tempEnt (nth itemIndex tempPanelSSList))
+				(setq entLayerName (getentpro tempEnt 8))
+				(cond 
+					((equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+						(setq tempHolePos (getEntPro tempEnt 10))
+						(setq tempEntAxis (getEntPro tempEnt 210))
+						(setq tempEntPosWorld (trans tempHolePos tempEntAxis 0))
+						(if (and	(and 	(> (nth 0 tempEntPosWorld) (nth 0 blindAreaABD_150_V1))
+											(< (nth 0 tempEntPosWorld) (nth 0 blindAreaABD_150_V2)) 
+									)
+									(and 	(> (nth 1 tempEntPosWorld) (nth 1 blindAreaABD_150_V1))
+											(< (nth 1 tempEntPosWorld) (nth 1 blindAreaABD_150_V2)) 
+									)
+							)
+							(progn
+								(setq isSuitableForABD150 nil)
+							)
+						)
+						(if (>= tempHoleDia 30.0) ; door hinge housing holes can not drilling abd150 machines 
+							(setq isSuitableForABD150 nil)
+						)
+					)
+					( (equal (lmm_getLMMdata tempEnt lmm-k-type) "GROOVE")
+						(setq isSuitableForABD150 nil)
+					)
+					( (equal (lmm_getLMMdata tempEnt lmm-k-type) "PANEL_SIZING")
+						(setq isSuitableForABD150 nil)
+					)
+					( (equal (lmm_getLMMdata tempEnt lmm-k-type) "PANEL_SIZING")
+						(setq isSuitableForABD150 nil)
+					)
+					( (equal entLayerName "PK")
+						(setq isSuitableForABD150 nil)
+					)
+					
+				)
+				(setq itemIndex (+ 1 itemIndex))
+				(if (>= itemIndex (length tempPanelSSList)) (setq EOLFlag nil) )
+			)
+		)
+	)
+	
+	(if isSuitableForABD150   ; eðer mevcut panel ABD_150 makinesi için uygun deðilse diðer iki makineye eþit olacak þekilde panelleri paylaþtýr
+		(setq mrtn "ABD_150")
+		(progn               
+			(if (>= WEEKE_PanelCount BMG_311_PanelCount)
+				(progn
+					(setq mrtn "BMG_311")
+					(setq BMG_311_PanelCount (+ 1 BMG_311_PanelCount))
+				)
+				(progn
+					(setq mrtn "WEEKE")
+					(setq WEEKE_PanelCount (+ 1 WEEKE_PanelCount))
+				)
+			)
+		)
+	)
+	
+	mrtn
+)
+
+(setq mprAllEntities nil)
+(setq mprNotFreeEntities nil)
+(setq mprEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq mprIgnoreLayerNameList (list "0" "PANEL" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0" "LMM_EDGESTRIP")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+
+(setq lmm_exportMPRFilesDesiredCAMOp nil)
+(defun lmm_exportMPRFilesDesiredCAMOp ( /  allPanelsList tempPanel  currentMachine alertMsg tempIter) 
+	(setq mprAllEntities nil)
+	(setq mprNotFreeEntities nil)
+	(setq mprEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+	
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(setq BMG_311_PanelCount 0) ; panelleri daðýtmadan önce sýfýrlamak gerekir
+	(setq WEEKE_PanelCount 0)  ; panelleri daðýtmadan önce sýfýrlamak gerekir
+	(foreach tempPanel allPanelsList
+		;(setq currentMachine (selectMachine tempPanel))
+		;(setq currentMachine "BMG_311")
+		;(cond 
+		;	((equal "ABD_150" currentMachine)
+		;		(sendABD_150Machine tempPanel ad_mprABD150CAMOperationList)
+		;	)
+		;	((equal "BMG_311" currentMachine)
+		;		(sendBMG_311Machine tempPanel ad_mprCAMOperationList)
+		;	)
+		;	((equal "WEEKE" currentMachine)
+		;		(sendWEEKEMachine tempPanel ad_mprCAMOperationList)
+		;	)
+		;)
+		(sendBMG_311Machine tempPanel ad_mprCAMOperationList)
+		(sendWEEKEMachine tempPanel ad_mprCAMOperationListWEKE)
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem mprAllEntities
+		(if (and (not (member tempItem mprNotFreeEntities)) (not (member tempItem mprEntitiesThatCanNotBeCAM)))
+			(setq mprEntitiesThatCanNotBeCAM (append mprEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if mprEntitiesThatCanNotBeCAM
+		(progn
+			(setq mprEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) mprEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length mprEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter mprEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter mprEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun mprInterpretHoleLayerName ( tempEnt / currentReturn tempHoleDia tempHoleDepth)
+	(cond 
+		( ;Z - 
+			(equal (getnth 2 (getEntPro tempEnt 210)) 1.00000)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	;(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	currentReturn
+)
+
+(princ)

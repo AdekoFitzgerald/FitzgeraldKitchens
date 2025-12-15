@@ -1,0 +1,7 @@
+LINCOv2_GEOMETRY -> "Geometry of lincov2 hole. POLYLINE or CIRCLE ?"
+LINCOv2_HOR_DIA -> "Diameter of lincov2 bolt hole"
+LINCOv2_HOR_DEPTH -> "Depth of lincov2 bolt hole"
+LINCOv2_BOLT_HOLE_POS -> "Position of lincov2 bolt hole"
+LINCOv2_VER_DEPTH -> "Depth of main lincov2 hole"
+LINCOv2_CODE -> "Code of lincov2"
+LINCOv2_UNIT -> "Unit of lincov2"

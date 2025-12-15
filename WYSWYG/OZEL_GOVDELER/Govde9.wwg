@@ -1,0 +1,175 @@
+(setq serenAyak 8.0) ;Seren ayak eni ve derinliði
+(setq seren (+ serenAyak 2.5)) 	;Ara seren yüksekliði
+(setq serenTolerans 0.3) ;Serenler arasýndaki kot farký
+(setq araf5orta (- (/ (- unitD) 2) (/ ad_et 2))) 
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	 (list 
+		 (list 0.0 0.0 0.0) 
+		 (list serenAyak 0.0 0.0) 
+		 (list serenAyak (+ unitH ad_bazaH) 0.0) 
+		 (list 0.0 (+ unitH ad_bazaH) 0.0) 
+	 ) 
+	 (list 0.0 0.0 0.0) 
+	
+	 serenAyak
+	 0.0 
+	 0.0 
+	 (list 0.0 0.0 0.0)
+	
+	 "SOL_ARKA_AYAK" 
+	 "" 
+	 nil 
+	 "SIDE" 
+	 (strcat kodBlock "_LACQUER")
+	 "LACQUER"
+	 "noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	 (list 
+		 (list 0.0 0.0 0.0) 
+		 (list serenAyak 0.0 0.0) 
+		 (list serenAyak (+ unitH ad_bazaH) 0.0) 
+		 (list 0.0 (+ unitH ad_bazaH) 0.0) 
+	 ) 
+	 (list 0.0 0.0 0.0) 
+	
+	 serenAyak
+	 0.0 
+	 0.0 
+	 (list (- unitW serenAyak) 0.0 0.0)
+	
+	 "SAG_ARKA_AYAK" 
+	 "" 
+	 nil 
+	 "SIDE" 
+	 (strcat kodBlock "_LACQUER")
+	 "LACQUER"
+	 "noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	 (list 
+		 (list 0.0 0.0 0.0) 
+		 (list serenAyak 0.0 0.0) 
+		 (list serenAyak (+ unitH ad_bazaH) 0.0) 
+		 (list 0.0 (+ unitH ad_bazaH) 0.0) 
+	 ) 
+	 (list 0.0 0.0 0.0) 
+	
+	 serenAyak
+	 0.0 
+	 0.0 
+	 (list 0.0 (+ (- unitD) serenAyak) 0.0)
+	
+	 "SOL_ON_AYAK" 
+	 "" 
+	 nil 
+	 "SIDE" 
+	 (strcat kodBlock "_LACQUER")
+	 "LACQUER"
+	 "noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	 (list 
+		 (list 0.0 0.0 0.0) 
+		 (list serenAyak 0.0 0.0) 
+		 (list serenAyak (+ unitH ad_bazaH) 0.0) 
+		 (list 0.0 (+ unitH ad_bazaH) 0.0) 
+	 ) 
+	 (list 0.0 0.0 0.0) 
+	
+	 serenAyak
+	 0.0 
+	 0.0 
+	 (list (- unitW serenAyak) (+ (- unitD) serenAyak) 0.0)
+	
+	 "SAG_ON_AYAK" 
+	 "" 
+	 nil 
+	 "SIDE" 
+	 (strcat kodBlock "_LACQUER")
+	 "LACQUER"
+	 "noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW 1.0) 0.0 0.0) 
+		(list (- unitW 1.0) (- unitD 1.0) 0.0) 
+		(list 0.0 (- unitD 1.0) 0.0) 
+	) 
+	nil
+	3.0
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.5 (- 0.5) dAltKot)
+	"ALT_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW 1.0) 0.0 0.0) 
+		(list (- unitW 1.0) (- unitD 1.0) 0.0) 
+		(list 0.0 (- unitD 1.0) 0.0) 
+	) 
+	nil
+	3.0
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.5 (- 0.5) (- (+ unitH dAltKot) 3.0))
+	"UST_TABLA"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW 1.0) 0.0 0.0) 
+		(list (- unitW 1.0) (- unitD 1.0) 0.0) 
+		(list 0.0 (- unitD 1.0) 0.0) 
+	) 
+	nil
+	3.0
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.5  (- 0.5) (+ (- (+ (/ (- (+ unitH ad_bazaH) seren seren) 2) dAltKot) (/ seren 2)) (/ dAltKot 2)))
+	"RAF"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_LACQUER")
+	"LACQUER"
+	"noedgedrawing"
+)

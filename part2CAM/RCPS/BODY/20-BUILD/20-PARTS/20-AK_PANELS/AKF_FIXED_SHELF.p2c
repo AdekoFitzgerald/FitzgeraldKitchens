@@ -1,0 +1,32 @@
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+PANEL_LABEL -> "Label of panel"
+PANEL_TAG -> "Tag of panel"
+
+WID_EDGESTRIP_MAT -> "Material of edgestrip on panels width, WID"
+HEI_EDGESTRIP_MAT -> "Material of edgestrip on panels height, HEI"
+DEP_EDGESTRIP_MAT -> "Material of edgestrip on panels depth, DEP"
+DEP2_EDGESTRIP_MAT -> "Material of edgestrip on panels second depth, DEP2"
+SLOPING_EDGESTRIP_MAT -> "Material of edgestrip on panels sloping edge"
+;prefvars
+(_SETA 'PANEL_MAIN_ROTATION nil)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'PANEL_LABEL nil)
+(_SETA 'PANEL_TAG nil)
+
+(_SETA 'WID_EDGESTRIP_MAT nil)
+(_SETA 'HEI_EDGESTRIP_MAT nil)
+(_SETA 'DEP_EDGESTRIP_MAT nil)
+(_SETA 'DEP2_EDGESTRIP_MAT nil)
+(_SETA 'SLOPING_EDGESTRIP_MAT nil)
+; Standard Values, PANEL_MAIN_ROTATION nil, PANEL_CUTLIST_ROTATION nil, PANEL_DXF_ROTATION nil, PANEL_MIRRORING_AXIS nil
+; Standard Values, PANEL_LABEL nil, PANEL_TAG nil
+; Standard Values, WID_EDGESTRIP_MAT nil, HEI_EDGESTRIP_MAT nil, DEP_EDGESTRIP_MAT nil, DEP2_EDGESTRIP_MAT nil, SLOPING_EDGESTRIP_MAT nil
+(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\20-AK_PANELS\\AKF_FIXED_SHELF" T "p2chelper")
+(_NONOTCH)

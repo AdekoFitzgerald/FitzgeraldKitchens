@@ -1,0 +1,69 @@
+;prefvars
+
+(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+	(progn
+		(_CREATESFACEMAIN AK_BOTTOM_PANEL_CODE (_ AK_BOTTOM_PANEL_PDATA AK_BOTTOM_PANEL_ROT AK_BOTTOM_PANEL_MAT AK_BOTTOM_PANEL_THICKNESS "X"))
+	
+		(_FSET (_ 'legPos (_ (_ PLINTH_LEG_BACK_OFFSET PLINTH_LEG_BACK_OFFSET 0.0)
+							 (_ PLINTH_LEG_BACK_OFFSET (- AK_BOTTOM_PANEL_WID PLINTH_LEG_SIDE_OFFSET) 0.0)
+							 ;(_ (- AK_BOTTOM_PANEL_HEI PLINTH_LEG_SIDE_OFFSET) PLINTH_LEG_BACK_OFFSET 0.0)
+							 ;(_ (- AK_BOTTOM_PANEL_HEI PLINTH_LEG_SIDE_OFFSET) (- AK_BOTTOM_PANEL_DEP2 PLINTH_LEG_FRONT_OFFSET) 0.0)
+							 (_ (- AK_BOTTOM_PANEL_DEP PLINTH_LEG_FRONT_OFFSET) (- AK_BOTTOM_PANEL_WID PLINTH_LEG_SIDE_OFFSET) 0.0)
+							 )))
+		 
+		(if (equal CORNER_UNIT_MIDDLE_PLEG_HOLE_AVAILABLE T)
+			(_FSET (_ 'legPos (cons (_ (- AK_BOTTOM_PANEL_DEP PLINTH_LEG_FRONT_OFFSET)  (- AK_BOTTOM_PANEL_DEP2 PLINTH_LEG_FRONT_OFFSET) 0.0) legPos)))
+		)
+							 
+		(foreach LEG_POSITION legPos
+			(if (_ISLEGPOSINLIMITSFORAK LEG_POSITION OFFSET_FROM_EDGES AK_BOTTOM_PANEL_HEI AK_BOTTOM_PANEL_WID AK_BOTTOM_PANEL_DEP AK_BOTTOM_PANEL_DEP2 AK_BOTTOM_PANEL_SLOPING_EDGE)
+				(progn
+					(setq plinthLegHole_1 (polar LEG_POSITION DEG_0 PLEG_HOLES_OFFSET_TO_ORIGIN))										
+					(_HOLE "PLINTH_LEG_HOLE" (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (car plinthLegHole_1) (cadr plinthLegHole_1) 0)  PLINTH_LEG_HOLE_DIAMETER PLINTH_LEG_HOLE_DEPTH))	
+					
+					(setq plinthLegHole_2 (polar LEG_POSITION DEG_180 PLEG_HOLES_OFFSET_TO_ORIGIN))
+					(_HOLE "PLINTH_LEG_HOLE" (strcat AK_BOTTOM_PANEL_CODE "!!SFACE") (_ (_ (car plinthLegHole_2) (cadr plinthLegHole_2) 0)  PLINTH_LEG_HOLE_DIAMETER PLINTH_LEG_HOLE_DEPTH))
+				)
+				(progn
+					(alert (Xstr "Wrong Leg Hole Coordinate"))
+				)
+			)
+		)
+		(_FSET (_ 'legPos2 (_  (_ (- AK_BOTTOM_PANEL_HEI PLINTH_LEG_SIDE_OFFSET) PLINTH_LEG_BACK_OFFSET 0.0)
+										   (_ (- AK_BOTTOM_PANEL_HEI PLINTH_LEG_SIDE_OFFSET) (- AK_BOTTOM_PANEL_DEP2 PLINTH_LEG_FRONT_OFFSET) 0.0))))
+		
+		(if (>= PLINTH_LEG_HOLE_DEPTH __AD_PANELTHICK)
+			(_FSET (_ 'currActivePanelFace AK_BOTTOM_PANEL_CODE))
+			(_FSET (_ 'currActivePanelFace (strcat AK_BOTTOM_PANEL_CODE "!!SFACE")))			
+		)
+
+		
+		(foreach LEG_POSITION legPos2
+			(if (_ISLEGPOSINLIMITSFORAK LEG_POSITION OFFSET_FROM_EDGES AK_BOTTOM_PANEL_HEI AK_BOTTOM_PANEL_WID AK_BOTTOM_PANEL_DEP AK_BOTTOM_PANEL_DEP2 AK_BOTTOM_PANEL_SLOPING_EDGE)
+				(progn
+					(setq plinthLegHole_1 (polar LEG_POSITION DEG_90 PLEG_HOLES_OFFSET_TO_ORIGIN))										
+					(_HOLE "PLINTH_LEG_HOLE" currActivePanelFace (_ (_ (car plinthLegHole_1) (cadr plinthLegHole_1) 0)  PLINTH_LEG_HOLE_DIAMETER PLINTH_LEG_HOLE_DEPTH))	
+					
+					(setq plinthLegHole_2 (polar LEG_POSITION DEG_270 PLEG_HOLES_OFFSET_TO_ORIGIN))
+					(_HOLE "PLINTH_LEG_HOLE" currActivePanelFace (_ (_ (car plinthLegHole_2) (cadr plinthLegHole_2) 0)  PLINTH_LEG_HOLE_DIAMETER PLINTH_LEG_HOLE_DEPTH))
+				)
+				(progn
+					(alert (Xstr "Wrong Leg Hole Coordinate"))
+				)
+			)
+		)
+	)
+)
+			
+			
+; IMPORTANT INFORMATION
+; General assembly type of modules are differet than bottomside style. It refers to the specific abilities of assembly types
+; Relations between general assembly types and bottomside style is declared below
+
+; 	GENERAL ASSEMBLY TYPE				value of GENERAL_ASSEMBLY_BOTTOM_TYPE			BOTTOMSIDE_STYLE
+
+; 	 BOTTOM BETWEEN SIDES								0							  BOTTOM_BETWEEN_SIDES
+; 	   SIDES ON BOTTOM									1								SIDES_ON_BOTTOM
+;	   SIDES TO FLOOR									2							  BOTTOM_BETWEEN_SIDES
+;		SIDES STRECH									3							  BOTTOM_BETWEEN_SIDES
+;	 45 DEGREES ASSEMBLY								4							  BOTTOM_BETWEEN_SIDES

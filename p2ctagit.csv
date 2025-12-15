@@ -1,0 +1,5 @@
+Modul;Item;Adet/Quantity;Birim/Unit;Tag1;Tag2;Tag3;Tag4;Tag5
+A2K 030;Mbant;1.118;MT;Fabrika;mytag2;mytag3;mytag4;mytag5
+A1K 080;Led;3;AD;Montaj;mytag2;mytag3;mytag4;mytag5
+MODUL KODU 60;Mbant;1.118;MT;Fabrika;mytag2;mytag3;mytag4;mytag5
+MODUL KODU 60;Led;3;AD;Montaj;mytag2;mytag3;mytag4;mytag5

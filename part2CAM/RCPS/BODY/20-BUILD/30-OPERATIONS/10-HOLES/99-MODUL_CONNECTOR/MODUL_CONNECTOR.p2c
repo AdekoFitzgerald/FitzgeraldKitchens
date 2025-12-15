@@ -1,0 +1,45 @@
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MISCELLANEOUS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn 
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'holeCodeParam (_ "FU" "BU" "BD" "FD")))
+		(if (and MODULE_CONNNECTOR_IS_AVAILABLE (_EXISTPANEL LEFT_PANEL_CODE) (equal __SIDELNO 0) (if __VLSIDE MODULE_CONNNECTOR_VSIDE_OP_AVAILABLE T))
+			(progn 
+				(_FSET (_ 'leftPanelHoles (_CALCULATEHOLES LEFT_PANEL_WID LEFT_PANEL_HEI MODULE_CONNNECTOR_HOLES_DIAMETER MC_HOLES_LIST "L")))
+				(_FSET (_ 'hCounter 0))
+				(repeat (length leftPanelHoles)
+					(_FSET (_ 'currentHolePOS (getnth hCounter leftPanelHoles)))
+					(if (_NOTNULL currentHolePOS)
+						(progn
+							(_FSET (_ 'holeCodeBody (_& (_ "LEFT_PANEL_MODUL_CONNECTOR_HOLE_" (getnth hCounter holeCodeParam)))))
+							(_HOLE holeCodeBody LEFT_PANEL_CODE (_ currentHolePOS MODULE_CONNNECTOR_HOLES_DIAMETER MODULE_CONNNECTOR_HOLES_DEPTH))
+						)
+					)
+					(_FSET (_ 'hCounter (+ 1 hCounter)))
+				)
+			)
+		)
+		(if (and MODULE_CONNNECTOR_IS_AVAILABLE (_EXISTPANEL RIGHT_PANEL_CODE) (equal __SIDERNO 0) (if __VRSIDE MODULE_CONNNECTOR_VSIDE_OP_AVAILABLE T))
+			(progn 
+				(_FSET (_ 'rightPanelHoles (_CALCULATEHOLES RIGHT_PANEL_WID RIGHT_PANEL_HEI MODULE_CONNNECTOR_HOLES_DIAMETER MC_HOLES_LIST "R")))
+				(_FSET (_ 'hCounter 0))
+				(repeat (length rightPanelHoles)
+					(_FSET (_ 'currentHolePOS (getnth hCounter rightPanelHoles)))
+					(if (_NOTNULL currentHolePOS)
+						(progn 
+							(_FSET (_ 'holeCodeBody (_& (_ "RIGHT_PANEL_MODUL_CONNECTOR_HOLE_" (getnth hCounter holeCodeParam)))))
+							(_HOLE holeCodeBody RIGHT_PANEL_CODE (_ currentHolePOS MODULE_CONNNECTOR_HOLES_DIAMETER MODULE_CONNNECTOR_HOLES_DEPTH))
+						)
+					)
+					(_FSET (_ 'hCounter (+ 1 hCounter)))
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,71 @@
+(_RUNDEFAULTHELPERRCP "AKK_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+; Control for cutlist and dxf rotation
+(if (null SHELVES_CUTLIST_ROTATION) (_FSET (_ 'SHELVES_CUTLIST_ROTATION __MODULBODYMATROT)))
+(if (null SHELVES_DXF_ROTATION) (_FSET (_ 'SHELVES_DXF_ROTATION __MODULBODYMATROT)))
+
+; Edgestrip material controls
+(if (null SHELVES_LEFT_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_LEFT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+(if (null SHELVES_RIGHT_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_RIGHT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+(if (null SHELVES_TOP_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_TOP_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+(if (null SHELVES_BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'SHELVES_BOTTOM_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+
+(_ADDPARTMAT2EDGESTRIPS (_ 'SHELVES_LEFT_EDGESTRIP_MAT 'SHELVES_RIGHT_EDGESTRIP_MAT 'SHELVES_TOP_EDGESTRIP_MAT 'SHELVES_BOTTOM_EDGESTRIP_MAT) __MODULBODYMAT ADD_PART_MATERIAL)
+
+; Width of edgestrips are taken from database
+(_FSET (_ 'SHELVES_LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_LEFT_EDGESTRIP_MAT)))
+(_FSET (_ 'SHELVES_RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_RIGHT_EDGESTRIP_MAT)))
+(_FSET (_ 'SHELVES_TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_TOP_EDGESTRIP_MAT)))
+(_FSET (_ 'SHELVES_BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB SHELVES_BOTTOM_EDGESTRIP_MAT)))
+
+(_FSET (_ 'shelfCounter 1))
+(foreach elevList BLIND_CORNER_ADJUSTABLE_SHELF_ELEV_LIST
+	(_FSET (_ 'paramBody (_& (_ "ADJUSTABLE_SHELF_0_" shelfCounter "_"))))
+
+	; Global variables of current adjustable shelf
+	(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+	(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+	
+	(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+	(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+	(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+	(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+	
+	(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+	(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+	(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+	(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+	
+	;Adjustable Shelf Parameters calculating
+	(_FSET (_ (read tempWID) (_= "__WID - __AD_PANELTHICK - __AD_PANELTHICK - ASHELF_SIDE_OFFSET - ASHELF_SIDE_OFFSET")))
+	(_FSET (_ (read tempHEI) (_= "__DEP - ASHELF_FRONT_OFFSET - ASHELF_BACK_OFFSET - GROOVE_WID - GROOVE_DISTANCE")))
+	
+	(_FSET (_ (read tempROT) (_ SHELVES_MAIN_ROTATION SHELVES_CUTLIST_ROTATION SHELVES_DXF_ROTATION SHELVES_MIRRORING_AXIS)))
+	(_FSET (_ (read tempMAT) __MODULBODYMAT))
+	(_FSET (_ (read tempTHICKNESS) __AD_PANELTHICK))
+	(_FSET (_ (read tempELEV) elevList))
+
+	(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempHEI) (_S2V tempWID))))
+									  
+	(_FSET (_ (read tempLABEL) (XSTR SHELVES_LABEL)))
+	(_FSET (_ (read tempTAG) SHELVES_TAG))
+	
+	(_FSET (_ (read tempEDGESTRIPS) (_ (_ SHELVES_BOTTOM_EDGESTRIP_MAT SHELVES_BOTTOM_EDGESTRIP_WID)
+								  (_ SHELVES_LEFT_EDGESTRIP_MAT SHELVES_LEFT_EDGESTRIP_WID)
+								  (_ SHELVES_TOP_EDGESTRIP_MAT SHELVES_TOP_EDGESTRIP_WID)
+								  (_ SHELVES_RIGHT_EDGESTRIP_MAT SHELVES_RIGHT_EDGESTRIP_WID))))
+		; Unique code of adjustable shelf
+		(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "ADJUSTABLE_SHELF") "_0_" shelfCounter))))
+		
+		(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+		
+		(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+		; Label and tag of each adjustable shelf
+		(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+		(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+		
+		(_FSET (_ 'shelfCounter (+ shelfCounter 1)))
+)
+(_NONOTCH)

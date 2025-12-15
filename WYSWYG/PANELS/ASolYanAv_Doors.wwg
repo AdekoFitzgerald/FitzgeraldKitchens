@@ -1,0 +1,15 @@
+(setq KPK_wyswyg_tip1 (cond ((equal gm1:layername "CAB_BODY_WALL")
+							(getUpKapakname)
+							)
+							((equal gm1:layername "CAB_BODY_TALL")
+							(getTallKapakname)
+							)
+							(T
+								(getKapakname)
+							)
+					)
+)
+
+(setq doorId (kapak_ciz (list "B" KPK_wyswyg_tip1) "0-" 2.0 (/ unitD 2) dAltKot unitD unitH nil -90.0))
+(set_mdata (entlast) (list (cons k:animateScript "nil")))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A kanat ;;;;;;;;;;;;; kulp ;;;; x ;;;;;; y ;;;;;;; z ;;; en ; boy ;;;;;;;;;;;

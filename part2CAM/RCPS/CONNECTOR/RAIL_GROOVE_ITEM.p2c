@@ -1,0 +1,3 @@
+(_FSET (_ 'rayLength (get_mdata g_CurrentModulEnt k:WID)))
+(_ITEMMAIN "WARDROBE_RAIL" "WARDROBE_RAIL" (_ (/ (/ rayLength 100) 2.0) "m"))
+(_NONOTCH)

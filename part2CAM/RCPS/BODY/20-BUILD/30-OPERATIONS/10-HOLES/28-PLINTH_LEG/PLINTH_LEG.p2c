@@ -1,0 +1,20 @@
+(_RUNDEFAULTHELPERRCP "PLINTH_LEG_DEFAULT" nil "p2chelper")
+(if lmm-defaultUsrRcpName (setq lmm-defaultRcpName lmm-defaultUsrRcpName lmm-defaultUsrRcpName nil)) ; if set diverted by organizer, revert back to user set
+
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn 
+		(if ARE_PLINTH_LEG_HOLES_AVAILABLE
+			(progn
+				(setq modulType (convertstr (getnth 1 (read (get_Mdata g_currentModulEnt k:mdata)))))
+
+				(_SETA 'PLEG_DEGREE DEG_90)
+				(_RUNHELPERRCP (strcat "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\28-PLINTH_LEG\\PLINTH_LEG_" PLINTH_LEG_TYPE "_" modulType) T "p2chelper")
+			)
+		)
+	)
+)
+(_NONOTCH)
+

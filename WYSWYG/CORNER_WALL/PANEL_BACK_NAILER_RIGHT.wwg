@@ -1,0 +1,33 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW2 ad_et) 0.0 0.0) 
+(list (- unitW2 ad_et) 10 0.0) 
+(list 0.0 10 0.0) 
+) 
+
+nil
+
+ad_et 
+
+0.0
+
+(d2r 90.0) 
+(list 0.0 -1.8 (- (+ unitH dAltKot) 10) )
+
+"PANEL_BACK_RIGHT" 
+
+"" 
+
+nil 
+
+"SIDE" 
+
+(strcat kodBlock "_CAB_BODY_BASE")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+

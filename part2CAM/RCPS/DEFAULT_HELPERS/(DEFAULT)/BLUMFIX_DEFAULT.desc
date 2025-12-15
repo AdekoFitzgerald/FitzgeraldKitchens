@@ -1,0 +1,8 @@
+BLUMFIX_HOR_HOLE_POS -> "Horizontal position of blumfix hole to inside of panel"
+BLUMFIX_HOR_DIAMETER -> "Diameter of horizontal blumfix hole"
+BLUMFIX_HOR_DEPTH -> "Depth of horizontal blumfix hole"
+BLUMFIX_VER_DIAMETER -> "Diameter of blumfix housing hole"
+BLUMFIX_VER_DEPTH -> "Depth of blumfix housing hole"
+BLUMFIX_VER_HOLE_DIST_HOR_HOLE_CENTER -> "Distance from blumfix vertical hole center to horizontal hole center"
+BLUMFIX_CODE -> "Code of blumfix"
+BLUMFIX_UNIT -> "Unit of blumfix"

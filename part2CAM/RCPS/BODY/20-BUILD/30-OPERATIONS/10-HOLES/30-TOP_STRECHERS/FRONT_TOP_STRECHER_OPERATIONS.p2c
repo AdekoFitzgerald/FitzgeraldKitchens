@@ -1,0 +1,53 @@
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		; According to position of front top strecher side panel holes are calibrated 
+		(if (_EXISTPANEL FRONT_TOP_STRECHER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForFrontTopStrecherAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH FRONT_TOP_STRECHER_HEI (_ 0 0 20 0))))
+				(_FSET (_ 'lengthForFrontTopStrecherAndLeft (car lengthParametersForFrontTopStrecherAndLeft)))
+
+				(_FSET (_ 'lengthParametersForFrontTopStrecherAndRight (_CALCULATEPANELSINTERSECTIONLENGTH FRONT_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForFrontTopStrecherAndRight (car lengthParametersForFrontTopStrecherAndRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'frontTopStrecherPointListForLeftSide (_GETHOLEPOINTLIST operationName (_ lengthForFrontTopStrecherAndLeft 0 (car horizontalHolePos) "Y") (_ 0 0 nil FRONT_TOP_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName FRONT_TOP_STRECHER_OP_FACE frontTopStrecherPointListForLeftSide (_ "X+" "Y+") connectorParams)
+					
+					(_FSET (_ 'frontTopStrecherPointListForRightSide (_GETHOLEPOINTLIST operationName (_ lengthForFrontTopStrecherAndRight FRONT_TOP_STRECHER_WID (car horizontalHolePos) "Y") (_ 0 0 nil FRONT_TOP_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName FRONT_TOP_STRECHER_OP_FACE frontTopStrecherPointListForRightSide (_ "X-" "Y+") connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForFrontTopStrecher (_GETHOLEPOINTLIST operationName (_ lengthForFrontTopStrecherAndLeft (- LEFT_PANEL_HEI FRONT_STRECHER_UP_OFFSET LEFT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") (_ (+ FRONT_STRECHER_FRONT_OFFSET LEFT_PANEL_FRONT_VARIANCE) (* -1 FRONT_STRECHER_FRONT_OFFSET) nil FRONT_TOP_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForFrontTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName (_ lengthForFrontTopStrecherAndRight (- RIGHT_PANEL_HEI FRONT_STRECHER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") (_ (- (+ FRONT_STRECHER_FRONT_OFFSET FRONT_TOP_STRECHER_HEI RIGHT_PANEL_FRONT_VARIANCE 0) RIGHT_PANEL_WID) (- RIGHT_PANEL_WID (+ FRONT_STRECHER_FRONT_OFFSET FRONT_TOP_STRECHER_HEI RIGHT_PANEL_FRONT_VARIANCE 0)) T FRONT_TOP_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)
+

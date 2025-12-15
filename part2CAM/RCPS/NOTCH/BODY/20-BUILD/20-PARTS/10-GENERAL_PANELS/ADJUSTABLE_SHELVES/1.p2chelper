@@ -1,0 +1,101 @@
+; DATA SHEET OF DIVIDER_SHELF_DATA
+; Index			DATA
+; 0				Index of current division
+; 1				Information about shelves of current division
+; 2				Information about dividers of current division
+; SHELF INFORMATION
+; Index			DATA
+; 0				Number of shelves in current division
+; 1				Material of shelves in current division
+; 2				Rotation list of shelves in current division
+; 3				Edge statues of shelves in current division
+(if (and (> __NOTCHDIM1 __AD_PANELTHICK) (equal GROOVE_STATE 3))
+	(progn
+		; DSD prefix refers to DIVIDER_SHELF_DATA
+		(_FSET (_ 'DSD_curDivOrder (getnth 0 DIVIDER_SHELF_DATA)))
+		(_FSET (_ 'DSD_shelvesInfo (getnth 1 DIVIDER_SHELF_DATA)))
+
+		(_FSET (_ 'shelfCounter 1))
+		(repeat (getnth 0 DSD_shelvesInfo)
+			(_FSET (_ 'orjShelfCODE (_& (_ (XSTR "ADJUSTABLE_SHELF") "_" DSD_curDivOrder "_" shelfCounter))))
+			; If adjustable shelf exists notch operation performed
+			(if (_EXISTPANEL orjShelfCODE)
+				(progn
+					(_DELPANEL orjShelfCODE)
+					
+					(_FSET (_ 'paramBody (_& (_ "NOTCHED_ADJUSTABLE_SHELF_" DSD_curDivOrder "_" shelfCounter "_"))))
+					(_FSET (_ 'orjParamBody (_& (_ "ADJUSTABLE_SHELF_" DSD_curDivOrder "_" shelfCounter "_"))))
+					
+					(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+					(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+					(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+					(_FSET (_ 'tempWIDOPPWID (_& (_ paramBody "WIDOPPWID"))))
+					(_FSET (_ 'tempWIDOPPHEI (_& (_ paramBody "WIDOPPHEI"))))
+					(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+					
+					(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+					(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+					(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+					
+					(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+					(_FSET (_ 'tempEDGES (_& (_ paramBody "EDGES"))))
+					(_FSET (_ 'tempCONN (_& (_ paramBody "CONN"))))
+					(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+					
+					(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+					(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+					(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+				
+					; Unique variables of each notched adjustable shelf
+					(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "NOTCHED_ADJUSTABLE_SHELF") "_" DSD_curDivOrder "_" shelfCounter))))
+					(if (equal ARE_SECONDARY_NOTCHED_BACK_PANELS_DATA_SAME_WITH_NOTCHED_BACK_PANEL T)
+						(_FSET (_ 'realNotchdim2 (_= "__NOTCHDIM2 - GROOVE_WID - GROOVE_DISTANCE + GROOVE_DISTANCE + GROOVE_DISTANCE + GROOVE_WID")))
+						(_FSET (_ 'realNotchdim2 (_= "__NOTCHDIM2 + __AD_PANELTHICK - GROOVE_WID - GROOVE_DISTANCE")))
+					)
+
+					(_FSET (_ 'ASHELF_SIDE_OFFSET (* 0.5 (if (equal currentDivShelfType 1) GLASS_ASHELF_SIDES_TOTAL_OFFSET ASHELF_SIDES_TOTAL_OFFSET))))
+					(_FSET (_ (read tempWID) (_S2V (_& (_ orjParamBody "WID")))))
+					(_FSET (_ (read tempHEI) (_S2V (_& (_ orjParamBody "HEI")))))
+					(_FSET (_ (read tempDEP) (- (_S2V tempHEI) realNotchdim2)))
+					(_FSET (_ (read tempWIDOPPWID) (- __NOTCHDIM1 ASHELF_SIDE_OFFSET)))
+					(_FSET (_ (read tempWIDOPPHEI) realNotchdim2))
+					(_FSET (_ (read tempDEP2) (- (_S2V tempWID) (_S2V tempWIDOPPWID))))
+					
+					(_FSET (_ (read tempROT) (_S2V (_& (_ orjParamBody "ROT")))))
+					(_FSET (_ (read tempMAT) (_S2V (_& (_ orjParamBody "MAT")))))
+					(_FSET (_ (read tempTHICKNESS) (_S2V (_& (_ orjParamBody "THICKNESS")))))
+					
+					(_FSET (_ (read tempELEV) (_S2V (_& (_ orjParamBody "ELEV")))))
+					(_FSET (_ (read tempEDGES) (_S2V (_& (_ orjParamBody "EDGES")))))
+					(_FSET (_ (read tempCONN) (_S2V (_& (_ orjParamBody "CONN")))))
+					(_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+												  (_ 0.0 (_S2V tempWID) 0.0) 0 
+												  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+												  (_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+												  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+												  (_ (_S2V tempHEI) 0.0 0.0) 0 
+												  (_ 0.0 0.0 0.0) 0)))
+					
+					(_FSET (_ (read tempLABEL) (_S2V (_& (_ orjParamBody "LABEL")))))
+					(_FSET (_ (read tempTAG) (_S2V (_& (_ orjParamBody "TAG")))))
+					; Because of notch operation the geometry of panel is changed, edgestrips of notched panel is completely different
+					(_FSET (_ 'originalEdgestrips (_S2V (_& (_ orjParamBody "EDGESTRIPS")))))
+					(_FSET (_ (read tempEDGESTRIPS) (_ (getnth 0 originalEdgestrips)
+													   (getnth 1 originalEdgestrips)
+													   (getnth 2 originalEdgestrips)
+													   (getnth 1 originalEdgestrips)
+													   (getnth 2 originalEdgestrips)
+													   (getnth 3 originalEdgestrips))))
+					
+					(_PANELMAIN notchedShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+					
+					(if (_NOTNULL (_S2V tempEDGES)) (_CREATEEDGESTRIPS notchedShelfCODE (_S2V tempEDGESTRIPS)))
+					
+					(_PUTLABEL notchedShelfCODE notchedShelfCODE (_S2V tempLABEL))
+					(_PUTTAG notchedShelfCODE notchedShelfCODE (_S2V tempTAG))
+				)
+			)
+			(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+		)
+	)
+)

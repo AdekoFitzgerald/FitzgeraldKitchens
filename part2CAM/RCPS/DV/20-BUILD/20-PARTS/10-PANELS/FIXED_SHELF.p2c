@@ -1,0 +1,81 @@
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "FIXED_SHELF_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (not (equal __CURDIVTYPE "FS"))
+	(progn
+		; If current division is not fixed shelf at all, then there is no need to perform notch operations
+		(_NONOTCH)
+	)
+	(progn
+		; Whether this fixed shelf is special or not will be determined in this block
+		(if (and (equal SPECIAL_FIXED_SHELF_ORDER __CURDIVORDER) (_NOTNULL IS_SPECIAL_FIXED_SHELF))
+			(progn
+				(_FSET (_ 'currentShelfHEI SPECIAL_FIXED_SHELF_HEI))
+				(_FSET (_ 'notchControl T))
+			)
+			(progn
+				(_FSET (_ 'currentShelfHEI (_= "__DEP - FIXED_SHELF_FRONT_OFFSET - GROOVE_WID - GROOVE_DISTANCE")))
+				(_FSET (_ 'notchControl nil))
+			)
+		)
+
+		; Control for cutlist and dxf rotation
+		(if (null FIXED_SHELF_PANEL_CUTLIST_ROTATION) (_FSET (_ 'FIXED_SHELF_PANEL_CUTLIST_ROTATION __MODULBODYMATROT)))
+		(if (null FIXED_SHELF_PANEL_DXF_ROTATION) (_FSET (_ 'FIXED_SHELF_PANEL_DXF_ROTATION __MODULBODYMATROT)))
+		; Edgestrip material controls
+		(if (null FIXED_SHELF_BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'FIXED_SHELF_BOTTOM_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+		(_ADDPARTMAT2EDGESTRIPS (_ 'FIXED_SHELF_LEFT_EDGESTRIP_MAT 'FIXED_SHELF_RIGHT_EDGESTRIP_MAT 'FIXED_SHELF_TOP_EDGESTRIP_MAT 'FIXED_SHELF_BOTTOM_EDGESTRIP_MAT) __MODULBODYMAT ADD_PART_MATERIAL)
+		; Width of edgestrips are taken from database
+		(_FSET (_ 'LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB FIXED_SHELF_LEFT_EDGESTRIP_MAT)))
+		(_FSET (_ 'RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB FIXED_SHELF_RIGHT_EDGESTRIP_MAT)))
+		(_FSET (_ 'TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB FIXED_SHELF_TOP_EDGESTRIP_MAT)))
+		(_FSET (_ 'BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB FIXED_SHELF_BOTTOM_EDGESTRIP_MAT)))
+		
+		(_FSET (_ 'paramBody (_& (_ "FIXED_SHELF_" __CURDIVORDER "_"))))
+		
+		(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+		(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+		
+		(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+		(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+		(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+		(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+		
+		(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+		(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+		(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+		(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+		
+		(_FSET (_ (read tempWID) (- __CURDIVINSIDEWID FIXED_SHELF_SIDES_TOTAL_OFFSET)))
+		(_FSET (_ (read tempHEI) currentShelfHEI))
+		
+		(_FSET (_ (read tempROT) (_ FIXED_SHELF_PANEL_MAIN_ROTATION FIXED_SHELF_PANEL_CUTLIST_ROTATION FIXED_SHELF_PANEL_DXF_ROTATION FIXED_SHELF_PANEL_MIRRORING_AXIS)))
+		(_FSET (_ (read tempMAT) __MODULBODYMAT))
+		(_FSET (_ (read tempTHICKNESS) __CURDIVINSIDEHEI))
+		(_FSET (_ (read tempELEV) __CURDIVELEV))
+		
+		(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+									  
+		
+		(_FSET (_ (read tempLABEL) (XSTR FIXED_SHELF_PANEL_LABEL)))
+		(_FSET (_ (read tempTAG) FIXED_SHELF_PANEL_TAG))
+		
+		(_FSET (_ (read tempEDGESTRIPS) (_ (_ FIXED_SHELF_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+										   (_ FIXED_SHELF_TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+										   (_ FIXED_SHELF_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID)
+										   (_ FIXED_SHELF_BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID))))
+		; Unique code of fixed shelf
+		(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FIXED_SHELF") "_" __CURDIVORDER))))
+		
+		(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+		
+		(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+		; Label and tag of each fixed shelf
+		(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+		(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+		; Operations from former divisions are controlled in here
+		(_FSET (_ 'operationControl (_S2V (_& (_ "FIXED_SHELF_" __CURDIVORDER "_OPC")))))
+		(if (and (_NOTNULL operationControl) (equal __NOTCHTYPE 0)) (_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\10-PANELS\\FIXED_SHELF_OPR_CONTROLLER" nil "p2chelper"))
+	)
+)

@@ -1,0 +1,999 @@
+;Derinlikler iptal edildi.
+;v2 isimli operasyonda kanallar için arclar eklendi.
+;v2 isimli operasyonda delikler için matris operasyonlarý ile yüzey belirleme eklendi. Ayrýca "Yan delikleri panel alt noktasý z sýfýrda gibi çiz" seçeneði için her iki ihtimal için de düzgün çalýþmasý saðlandý.
+
+
+; UYARI  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+; CONTOUR ve XG0XLY2P operasyonlarý arclarý desteklemiyor. Freze iþlemleri için XG0XLY2P_v2 operasyonunu tercih ediniz.
+
+
+(setq ad_xxlCAMOperationList (list
+										(list "TOP_DIA8.0" "N=\"S\"" "XBO" "V4")
+										(list "TOP_DIA15.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA35.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA5.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA4.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA10.0" "N=\"P\"" "XBO" "V4")
+										(list "NOTCH" "T=102" "CONTOUR" 1 0 0 0 "INSIDE" 4 "V=5" "S=18000.00" T)
+										(list "LEFT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "RIGHT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "REAR_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "FRONT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "GROOVE" "T=102" "CONTOUR" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+										;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_1" "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_2 " "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										
+ ))
+(setq cyflexf900CAMOpList (list
+										(list "TOP_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA15.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA35.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA5.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA4.0" "N=\"P\"" "XBO" "V4")
+										(list "TOP_DIA10.0" "N=\"P\"" "XBO" "V4")
+										(list "NOTCH" "T=140" "CONTOUR" 1 0 0 0 "INSIDE" 4 "V=5" "S=18000.00" T)
+										(list "LEFT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "RIGHT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "REAR_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "FRONT_DIA8.0" "N=\"P\"" "XBO" "V4")
+										(list "GROOVE" "T=140" "CONTOUR" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+										;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_1" "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_2 " "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										
+ ))
+ (setq morbidelliUx100CAMOpList (list
+										(list "TOP_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA15.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA35.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA5.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA10.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA20.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "TOP_DIA6.0" "N=\"P\"" "XBO_v2" "V4")
+										;(list "TOP_DIA4.0" "N=\"P\"" "XBO" "V4")
+										;(list "TOP_DIA10.0" "N=\"P\"" "XBO" "V4")
+										(list "NOTCH" "T=102" "XG0XLY2P_v2" 2 0 0 0 "INSIDE" 4.5 "V=5" "S=18000.00" T)
+										(list "LEFT_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "LEFT_DIA12.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "RIGHT_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "RIGHT_DIA12.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "REAR_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "REAR_DIA12.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "FRONT_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "FRONT_DIA12.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "GROOVE" "T=101" "XG0XLY2P_v2" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										(list "GROOVE_9" "T=101" "XG0XLY2P_v2" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										(list "GROOVE_5" "T=105" "XG0XLY2P_v2" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "GROOVE_SF" "T=103" "XG0XLY2P" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil) ;alt yüzey kanal
+										; (list "BOTTOM_DIA8.0" "N=\"P\"" "XBO_v2" "V4")
+										; (list "BOTTOM_DIA15.0" "N=\"P\"" "XBO_v2" "V4")
+										; (list "BOTTOM_DIA35.0" "N=\"P\"" "XBO_v2" "V4")
+										; (list "BOTTOM_DIA5.0" "N=\"P\"" "XBO_v2" "V4")
+										; (list "BOTTOM_DIA10.0" "N=\"P\"" "XBO_v2" "V4")
+										(list "POLYLINE_CIRCLE" "T=103" "XG0XLY2P_v2" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										(list "POLYLINE_CIRCLE" "T=103" "XG0XLY2P" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "101" "SAW" 1 0 0 0 "OUTSIDE" 0 "F30")
+										;(list "GROOVE" "101" "CONTOUR" 1 0 0 0 "CENTER" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_1" "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										;(list "GOLA_LAYER_TOP_2 " "T1" "CONTOUR" 1 0 0 0 "INSIDE" 0 "V=5" "S=18000.00" nil)
+										
+ ))
+ 
+(setq machinelist (list ;(list "3x" "-AB C=0 T=196608 R=1 *MM /\"DEF\"" ad_xxlCAMOperationList)
+						;(list "cyflexf900" "-J C=0 T=1073741824 R=1 *MM /\"def.tlg\" V=71" cyflexf900CAMOpList)
+						(list "Morbidelli Ux100" "-IJ C=0 T=196609 R=1 *MM /\"def\" V=0" morbidelliUx100CAMOpList)
+					)
+)
+
+;Basic parameters:
+;X Coordinate X for first  hole
+;Y Coordinate Y for first  hole
+;Z Hole depth
+;D Hole diameter
+;R Number of holes (including the original hole)
+;x X step for repetitions
+;y Y step for repetitions
+;N Hole type (P=flat, L=lance, S=taper)
+;Extended parameters:
+;L Taper height (only if N=S)
+;V Boring speed
+;G Number of chip discharge steps
+;
+;To make a hole, parameters X, Y, Z, D, N, F are mandatory
+;The example that can be written as an element into the ad_xxlCAMOperationList .
+;(list "TOP_DIA8.0" "T=1" "XBO")
+(setq xxlXBOCAMOperation nil)
+(defun xxlXBOCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opToolType tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opToolType (nth 1 currentOp))
+	(setq opOpName (nth 2 currentOp))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=1"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "BOT" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=1"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) ;right hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq sideOrigin (list tempPanelLength 0 (* -1 tempPanelDepth)))
+			(setq tempHolePosSide (vectorsub tempHolePosWorld sideOrigin))
+			(setq tempHolePos (list (nth 2 tempHolePosSide) (nth 1 tempHolePosSide) 0 ))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=2"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) ; left hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq sideOrigin (list 0 0 (* -1 tempPanelDepth)))
+			(setq tempHolePosSide (vectorsub tempHolePosWorld sideOrigin))
+			(setq tempHolePos (list (nth 2 tempHolePosSide) (nth 1 tempHolePosSide) 0 ))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=3"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "REA" (substr entLayerName 1 3)) ; rear holes routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq sideOrigin (list 0 tempPanelWidth (* -1 tempPanelDepth)))
+			(setq tempHolePosSide (vectorsub tempHolePosWorld sideOrigin))
+			(setq tempHolePos (list (nth 0 tempHolePosSide) (nth 2 tempHolePosSide) 0 ))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=5"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) ; front hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq sideOrigin (list 0 0 (* -1 tempPanelDepth)))
+			(setq tempHolePosSide (vectorsub tempHolePosWorld sideOrigin))
+			(setq tempHolePos (list (nth 0 tempHolePosSide) (nth 2 tempHolePosSide) 0 ))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=4"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		;( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+        ;
+		;)
+	)
+)
+
+(setq xxlXBOCAMOperation_v2 nil)
+(defun xxlXBOCAMOperation_v2 (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opToolType tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq ikiyuzon (getEntPro tempEnt 210))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opToolType (nth 1 currentOp))
+	(setq opOpName (substr (nth 2 currentOp) 1 3))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=1"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "BOT" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=1"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) ;right hole routines
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-HorHolesBottomOrigin0" "") "1")
+				(setq transformMatrix (_ (_ 0 0 1 0) (_ 0 1 0 0) (_ -1 0 0 0) (_ 0 0 0 1))) ; plane transfomation matrix
+				(setq transformMatrix (_ (_ 0 0 1 0) (_ 0 1 0 0) (_ -1 0 0 0) (_ 0 0 (* -1 tempPanelDepth) 1))) ; plane transfomation matrix
+			)
+			(setq tempHolePos (absoluteToLocal transformMatrix tempHolePosWorld)) ; entity -> lokale taþýndý
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=2"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) ; left hole routines
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-HorHolesBottomOrigin0" "") "1")
+				(setq transformMatrix (_ (_ 0 0 1 0) (_ 0 1 0 0) (_ -1 0 0 0) (_ 0 0 0 1))) ; plane transfomation matrix
+				(setq transformMatrix (_ (_ 0 0 1 0) (_ 0 1 0 0) (_ -1 0 0 0) (_ 0 0 (* -1 tempPanelDepth) 1))) ; plane transfomation matrix
+			)
+			(setq tempHolePos (absoluteToLocal transformMatrix tempHolePosWorld)) ; entity -> lokale taþýndý
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=3"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "REA" (substr entLayerName 1 3)) ; rear holes routines
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))			
+			(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-HorHolesBottomOrigin0" "") "1")
+				(setq transformMatrix (_ (_ 1 0 0 0) (_ 0 0 1 0) (_ 0 -1 0 0) (_ 0 0 0 1))) ; plane transfomation matrix
+				(setq transformMatrix (_ (_ 1 0 0 0) (_ 0 0 1 0) (_ 0 -1 0 0) (_ 0 0 (* -1 tempPanelDepth) 1))) ; plane transfomation matrix
+			)
+			(setq tempHolePos (absoluteToLocal transformMatrix tempHolePosWorld)) ; entity -> lokale taþýndý
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=5"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) ; front hole routines
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))			
+			(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-HorHolesBottomOrigin0" "") "1")
+				(setq transformMatrix (_ (_ 1 0 0 0) (_ 0 0 1 0) (_ 0 -1 0 0) (_ 0 0 0 1))) ; plane transfomation matrix
+				(setq transformMatrix (_ (_ 1 0 0 0) (_ 0 0 1 0) (_ 0 -1 0 0) (_ 0 0 (* -1 tempPanelDepth) 1))) ; plane transfomation matrix
+			)
+			(setq tempHolePos (absoluteToLocal transformMatrix tempHolePosWorld)) ; entity -> lokale taþýndý
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat opOpName
+								" X" mHoleX 
+								" Y" mHoleY 
+								" Z" mHoleZ 
+								" D" mHoleDia
+								" " opToolType
+								" F=4"
+								" C=0 K=0 P=0"
+								";"
+								) file)
+		)
+		;( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+        ;
+		;)
+	)
+)
+;Example
+;(list "NOTCH" ;operation which layer will be applied?
+;	   "T=101"  ;which tool will be used?
+;	   "CONTOUR" ;which cam opration will be applied?
+;      2  ;How many steps will be processed in depth?
+;      1  ;bottom extra cut 
+;      0  ;top extra approach move
+;      0  ;last pass value
+;     "INSIDE" ;
+;     4   ;Offset value
+;     "V=5" ;milling speed
+;     "S=18000.00") ;spindle speed
+(setq xxlContourCAMOperation nil)
+(defun xxlContourCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								deleteHelper tempDepth stepOfPasses safetyPlane bottomZComponent topZComponent stepZComponets
+								currentZLevel tempPoints firstPoint secondPoint firstSecondNormal fieldPoint iteration)
+	(setq iteration 0)
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq safetyPlane (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (nth 5 tempCAMStyle) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq helperEntity currentEnt)
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+	
+	(if (equal 1 (getentpro helperEntity 70))
+		(progn
+			(setq tempPoints (append tempPoints (list (nth 0 tempPoints))))
+		)
+	)
+	
+	(foreach currentZLevel stepZComponets
+		(write-line "GIN G0" file)
+		(write-line "F =1" file)
+		(setq iteration 0)
+		(foreach tempPoint tempPoints
+			(if (equal iteration 0)
+				(write-line (strcat "G0 X" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+									" Y"   (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+									" Z"   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" " (nth 10 tempCAMStyle) ;spindle speed
+									" " (nth 9 tempCAMStyle) ;milling speed
+									" " (nth 1 tempCAMStyle) ;tool
+									" ;"	) file)
+				(write-line (strcat "G1 X" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+									" Y"   (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+									" Z"   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" ;" ) file)
+			)
+			(setq iteration (+ 1 iteration))
+		)
+		(write-line "GOUT;" file)
+		(write-line "C0;" file)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+)
+
+;Morbidelli uf100 makinesi alt yüzeylerede iþlem yapabiliyor
+(setq xxlXG0XL2PCAMOperation nil)
+(defun xxlXG0XL2PCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								deleteHelper tempDepth stepOfPasses safetyPlane bottomZComponent topZComponent stepZComponets
+								currentZLevel tempPoints firstPoint secondPoint firstSecondNormal fieldPoint iteration selectedFaceNumber)
+	
+	(if (equal "_SF" (substr entLayerName (- (strlen entLayerName) 2) 3))
+		(setq selectedFaceNumber "F=6")
+		(setq selectedFaceNumber "F=1")
+	)	
+	
+	(setq iteration 0)
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq safetyPlane (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (nth 5 tempCAMStyle) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq helperEntity currentEnt)
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+	
+	(if (equal 1 (getentpro helperEntity 70))
+		(progn
+			(setq tempPoints (append tempPoints (list (nth 0 tempPoints))))
+		)
+	)
+	
+	(foreach currentZLevel stepZComponets
+		;(write-line "GIN G0" file)
+		;(write-line "F =1" file)
+		(setq iteration 0)
+		(foreach tempPoint tempPoints
+			(if (equal iteration 0)
+				(write-line (strcat "XG0 X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+									" Y="   (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+									" Z="   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" " (nth 1 tempCAMStyle) ;Tool
+									;" " (nth 10 tempCAMStyle) ;spindle speed
+									;" " (nth 9 tempCAMStyle) ;milling speed
+									;" " (nth 1 tempCAMStyle) ;tool
+									" "  selectedFaceNumber
+									" C=0 K=0 P=0"
+									" ;"	) file)
+				(write-line (strcat "XL2P X=" (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 2)
+									" Y="   (lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 2)
+									" Z="   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" K=0" 
+									" ;" ) file)
+			)
+			(setq iteration (+ 1 iteration))
+		)
+		;(write-line "GOUT;" file)
+		;(write-line "C0;" file)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+)
+
+(setq xxlXG0XL2PCAMOperation_v2 nil)
+(defun xxlXG0XL2PCAMOperation_v2 (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								deleteHelper tempDepth stepOfPasses safetyPlane bottomZComponent topZComponent stepZComponets helperEntity
+								currentZLevel tempPoints firstPoint secondPoint firstSecondNormal fieldPoint segmentIndex selectedFaceNumber tempPointsWB
+								maxSegDistance segBulge secondPoint arcValues centerOfSegment lengthOfSegment totalRadOfSegment stepVal buffRadVec deltaAngle
+								bufferPoint)
+	
+	(if (equal "_SF" (substr entLayerName (- (strlen entLayerName) 2) 3))
+		(setq selectedFaceNumber "F=6")
+		(setq selectedFaceNumber "F=1")
+	)	
+	
+	(setq maxSegDistance 1.0)
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq safetyPlane (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq bottomZComponent (+ tempDepth (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (nth 5 tempCAMStyle) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent bottomZComponent (nth 6 tempCAMStyle)))
+	
+	(cond 
+		( (equal "CENTER" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq helperEntity currentEnt)
+		)
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	
+	(if (equal 1 (getentpro helperEntity 70))
+		(progn
+			(setq tempPoints (append tempPoints (list (nth 0 tempPoints))))
+			(setq tempPointsWB (append tempPointsWB (list (nth 0 tempPointsWB))))
+			(setq tempPointsWB (append tempPointsWB (list (nth 1 tempPointsWB))))
+		)
+	)
+	
+	(foreach currentZLevel stepZComponets
+		;(write-line "GIN G0" file)
+		;(write-line "F =1" file)
+		(setq segmentIndex 0)
+		(foreach segPoint tempPoints
+			(if (equal segmentIndex 0)
+				(write-line (strcat "XG0 X=" (lmm_convertNumtoStringWithDigit (nth 0 segPoint) 2)
+									" Y="   (lmm_convertNumtoStringWithDigit (nth 1 segPoint) 2)
+									" Z="   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" " (nth 1 tempCAMStyle) ;Tool
+									;" " (nth 10 tempCAMStyle) ;spindle speed
+									;" " (nth 9 tempCAMStyle) ;milling speed
+									;" " (nth 1 tempCAMStyle) ;tool
+									" "  selectedFaceNumber
+									" C=0 K=0 P=0"
+									" ;"	) file)
+				(write-line (strcat "XL2P X=" (lmm_convertNumtoStringWithDigit (nth 0 segPoint) 2)
+									" Y="   (lmm_convertNumtoStringWithDigit (nth 1 segPoint) 2)
+									" Z="   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+									" K=0" 
+									" ;" ) file)
+			)
+			(setq segBulge (nth (+ (* 2 segmentIndex) 1) tempPointsWB))
+			;son point deðilse ve bulge varsa
+			(if (and (not (equal segmentIndex (- (length tempPoints) 1))) (not (equal segBulge 0)))
+				(progn
+					(setq secondPoint (nth (1+ segmentIndex) tempPoints))
+					(setq arcValues (calculatePolylineSegmentRadius segPoint secondPoint segBulge))
+					(setq centerOfSegment (nth 2 arcValues))
+					(setq lengthOfSegment (nth 3 arcValues))
+					(setq totalRadOfSegment (nth 4 arcValues))
+					(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+					(setq buffRadVec (VectorSub segPoint centerOfSegment))
+					(if (> 0.0 segBulge)
+						(setq deltaAngle (* -1 (/ totalRadOfSegment stepVal)))
+						(setq deltaAngle (/ totalRadOfSegment stepVal))
+					)
+
+					(setq stepVal (- stepVal 2))
+					(repeat (1+ stepVal)
+						(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+						(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+						(write-line (strcat "XL2P X=" (lmm_convertNumtoStringWithDigit (nth 0 bufferPoint) 2)
+											" Y="   (lmm_convertNumtoStringWithDigit (nth 1 bufferPoint) 2)
+											" Z="   (lmm_convertNumtoStringWithDigit currentZLevel 2) 
+											" K=0" 
+											" ;" ) file)
+					)
+	
+				)
+				
+			)
+			(setq previousSegment segPoint)
+			(setq segmentIndex (+ 1 segmentIndex))
+		)
+		;(write-line "GOUT;" file)
+		;(write-line "C0;" file)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+)
+
+(setq scmAllEntities nil)
+(setq scmNotFreeEntities nil)
+(setq scmEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq scmIgnoreLayerNameList (list "0" "PANEL" "PANEL_SF" "TOP_DIA0.0" "REAR_DIA0.0" "FRONT_DIA0.0" "LEFT_DIA0.0" "RIGHT_DIA0.0" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0" "LMM_EDGESTRIP")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+
+;Eðer her hangi bir eksende bir veya birden fazla aynalanmýþ panel varsa bunlarý gerisin geri tekrar aynalar.
+(setq normalizePanelsForSCMPost nil)
+(defun normalizePanelsForSCMPost ( / tempComp panelMirrorMode mirrorAxisToEndPoint tempSS
+									panelSingleMirrorMode indexx )
+	(foreach tempComp (lmm_getAllPanelsList)		
+		(setq panelMirrorMode (lmm_getLMMdata tempComp lmm-k-mirrorMode) indexx 0)
+		(if panelMirrorMode
+			(progn
+				(while (not (equal (- (strlen panelMirrorMode) indexx) 0))	
+					(setq panelSingleMirrorMode (substr panelMirrorMode (- (strlen panelMirrorMode) indexx) 1))
+					(setq mirrorAxisToEndPoint (cond ((equal panelSingleMirrorMode "X") (list 100.0 0.0 0.0)) ((equal panelSingleMirrorMode "Y") (list 0.0 100.0 0.0)) )) 
+					(setq tempSS (lmm_getComponentWithChild tempComp "ALL"))	
+					(command "_MIRROR" tempSS "" (list 0.0 0.0 0.0) mirrorAxisToEndPoint "_Y" )	
+					(setq tempYoffset (lmm_getPolylineMinY tempComp))
+					(command "_MOVE" tempSS "" (list 0 0 0) (list 0 (* -1 tempYoffset) 0))
+					(setq tempXoffset (lmm_getPolylineMinX tempComp))
+					(command "_MOVE" tempSS "" (list 0 0 0) (list (* -1 tempXoffset) 0 0) )					
+					(setq indexx (+ 1 indexx))		
+				
+				)
+				;TODO panelin mirrormodu nillendi nil olarak set et.
+			)
+		)
+	)
+)
+
+(setq SCMMachineName nil)
+
+;SFace panelleri gerekliyse ana panele birlþetirir
+(setq scm_mergeSFacePanels nil)
+(defun scm_mergeSFacePanels ( / tempSS tempCompSFace panelobjCode tempComp tempSS2 tempss3 temppanelList funcReturn)
+	(if (equal lmm-s-mergeSFaces "1")
+		(setq temppanelList (lmm_getAllPanelsListWithoutSecondaryFaces))
+		(setq temppanelList (lmm_getAllPanelsList))
+	)
+	
+	(normalizePanelsForSCMPost)
+	
+	(foreach tempComp temppanelList		
+		(setq tempSS (lmm_getComponentWithChild tempComp "DXF"))
+		(setq tempss3 tempSS)
+		(if (LMM_GETLMMDATA TEMPCOMP LMM-K-PURECODE)
+			(progn 
+				(if (equal lmm-s-mergeSFaces "1")
+					(progn
+						(setq tempCompSFace (lmm_getComponentFromCodes (strcat (lmm_getLMMdata tempComp lmm-k-pureCode) lmm-sfaceSuffix ) (strcat (lmm_getLMMdata tempComp lmm-k-pureCode) lmm-sfaceSuffix ) (lmm_getLMMdata tempComp lmm-k-parentModul)))
+						(if (and tempCompSFace tempSS)
+							(progn 
+								(setq tempSS2 (lmm_getComponentWithChild tempCompSFace "DXF"))
+								(setq tempss3 (mergeSSs (list tempSS tempSS2)))
+							)						
+						)
+					)
+				)
+				(setq funcReturn (append funcReturn (list (list tempComp tempss3) )))
+			)	
+		)
+	)
+	funcReturn
+)
+
+;post kodlarýn çýkartýlmasýný saðlayan
+(setq lmm_exportXXLFilesDesiredCAMOp nil)
+(defun lmm_exportXXLFilesDesiredCAMOp ( / xxlFilesPath allPanelsList 
+											tempPanel tempPanelName tempPanelDepth tempPanelLength tempPanelWidth
+											xxlFile currentOp tempOpLayerName tempOpToolName tempOpOpName tempOpOpSpeed
+											tempPanelSS tempPanelSSList tempEnt tempHoleDia tempDerivedLayerName
+											tempHolePos tempHoleDepth tempPanelCurrentHoleX tempPanelCurrentHoleY tempPanelCurrentHoleZ tempPanelCurrentHoleDia
+											 machineHeader machineProcedures tempIter alertMsg)
+	(setq scmAllEntities nil)
+	(setq scmNotFreeEntities nil)
+	(setq scmEntitiesThatCanNotBeCAM nil)			
+	;(setq allPanelsList (scm_mergeSFacePanels))
+	(setq allPanelsList (lmm_getAllPanelsList))
+	
+	
+	(foreach machine machinelist ; Her bir makine için ayrý ayrý postlar çýkartýlýyor
+		(setq SCMMachineName (nth 0 machine))
+		(setq machineHeader (nth 1 machine))
+		(setq machineProcedures (nth 2 machine))
+		(setq xxlFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+
+		(foreach tempPanel allPanelsList
+			;(setq tempPanelName (lmm_getLMMdata (car tempPanel) lmm-k-customCode))
+			;(setq tempPanelDepth (lmm_getLMMdata (car tempPanel) lmm-k-depth))
+			;(setq tempPanelLength (getnth 2 (getBBox (car tempPanel))))
+			;(setq tempPanelWidth (getnth 3 (getBBox (car tempPanel))))
+			(setq tempPanelName (lmm_getLMMdata tempPanel lmm-k-customCode))
+			(setq tempPanelDepth (lmm_getLMMdata tempPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox tempPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox tempPanel)))
+			(createDir (strcat xxlFilesPath SCMMachineName "\\" ))
+			(setq xxlFile (open (strcat xxlFilesPath SCMMachineName "\\" (lmm_getDXFFileNameByFileMode (list tempPanel)) ".xxl") "w"))
+			(setq tempPanelLength (lmm_convertNumtoStringWithDigit tempPanelLength 2))
+			(setq tempPanelWidth (lmm_convertNumtoStringWithDigit tempPanelWidth 2))
+			(setq tempPanelDepth (lmm_convertNumtoStringWithDigit tempPanelDepth 2))
+			;(write-line (strcat "H " "DX" tempPanelLength " DY" tempPanelWidth " DZ" tempPanelDepth " -A *MM R1 /def.tlg;") xxlFile)
+			(write-line (strcat "H " "DX" tempPanelLength " DY" tempPanelWidth " DZ" tempPanelDepth " " machineHeader ";" (lmm_getDXFFileNameByFileMode (list tempPanelName)) ) xxlFile)
+			;(write-line "SET BOTYPE = 0" xxlFile)
+			;(write-line "SET BOPERC = 100" xxlFile)
+			(setq tempPanelDepth (atof tempPanelDepth))
+			(setq tempPanelLength (atof tempPanelLength))
+			(setq tempPanelWidth (atof tempPanelWidth))
+			(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+			(setq tempPanelSSList (convertSStolist tempPanelSS))
+			(setq tempPanelSSList (entOptimization tempPanelSSList))
+			;delik entitylerinin katman isimlerini yeniden ver
+			(foreach tempEnt tempPanelSSList
+			(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+						(progn 
+							(setq tempDerivedLayerName (interpretHoleLayerName tempEnt))
+							(changeEntPro tempEnt 8 tempDerivedLayerName)
+						)
+						(progn 
+							(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+						)
+					)
+					
+					;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+					(if (not (member tempDerivedLayerName scmIgnoreLayerNameList))
+						(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) scmAllEntities))
+							(setq scmAllEntities (append scmAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+						)
+					)
+			)	
+		
+			(foreach currentOp machineProcedures
+				(setq tempOpLayerName (nth 0 currentOp))
+				(setq tempOpToolName (nth 1 currentOp))
+				(setq tempOpOpName (nth 2 currentOp))
+				(setq tempPanelSSListRelatedOp (getOpRelatedEnts tempPanelSSList currentOp))	
+		
+
+				(cond 
+					((equal tempOpOpName "B") 
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlBCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					) 
+					((equal tempOpOpName "BO") 
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlBOCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					) 
+					((equal tempOpOpName "XB") 
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlXBCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					) 
+					((equal tempOpOpName "XBO") 
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlXBOCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					)  
+					((equal tempOpOpName "XBO_v2") 
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlXBOCAMOperation_v2 tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					)
+					((equal tempOpOpName "SAW") ;testere iþlemi
+						;boþ
+					)
+					((equal tempOpOpName "CONTOUR") ;freze iþlemi
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlContourCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					)
+					((equal tempOpOpName "XG0XLY2P") ;freze iþlemi
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlXG0XL2PCAMOperation tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					)
+					((equal tempOpOpName "XG0XLY2P_v2") ;freze iþlemi
+						(foreach tempEnt tempPanelSSListRelatedOp
+							(xxlXG0XL2PCAMOperation_v2 tempEnt (getentpro  tempEnt 8 ) currentOp tempPanel xxlFile)
+							;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm iþlem yapýlan varlýklarý *NotFreeEntities de topluyoruz
+							(setq scmNotFreeEntities (append scmNotFreeEntities (list (strcat tempPanelName "->"  (getentpro  tempEnt 8 )))))
+						)
+					)
+					( (equal tempOpOpName "MULTIDRILL")
+						(doVigorMultiDrill tempPanelSSListRelatedOp currentOp)
+					)
+				)
+			)
+			(write-line "N X=-2500 Q=1" xxlFile)
+			(close xxlFile)
+		)
+	)
+	(command "_.delay" 10)
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem scmAllEntities
+		(if (and (not (member tempItem scmNotFreeEntities)) (not (member tempItem scmEntitiesThatCanNotBeCAM)))
+			(setq scmEntitiesThatCanNotBeCAM (append scmEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if scmEntitiesThatCanNotBeCAM
+		(progn
+			(setq scmEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) scmEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length scmEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter scmEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat "SCMXXLOUT\n" alertMsg (nth tempIter scmEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+	
+	(princ (xstr "Done!"))
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun interpretHoleLayerName ( tempEnt / isOnTheSFace currentReturn tempHoleDia tempHoleDepth)
+	(setq isOnTheSFace (getEntPro tempEnt 8))
+	(if (equal "_SF" (substr isOnTheSFace (- (strlen isOnTheSFace) 2) 3))
+		(setq isOnTheSFace T)
+		(setq isOnTheSFace nil)
+	)
+	(cond 
+		( ;Z - 
+			(and (equal (getnth 2 (getEntPro tempEnt 210)) 1.00000) 
+				(not isOnTheSFace)
+			)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(or (equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+				isOnTheSFace
+			)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	currentReturn
+)
+
+
+(princ)

@@ -1,0 +1,339 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ YS10_T1 YS10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 (+ (- unitD) 0.1) dAltKot)
+	"ON BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ YS10_T1 YS10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 0.0 dAltKot)
+	"ARKA BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	(+ YS10_T1 YS10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 0.0 dAltKot)
+	"SOL BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	(+ YS10_T1 YS10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  (- unitW 0.1) 0.0 dAltKot)
+	"SAG BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(initget (strcat (Xstr "Top Bottom") " ~_Top ~_Bottom"))
+(setq kpmTB (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Top/Bottom: ")))
+(cond
+	((equal kpmTB "Bottom")	
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) (- unitD 0.2) 0.0) 
+				(list 0.0 (- unitD 0.2) 0.0) 
+			) 
+			nil
+			YS10_T2
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- 0.1) (+ dAltKot YS10_T1))
+			"YS10_01"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) YS10_D2 0.0) 
+				(list 0.0 YS10_D2 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- 0.1) dAltKot)
+			"YS10_02"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) YS10_D1 0.0) 
+				(list 0.0 YS10_D1 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (+ (+ (- unitD) YS10_D1) 0.1) dAltKot)
+			"YS10_03"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YS10_D4 0.0 0.0) 
+				(list YS10_D4 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+				(list 0.0 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- (- YS10_D2) 0.1) dAltKot)
+			"YS10_04"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YS10_D3 0.0 0.0) 
+				(list YS10_D3 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+				(list 0.0 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list (- unitW YS10_D3 0.1) (- (- YS10_D2) 0.1) dAltKot)
+			"YS10_05"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+	
+	(T	
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) (- unitD 0.2) 0.0) 
+				(list 0.0 (- unitD 0.2) 0.0) 
+			) 
+			nil
+			YS10_T2
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- 0.1) dAltKot)
+			"YS10_01"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) YS10_D2 0.0) 
+				(list 0.0 YS10_D2 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- 0.1) (+ dAltKot YS10_T2))
+			"YS10_02"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW 0.2) 0.0 0.0) 
+				(list (- unitW 0.2) YS10_D1 0.0) 
+				(list 0.0 YS10_D1 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (+ (+ (- unitD) YS10_D1) 0.1) (+ dAltKot YS10_T2))
+			"YS10_03"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YS10_D4 0.0 0.0) 
+				(list YS10_D4 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+				(list 0.0 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list 0.1 (- (- YS10_D2) 0.1) (+ dAltKot YS10_T2))
+			"YS10_04"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YS10_D3 0.0 0.0) 
+				(list YS10_D3 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+				(list 0.0 (- unitD YS10_D1 YS10_D2 0.2) 0.0) 
+			) 
+			nil
+			YS10_T1
+			0.0
+			;(d2r 90.0)
+			0.0
+			(list (- unitW YS10_D3 0.1) (- (- YS10_D2) 0.1) (+ dAltKot YS10_T2))
+			"YS10_05"
+			""
+			nil
+			"SHELF"
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+)	
+		
+		
+		
+		
+		
+

@@ -1,0 +1,43 @@
+WARDROBE_DRAWER_PANELS_THINNING_OP_TYPE -> "Operation type of drawer panels thinning. Modes are ``POCKETING`` , ``MILLING``"
+WARDROBE_THINNING_OVERFLOW_VALUE -> "Value of begining of thinning operation from outside"
+WARDROBE_THINNING_WIDTH_BOTTOM -> "Width of thinning for left and right edges of drawer bottom panel"
+WARDROBE_THINNING_DEPTH_BOTTOM -> "Depth of thinning for left and right edges of drawer bottom panel"
+
+(_SETA 'WARDROBE_DRAWER_PANELS_THINNING_OP_TYPE "POCKETING")
+(_SETA 'WARDROBE_THINNING_OVERFLOW_VALUE 10)
+(_SETA 'WARDROBE_THINNING_WIDTH_BOTTOM 10)
+(_SETA 'WARDROBE_THINNING_DEPTH_BOTTOM 2)
+
+(_FSET (_ 'wDrawerBottomPanelHeight (distance (getnth 2 __PANELPOLYLINEDATA) (getnth 4 __PANELPOLYLINEDATA))))
+(_FSET (_ 'wDrawerBottomPanelWidth (distance (getnth 0 __PANELPOLYLINEDATA) (getnth 2 __PANELPOLYLINEDATA))))
+
+(cond
+	((equal WARDROBE_DRAWER_PANELS_THINNING_OP_TYPE "MILLING")
+		; Left side thinning
+		(_GROOVE "WARDROBE_DRAWER_BOTTOM_PANEL_LEFT_THINNING" PRI_SHELF_CODE (_ (_ (_ (/ WARDROBE_THINNING_WIDTH_BOTTOM 2) (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0)
+																				   (_ (/ WARDROBE_THINNING_WIDTH_BOTTOM 2) (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0)) WARDROBE_THINNING_WIDTH_BOTTOM WARDROBE_THINNING_DEPTH_BOTTOM))
+		; Right side thinning
+		(_GROOVE "WARDROBE_DRAWER_BOTTOM_PANEL_RIGHT_THINNING" PRI_SHELF_CODE (_ (_ (_ (- wDrawerBottomPanelWidth (/ WARDROBE_THINNING_WIDTH_BOTTOM 2)) (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0)
+																				    (_ (- wDrawerBottomPanelWidth (/ WARDROBE_THINNING_WIDTH_BOTTOM 2)) (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0)) WARDROBE_THINNING_WIDTH_BOTTOM WARDROBE_THINNING_DEPTH_BOTTOM))
+	)
+	((equal WARDROBE_DRAWER_PANELS_THINNING_OP_TYPE "POCKETING")
+		(_FSET (_ 'tempPolylineDataLeft (list (list 0.0 (/ wDrawerBottomPanelHeight 2) 0.0) 0.0
+											  (list 0.0 (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0.0) 0.0
+											  (list WARDROBE_THINNING_WIDTH_BOTTOM (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0.0) 0.0
+											  (list WARDROBE_THINNING_WIDTH_BOTTOM (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+											  (list 0.0 (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+											  (list 0.0 (/ wDrawerBottomPanelHeight 2) 0.0) 0.0)))
+						 
+		(_POLYLINEHOLE "WARDROBE_DRAWER_BOTTOM_PANEL_LEFT_THINNING" PRI_SHELF_CODE (_ tempPolylineDataLeft WARDROBE_THINNING_DEPTH_BOTTOM "PK"))
+		
+		(_FSET (_ 'tempPolylineDataRight (list (list wDrawerBottomPanelWidth (/ wDrawerBottomPanelHeight 2) 0.0) 0.0
+											   (list wDrawerBottomPanelWidth (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0.0) 0.0
+											   (list (- wDrawerBottomPanelWidth WARDROBE_THINNING_WIDTH_BOTTOM) (+ wDrawerBottomPanelHeight WARDROBE_THINNING_OVERFLOW_VALUE) 0.0) 0.0
+											   (list (- wDrawerBottomPanelWidth WARDROBE_THINNING_WIDTH_BOTTOM) (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+											   (list wDrawerBottomPanelWidth (* WARDROBE_THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+											   (list wDrawerBottomPanelWidth (/ wDrawerBottomPanelHeight 2) 0.0) 0.0)))
+											  
+		(_POLYLINEHOLE "WARDROBE_DRAWER_BOTTOM_PANEL_LEFT_THINNING" PRI_SHELF_CODE (_ tempPolylineDataRight WARDROBE_THINNING_DEPTH_BOTTOM "PK"))
+	)
+)
+(_NONOTCH)

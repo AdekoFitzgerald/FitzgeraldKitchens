@@ -1,0 +1,50 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "CABINEO_DEFAULT" nil "p2chelper")
+;(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; Control for item variables
+		(if (and (null DOWEL_CODE) (null DOWEL_UNIT))
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(_FSET (_ 'QUANTITY_OF_ITEM 1))
+		)
+		; Upper case variables are used by other recipes
+		(_FSET (_ 'divisionCounter 0))
+		
+		(while (_S2V (_& (_ "__DIV" divisionCounter)))
+			(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+			(_FSET (_ 'numberOfDividers (length (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS"))))))
+			(_FSET (_ 'dividerOffsetValues (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS")))))
+			; If current division shelf type is not hidden drawer operation will be performed
+			(_FSET (_ 'currentShelfType (_S2V (_& (_ currentDivision "_SHELFTYPE")))))
+			(cond 
+				((> numberOfDividers 0)
+					; This variable declares whether operation recipe is called by notch recipe or not
+					(_FSET (_ 'GROUP_HOLES_FOR_NOTCH nil))
+					(_FSET (_ 'performOperation T))
+				)
+				(T
+					(_FSET (_ 'performOperation nil))
+				)
+			)
+			; Call for operation
+			(if (_NOTNULL performOperation)
+				(progn
+					; Global data container for further operations is created here
+					(_FSET (_ 'DIVIDER_OP_DATA (_ divisionCounter numberOfDividers dividerOffsetValues)))
+					(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\60-DIVIDERS\\DIVIDER_HOLES_OPERATIONS" T "p2chelper")
+				)
+			)
+
+			; Next division
+			(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+			(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+			(_FSET (_ 'numberOfDividers (length (_S2V (_& (_ currentDivision "_DIVIDERSOFFSETS"))))))
+		)
+	)
+)
+(_NONOTCH)

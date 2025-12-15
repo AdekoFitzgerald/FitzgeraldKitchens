@@ -1,0 +1,117 @@
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+
+(_ADDPARTMAT2EDGESTRIPS (_ 'EDGESTRIP_1_WID 'EDGESTRIP_2_WID 'EDGESTRIP_3_WID 'EDGESTRIP_4_WID 'EDGESTRIP_5_WID 'EDGESTRIP_6_WID 'EDGESTRIP_7_WID 'EDGESTRIP_8_WID) DRAWER_BOTTOM_PANEL_MAT ADD_PART_MATERIAL)
+; Width of edgestrips are taken from database
+(_FSET (_ 'EDGESTRIP_1_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_1_MAT)))
+(_FSET (_ 'EDGESTRIP_2_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_2_MAT)))
+(_FSET (_ 'EDGESTRIP_3_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_3_MAT)))
+(_FSET (_ 'EDGESTRIP_4_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_4_MAT)))
+(_FSET (_ 'EDGESTRIP_5_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_5_MAT)))
+(_FSET (_ 'EDGESTRIP_6_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_6_MAT)))
+(_FSET (_ 'EDGESTRIP_7_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_7_MAT)))
+(_FSET (_ 'EDGESTRIP_8_WID (_GETEDGESTRIPWIDFROMDB SINKU_BOTTOM_PANEL_EDGESTRIP_8_MAT)))
+; Code Generator block for drawer body panels
+(_FSET (_ 'currentPanelType "SINKU_BOTTOM"))
+(if (_NOTNULL DIV_ON_HAND)
+	(progn
+		(if (equal DIV_ON_HAND __CURDIVORDER)
+			(progn
+				(if (equal LAST_OPERATOR currentPanelType)
+					(progn
+						(_FSET (_ 'DRAWER_ID (+ DRAWER_ID 1)))
+						(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+					)
+					(progn
+						(_FSET (_ 'LAST_OPERATOR currentPanelType))
+						(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+						(_FSET (_ 'tempPanelCode (_& (_ currentPanelCode (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT")))))
+						(if (_EXISTPANEL tempPanelCode)
+							(progn
+								(_FSET (_ 'DRAWER_ID (+ DRAWER_ID 1)))
+								(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+							)
+						)
+					)
+				)
+			)
+			(progn
+				(_FSET (_ 'DIV_ON_HAND __CURDIVORDER))
+				(_FSET (_ 'LAST_OPERATOR currentPanelType))
+				(_FSET (_ 'DRAWER_ID 0))
+				(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+			)
+		)
+	)
+	(progn
+		(_FSET (_ 'DIV_ON_HAND __CURDIVORDER))
+		(_FSET (_ 'LAST_OPERATOR currentPanelType))
+		(_FSET (_ 'DRAWER_ID 0))
+		(_FSET (_ 'currentPanelCode (_& (_ (XSTR "DRAWER") "_" DIV_ON_HAND "_" DRAWER_ID "_"))))
+	)
+)
+(_FSET (_ 'paramBody (_& (_ "DRAWER_" DIV_ON_HAND "_" DRAWER_ID "_SINKU_BOTTOM_PANEL_"))))
+
+(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+(_FSET (_ 'tempSIDEWID (_& (_ paramBody "SIDEWID"))))
+(_FSET (_ 'tempSINKHEI (_& (_ paramBody "SINKHEI"))))
+(_FSET (_ 'tempSINKWID (_& (_ paramBody "SINKWID"))))
+
+(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+
+(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+
+(_FSET (_ (read tempWID) (_= "__WID - DRAWER_TOTAL_GAP_WID - __AD_PANELTHICK - __AD_PANELTHICK")))
+;(_FSET (_ (read tempHEI) (- DRAWER_DEPTH DRAWER_TOTAL_GAP_DEP)))
+(if (_NOTNULL (getnth 0 activeRailPackage))
+	;(_FSET (_ (read tempPDATA) (_GENERATEPDATA (- (getnth 0 activeRailPackage) GAP_BETWEEN_DRAWER_AND_RAIL) (_S2V tempHEI))))
+	(_FSET (_ (read tempHEI) (- (getnth 0 activeRailPackage) GAP_BETWEEN_DRAWER_AND_RAIL)))
+	(_FSET (_ (read tempHEI) (- DRAWER_DEPTH DRAWER_TOTAL_GAP_DEP)))
+)
+(_FSET (_ (read tempSIDEWID) (/ (- (_S2V tempWID) SINKU_WID_OF_DRAWER) 2.0)))
+(_FSET (_ (read tempSINKHEI) SINKU_DEP_OF_DRAWER))
+(_FSET (_ (read tempSINKWID) SINKU_WID_OF_DRAWER))
+
+(_FSET (_ (read tempROT) (_ SINKU_BOTTOM_PANEL_MAIN_ROTATION SINKU_BOTTOM_PANEL_CUTLIST_ROTATION SINKU_BOTTOM_PANEL_DXF_ROTATION SINKU_BOTTOM_PANEL_MIRRORING_AXIS)))
+(_FSET (_ (read tempMAT) DRAWER_BOTTOM_PANEL_MAT))
+(_FSET (_ (read tempTHICKNESS) DRAWER_BOTTOM_PANEL_THICKNESS))
+
+(_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+						   (_ 0.0 (_S2V tempHEI) 0.0) 0 
+						   (_ (_S2V tempSIDEWID) (_S2V tempHEI) 0.0) 0 
+						   (_ (_S2V tempSIDEWID) (- (_S2V tempHEI) (_S2V tempSINKHEI)) 0.0) 0 
+						   (_ (- (_S2V tempWID) (_S2V tempSIDEWID)) (- (_S2V tempHEI) (_S2V tempSINKHEI)) 0.0) 0 
+						   (_ (- (_S2V tempWID) (_S2V tempSIDEWID)) (_S2V tempHEI) 0.0) 0 
+						   (_ (_S2V tempWID) (_S2V tempHEI) 0.0) 0 
+						   (_ (_S2V tempWID) 0.0 0.0) 0 
+						   (_ 0.0 0.0 0.0) 0)))
+(_FSET (_ (read tempLABEL) (XSTR SINKU_BOTTOM_PANEL_LABEL)))
+(_FSET (_ (read tempTAG) SINKU_BOTTOM_PANEL_TAG))
+; This variable is needed in recipe of drawer assembly with groove
+(_FSET (_ (read tempEDGESTRIPS) (_ (_ SINKU_BOTTOM_PANEL_EDGESTRIP_1_MAT EDGESTRIP_1_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_2_MAT EDGESTRIP_2_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_3_MAT EDGESTRIP_3_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_4_MAT EDGESTRIP_4_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_5_MAT EDGESTRIP_5_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_6_MAT EDGESTRIP_6_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_7_MAT EDGESTRIP_7_WID) 
+								   (_ SINKU_BOTTOM_PANEL_EDGESTRIP_8_MAT EDGESTRIP_8_WID))))
+
+(_FSET (_ 'DRAWER_SINKU_BOTTOM_PANEL_CODE (_& (_ currentPanelCode (XSTR "BOTTOM_PANEL_FOR_SINK_UNIT")))))
+
+(_PANELMAIN DRAWER_SINKU_BOTTOM_PANEL_CODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+
+(_CREATEEDGESTRIPS DRAWER_SINKU_BOTTOM_PANEL_CODE (_S2V tempEDGESTRIPS))
+
+(_PUTLABEL DRAWER_SINKU_BOTTOM_PANEL_CODE DRAWER_SINKU_BOTTOM_PANEL_CODE (_S2V tempLABEL))
+(_PUTTAG DRAWER_SINKU_BOTTOM_PANEL_CODE DRAWER_SINKU_BOTTOM_PANEL_CODE (_S2V tempTAG))
+; Current drawer division order and id
+(_FSET (_ 'CURRENT_DRAWER_DATA (_ DIV_ON_HAND DRAWER_ID)))
+(_NONOTCH)

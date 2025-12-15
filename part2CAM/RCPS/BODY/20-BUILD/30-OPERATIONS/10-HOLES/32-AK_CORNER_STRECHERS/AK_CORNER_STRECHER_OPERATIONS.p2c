@@ -1,0 +1,169 @@
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "AK_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (or (_NOTNULL USE_PROJECT_PRICING_RECIPES) (null CORNER_UNIT_CONTROL))
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(cond
+			((equal AK_STRECHER_NUMBER 1)
+				; According to position of corner strecher side panel holes are calibrated 
+				(if (_EXISTPANEL AK_CORNER_STRECHER_CODE)
+					(progn
+						(_FSET (_ 'lengthParametersForCornerStrecherAndBottom (_CALCULATEPANELSINTERSECTIONLENGTH AK_CORNER_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndBottom (car lengthParametersForCornerStrecherAndBottom)))
+
+						(_FSET (_ 'lengthParametersForCornerStrecherAndTop (_CALCULATEPANELSINTERSECTIONLENGTH AK_CORNER_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndTop (car lengthParametersForCornerStrecherAndTop)))
+
+						(_FSET (_ 'index 0))
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+							(_FSET (_ 'cornerStrecherPointListForBottomSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndBottom 0 (car horizontalHolePos) "Y") (_ 0 0 nil AK_CORNER_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_CORNER_STRECHER_OP_FACE cornerStrecherPointListForBottomSide (_ "X+" nil) connectorParams)
+							
+							(_FSET (_ 'cornerStrecherPointListForTopSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndTop AK_CORNER_STRECHER_WID (car horizontalHolePos) "Y") (_ 0 0 nil AK_CORNER_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_CORNER_STRECHER_OP_FACE cornerStrecherPointListForTopSide (_ "X-" nil) connectorParams)
+							
+							(cond ((equal CORNER_STRECHERS_SIDE "R")
+									(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+										(progn
+											(_FSET (_ 'bottomPanelPointListForCornerStrecher (_GETHOLEPOINTLIST operationName 
+											(_ lengthForCornerStrecherAndBottom (+ GROOVE_DISTANCE GROOVE_WID (cadr horizontalHolePos) AK_BOTTOM_PANEL_BACK_VARIANCE) AK_BOTTOM_PANEL_BACK_VARIANCE "Y")
+											(_ (+ GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE) AK_BOTTOM_PANEL_BACK_VARIANCE nil AK_CORNER_STRECHER_HEI)
+											(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName AK_BOTTOM_PANEL_OP_FACE bottomPanelPointListForCornerStrecher (_ nil "X-") connectorParams)
+										)
+									)
+									(if (_EXISTPANEL AK_TOP_PANEL_CODE)
+										(progn
+											(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+											(_ lengthForCornerStrecherAndTop (+ GROOVE_DISTANCE GROOVE_WID (cadr horizontalHolePos) AK_TOP_PANEL_BACK_VARIANCE) AK_TOP_PANEL_BACK_VARIANCE "Y") 
+											(_ (_= "GROOVE_DISTANCE + GROOVE_WID + AK_CORNER_STRECHER_HEI - AK_TOP_PANEL_WID + AK_TOP_PANEL_BACK_VARIANCE") AK_TOP_PANEL_BACK_VARIANCE T AK_CORNER_STRECHER_HEI) 
+											(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE rightPanelPointListForBottomPanel (_ nil "X-") connectorParams)
+										)
+									)
+								)
+								((equal CORNER_STRECHERS_SIDE "L")
+									(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+										(progn
+											(_FSET (_ 'bottomPanelPointListForCornerStrecher (_GETHOLEPOINTLIST operationName 
+											(_ lengthForCornerStrecherAndBottom (+ GROOVE_DISTANCE GROOVE_WID (cadr horizontalHolePos) AK_BOTTOM_PANEL_BACK_VARIANCE) AK_BOTTOM_PANEL_BACK_VARIANCE "X") 
+											(_ (+ GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE) AK_BOTTOM_PANEL_BACK_VARIANCE nil AK_CORNER_STRECHER_HEI) 
+											(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName AK_BOTTOM_PANEL_OP_FACE bottomPanelPointListForCornerStrecher (_ nil "Y-") connectorParams)
+										)
+									)
+									(if (_EXISTPANEL AK_TOP_PANEL_CODE)
+										(progn
+											(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+											(_ lengthForCornerStrecherAndTop (- AK_TOP_PANEL_WID GROOVE_DISTANCE GROOVE_WID (cadr horizontalHolePos) AK_TOP_PANEL_BACK_VARIANCE) AK_TOP_PANEL_BACK_VARIANCE "X") 
+											(_ (+ GROOVE_DISTANCE GROOVE_WID AK_TOP_PANEL_BACK_VARIANCE) AK_TOP_PANEL_BACK_VARIANCE (_ nil nil) AK_CORNER_STRECHER_HEI) 
+											(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE rightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+										)
+									)
+								)
+							)
+							
+							(_FSET (_ 'index (+ index 1)))
+						)
+					)
+				)
+			)
+			((equal AK_STRECHER_NUMBER 2)
+				; According to position of corner strecher side panel holes are calibrated 
+				
+				; Corner unit double corner left strecher
+				(if (_EXISTPANEL AK_DC_LEFT_STRECHER_CODE)
+					(progn
+						(_FSET (_ 'lengthParametersForCornerStrecherAndBottom (_CALCULATEPANELSINTERSECTIONLENGTH AK_DC_LEFT_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndBottom (car lengthParametersForCornerStrecherAndBottom)))
+
+						(_FSET (_ 'lengthParametersForCornerStrecherAndTop (_CALCULATEPANELSINTERSECTIONLENGTH AK_DC_LEFT_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndTop (car lengthParametersForCornerStrecherAndTop)))
+
+						(_FSET (_ 'index 0))
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+							(_FSET (_ 'cornerStrecherPointListForBottomSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndBottom 0 (car horizontalHolePos) "Y") (_ 0 0 nil AK_DC_LEFT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_DC_LEFT_STRECHER_OP_FACE cornerStrecherPointListForBottomSide (_ "X+" nil) connectorParams)
+							
+							(_FSET (_ 'cornerStrecherPointListForTopSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndTop AK_DC_LEFT_STRECHER_WID (car horizontalHolePos) "Y") (_ 0 0 nil AK_DC_LEFT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_DC_LEFT_STRECHER_OP_FACE cornerStrecherPointListForTopSide (_ "X-" nil) connectorParams)
+							
+							(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+								(progn
+									(_FSET (_ 'bottomPanelPointListForCornerStrecher (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndBottom (+ GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE (cadr horizontalHolePos)) 0 "X") (_ (+ lsLoss GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE) 0 nil AK_DC_LEFT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+									(_HOLEGROUP operationName AK_BOTTOM_PANEL_OP_FACE bottomPanelPointListForCornerStrecher (_ nil "Y-") connectorParams)
+								)
+							)
+							(if (_EXISTPANEL AK_TOP_PANEL_CODE)
+								(progn
+									(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndTop (- AK_TOP_PANEL_WID GROOVE_DISTANCE GROOVE_WID AK_TOP_PANEL_BACK_VARIANCE (cadr horizontalHolePos)) 0 "X") (_ (+ lsLoss GROOVE_DISTANCE GROOVE_WID AK_TOP_PANEL_BACK_VARIANCE) 0 nil AK_DC_LEFT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+									(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE rightPanelPointListForBottomPanel (_ nil "Y+") connectorParams)
+								)
+							)
+							
+							(_FSET (_ 'index (+ index 1)))
+						)
+					)
+				)
+				; Corner unit double corner right strecher
+				(if (_EXISTPANEL AK_DC_RIGHT_STRECHER_CODE)
+					(progn
+						; Corner unit double corner left strecher
+						(_FSET (_ 'lengthParametersForCornerStrecherAndBottom (_CALCULATEPANELSINTERSECTIONLENGTH AK_DC_RIGHT_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndBottom (car lengthParametersForCornerStrecherAndBottom)))
+
+						(_FSET (_ 'lengthParametersForCornerStrecherAndTop (_CALCULATEPANELSINTERSECTIONLENGTH AK_DC_RIGHT_STRECHER_HEI (_ 0 0 0 0))))
+						(_FSET (_ 'lengthForCornerStrecherAndTop (car lengthParametersForCornerStrecherAndTop)))
+
+						(_FSET (_ 'index 0))
+						(foreach operationParams OPERATION_LIST
+							(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+							(_FSET (_ 'cornerStrecherPointListForBottomSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndBottom 0 (car horizontalHolePos) "Y") (_ 0 0 nil AK_DC_RIGHT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_DC_RIGHT_STRECHER_OP_FACE cornerStrecherPointListForBottomSide (_ "X+" nil) connectorParams)
+							
+							(_FSET (_ 'cornerStrecherPointListForTopSide (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndTop AK_DC_RIGHT_STRECHER_WID (car horizontalHolePos) "Y") (_ 0 0 nil AK_DC_RIGHT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_DC_RIGHT_STRECHER_OP_FACE cornerStrecherPointListForTopSide (_ "X-" nil) connectorParams)
+							
+							(if (_EXISTPANEL AK_BOTTOM_PANEL_CODE)
+								(progn
+									(_FSET (_ 'bottomPanelPointListForCornerStrecher (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndBottom (+ GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE (cadr horizontalHolePos)) 0 "Y") (_ (+ rsLoss GROOVE_DISTANCE GROOVE_WID AK_BOTTOM_PANEL_BACK_VARIANCE) 0 nil AK_DC_RIGHT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+									(_HOLEGROUP operationName AK_BOTTOM_PANEL_OP_FACE bottomPanelPointListForCornerStrecher (_ nil "X-") connectorParams)
+								)
+							)
+
+							(if (_EXISTPANEL AK_TOP_PANEL_CODE)
+								(progn
+									(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName (_ lengthForCornerStrecherAndTop (+ GROOVE_DISTANCE GROOVE_WID AK_TOP_PANEL_BACK_VARIANCE (cadr horizontalHolePos)) 0 "Y") (_ (_= "rsLoss + GROOVE_DISTANCE + GROOVE_WID + AK_TOP_PANEL_BACK_VARIANCE + AK_DC_RIGHT_STRECHER_HEI - AK_TOP_PANEL_WID") 0 T AK_DC_RIGHT_STRECHER_HEI) (_ FITTING_PARAMETERS nil))))
+									(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE rightPanelPointListForBottomPanel (_ nil "X-") connectorParams)
+								)
+							)
+							
+							(_FSET (_ 'index (+ index 1)))
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

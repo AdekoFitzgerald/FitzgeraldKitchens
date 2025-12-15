@@ -1,0 +1,192 @@
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (equal AK_GROOVE_STATE 3)
+	(progn
+		(_DELPANEL AK_LEFT_PANEL_CODE)
+		
+		(if (equal INTERSECTION_OF_BACK_PANELS "L")
+			(_FSET (_ 'leftPanelShare __AD_PANELTHICK))
+			(_FSET (_ 'leftPanelShare 0))
+		)
+		
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_WID AK_LEFT_PANEL_WID))
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_HEI AK_LEFT_PANEL_HEI))
+
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_ROT AK_LEFT_PANEL_ROT))
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_MAT AK_LEFT_PANEL_MAT))
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_THICKNESS AK_LEFT_PANEL_THICKNESS))
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_CODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "NOTCHED_LEFT_PANEL")))))
+		              				
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_LABEL AK_LEFT_PANEL_LABEL))
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_TAG AK_LEFT_PANEL_TAG))	
+		(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_BOTTOM_STRECH 0.0))	;;;; Þimdilik parametrik deðil ileride bottom strech eklenmek istenirse kullanýlablir.	
+		
+		;;;;;;;;;;; GOLA_PREFERENCES;;;;;;;;;;;;;;;;
+		(cond 
+			( (and GOLA_PATTERN (not (equal GOLA_CLEARANCE 0.0))  (equal __DOOR0_OPENDIRECTION "L")) ;;;defined vertical gola
+				(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_PDATA (_ (_ GOLA_CLEARANCE AK_NOTCHED_LEFT_PANEL_BOTTOM_STRECH 0.0) 0 
+												   (_ GOLA_CLEARANCE AK_NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ AK_NOTCHED_LEFT_PANEL_DEP2 AK_NOTCHED_LEFT_PANEL_HEI 0.0) 0 
+												   (_ AK_NOTCHED_LEFT_PANEL_DEP2 AK_NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ AK_NOTCHED_LEFT_PANEL_WID AK_NOTCHED_LEFT_PANEL_DEP 0.0) 0 
+												   (_ AK_NOTCHED_LEFT_PANEL_WID AK_NOTCHED_LEFT_PANEL_BOTTOM_STRECH 0.0) 0 
+												   (_ GOLA_CLEARANCE AK_NOTCHED_LEFT_PANEL_BOTTOM_STRECH 0.0) 0)))
+				(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_EDGESTRIPS (_ (getnth 0 LEFT_PANEL_EDGESTRIPS)
+														(getnth 1 LEFT_PANEL_EDGESTRIPS)
+														(getnth 2 LEFT_PANEL_EDGESTRIPS)
+														(getnth 1 LEFT_PANEL_EDGESTRIPS)
+														(getnth 2 LEFT_PANEL_EDGESTRIPS)
+														(getnth 3 LEFT_PANEL_EDGESTRIPS))))
+			)
+			((and (not (null GOLA_PATTERN)) GOLA_OP_AVAILABLE (if __VLSIDE GOLA_VSIDE_OP_AVAILABLE T) (or (equal 1 GOLA_SIDE_SELECTION)(equal 3 GOLA_SIDE_SELECTION)) (equal GOLA_CLEARANCE 0.0) ) ;;;defined horizontal gola
+				(setq gCavityShift (_ 0 (_= "0 - bottomSideStyleV1") 0));;if necessary, offsetting cavity. Domestic or Euro styles for example
+				(setq nCavityShift (_ 0 (_= "0 - bottomSideStyleV1") 0))
+				(setq PanelInformations (_GENERATEPDATAV2 AK_NOTCHED_LEFT_PANEL_WID 
+											   AK_NOTCHED_LEFT_PANEL_HEI 
+											   AK_NOTCHED_LEFT_PANEL_BOTTOM_STRECH 
+											   gCavityShift
+											   nCavityShift
+											   GOLA_CAVITY_ORDER
+											   (_ (_ __HEI __NOTCHDIM3 __NOTCHDIM1) )  ))
+				(setq GolaPData (MoveVectorList (RotateVectorList (nth 0 PanelInformations) 90.0) (_ AK_NOTCHED_LEFT_PANEL_HEI 0 0)))
+				(setq GolaEdgeStrips (mapcar '(lambda (item) 
+													(if (equal item 0) (setq item (_ " " 0)))
+													(if (equal item 1) (setq item (_ VISIBLE_EDGESTRIP_MAT VISIBLE_EDGESTRIP_WID)))
+													(if (equal item 2) (setq item (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)))
+													(if (equal item 3) (setq item (_ HIDDEN_EDGESTRIP_MAT HIDDEN_EDGESTRIP_WID)))
+													(if (equal item 4) (setq item (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)))
+													item ) (nth 1 PanelInformations)))
+				(setq golaControlPoints(mapcar '(lambda (item)  (MoveVectorList (RotateVectorList item 90.0) (_ AK_NOTCHED_LEFT_PANEL_HEI 0 0))) (nth 2 PanelInformations)) )
+				(setq golaEdgeTrimCtrlPts (mapcar '(lambda (item) (MoveVectorList (RotateVectorList (reverse item) 90.0) (_ AK_NOTCHED_LEFT_PANEL_HEI 0 0)) ) (nth 4 PanelInformations)) )
+				
+				; if you want to draw approach helper lines for notching 
+				;(setq golaControlPoints (append golaControlPoints (nth 3 PanelInformations)))
+				;(setq golaEdgeTrimCtrlPts (append golaEdgeTrimCtrlPts (nth 5 PanelInformations)))
+
+				
+				; milling approach lines adding 
+				(if (or (equal GOLA_DRAW_APPROACH_OUTSIDE 1) (equal GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE 1))
+					(progn
+						(_GENERATEMILLINGAPPROACH AK_NOTCHED_LEFT_PANEL_CODE 
+												  golaControlPoints                                                      ; definition of up L , down L , U cavities control points 
+												  GOLA_DRAW_APPROACH_OUTSIDE											 ; Draw top approach lines
+												  GOLA_DRAW_SECONDARY_FACE_APPROACH_OUTSIDE      						 ; Draw bottom approach lies
+												  GOLA_MIRROR_SFACE_GEOMETRIES											 ; Mirror bottom approach lines. it needed for biesse cam			
+												  GOLA_APPROACH_DISTANCE 												 ; Desired approach distance from the outside of panels
+												  GOLA_INNER_RADIUS														 ; Definition of the cavities concave corner radius
+												  (_ (_  (/ AK_NOTCHED_LEFT_PANEL_HEI 2) 0.0 0.0) (_ (/ AK_NOTCHED_LEFT_PANEL_HEI 2) 1.0 0.0) )); Mirror axis
+						(_GENERATEEDGEMILLING AK_NOTCHED_LEFT_PANEL_CODE 
+											  golaEdgeTrimCtrlPts 						; definition of up L , down L , U cavities control points list. firsth and last points are create the line to be cut
+											  GOLA_EDGE_TRIM_GEO_OFFSET_DISTANCE		; cutoff line, outward offset
+											  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE		; extension of offseted cutoff line from start point
+											  GOLA_EDGE_TRIM_GEO_EXTENSION_DISTANCE2)	; extension of offseted cutoff line to end point
+					)
+				)
+																
+				(if (equal GOLA_DRAW_PATTERN 1)
+					(progn
+						(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_PDATA GolaPData))												
+						(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_EDGESTRIPS GolaEdgeStrips))
+					)
+				)
+				(if GOLA_DRAW_RECT_GEOMETRY (generate_special_golaRectPattern AK_NOTCHED_LEFT_PANEL_CODE golaControlPoints))
+			)
+		)					
+
+		(if (equal AK_NOTCHED_LEFT_PANEL_PDATA nil)
+			(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_PDATA (_ (_ 0.0 0.0 0.0) 0 
+										 (_ 0.0 (- AK_NOTCHED_LEFT_PANEL_WID __NOTCHDIM1) 0.0) 0 
+										 (_ (- __NOTCHDIM3 topSideStyleV1) (- AK_NOTCHED_LEFT_PANEL_WID __NOTCHDIM1) 0.0) 0 
+										 (_ (- __NOTCHDIM3 topSideStyleV1) AK_NOTCHED_LEFT_PANEL_WID 0.0) 0
+										 (_ AK_NOTCHED_LEFT_PANEL_HEI AK_NOTCHED_LEFT_PANEL_WID 0.0) 0 
+										 (_ AK_NOTCHED_LEFT_PANEL_HEI 0.0 0.0) 0
+										 (_ 0.0 0.0 0.0) 0 )))
+		)
+		
+		(if (equal AK_NOTCHED_LEFT_PANEL_EDGESTRIPS nil)
+			(_FSET (_ 'AK_NOTCHED_LEFT_PANEL_EDGESTRIPS (_ (getnth 1 AK_LEFT_PANEL_EDGESTRIPS) ;;top
+																   (getnth 2 AK_LEFT_PANEL_EDGESTRIPS) ;;
+																   (getnth 2 AK_LEFT_PANEL_EDGESTRIPS)
+																   (getnth 2 AK_LEFT_PANEL_EDGESTRIPS)
+																   (getnth 3 AK_LEFT_PANEL_EDGESTRIPS)
+																   (getnth 0 AK_LEFT_PANEL_EDGESTRIPS))))
+		)
+		
+		(_PANELMAIN AK_NOTCHED_LEFT_PANEL_CODE (_ AK_NOTCHED_LEFT_PANEL_PDATA AK_NOTCHED_LEFT_PANEL_ROT AK_NOTCHED_LEFT_PANEL_MAT AK_NOTCHED_LEFT_PANEL_THICKNESS))
+		(_CREATEEDGESTRIPS AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_EDGESTRIPS)
+		(_PUTLABEL AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_LABEL)
+		(if (equal __SIDELNO 1)
+			(progn
+				(_PUTSOURCETAG AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_CODE "INSOURCE")
+				(_PUTUSAGETYPETAG AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_CODE "GYAN")
+			)
+		)
+		(_PUTTAG AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_CODE AK_NOTCHED_LEFT_PANEL_TAG)
+		
+		;------------------------ Secondary Left Panels -------------------------------
+		
+		; Global variables of secondary top left panel
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_HEI __NOTCHDIM3))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_WID (_= "__WID - __NOTCHDIM1 - __AD_PANELTHICK - __AD_PANELTHICK + leftPanelShare")))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_ROT AK_LEFT_PANEL_ROT))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_MAT AK_LEFT_PANEL_MAT))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_THICKNESS AK_LEFT_PANEL_THICKNESS))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_LABEL AK_LEFT_PANEL_LABEL))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_TAG AK_LEFT_PANEL_TAG))
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_CODE (XSTR "SECONDARY_TOP_LEFT_PANEL")))
+		
+		(if (equal INTERSECTION_OF_BACK_PANELS "L")		
+			(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_EDGESTRIPS (_ (getnth 2 AK_LEFT_PANEL_EDGESTRIPS)
+															  (_ nil 0)
+															  (_ nil 0)
+															  ;(getnth 2 AK_LEFT_PANEL_EDGESTRIPS)
+															  (getnth 0 AK_LEFT_PANEL_EDGESTRIPS))))
+			(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_EDGESTRIPS (_ (_ nil 0)
+															  (_ nil 0)
+															  (_ nil 0)
+															  (getnth 0 AK_LEFT_PANEL_EDGESTRIPS))))
+		)
+		
+		(_FSET (_ 'SECONDARY_TOP_LEFT_PANEL_PDATA (_GENERATEPDATA SECONDARY_TOP_LEFT_PANEL_WID SECONDARY_TOP_LEFT_PANEL_HEI)))
+		
+		(_PANELMAIN SECONDARY_TOP_LEFT_PANEL_CODE (_ SECONDARY_TOP_LEFT_PANEL_PDATA SECONDARY_TOP_LEFT_PANEL_ROT SECONDARY_TOP_LEFT_PANEL_MAT SECONDARY_TOP_LEFT_PANEL_THICKNESS))
+
+		(_CREATEEDGESTRIPS SECONDARY_TOP_LEFT_PANEL_CODE SECONDARY_TOP_LEFT_PANEL_EDGESTRIPS)
+
+		(_PUTLABEL SECONDARY_TOP_LEFT_PANEL_CODE SECONDARY_TOP_LEFT_PANEL_CODE SECONDARY_TOP_LEFT_PANEL_LABEL)
+		(_PUTTAG SECONDARY_TOP_LEFT_PANEL_CODE SECONDARY_TOP_LEFT_PANEL_CODE SECONDARY_TOP_LEFT_PANEL_TAG)
+		
+		; Global variables of secondary bottom left panel
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_HEI (+ __NOTCHDIM1 leftPanelShare)))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_WID (_= "__HEI - __NOTCHDIM3 - __AD_PANELTHICK - __AD_PANELTHICK")))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_ROT AK_LEFT_PANEL_ROT))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_MAT AK_LEFT_PANEL_MAT))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_THICKNESS AK_LEFT_PANEL_THICKNESS))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_LABEL AK_LEFT_PANEL_LABEL))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_TAG AK_LEFT_PANEL_TAG))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_CODE (XSTR "SECONDARY_BOTTOM_LEFT_PANEL")))
+
+		(if (equal INTERSECTION_OF_BACK_PANELS "L")	
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_EDGESTRIPS (_ (_ nil 0)
+															  (getnth 2 AK_LEFT_PANEL_EDGESTRIPS)
+															  (_ nil 0)
+															  (getnth 0 AK_LEFT_PANEL_EDGESTRIPS))))
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_EDGESTRIPS (_ (_ nil 0)
+															  (_ nil 0)
+															  (_ nil 0)
+															  (getnth 0 AK_LEFT_PANEL_EDGESTRIPS))))
+		)
+		(_FSET (_ 'SECONDARY_BOTTOM_LEFT_PANEL_PDATA (_GENERATEPDATA SECONDARY_BOTTOM_LEFT_PANEL_WID SECONDARY_BOTTOM_LEFT_PANEL_HEI)))
+	
+		
+		(_PANELMAIN SECONDARY_BOTTOM_LEFT_PANEL_CODE (_ SECONDARY_BOTTOM_LEFT_PANEL_PDATA SECONDARY_BOTTOM_LEFT_PANEL_ROT SECONDARY_BOTTOM_LEFT_PANEL_MAT SECONDARY_BOTTOM_LEFT_PANEL_THICKNESS))
+
+		(_CREATEEDGESTRIPS SECONDARY_BOTTOM_LEFT_PANEL_CODE SECONDARY_BOTTOM_LEFT_PANEL_EDGESTRIPS)
+
+		(_PUTLABEL SECONDARY_BOTTOM_LEFT_PANEL_CODE SECONDARY_BOTTOM_LEFT_PANEL_CODE SECONDARY_BOTTOM_LEFT_PANEL_LABEL)
+		(_PUTTAG SECONDARY_BOTTOM_LEFT_PANEL_CODE SECONDARY_BOTTOM_LEFT_PANEL_CODE SECONDARY_BOTTOM_LEFT_PANEL_TAG)
+		
+
+		
+	)
+)

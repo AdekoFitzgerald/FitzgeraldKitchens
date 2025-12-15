@@ -1,0 +1,444 @@
+
+
+;(list "TOP_DIA8.0" ;definition of hole Dia value must be one digit after the desimal point.  LEFT_DIA8.0, RIGHT_DIA8.0, REAR_DIA8.0,FRONT_DIA8.0  
+;		"60,61,62,90,91,92,150,190" ; which tools are suitable 
+;		"HOLE"  ; which operation
+;		""      ;rezerved
+;)
+(setq mpr_ABD_150_getCValOfHole nil)
+(defun mpr_ABD_150_getCValOfHole ( par  / holeCenter holeCenterX holeCenterY Width Height minDistance edgeindex funRes) 
+	(setq 	holeCenter (getnth 0 par)
+			Width (getnth 1 par)
+			Height (getnth 2 par)
+			minDistance 1000000.0
+			)
+	(setq 	holeCenterX (getnth 0 holeCenter)
+			holeCenterY (getnth 1 holeCenter)
+	)
+	
+	
+	(if (< (abs (- holeCenterX 0)) minDistance)
+		(progn
+			(setq minDistance (abs (- holeCenterX 0)))
+			(setq edgeindex 1) ; left edge
+			(setq funRes "_C1")
+		)
+	)
+	(if (< (abs (- holeCenterX Width)) minDistance)
+		(progn
+			(setq minDistance (abs (- holeCenterX Width)))
+			(setq edgeindex 3) ; rigth edge
+			(setq funRes "_C3")
+		)
+	)
+	(if (< (abs (- holeCenterY 0)) minDistance)
+		(progn
+			(setq minDistance (abs (- holeCenterY 0)))
+			(setq edgeindex 2) ; front edge
+			(setq funRes "_C4")
+		)
+	)
+	(if (< (abs (- holeCenterY Height)) minDistance)
+		(progn
+			(setq minDistance (abs (- holeCenterY Height)))
+			(setq edgeindex 4) ; rear edge
+			(setq funRes "_C2")
+		)
+	)
+	funRes
+)
+
+(setq mpr_ABD_150_HoleCamOperation nil)
+(defun mpr_ABD_150_HoleCamOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opSuitableTools tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 tempCAMStyle))
+	(setq opSuitableTools (nth 1 tempCAMStyle));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 tempCAMStyle))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs(getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<102 \\Ust Delik\\" file)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line "BM=\"LS\"" file) ; LS =0: slow-fast to depth ref-> mprx4_format_us.pdf page->20
+			(write-line (strcat "TI=\"" mHoleZ "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "WI=\"90\"" file) ;
+			(write-line "ZT=\"0\"" file) ;Deliver depth (only WW6)
+			(write-line "RM=\"0\"" file) ;withdrawal measure (only WW6)
+			(write-line "VW=\"0\"" file) ;dwell time (only WW6)
+			(write-line "HP=\"0\"" file) ; 
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "KAT=\"Bohren vertikal\"" file) ; 
+			(write-line "MNM=\"Dikey delikler\"" file) ; 
+			(write-line "ORI=\"\"" file) ; 
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "SYA=\"0\"" file) ;enable/disable synchronic behaviour
+			(write-line "SYV=\"0\"" file) ;synchronc behaviour (SYNCHRONMASTER 0 SYNCHRONSLAVE1 1 SYNCHRONSLAVE1 2 SYNCHRONSLAVE1 3)
+			(write-line "KO=\"0\"" file) ;
+			(write-line (strcat "??=\"" (mpr_ABD_150_getCValOfHole (list  tempHolePos tempPanelWidth tempPanelLength)) "\"" ) file) ;
+			(write-line "" file) ;
+		)
+		( (member (substr entLayerName 1 3) (list "RIG" "LEF" "REA" "FRO")) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line (strcat "<103 \\Yan " entLayerName " Delik\\") file)
+			(write-line "MI=\"0\"" file) ;Hole row type: 0:start point- 1:center point.
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"" mHoleZ "\"" ) file)
+			(write-line (strcat "DU=\"" mHoleDia "\"" ) file)
+			(write-line (strcat "TI=\"" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) "\"" ) file)
+			(write-line "ANA=\"50\"" file)
+			(cond 
+				((equal (substr entLayerName 1 3) "RIG")
+					(write-line "BM=\"XM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+				)
+				((equal (substr entLayerName 1 3) "LEF")
+					(write-line "BM=\"XP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+				)
+				((equal (substr entLayerName 1 3) "REA")
+					(write-line "BM=\"YM\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+				)
+				((equal (substr entLayerName 1 3) "FRO")
+					(write-line "BM=\"YP\"" file) ; Drill mode(string parameter) mprx4_format_us.pdf page->21
+				)
+			)
+			(write-line "AN=\"1\"" file) ;Number of drillings (alternative LA or AN)
+			(write-line "AB=\"32\"" file) ;grid distance
+			(write-line "BM2=\"STD\"" file) ;drill mode (Stringparameter): (only WW6) / STD =0: (only WW6) / BMR =9: drill with withdrawal (only WW6)
+			(write-line "ZT=\"0\"" file) ;Deliver depth (only WW6)
+			(write-line "RM=\"0\"" file) ;withdrawal measure (only WW6)
+			(write-line "VW=\"0\"" file) ;dwell time (only WW6)
+			(write-line "HP=\"0\"" file) ;
+			(write-line "SP=\"0\"" file) ;
+			(write-line "YVE=\"0\"" file) ;
+			(write-line (strcat "WW=\"" opSuitableTools  "\"") file) ;
+			(write-line "ASG=\"2\"" file) ; Exhauster 0 = Off 1 = On 2 = Automatic
+			(write-line "KAT=\"Horizontalbohren\"" file) ;
+			(write-line "MNM=\"Yatay delme\"" file) ;
+			(write-line "ORI=\"\"" file) ;
+			(write-line "S_=\"2\"" file) ;r.p.m. 0: Slow 1: Normal 2: Fast
+			(write-line "MX=\"0\"" file) ;Processing is depend from previous measures in X (default=0)
+			(write-line "MY=\"0\"" file) ;Processing is depend from previous measures in Y (default=0)
+			(write-line "MZ=\"0\"" file) ;Processing is depend from previous measures in Z (default=0)
+			(write-line "MXF=\"1\"" file) ;Measuring factor in X
+			(write-line "MYF=\"1\"" file) ;Measuring factor in X
+			(write-line "MZF=\"1\"" file) ;Measuring factor in X
+			(write-line "SYA=\"0\"" file) ;enable/disable synchronic behaviour
+			(write-line "SYV=\"0\"" file) ;synchronc behaviour (SYNCHRONMASTER 0 SYNCHRONSLAVE1 1 SYNCHRONSLAVE1 2 SYNCHRONSLAVE1 3)
+			(write-line "KO=\"0\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+
+		)
+	)
+)
+
+; ABD 150 makinesinde kavela deliðine 
+(setq mpr_ABD_150_ABD_DEUCamOperation nil)
+(defun mpr_ABD_150_ABD_DEUCamOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opSuitableTools tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	;(setq opLayerName (nth 0 tempCAMStyle))
+	(setq opSuitableTools (nth 1 tempCAMStyle));default tool numbers suitable for this macro
+	(setq opOpName (nth 2 tempCAMStyle))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)) ;bottom hole routines
+
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<139 \\Yan Sag Delik kavela cakma \\" file)
+			(write-line "IN=\"ABD_DEU.MPR\"" file)
+			(write-line (strcat "XA=\"0.0\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"0.0\"" ) file)
+			(write-line "EM=\"0\"" file)
+			(write-line "VA=\"Kante 2\"" file)
+			(write-line "VA=\"Pos 0\"" file)
+			(write-line (strcat "VA=\"ZPos " mHoleZ "\"") file)
+			(write-line (strcat "VA=\"Durchm " mHoleDia "\"") file)
+			(write-line (strcat "VA=\"Tiefe " (lmm_convertNumtoStringWithDigit tempHoleDepth 2) "\"") file)
+			(write-line "VA=\"duebeln 1\"" file)
+			(write-line "VA=\"leimen 1\"" file)
+			(write-line "VA=\"Anzahl 1\"" file)
+			(write-line "VA=\"Raster 32\"" file)
+			(write-line "VA=\"zentrum 0\"" file)
+			(write-line "KAT=\"Komponentenmakro\"" file)
+			(write-line "MNM=\"Komponente\"" file)
+			(write-line "ORI=\"\"" file)
+			(write-line "KO=\"01\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<139 \\Yan Sol Delik kavela cakma\\" file)
+			(write-line "IN=\"ABD_DEU.MPR\"" file)
+			(write-line (strcat "XA=\"0.0\"" ) file)
+			(write-line (strcat "YA=\"" mHoleY "\"" ) file)
+			(write-line (strcat "ZA=\"0.0\"" ) file)
+			(write-line "EM=\"0\"" file)
+			(write-line "VA=\"Kante 2\"" file)
+			(write-line "VA=\"Pos 0\"" file)
+			(write-line (strcat "VA=\"ZPos " mHoleZ "\"") file)
+			(write-line (strcat "VA=\"Durchm " mHoleDia "\"") file)
+			(write-line (strcat "VA=\"Tiefe " (lmm_convertNumtoStringWithDigit tempHoleDepth 2) "\"") file)
+			(write-line "VA=\"duebeln 1\"" file)
+			(write-line "VA=\"leimen 1\"" file)
+			(write-line "VA=\"Anzahl 1\"" file)
+			(write-line "VA=\"Raster 32\"" file)
+			(write-line "VA=\"zentrum 0\"" file)
+			(write-line "KAT=\"Komponentenmakro\"" file)
+			(write-line "MNM=\"Komponente\"" file)
+			(write-line "ORI=\"\"" file)
+			(write-line "KO=\"00\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "REA" (substr entLayerName 1 3)) 
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<139 \\Yan Arka Delik kavela cakma\\" file)
+			(write-line "IN=\"ABD_DEU.MPR\"" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"0.0\"" ) file)
+			(write-line (strcat "ZA=\"0.0\"" ) file)
+			(write-line "EM=\"0\"" file)
+			(write-line "VA=\"Kante 1\"" file)
+			(write-line "VA=\"Pos 0\"" file)
+			(write-line (strcat "VA=\"ZPos " mHoleZ "\"") file)
+			(write-line (strcat "VA=\"Durchm " mHoleDia "\"") file)
+			(write-line (strcat "VA=\"Tiefe " (lmm_convertNumtoStringWithDigit tempHoleDepth 2) "\"") file)
+			(write-line "VA=\"duebeln 1\"" file)
+			(write-line "VA=\"leimen 1\"" file)
+			(write-line "VA=\"Anzahl 1\"" file)
+			(write-line "VA=\"Raster 32\"" file)
+			(write-line "VA=\"zentrum 0\"" file)
+			(write-line "KAT=\"Komponentenmakro\"" file)
+			(write-line "MNM=\"Komponente\"" file)
+			(write-line "ORI=\"\"" file)
+			(write-line "KO=\"03\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) 
+			(write-line (strcat "\\On tarafa ABD_DEU uyguladým Delik Çap:" (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2) " Delik Derinlik:" (lmm_convertNumtoStringWithDigit (abs tempHoleDepth) 2) ) file)
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempHolePos tempHolePosWorld)
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (abs (getnth 0 tempHolePos)) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (abs (getnth 1 tempHolePos)) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit (abs mHoleDia) 2))
+			(write-line "<139 \\Yan On Delik kavela cakma\\" file)
+			(write-line "IN=\"ABD_DEU.MPR\"" file)
+			(write-line (strcat "XA=\"" mHoleX "\"" ) file)
+			(write-line (strcat "YA=\"0.0\"" ) file)
+			(write-line (strcat "ZA=\"0.0\"" ) file)
+			(write-line "EM=\"0\"" file)
+			(write-line "VA=\"Kante 1\"" file)
+			(write-line "VA=\"Pos 0\"" file)
+			(write-line (strcat "VA=\"ZPos " mHoleZ "\"") file)
+			(write-line (strcat "VA=\"Durchm " mHoleDia "\"") file)
+			(write-line (strcat "VA=\"Tiefe " (lmm_convertNumtoStringWithDigit tempHoleDepth 2) "\"") file)
+			(write-line "VA=\"duebeln 1\"" file)
+			(write-line "VA=\"leimen 1\"" file)
+			(write-line "VA=\"Anzahl 1\"" file)
+			(write-line "VA=\"Raster 32\"" file)
+			(write-line "VA=\"zentrum 0\"" file)
+			(write-line "KAT=\"Komponentenmakro\"" file)
+			(write-line "MNM=\"Komponente\"" file)
+			(write-line "ORI=\"\"" file)
+			(write-line "KO=\"00\"" file) ;
+			(write-line "" file) ;
+		)
+		( (equal "BOT" (substr entLayerName 1 3)) ;bottom hole routines
+
+		)
+	)
+)
+
+(defun sendABD_150Machine (cPnl machineProcedures / machineName mprFilesPath tempPanelName tempPanelDepth tempPanelLength tempPanelWidth mprFile
+													tempPanelSS tempPanelSSList tempDerivedLayerName tempEnt )
+
+	(setq machineName "ABD_150")
+	(setq mprFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	(createDir (strcat mprFilesPath machineName "\\" ))
+	(setq mprFile (open (strcat mprFilesPath machineName "\\" (lmm_getDXFFileNameByFileMode (list tempPanelName)) ".mpr") "w"))
+	(setq tempPanelLength (lmm_convertNumtoStringWithDigit tempPanelLength 4))
+	(setq tempPanelWidth (lmm_convertNumtoStringWithDigit tempPanelWidth 4))
+	(setq tempPanelDepth (lmm_convertNumtoStringWithDigit tempPanelDepth 4))
+	(setq ad_HomagContourEntityIndex 0);her dosya için kontur elemaný sayýsý birden baþlasa iyi olur
+	(write-line "[H" mprFile)
+	(write-line "VERSION=\"4.0 Alpha\"" mprFile)
+	(write-line "WW=\"6.0.17\"" mprFile)
+	(write-line "HP=\"1\"" mprFile)
+	(write-line "IN=\"0\"" mprFile)
+	(write-line "GX=\"0\"" mprFile)
+	(write-line "BFS=\"1\"" mprFile)
+	(write-line "GY=\"0\"" mprFile)
+	(write-line "GXY=\"0\"" mprFile)
+	(write-line "UP=\"0\"" mprFile)
+	(write-line "FM=\"0\"" mprFile)
+	(write-line "FW=\"200\"" mprFile)
+	(write-line "ZS=\"20\"" mprFile)
+	(write-line "HS=\"0\"" mprFile)
+	(write-line "OP=\"0\"" mprFile)
+	(write-line "MAT=\"WEEKE\"" mprFile)
+	(write-line "DN=\"STANDARD\"" mprFile)
+	(write-line "INCH=\"0\"" mprFile)
+	(write-line "VIEW=\"NOMIRROR\"" mprFile)
+	(write-line "ANZ=\"1\"" mprFile)
+	(write-line "BES=\"0\"" mprFile)
+	(write-line "ENT=\"0\"" mprFile)
+	(write-line (strcat "_BSX=" 
+						tempPanelLength) mprFile)
+	(write-line (strcat "_BSY=" 
+						tempPanelWidth) mprFile)
+	(write-line (strcat "_BSZ=" 
+						tempPanelDepth) mprFile)
+	(write-line "_FNX=0.000000" mprFile)
+	(write-line "_FNY=0.000000" mprFile)
+	(write-line "_RNX=0.000000" mprFile)
+	(write-line "_RNY=0.000000" mprFile)
+	(write-line "_RNZ=0.000000" mprFile)
+	(write-line (strcat "_RX=" 
+						tempPanelLength) mprFile)
+	(write-line (strcat "_RY=" 
+						tempPanelWidth) mprFile)
+	(write-line "" mprFile)
+	(write-line "[001" mprFile)
+	(write-line (strcat "l=\"" tempPanelLength "\"") mprFile)
+	(write-line "KM=\"X deki uzunluk\"" mprFile)
+	(write-line (strcat "b=\"" tempPanelWidth "\"") mprFile)
+	(write-line "KM=\"Y deki genislik\"" mprFile)
+	(write-line (strcat "d=\"" tempPanelDepth "\"") mprFile)
+	(write-line "KM=\"Z deki kalinlik\"" mprFile)
+	(write-line "" mprFile)
+	(write-line "<100 \\WerkStck\\" mprFile)
+	(write-line "LA=\"l\"" mprFile)
+	(write-line "BR=\"b\"" mprFile)
+	(write-line "DI=\"d\"" mprFile)
+	(write-line "FNX=\"0\"" mprFile)
+	(write-line "FNY=\"0\"" mprFile)
+	(write-line "AX=\"0\"" mprFile)
+	(write-line "AY=\"0\"" mprFile)
+	(write-line "" mprFile)
+	(foreach currentOp machineProcedures
+		(setq tempOpLayerName (nth 0 currentOp))
+		;(setq tempOpToolName (nth 1 currentOp))
+		(setq tempOpOpName (nth 2 currentOp))
+		(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+		(setq tempPanelSSList (convertSStolist tempPanelSS))
+		(foreach tempEnt tempPanelSSList
+			
+			(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+				(progn 
+					(setq tempDerivedLayerName (mprInterpretHoleLayerName tempEnt))
+				)
+				(progn 
+					(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+				)
+			)
+			
+			(if (not (member tempDerivedLayerName mprIgnoreLayerNameList))
+				(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) mprAllEntities))
+					(setq mprAllEntities (append mprAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+				)
+			)
+			
+			(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+				(progn
+					(cond 
+						((equal tempOpOpName "HOLE") 
+							(mpr_ABD_150_HoleCamOperation tempEnt tempDerivedLayerName currentOp cPnl mprFile)
+							(setq mprNotFreeEntities (append mprNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						) 
+						((equal tempOpOpName "ABD_DEU") 
+							(mpr_ABD_150_ABD_DEUCamOperation tempEnt tempDerivedLayerName currentOp cPnl mprFile)
+							(setq mprNotFreeEntities (append mprNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+						)
+						((equal tempOpOpName "SAW") ;testere iþlemi
+							;boþ
+						)
+						((equal tempOpOpName "CONTOUR") ;freze iþlemi
+							;boþ
+							;(mpr_ABD_150_ContourCAMOperation tempEnt tempDerivedLayerName currentOp cPnl mprFile)
+						)
+					)
+				)
+			)
+		)
+	)
+
+	(write-line "!" mprFile)
+	(close mprFile)
+)
+
+
+(princ)

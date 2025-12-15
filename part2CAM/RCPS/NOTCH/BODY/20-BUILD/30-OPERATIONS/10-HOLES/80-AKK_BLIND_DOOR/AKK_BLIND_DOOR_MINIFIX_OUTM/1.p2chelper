@@ -1,0 +1,47 @@
+(_FSET (_ 'halfOfThickness (/ __AD_PANELTHICK 2.0)))
+; Blind corner blind door operations are performed in original recipe
+; IMPORTANT INFORMATION
+; 	Priority of top panel is higher than front top strechers. If both of them exists by the way it is not logical, then operation performs on top panel
+(cond
+	((_EXISTPANEL NOTCHED_TOP_PANEL_CODE)
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (_= "NOTCHED_TOP_PANEL_WID + __AD_PANELTHICK - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "NOTCHED_TOP_PANEL_WID + __AD_PANELTHICK + DISTANCE_TO_WALL - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY (- BLIND_DOOR_CONN_LEFT_OFFSET __AD_PANELTHICK)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - __AD_PANELTHICK - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holeCodeBody (_& (_ "NOTCHED_TOP_PANEL_MINIFIX_VER_HOLE_"))))
+		(_HOLE (_& (_ holeCodeBody "BS")) NOTCHED_TOP_PANEL_OP_FACE (_ (_ (_= "NOTCHED_TOP_PANEL_HEI - MINIFIX_HOR_DEPTH - MINIFIX_CONN_DISTANCE") bs_holePosOnAxisY 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+		(_HOLE (_& (_ holeCodeBody "DS")) NOTCHED_TOP_PANEL_OP_FACE (_ (_ (_= "NOTCHED_TOP_PANEL_HEI - MINIFIX_HOR_DEPTH - MINIFIX_CONN_DISTANCE") ds_holePosOnAxisY 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+		(_FSET (_ 'holeCodeBody (_& (_ "NOTCHED_TOP_PANEL_MINIFIX_HOR_HOLE_"))))
+		(_HOLE (_& (_ holeCodeBody "BS")) NOTCHED_TOP_PANEL_OP_FACE (_ (_ NOTCHED_TOP_PANEL_HEI bs_holePosOnAxisY (* halfOfThickness -1)) MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "X-"))
+		(_HOLE (_& (_ holeCodeBody "DS")) NOTCHED_TOP_PANEL_OP_FACE (_ (_ NOTCHED_TOP_PANEL_HEI ds_holePosOnAxisY (* halfOfThickness -1)) MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "X-"))
+	)
+	((_EXISTPANEL FRONT_TOP_STRECHER_CODE)
+		; Front top strecher operations are performed in original recipe
+	)
+)
+(if (_EXISTPANEL NOTCHED_BOTTOM_PANEL_CODE)
+	(progn
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (_= "NOTCHED_BOTTOM_PANEL_WID + bottomSideStyleV2 - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "NOTCHED_BOTTOM_PANEL_WID + bottomSideStyleV2 + DISTANCE_TO_WALL - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY (- BLIND_DOOR_CONN_LEFT_OFFSET bottomSideStyleV2)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - bottomSideStyleV2 - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holeCodeBody (_& (_ "NOTCHED_BOTTOM_PANEL_MINIFIX_VER_HOLE_"))))
+		(_HOLE (_& (_ holeCodeBody "BS")) NOTCHED_BOTTOM_PANEL_OP_FACE (_ (_ (+ MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) bs_holePosOnAxisY 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))
+		(_HOLE (_& (_ holeCodeBody "DS")) NOTCHED_BOTTOM_PANEL_OP_FACE (_ (_ (+ MINIFIX_HOR_DEPTH MINIFIX_CONN_DISTANCE) ds_holePosOnAxisY 0) MINIFIX_VER_DIAMETER MINIFIX_VER_DEPTH))	
+		(_FSET (_ 'holeCodeBody (_& (_ "NOTCHED_BOTTOM_PANEL_MINIFIX_HOR_HOLE_"))))
+		(_HOLE (_& (_ holeCodeBody "BS")) NOTCHED_BOTTOM_PANEL_OP_FACE (_ (_ 0 bs_holePosOnAxisY (* halfOfThickness -1)) MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "X+"))
+		(_HOLE (_& (_ holeCodeBody "DS")) NOTCHED_BOTTOM_PANEL_OP_FACE (_ (_ 0 ds_holePosOnAxisY (* halfOfThickness -1)) MINIFIX_HOR_DIAMETER MINIFIX_HOR_DEPTH "X+"))
+	)
+)

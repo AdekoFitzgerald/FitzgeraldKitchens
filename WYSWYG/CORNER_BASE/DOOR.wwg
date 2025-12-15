@@ -1,0 +1,32 @@
+;(setq entselFrom (entlast))
+;	
+;;tip   : A= Duz kapak B=Camli C=Cekmece D=Ic Kivrik
+;;        E=Dis Kivrik F=Serit Camli G=Stor Z=Z kapak(=> EN='(en wid1 wid2 deltaY))
+;;kulp  : Kulp yonu (K)uzey KD (D)ogu GD (G)uney (O)rta (K2) Kuzeyde 2 (O2) Ortada 2
+;;(setq doorId (kapak_ciz tipAndModel kulp ox oy oz en boy orient rotang))
+;;(setq doorId (kapak_ciz "A" "G-" 0.0 0.0 0.0 20.0 30.0 nil 0.0))
+;(setq doorId (kapak_ciz "D" "0-" 0.0 ADDer 0.0 31.7 68.5 nil 0.0))
+;
+;;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+;(setq doorsPropList (cons (list 0.0  0.0 31.7 "G-" "S" nil 0 doorId)  doorsPropList))
+;	
+;
+;	
+
+;tip   : A= Duz kapak B=Camli C=Cekmece D=Ic Kivrik
+;        E=Dis Kivrik F=Serit Camli G=Stor Z=Z kapak(=> EN='(en wid1 wid2 deltaY))
+;kulp  : Kulp yonu (K)uzey KD (D)ogu GD (G)uney (O)rta (K2) Kuzeyde 2 (O2) Ortada 2
+;(setq doorId (kapak_ciz tipAndModel kulp ox oy oz en boy orient rotang))
+
+;(setq doorId (kapak_ciz "A" "G-" 0.0 0.0 0.0 20.0 30.0 nil 0.0))
+;(setq doorId (kapak_ciz "D" "0-" 75.0 58.0 ad_bazaH 29.8 (- unitH 3.5) nil 0.0))
+;(setq doorId (kapak_ciz "A" "0-" 58.0 75.0 ad_bazaH 29.8 (- unitH 3.5) nil 90.0))
+(setq ptlst (ak2_drawBodyBoundingPoints))		
+(setq tempent1 (kapak_ciz (list "D" specialDoor) "0-" unitD unitD2 (+ ad_bazaH g_ClearBaseZBot) akd90_doorWidth1 (- unitH 3.3) (if LR LR "soL") (r2d (- pi/2 (* 0.5 dCornAng)))))
+					(setq tempent2 tempent1 )
+
+
+;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+;(setq doorsPropList (cons (list 0.0  (- unitH 3.2) 31.7 "0-" "D" nil 0 doorId)  doorsPropList))
+(setq doorsPropList (cons (list g_ClearBaseZBot (- (- unitH 3.3) g_ClearBaseZTop g_ClearBaseZBot) akd90_doorWidth1 "0-" "A" nil 0 tempent1) doorsPropList))	
+(setq doorsPropList (cons (list g_ClearBaseZBot (- (- unitH 3.3) g_ClearBaseZTop g_ClearBaseZBot) akd90_doorWidth1 "0-" "A" nil 0 tempent2) doorsPropList))

@@ -1,0 +1,1 @@
+(setq doorId (kapak_ciz (list "A" "ORCUNBU" "!!FIX!!") "0-"  ( * unitW 0.5) unitD dAltKot unitW unitH nil 0))

@@ -1,0 +1,350 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	(+ DS10_T1 DS10_T2)
+	0.0 
+	0.0 
+	
+	(list 0.0 (+ (- unitD) 0.1) dAltKot)
+	
+	"ON_BANT" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	(+ DS10_T1 DS10_T2)
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"ARKA_BANT" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ DS10_T1 DS10_T2)
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"ALT_BANT" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ DS10_T1 DS10_T2)
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 (- (+ dAltKot unitH) 0.1))
+	
+	"UST_BANT" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+)
+
+(initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
+(setq kpmLR (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Left/Right: ")))
+(cond
+	
+	((equal kpmLR "Right")
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD 0.1 0.1) 0.0 0.0) 
+				(list (- unitD 0.1 0.1) (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T2 
+			0.0 
+			0.0 
+			
+			(list 0.0 (- 0.1) (+ dAltKot 0.1))
+			
+			"DS10_01" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS10_D2 0.0 0.0) 
+				(list DS10_D2 (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list DS10_T2 (- 0.1) (+ dAltKot 0.1))
+			
+			"DS10_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS10_D1 0.0 0.0) 
+				(list DS10_D1 (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list DS10_T2 (+ (- unitD) DS10_D1 0.1) (+ dAltKot 0.1))
+			
+			"DS10_03" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) DS10_D4 0.0) 
+				(list 0.0 DS10_D4 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list DS10_T2 (- (- DS10_D2) 0.1) (+ dAltKot 0.1))
+			
+			"DS10_05" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) DS10_D3 0.0) 
+				(list 0.0 DS10_D3 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list DS10_T2 (- (- DS10_D2) 0.1) (- (+ unitH dAltKot) DS10_D3 0.1))
+			
+			"DS10_04" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+	
+	(T
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD 0.1 0.1) 0.0 0.0) 
+				(list (- unitD 0.1 0.1) (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T2
+			0.0 
+			0.0 
+			
+			(list DS10_T1 (- 0.1) (+ dAltKot 0.1))
+			
+			"DS10_01" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS10_D2 0.0 0.0) 
+				(list DS10_D2 (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 (- 0.1) (+ dAltKot 0.1))
+			
+			"DS10_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS10_D1 0.0 0.0) 
+				(list DS10_D1 (- unitH 0.1 0.1) 0.0) 
+				(list 0.0 (- unitH 0.1 0.1) 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 (+ (- unitD) DS10_D1 0.1) (+ dAltKot 0.1))
+			
+			"DS10_03" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) DS10_D4 0.0) 
+				(list 0.0 DS10_D4 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 (- (- DS10_D2) 0.1) (+ dAltKot 0.1))
+			
+			"ALT_YATAY_PARCA" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) 0.0 0.0) 
+				(list (- unitD DS10_D1 DS10_D2 0.1 0.1) DS10_D4 0.0) 
+				(list 0.0 DS10_D4 0.0) 
+			) 
+			nil
+			DS10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 (- (- DS10_D2) 0.1) (- (+ unitH dAltKot) DS10_D4 0.1))
+			
+			"UST_YATAY_PARCA" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+)

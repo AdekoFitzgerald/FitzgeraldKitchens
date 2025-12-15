@@ -1,0 +1,159 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MISCELLANEOUS_DEFAULT" nil "p2chelper")
+
+(setq earlyLedFinCEK 0) ; kenarlardan kisaltir ve yan panele operasyon yaptirmaz
+(setq DIST_OF_LED_GROOVE 10) ; mesafe override
+(setq ledItemCodeOverride "LED")
+
+(cond
+	(	(and (equal "FS" (getnth 1 (getnth (- __CURDIVORDER 1) (reverse (read (get_mdata g_currentModulEnt k:CAllDivisionList)))))))
+		(if (_EXISTPANEL (setq currentLedShelfCODE (strcat (XSTR "FIXED_SHELF") "_" (itoa (- __CURDIVORDER 1)))))
+			(progn
+				(setq grooveDistanceBTS (- (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)) FIXED_SHELF_FRONT_OFFSET))
+				(setq grooveDistanceBTS 	(_ (_ earlyLedFinCEK grooveDistanceBTS 0) (_ (- __CURDIVINSIDEWID FIXED_SHELF_SIDES_TOTAL_OFFSET earlyLedFinCEK) grooveDistanceBTS 0)))
+				(if LED_GROOVE_IS_AVAILABLE (_GROOVE "FIXED_SHELF_LED_GROOVE" currentLedShelfCODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+				(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+			)
+		)
+	)
+	(	(and (equal "FS" (getnth 1 (getnth __CURDIVORDER (reverse (read (get_mdata g_currentModulEnt k:CAllDivisionList)))))))
+		(if (_EXISTPANEL (setq currentLedShelfCODE (strcat (XSTR "FIXED_SHELF") "_" (itoa __CURDIVORDER))))
+			(progn
+				(setq grooveDistanceBTS (- (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)) FIXED_SHELF_FRONT_OFFSET))
+				(setq grooveDistanceBTS 	(_ (_ earlyLedFinCEK grooveDistanceBTS 0) (_ (- __CURDIVINSIDEWID FIXED_SHELF_SIDES_TOTAL_OFFSET earlyLedFinCEK) grooveDistanceBTS 0)))
+				(if LED_GROOVE_IS_AVAILABLE (_GROOVE "FIXED_SHELF_LED_GROOVE" currentLedShelfCODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+				(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+			)
+		)
+	)
+	(	(and (equal __CURDIVORDER 0) (_EXISTPANEL (setq currentLedShelfCODE TOP_PANEL_CODE))) 
+		(progn
+			(setq grooveDistanceBTS (- TOP_PANEL_HEI TOP_PANEL_FRONT_VARIANCE DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)))
+			(setq grooveDistanceBTS (_ (_ grooveDistanceBTS earlyLedFinCEK 0) (_ grooveDistanceBTS (- TOP_PANEL_WID earlyLedFinCEK) 0)))
+			(if LED_GROOVE_IS_AVAILABLE (_GROOVE "TOP_PANEL_LED_GROOVE" TOP_PANEL_CODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+			(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+		)
+	)
+	(	(and (equal __CURDIVORDER 0) (_EXISTPANEL (setq currentLedShelfCODE FRONT_TOP_STRECHER_CODE)))
+		(progn
+			(setq grooveDistanceBTS (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)))
+			(setq grooveDistanceBTS (_ (_ earlyLedFinCEK grooveDistanceBTS 0) (_ (- FRONT_TOP_STRECHER_WID earlyLedFinCEK) grooveDistanceBTS 0)))
+			(if LED_GROOVE_IS_AVAILABLE (_GROOVE "FRONT_TOP_STRECHER_LED_GROOVE" FRONT_TOP_STRECHER_CODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+			(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+		)
+	)
+	(	(and (equal __CURDIVORDER 0) IS_ALU_STRECHER_EXISTS)
+		(progn
+			(setq grooveDistanceBTS (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)))
+			(setq grooveDistanceBTS (_ (_ earlyLedFinCEK grooveDistanceBTS 0) (_ (- __WID __AD_PANELTHICK __AD_PANELTHICK earlyLedFinCEK) grooveDistanceBTS 0)))
+			(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+		)
+	)
+	(	T ; (equal "CT" (getnth 1 (getnth __CURDIVORDER (reverse (read (get_mdata g_currentModulEnt k:CAllDivisionList))))))
+		(progn ; burda sabit raf recetelerinden kopya cektim -orcun
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; panel
+			(setq currentLedShelfCODE (_& (_ (XSTR "LED_SHELF") "_" __CURDIVORDER)))
+			(setq LED_SHELF_FRONT_OFFSET (if GOLA_PATTERN (cu2mm (_GETGOLACLEARANCE (_GETGOLAORDER GOLA_PATTERN) (mm2cu (+ __CURDIVELEV __CURDIVINSIDEHEI __AD_PANELTHICK)) )) 0.0))
+			(setq LED_SHELF_HOLES_FRONT_SHIFT_VALUE 0)
+			(setq tempHEI 100)
+			(setq tempWID __CURDIVINSIDEWID)
+			(setq tempROT (_ nil __MODULBODYMATROT __MODULBODYMATROT nil))
+			(setq tempELEV (+ __CURDIVELEV __CURDIVINSIDEHEI (* 0.5 (cu2mm g_ClearBaseZTop)))) ; 1.5 mm yukari ( kapak boslugu yarisi kadar )
+			(setq tempELEV (+ tempELEV 0)) ; extra yukari asagi
+			(setq tempPDATA (_GENERATEPDATA tempWID tempHEI))
+			
+			(_PANELMAIN currentLedShelfCODE (_ tempPDATA tempROT __MODULBODYMAT __AD_PANELTHICK))
+			(_PUTLABEL currentLedShelfCODE currentLedShelfCODE "LED_SHELVES")
+			(_PUTTAG currentLedShelfCODE currentLedShelfCODE nil)
+			(setq LED_SHELF_LEFT_EDGESTRIP_MAT nil)
+			(setq LED_SHELF_RIGHT_EDGESTRIP_MAT nil)
+			(setq LED_SHELF_TOP_EDGESTRIP_MAT PVCKoduDCS)
+			(setq LED_SHELF_BOTTOM_EDGESTRIP_MAT PVCKoduDCS)
+			(if (null LED_SHELF_BOTTOM_EDGESTRIP_MAT) (setq LED_SHELF_BOTTOM_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT))
+			(_ADDPARTMAT2EDGESTRIPS (_ 'LED_SHELF_LEFT_EDGESTRIP_MAT 'LED_SHELF_RIGHT_EDGESTRIP_MAT 'LED_SHELF_TOP_EDGESTRIP_MAT 'LED_SHELF_BOTTOM_EDGESTRIP_MAT) __MODULBODYMAT ADD_PART_MATERIAL)
+			(_CREATEEDGESTRIPS currentLedShelfCODE (_ 
+				(_ LED_SHELF_LEFT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LED_SHELF_LEFT_EDGESTRIP_MAT))
+				(_ LED_SHELF_TOP_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LED_SHELF_TOP_EDGESTRIP_MAT))
+				(_ LED_SHELF_RIGHT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LED_SHELF_RIGHT_EDGESTRIP_MAT))
+				(_ LED_SHELF_BOTTOM_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LED_SHELF_BOTTOM_EDGESTRIP_MAT))
+			))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; delik
+	
+			(if DEDUCT_GROOVE_SHARE_FROM_BACK
+				(setq DEDUCTION_VALUE (* -1 (+ GROOVE_WID GROOVE_DISTANCE)))
+				(setq DEDUCTION_VALUE 0)
+			)
+			(setq lengthParametersLedShelfAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ ( * -1 LED_SHELF_FRONT_OFFSET) (+ (* -1 (- __DEP tempHEI LED_SHELF_FRONT_OFFSET)) DEDUCTION_VALUE) LEFT_PANEL_FRONT_VARIANCE (+ LEFT_PANEL_BACK_VARIANCE DEDUCTION_VALUE))))
+			(mapcar '_SETA '(lengthForLedShelfAndLeft frontStartingPointLedShelfL backStartingPointLedShelfL frontStartingPointLeft backStartingPointLeft) lengthParametersLedShelfAndLeft)
+			(setq lengthParametersForLedShelfAndRight (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ (* -1 LED_SHELF_FRONT_OFFSET) (+ (* -1 (- __DEP tempHEI LED_SHELF_FRONT_OFFSET)) DEDUCTION_VALUE) RIGHT_PANEL_FRONT_VARIANCE (+ RIGHT_PANEL_BACK_VARIANCE DEDUCTION_VALUE))))
+			(mapcar '_SETA '(lengthForLedShelfAndRight frontStartingPointLedShelfR backStartingPointLedShelfR frontStartingPointRight backStartingPointRight) lengthParametersForLedShelfAndRight)
+			(setq LEDindex 0)
+			(foreach operationParams OPERATION_LIST
+				(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+				(setq LedShelfPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+					(_ lengthForLedShelfAndLeft 0 (car horizontalHolePos) "Y") 
+					(_ frontStartingPointLedShelfL backStartingPointLedShelfL nil tempHEI) 
+					(_ FITTING_PARAMETERS nil)))
+				(_HOLEGROUP operationName currentLedShelfCODE LedShelfPointListForLeftSide (_ "X+" nil) connectorParams)
+				(setq LedShelfPointListForRightSide (_GETHOLEPOINTLIST operationName
+					(_ lengthForLedShelfAndRight tempWID (car horizontalHolePos) "Y") 
+					(_ frontStartingPointLedShelfR backStartingPointLedShelfR nil tempHEI) 
+					(_ FITTING_PARAMETERS nil)))
+				(_HOLEGROUP operationName currentLedShelfCODE LedShelfPointListForRightSide (_ "X-" nil) connectorParams)
+				
+				(setq halfOfThickness (cadr horizontalHolePos))
+				
+				(setq holePosOnAxisY_Left (_= "tempELEV + halfOfThickness - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE"))
+				(setq holePosOnAxisY_Right (_= "tempELEV + halfOfThickness - bottomSideStyleV1 + RIGHT_PANEL_LOWER_VARIANCE"))
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(setq leftPanelPointListForLedShelf (_GETHOLEPOINTLIST operationName 
+							(_ lengthForLedShelfAndLeft holePosOnAxisY_Left 0 "X") 
+							(_ (+ frontStartingPointLeft LED_SHELF_HOLES_FRONT_SHIFT_VALUE) (- backStartingPointLeft LED_SHELF_HOLES_FRONT_SHIFT_VALUE) nil LEFT_PANEL_WID) 
+							(_ FITTING_PARAMETERS nil)))
+						(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForLedShelf (_ nil "Y+") connectorParams)
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(setq rightPanelPointListForLedShelf (_GETHOLEPOINTLIST operationName 
+							(_ lengthForLedShelfAndRight holePosOnAxisY_Right 0 "X") 
+							(_ (_= "frontStartingPointRight + LED_SHELF_HOLES_FRONT_SHIFT_VALUE") (- backStartingPointRight LED_SHELF_HOLES_FRONT_SHIFT_VALUE) T RIGHT_PANEL_WID) 
+							(_ FITTING_PARAMETERS nil)))
+						(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForLedShelf (_ nil "Y+") connectorParams)
+					)
+				)
+				(setq LEDindex (+ LEDindex 1))
+			)
+			(setq LEDindex nil)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; led kanal
+			(setq grooveDistanceBTS (+ DIST_OF_LED_GROOVE (* 0.5 WID_OF_LED_GROOVE)))
+			(setq grooveDistanceBTS (_ (_ earlyLedFinCEK grooveDistanceBTS 0) (_ (- tempWID earlyLedFinCEK) grooveDistanceBTS 0)))
+			(if LED_GROOVE_IS_AVAILABLE (_GROOVE "LEF_SHELF_LED_GROOVE" currentLedShelfCODE (_ grooveDistanceBTS WID_OF_LED_GROOVE DEPTH_OF_LED_GROOVE)))
+			(if ledItemCodeOverride (_ITEMMAIN ledItemCodeOverride ledItemCodeOverride (list (* 0.001 (distance (getnth 0 grooveDistanceBTS) (getnth 1 grooveDistanceBTS))) "m")))
+		)
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; null
+(setq
+LED_SHELF_FRONT_OFFSET 			 	nil
+LED_SHELF_HOLES_FRONT_SHIFT_VALUE	nil
+LED_SHELF_LEFT_EDGESTRIP_MAT 		nil
+LED_SHELF_RIGHT_EDGESTRIP_MAT 	 	nil
+LED_SHELF_TOP_EDGESTRIP_MAT 		nil
+LED_SHELF_BOTTOM_EDGESTRIP_MAT 	 	nil
+tempHEI 		 	nil
+tempWID 		 	nil
+tempROT 		 	nil
+tempMAT 		 	nil
+tempTHICKNESS 	nil
+tempELEV 	 	nil
+tempPDATA 	 	nil
+)
+
+(setq currentLedShelfCODE nil)
+(setq ledItemCodeOverride nil)
+(setq earlyLedFinCEK nil)
+
+(_NONOTCH)

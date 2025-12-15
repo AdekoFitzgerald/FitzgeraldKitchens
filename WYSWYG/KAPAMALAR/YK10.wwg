@@ -1,0 +1,139 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ YK10_T1 YK10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 (+ (- unitD) 0.1) dAltKot)
+	"ON BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW 0.1 0.0) 
+		(list 0.0 0.1 0.0) 
+	) 
+	nil
+	(+ YK10_T1 YK10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 0.0 dAltKot)
+	"ARKA BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	(+ YK10_T1 YK10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  0.0 0.0 dAltKot)
+	"SOL BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	(+ YK10_T1 YK10_T2)
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list  (- unitW 0.1) 0.0 dAltKot)
+	"SAG BANT"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW 0.2) 0.0 0.0) 
+		(list (- unitW 0.2) (- unitD 0.2) 0.0) 
+		(list 0.0 (- unitD 0.2) 0.0) 
+	) 
+	nil
+	YK10_T1
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.1 (- 0.1) (+ dAltKot YK10_T2))
+	"YK10_01"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+		
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW 0.2) 0.0 0.0) 
+		(list (- unitW 0.2) (- unitD 0.2) 0.0) 
+		(list 0.0 (- unitD 0.2) 0.0) 
+	) 
+	nil
+	YK10_T2
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.1 (- 0.1) dAltKot)
+	"YK10_02"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+		

@@ -1,0 +1,7 @@
+QFIX_GEOMETRY -> "Geometry of qfix hole. POLYLINE or CIRCLE ?"
+QFIX_HOR_DIA -> "Diameter of qfix bolt hole"
+QFIX_HOR_DEPTH -> "Depth of qfix bolt hole"
+QFIX_BOLT_HOLE_POS -> "Position of qfix bolt hole"
+QFIX_VER_DEPTH -> "Depth of main qfix hole"
+QFIX_CODE -> "Code of qfix"
+QFIX_UNIT -> "Unit of qfix"

@@ -1,0 +1,668 @@
+
+
+; ------->>>>>>> Post Procesoru kullanmadan once aþaðýdaki ayarlarý yapnýz
+;Raporlar -> imalat DXF AYARLAR -> DXF/NC ->  Yan delikleri panel alt noktasý Z sýfýrda gibi çiz. 
+
+(setq ad_AspanCAMOperationList (list
+										(list "TOP_DIA3.0" "T3\nG172 T1 H3 D3\nG116 M(4) N(0) S3000" "HOLE" "F 2000")
+										(list "TOP_DIA5.0" "T6\nG172 T1 H6 D6\nG116 M(32) N(0) S3000" "HOLE" "F 2000")
+										(list "TOP_DIA8.0" "T9\nG172 T1 H9 D9\nG116 M(256) N(0) S3000" "HOLE" "F 2000")
+										(list "TOP_DIA10.0" "T10\nG172 T1 H10 D10\nG116 M(512) N(0) S3000" "HOLE" "F 2000")
+										(list "TOP_DIA15.0" "T2\nG172 T1 H2 D2\nG116 M(2) N(0) S3000" "HOLE" "F 2000")
+										(list "TOP_DIA35.0" "T1\nG172 T1 H1 D1\nG116 M(1) N(0) S3000" "HOLE" "F 2000")
+										(list "GROOVE" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "CENTER" 0 "F 3000" )
+										(list "GROOVE_9" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "CENTER" 0 "F 3000" )
+										(list "GROOVE_10" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "CENTER" 0 "F 3000" )
+										;(list "GROOVE_9" "T104\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "CENTER" 0 "F 3000" )
+										(list "GOLA_LAYER_TOP_1" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 2 0 0 0 "INSIDE" 4.5 "F 3000" )
+										(list "GOLA_LAYER_TOP_2" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 2 0 0 0 "INSIDE" 4.5 "F 3000" )
+										(list "NOTCH" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 2 0 0 0 "INSIDE" 4.5 "F 3000" )
+										(list "LEFT_DIA8.0" "T12\nG172 T1 H12 D12\nG116 M(2048) N(0) S3000" "HOLE" "F 2000")
+										(list "LEFT_DIA10.0" "T14\nG172 T1 H14 D14\nG116 M(8192) N(0) S3000" "HOLE" "F 2000")
+										(list "FRONT_DIA10.0" "T202\nG172 T3 H206 D206\nM122\nM123\nM3 S10000" "HOLE" "F 2000")
+										(list "FRONT_DIA8.0" "T202\nG172 T3 H206 D206\nM122\nM123\nM3 S10000" "HOLE" "F 2000")
+										(list "RIGHT_DIA8.0" "T11\nG172 T1 H11 D11\nG116 M(1024) N(0) S3000" "HOLE" "F 2000")
+										(list "RIGHT_DIA10.0" "T13\nG172 T1 H13 D13\nG116 M(4096) N(0) S3000" "HOLE" "F 2000")
+										(list "REAR_DIA10.0" "T201\nG172 T3 H201 D201\nM122\nM123\nM3 S10000" "HOLE" "F 2000")
+										;(list "REAR_DIA8.0" "T201\nG172 T3 H201 D201\nM122\nM123\nM3 S10000" "HOLE" "F 2000")
+										;(list "PK" "T103\nG172 T2 H111 D111\nG0 Z 30\nM3 S18000" "MILLING" 1 0 0 0 "INSIDE" 4 "F 3000" )
+										
+ ))
+ 
+ 
+ ;Gola varsa notch layerini gormezden gel. 
+ (defun prepareAspanCAMOperationList  ( tempPanel / tempPanelSS tempPanelSSList hasGolaLayer tempEnt layerName mrtn currOp) 
+	(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(setq hasGolaLayer nil)
+	(foreach tempEnt tempPanelSSList
+		 (setq layerName (getEntPro tempEnt 8))
+		 (if (member layerName '("GOLA_LAYER_TOP_1" "GOLA_LAYER_TOP_2"))
+			(setq hasGolaLayer T)
+		 )
+	)
+	(setq mrtn nil)
+	(if hasGolaLayer
+		(progn
+			(foreach currOp ad_AspanCAMOperationList
+				(if (not (member (nth 0 currOp) '("NOTCH")))
+					(setq mrtn (append mrtn (_ currOp)))
+				)
+			)
+		)
+		(setq mrtn ad_AspanCAMOperationList)
+	)
+	mrtn
+ )
+
+									
+;Basic parameters:
+;X Coordinate X for first  hole
+;Y Coordinate Y for first  hole
+;Z Hole depth
+;D Hole diameter
+;R Number of holes (including the original hole)
+;x X step for repetitions
+;y Y step for repetitions
+;N Hole type (P=flat, L=lance, S=taper)
+;Extended parameters:
+;L Taper height (only if N=S)
+;V Boring speed
+;G Number of chip discharge steps
+;
+;To make a hole, parameters X, Y, Z, D, N, F are mandatory
+;The example that can be written as an element into the ad_xxlCAMOperationList .
+;(list "TOP_DIA8.0" "T=1" "XBO")
+
+(defun selectWorkingFace ( wface panel file / tempPanelWidth tempPanelLength tempPanelDepth)
+	
+	(if (not (equal currentWorkingFace wface))
+		(progn
+			(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(cond
+				( (equal "TOP" wface); top hole routines
+					(write-line (strcat ";UPPER FACE\n"
+										"G161 X 0 Y 0 Z " (lmm_convertNumtoStringWithDigit tempPanelDepth 2)
+										"\nG160 I1 J0 K0 P0 Q1 R0 U0 V0 W1"
+										) file)
+				)
+				( (equal "RIG" wface) ;right hole routines
+					(write-line (strcat ";RIGHT FACE\n"
+										"G161 X " (lmm_convertNumtoStringWithDigit tempPanelLength 2) " Y 0 Z 0\n"
+										"G160 I0 J1 K0 P0 Q0 R1 U1 V0 W0"
+										) file)
+					
+				)
+				( (equal "LEF" wface) ; left hole routines
+					(write-line (strcat ";LEFT FACE\n"
+										"G161 X 0 Y " (lmm_convertNumtoStringWithDigit tempPanelWidth 2) " Z 0\n"
+										"G160 I0 J-1 K0 P0 Q0 R1 U-1 V0 W0"
+										) file)
+		
+				)
+				( (equal "REA" wface) ; rear holes routines
+					(write-line (strcat ";REAR FACE\n"
+										"G161 X " (lmm_convertNumtoStringWithDigit tempPanelLength 2) " Y " (lmm_convertNumtoStringWithDigit tempPanelWidth 2) " Z 0\n"
+										"G160 I-1 J0 K0 P0 Q0 R1 U0 V1 W0"
+										) file)
+				)
+				( (equal "FRO" wface) ; front hole routines
+					(write-line (strcat ";FRONT FACE\n"
+										"G161 X 0 Y 0 Z 0\n"
+										"G160 I1 J0 K0 P0 Q0 R1 U0 V-1 W0"
+										) file)
+				)
+		
+			)
+			(setq currentWorkingFace wface)
+		)
+	)
+)
+
+(defun selectTool ( tool file / )
+(if (not (equal currentTool tool))
+		(progn
+			(write-line (nth 1 tempCAMStyle) file)
+			(setq currentTool tool)
+		)
+	)
+)
+
+(setq aspanHoleCAMOperation nil)
+(defun aspanHoleCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / mHoleX mHoleY mHoleZ mHoleDepth mHoleDia tempHoleDepth tempHolePos
+																				  opOpName opToolType tempHolePosWorld ikiyuzon sideOrigin
+																				  tempPanelDepth tempPanelLength tempPanelWidth tempHolePosSide)
+
+	(selectWorkingFace 	(substr entLayerName 1 3) currentPanel file)
+	(selectTool (nth 1 tempCAMStyle) file)
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	;(setq opLayerName (nth 0 currentOp))
+	(setq opToolType (nth 1 currentOp))
+	(setq opOpName (nth 2 currentOp))
+	(cond
+		( (equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			;Güvenlik 
+			(if (> tempHoleDepth (+ tempPanelDepth 5))
+				(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Delik derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																					entLayerName
+																					tempHoleDepth)))
+			)
+			
+			(princ (sprintf ";( Drilling upper face HoleDia: ~d )\n" (list mHoleDia)) file)
+			(princ (sprintf "G0 X ~s Y ~s  Z 35.00\n" (list mHoleX mHoleY)) file) ;rapit yaklaþma G0 
+			(princ "G0 Z 10\n"  file) ;parçaya yaklaþma
+			(princ (sprintf "G1 Z-~s ~s\n" (list mHoleDepth (nth 3 tempCAMStyle))) file) ;delme 
+			(princ (sprintf "G1 Z10 ~s\n" (list (nth 3 tempCAMStyle))) file) ;rapid geri gelme uzaklaþma
+			(princ "G0 Z 35\n" file) ;rapid yukarý uzaklaþma
+		)
+		( (equal "RIG" (substr entLayerName 1 3)) ;right hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			;Güvenlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Delik derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																					entLayerName
+																					tempHoleDepth)))
+			)
+			(princ (sprintf ";( Drilling right face HoleDia: ~d )\n" (list mHoleDia)) file)
+			(princ (sprintf "G0 X ~s Y 83.00 Z 10.00\n" (list mHoleY)) file) ;rapit yaklaþma G0 
+			(princ (sprintf "G1 Y ~s ~s\n" (list mHoleZ (nth 3 tempCAMStyle))) file) ;parçaya yaklaþma G1 x y x F 4000
+			(princ (sprintf "G1 Z -~s ~s\n" (list mHoleDepth (nth 3 tempCAMStyle))) file) ;delme 
+			(princ (sprintf "G1 Z 10.00 ~s\n" (list (nth 3 tempCAMStyle))) file) ;rapid geri gelme uzaklaþma
+			(princ "G0 Y 83.00\n" file) ;rapid yukarý uzaklaþma
+			
+		)
+		( (equal "LEF" (substr entLayerName 1 3)) ; left hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealX (- tempPanelWidth (getnth 1 tempHolePos)))
+			;Güvenlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Delik derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																					entLayerName
+																					tempHoleDepth)))
+			)
+			(princ (sprintf ";( Drilling left face HoleDia: ~d )\n" (list mHoleDia)) file)
+			(princ (sprintf "G0 X ~s Y 83.00 Z 10.00\n" (list (lmm_convertNumtoStringWithDigit mRealX 2))) file) ;rapit yaklaþma G0 
+			(princ (sprintf "G1 Y ~s ~s\n" (list mHoleZ (nth 3 tempCAMStyle))) file) ;parçaya yaklaþma G1 x y x F 4000
+			(princ (sprintf "G1 Z -~s ~s\n" (list mHoleDepth (nth 3 tempCAMStyle))) file) ;delme 
+			(princ (sprintf "G1 Z 10.00 ~s\n" (list (nth 3 tempCAMStyle))) file) ;rapid geri gelme uzaklaþma
+			(princ "G0 Y 83.00\n" file) ;rapid yukarý uzaklaþma
+		)
+		( (equal "REA" (substr entLayerName 1 3)) ; rear holes routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq tempPanelWidth (getnth 3 (getBBox currentPanel)))
+			(setq tempPanelLength (getnth 2 (getBBox currentPanel)))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			(setq mRealX (- tempPanelLength (getnth 0 tempHolePos)))
+			;Güvenlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Delik derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																					entLayerName
+																					tempHoleDepth)))
+			)
+			(princ (sprintf ";( Boring with electrospindle HoleDia: ~d )\n" (list mHoleDia)) file)
+			(princ (sprintf "G0 X ~s Y 98.00 Z 30.00\n" (list (lmm_convertNumtoStringWithDigit mRealX 2))) file) ;rapit yaklaþma G0 
+			(princ (sprintf "G1 Y ~s ~s\nM80\n" (list mHoleZ (nth 3 tempCAMStyle))) file) ;parçaya yaklaþma G1 x y x F 4000
+			(princ (sprintf "G1 Z -~s ~s\n" (list mHoleDepth (nth 3 tempCAMStyle))) file) ;delme 
+			(princ (sprintf "G1 Z 30.00 ~s\n" (list (nth 3 tempCAMStyle))) file) ;rapid geri gelme uzaklaþma
+			(princ "G0 Y 98.00\n" file) ;rapid yukarý uzaklaþma
+		)
+		( (equal "FRO" (substr entLayerName 1 3)) ; front hole routines
+			(setq ikiyuzon (getEntPro tempEnt 210))
+			(setq tempHolePos (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleZ (lmm_convertNumtoStringWithDigit (getnth 2 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit tempHoleDepth 2))
+			;Güvenlik 
+			(if (> tempHoleDepth 35)
+				(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Delik derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																					entLayerName
+																					tempHoleDepth)))
+			)
+			(princ (sprintf ";( Boring with electrospindle HoleDia: ~d )\n" (list mHoleDia)) file)
+			(princ (sprintf "G0 X ~s Y 98.00 Z 30.00\n" (list mHoleX)) file) ;rapit yaklaþma G0 
+			(princ (sprintf "G1 Y ~s ~s\nM80\n" (list mHoleZ (nth 3 tempCAMStyle))) file) ;parçaya yaklaþma G1 x y x F 4000
+			(princ (sprintf "G1 Z -~s ~s\n" (list mHoleDepth (nth 3 tempCAMStyle))) file) ;delme 
+			(princ (sprintf "G1 Z 30.00 ~s\n" (list (nth 3 tempCAMStyle))) file) ;rapid geri gelme uzaklaþma
+			(princ "G0 Y 98.00\n" file) ;rapid yukarý uzaklaþma
+		)
+	)
+)
+
+(setq doAspanCONTOURCam nil)
+(defun doAspanCONTOURCam (currentEnt entLayerName tempCAMStyle currentPanel file /  deleteHelper tempDepth stepOfPasses
+																bottomZComponent topZComponent stepZComponets cutFeedRate 
+																tempPoints helperEntity fieldPoint firstPoint secondPoint
+																firstSecondNormal iteration currentZLevel tempPoint bulgeOfSegment
+																radiusOfSegment tempPanelDepth)
+	(selectWorkingFace "TOP" currentPanel file)
+	(princ ";( Routing ) \n" file)
+	(selectTool (nth 1 tempCAMStyle) file)
+	(setq deleteHelper nil)
+	(setq tempPanelDepth (lmm_getLMMdata currentPanel lmm-k-depth))
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq cutFeedRate (nth 9 tempCAMStyle))
+	
+	;Center mý inside mý outside mý?
+	(cond
+	( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints  (lmm_getPolylinePoints currentEnt) )
+			(setq helperEntity currentEnt)
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints (entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder tempPoints  currentPanel))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list tempEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints (entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+
+	;helper entitiyi kullanacaðýz
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	; (( x y z) b (x y z) b)
+	
+	(foreach currentZLevel stepZComponets
+		(if (> (abs currentZLevel) (+ 2 tempPanelDepth) )
+			(alert (sprintf "Takým çarpma riski hasýl oldu!!!\n ~s -> ~s\n Freze derinliði: ~d" (list (lmm_getDXFFileNameByFileMode (list tempPanel))
+																	entLayerName
+																	currentZLevel)))
+		)
+		
+		(setq iteration 1)
+		(foreach tempPoint tempPointsWB
+			(if (equal 0 (rem iteration 2))
+				(setq bulgeOfSegment tempPoint)
+				(progn
+					(cond
+						((equal 1 iteration) ; ilk harekat yaklaþma hareketlerinide yap
+							(princ "G0 Z40.00" file)
+							(princ (sprintf "\nG0 X~s Y~s" (list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+															)) 
+							file)
+							(princ (sprintf "\nG1 Z~s ~s" (list (lmm_convertNumtoStringWithDigit currentZLevel 3) cutFeedRate )) file) ; plunge move
+						)
+						((equal (- (length tempPointsWB) 1) iteration) ; son kesme hareketleri ve uzaklaþma hareketleri
+							(cond
+								((equal 0.0 bulgeOfSegment)
+									(princ (sprintf "\nG1 X~s Y~s Z~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+								((> 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "\nG2 X~s Y~s Z~s R~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+								((< 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "\nG3 X~s Y~s Z~s R~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+							)
+							(princ "\nG0 Z40.000\n" file)
+						)
+						((and (< 1 iteration) (> (length tempPointsWB) iteration)) ; kesme hareketleri
+							(cond
+								((equal 0.0 bulgeOfSegment)
+									(princ (sprintf "\nG1 X~s Y~s Z~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+								((> 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "\nG2 X~s Y~s Z~s R~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+								((< 0.0 bulgeOfSegment)
+									(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+									;calculatePolylineSegmentRadius returns (_ segr  ijk center arcLength totalRad arcStartRad arcFinishRad )
+									(setq radiusOfSegment (nth 0 (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment)))
+									(princ (sprintf "\nG3 X~s Y~s Z~s R~s ~s" 	(list (lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+																	(lmm_convertNumtoStringWithDigit currentZLevel 3)
+																	(lmm_convertNumtoStringWithDigit radiusOfSegment 3)
+																	cutFeedRate
+															)) 
+									file)
+								)
+							)
+						)
+					)
+					(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+				)
+			)
+			(setq iteration (+ 1 iteration))
+		)
+	)
+	(if deleteHelper (deleteEntity (entlast)))
+)
+
+(setq aspanAllEntities nil)
+(setq aspanNotFreeEntities nil)
+(setq aspanEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq aspanIgnoreLayerNameList (list "0" "PANEL" "TOP_DIA0.0" "REAR_DIA0.0" "FRONT_DIA0.0" "LEFT_DIA0.0" "RIGHT_DIA0.0" "GOLA_LAYER_3" "LMM_EDGESTRIP")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+(setq currentWorkingFace nil)
+(setq currentTool nil)
+
+(setq lmm_exportAspanPGMFilesDesiredCAMOp nil)
+(defun lmm_exportAspanPGMFilesDesiredCAMOp ( / allPanelsList tempPanel panelIndex gCodeFilesPath gCodeFile
+												tempDerivedLayerName tempPanelName tempPanelDepth tempPanelLength
+												tempPanelWidth tempOpLayerName tempOpOpName tempProgramName
+												ad_AspanCAMOperationListTemp )
+	
+	
+	(setq aspanAllEntities nil)
+	(setq aspanNotFreeEntities nil)
+	(setq aspanEntitiesThatCanNotBeCAM nil)
+	
+	(setq allPanelsList (lmm_getAllPanelsList))
+ 	(setq gCodeFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	
+	(foreach tempPanel allPanelsList
+		;çalýþma yüzeyini her panel iþlemeye kalkýþtýðýmýzda nil lemmemzi gerekiyor
+		(setq currentWorkingFace nil)
+		(setq currentTool nil)
+	
+		;panelin bazý bilgileri alýnýyor
+		(setq tempPanelName (lmm_getLMMdata tempPanel lmm-k-customCode))
+		(setq tempPanelDepth (lmm_getLMMdata tempPanel lmm-k-depth))
+		(setq tempPanelLength (getnth 2 (getBBox tempPanel)))
+		(setq tempPanelWidth (getnth 3 (getBBox tempPanel)))
+	
+		;panel için dosya yarat
+		(setq tempProgramName (lmm_getDXFFileNameByFileMode (list tempPanel)))
+		(setq gCodeFile (open (strcat gCodeFilesPath  tempProgramName ".pgm") "w"))
+		
+		;header parça en boy kalýnlýk
+		
+		(write-line (strcat tempProgramName " %1000\n"
+;";Created on " (COMMAND "_DATE" "") " Adeko Part2CAM 2020 04 16"
+";//Utilizzate da G154..157, 158 e 159, G160, ..., G153 e G152
+;//Interne
+DBL ori_x=0, ori_y=0, ori_z=0
+DBL add1_x=0, add1_y=0, add1_z=0
+DBL add2_x=0, add2_y=0, add2_z=0
+DBL mx_a11=1, mx_a12=0, mx_a13=0, mx_o1=0
+DBL mx_a21=0, mx_a22=1, mx_a23=0, mx_o2=0
+DBL mx_a31=0, mx_a32=0, mx_a33=1, mx_o3=0
+;//livelli
+DBL ml_max=5, ml_curr=-1, ml_peak=-1
+;//traslazione
+DBL ml_to1[ml_max]
+DBL ml_to2[ml_max]
+DBL ml_to3[ml_max]
+;//rotazione
+DBL ml_a11[ml_max], ml_a12[ml_max], ml_a13[ml_max], ml_ro1[ml_max]
+DBL ml_a21[ml_max], ml_a22[ml_max], ml_a23[ml_max], ml_ro2[ml_max]
+DBL ml_a31[ml_max], ml_a32[ml_max], ml_a33[ml_max], ml_ro3[ml_max]
+;//specularita'
+DBL ml_mf1[ml_max], ml_mo1[ml_max]
+DBL ml_mf2[ml_max], ml_mo2[ml_max]
+DBL ml_mf3[ml_max], ml_mo3[ml_max]
+;//altre
+DBL rtcp_on=0
+DBL tool_cosx=0, tool_cosy=0, tool_cosz=0, cut_edge_no=0, cut_edge_svl=0
+DBL twist_head_no=0, tool_holder_no=0, rtcp_cut_edge_no=0, rtcp_cut_edge_svl=0
+;//Utilizzate da G180
+;//Output
+DBL kine_x=0, kine_y=0, kine_z=0
+DBL tf_a11=1, tf_a12=0, tf_a13=0
+DBL tf_a21=0, tf_a22=1, tf_a23=0
+DBL tf_a31=0, tf_a32=0, tf_a33=1
+;//Utilizzate da G196
+;//Output
+DBL uf_a11=1, uf_a12=0, uf_a13=0, uf_o1=0
+DBL uf_a21=0, uf_a22=1, uf_a23=0, uf_o2=0
+DBL uf_a31=0, uf_a32=0, uf_a33=1, uf_o3=0\n"
+";panel definition\n"
+"G200 X " (lmm_convertNumtoStringWithDigit tempPanelLength 3) " Y " (lmm_convertNumtoStringWithDigit tempPanelWidth 3) " Z " (lmm_convertNumtoStringWithDigit tempPanelDepth 3) " U28.00 V-28.00 W0.00\n"
+"M2222
+M2223
+G292
+; Spindles list"
+"\nT1" " Z 91.72" " X -21.15" " Y264.80" "			;DrillingHead"
+"\nT2" " Z 0.00" " X 0.00" " Y0.00" "				;Mandrino 1"
+"\nT3" " Z -51.40" " X 355.82" " Y158.34" "			;TH\n"
+"; Tool list"
+"\nG666 T1" " R 17.50" " L51.50" " S0" " K0" "			;35 Balama\n" "G667 H1" " Z 0.00" " C0.00" " F1" " X0.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T2" " R 7.50" " L52.00" " S0" " K0" "			;15 Mini Fix\n" "G667 H2" " Z 0.00" " C0.00" " F1" " X32.00" " Y 0.00" " B0.00" " W0.00"										
+"\nG666 T3" " R 1.50" " L52.10" " S0" " K0" "			;Freze 3 mm\n" "G667 H3" " Z 0.00" " C0.00" " F1" " X64.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T4" " R 2.50" " L51.50" " S0" " K0" "			;Freze 5\n" "G667 H4" " Z 0.00" " C0.00" " F1" " X96.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T5" " R 2.50" " L51.50" " S0" " K0" "			;Freze 5\n" "G667 H5" " Z 0.00" " C0.00" " F1" " X128.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T6" " R 2.50" " L51.50" " S0" " K0" "			;Freze 5\n" "G667 H6" " Z 0.00" " C0.00" " F1" " X160.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T7" " R 2.50" " L51.50" " S0" " K0" "			;Freze 5\n" "G667 H7" " Z 0.00" " C0.00" " F1" " X160.00" " Y -32.00" " B0.00" " W0.00"
+"\nG666 T8" " R 2.50" " L51.50" " S0" " K0" "			;Freze 5\n" "G667 H8" " Z 0.00" " C0.00" " F1" " X160.00" " Y -64.00" " B0.00" " W0.00"
+"\nG666 T9" " R 4.00" " L50.40" " S0" " K0" "			;Freze 8\n" "G667 H9" " Z 0.00" " C0.00" " F1" " X160.00" " Y -96.00" " B0.00" " W0.00"
+"\nG666 T10" " R 5.00" " L50.20" " S0" " K0" "			;Freze 10\n" "G667 H10" " Z 0.00" " C0.00" " F1" " X160.00" " Y -128.00" " B0.00" " W0.00"
+"\nG666 T11" " R 4.00" " L53.00" " S0" " K0" "			;Freze 8\n" "G667 H11" " Z -40.75" " C180.00" " F1" " X9.00" " Y 32.00" " B-90.00" " W0.00"
+"\nG666 T12" " R 4.00" " L53.00" " S0" " K0" "			;Freze 8\n" "G667 H12" " Z -40.75" " C0.00" " F1" " X119.00" " Y 32.00" " B-90.00" " W0.00"
+"\nG666 T13" " R 5.00" " L53.00" " S0" " K0" "			;Freze 10\n" "G667 H13" " Z -40.75" " C180.00" " F1" " X9.00" " Y 64.00" " B-90.00" " W0.00"
+"\nG666 T14" " R 5.00" " L53.00" " S0" " K0" "			;Freze 10\n" "G667 H14" " Z -40.75" " C0.00" " F1" " X119.00" " Y 64.00" " B-90.00" " W0.00"
+"\nG666 T111" " R 4.00" " L118.00" " S0" " K0" "		;DIA 8 CANAL\n" "G667 H111" " Z 0.00" " C0.00" " F1" " X0.00" " Y 0.00" " B0.00" " W0.00"
+"\nG666 T201" " R 5.00" " L87.20" " S0" " K0" "		;REAR FACE D10\n" "G667 H201" " Z 0.00" " C270.00" " F1" " X0.00" " Y 0.00" " B-90.00" " W-125.00"
+"\nG666 T206" " R 4.00" " L90.50" " S0" " K0" "		;FRONT FACE D8\n" "G667 H201" " Z 0.00" " C90.00" " F1" " X0.00" " Y 0.00" " B-90.00" " W-125.00\n"
+"G64
+G90
+G153
+G168
+;END HEADER" ) GCodeFile)
+		
+		(setq ad_AspanCAMOperationListTemp (prepareAspanCAMOperationList tempPanel))
+		(foreach currentOp ad_AspanCAMOperationListTemp
+			;operasyon bilgileri alýnýyor
+			(setq tempOpLayerName (nth 0 currentOp))
+			(setq tempOpOpName (nth 2 currentOp))
+			
+			(setq tempPanelSS (lmm_getComponentWithChild tempPanel "ALL"))
+			(setq tempPanelSSList (convertSStolist tempPanelSS))
+			(foreach tempEnt tempPanelSSList
+				(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+						(progn 
+							(setq tempDerivedLayerName (interpretAspanHoleLayerName tempEnt))
+						)
+						(progn 
+							(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+						)
+					)
+				
+				;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamk için tüm layerlarý *AllEntities te topluyoruz
+				(if (not (member tempDerivedLayerName aspanIgnoreLayerNameList))
+					(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) aspanAllEntities))
+						(setq aspanAllEntities (append aspanAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+					)
+				)
+				
+				
+				(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+					(cond
+						( (equal tempOpOpName "HOLE"); koþul delik ise delik yap
+							;(princ (strcat tempDerivedLayerName tempOpLayerName tempOpOpName))
+							(aspanHoleCamOperation tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+							(setq aspanNotFreeEntities (append aspanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+					
+						
+						)
+						( (equal tempOpOpName "MILLING") ; koþul freze ise freze operasyonu yap
+							(doAspanCONTOURCam tempEnt tempDerivedLayerName currentOp tempPanel gCodeFile)
+							(setq aspanNotFreeEntities (append aspanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+					
+						)
+						((equal tempOpOpName "SAW") ; koþul testerese ise testere yap
+							;(setq aspanNotFreeEntities (append aspanNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+					
+						)
+					)
+				)
+			)
+		)
+		
+		;footer
+		
+		(write-line (strcat "G1 Z 30 F 10000
+G153
+G0 Z 0
+M62
+M5
+M30" ) GCodeFile)
+
+		(close gCodeFile)
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem aspanAllEntities
+		(if (and (not (member tempItem aspanNotFreeEntities)) (not (member tempItem aspanEntitiesThatCanNotBeCAM)))
+			(setq aspanEntitiesThatCanNotBeCAM (append aspanEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if aspanEntitiesThatCanNotBeCAM
+		(progn
+			(setq aspanEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) aspanEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length aspanEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter aspanEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter aspanEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun interpretAspanHoleLayerName ( tempEnt / isOnTheSFace currentReturn tempHoleDia tempHoleDepth)
+	(setq isOnTheSFace (getEntPro tempEnt 8))
+	(if (equal "_SF" (substr isOnTheSFace (- (strlen isOnTheSFace) 2) 3))
+		(setq isOnTheSFace T)
+		(setq isOnTheSFace nil)
+	)
+	(cond 
+		( ;Z - 
+			(and (equal (getnth 2 (getEntPro tempEnt 210)) 1.00000) 
+				(not isOnTheSFace)
+			)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(or (equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+				isOnTheSFace
+			)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	;(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	;(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) "_DEPTH" (lmm_convertNumtoStringWithDigit tempHoleDepth 1) ))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	(if (equal 0.0 tempHoleDia) 
+		(setq currentReturn (getEntPro tempEnt 8))
+	)
+	currentReturn
+)
+
+
+
+
+(princ)

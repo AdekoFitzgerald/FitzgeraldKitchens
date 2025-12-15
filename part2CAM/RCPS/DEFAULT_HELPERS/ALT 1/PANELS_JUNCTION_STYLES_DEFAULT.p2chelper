@@ -1,0 +1,106 @@
+;prefvars
+(_IFNULLSET 'BOTTOM_PANEL_JOINT_TYPE 1)
+(_IFNULLSET 'TOP_PANEL_JOINT_TYPE 0)
+
+(_SETA 'THERE_IS_NO_TOP_PANEL T)
+
+(_SETA 'DOMINANT_SIDE_FOR_TOP_JOINT 0)
+(_SETA 'DOMINANT_SIDE_FOR_BOTTOM_JOINT 0)
+
+; CONTINGENCIES
+; These variables which are below can not be changed by users from part2cam interfaces		
+
+; Bottom panel's and sides' variances and joint types controls
+(cond 
+	((or (and (or (> BOTTOM_PANEL_LEFT_VARIANCE 0) (> BOTTOM_PANEL_RIGHT_VARIANCE 0)) (or (> LEFT_PANEL_LOWER_VARIANCE 0) (> RIGHT_PANEL_LOWER_VARIANCE 0)))
+			(and (equal __VBSIDE T) (or (equal __VLSIDE T) (equal __VRSIDE T))))
+		(if (equal DOMINANT_SIDE_FOR_BOTTOM_JOINT 0)
+			(_FSET (_ 'BOTTOM_PANEL_JOINT_TYPE 1))
+			(_FSET (_ 'BOTTOM_PANEL_JOINT_TYPE 0))
+		)
+	)
+	((or (> LEFT_PANEL_LOWER_VARIANCE 0) (> RIGHT_PANEL_LOWER_VARIANCE 0) (equal __VLSIDE T) (equal __VRSIDE T))
+		(_FSET (_ 'BOTTOM_PANEL_JOINT_TYPE 0))
+	)
+	((or (> BOTTOM_PANEL_LEFT_VARIANCE 0) (> BOTTOM_PANEL_RIGHT_VARIANCE 0) (equal __VBSIDE T))
+		(_FSET (_ 'BOTTOM_PANEL_JOINT_TYPE 1))
+	)
+)
+
+; Top panel's and sides' variances and joint types controls
+(cond 
+	((or (and (or (> TOP_PANEL_LEFT_VARIANCE 0) (> TOP_PANEL_RIGHT_VARIANCE 0)) (or (> LEFT_PANEL_UPPER_VARIANCE 0) (> RIGHT_PANEL_UPPER_VARIANCE 0)))
+			(and (equal __VTSIDE T) (or (equal __VLSIDE T) (equal __VRSIDE T))))
+		(if (equal DOMINANT_SIDE_FOR_TOP_JOINT 0)
+			(_FSET (_ 'TOP_PANEL_JOINT_TYPE 1))
+			(_FSET (_ 'TOP_PANEL_JOINT_TYPE 0))
+		)
+	)
+	((or (> LEFT_PANEL_UPPER_VARIANCE 0) (> RIGHT_PANEL_UPPER_VARIANCE 0) (equal __VLSIDE T) (equal __VRSIDE T))
+		(_FSET (_ 'TOP_PANEL_JOINT_TYPE 0))
+	)
+	((or (> TOP_PANEL_LEFT_VARIANCE 0) (> TOP_PANEL_RIGHT_VARIANCE 0) (equal __VTSIDE T))
+		(_FSET (_ 'TOP_PANEL_JOINT_TYPE 1))
+	)
+)
+
+(cond 
+	((equal BOTTOM_PANEL_JOINT_TYPE 0)
+		(_FSET (_ 'BOTTOM_PANEL_LEFT_VARIANCE 0))
+		(_FSET (_ 'BOTTOM_PANEL_RIGHT_VARIANCE 0))
+				
+		(_FSET (_ 'bottomSideStyleV1 0))
+		(_FSET (_ 'bottomSideStyleV2 __AD_PANELTHICK))
+		(_FSET (_ 'BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES"))
+	)
+	((equal BOTTOM_PANEL_JOINT_TYPE 1)
+		(_FSET (_ 'LEFT_PANEL_LOWER_VARIANCE 0))
+		(_FSET (_ 'RIGHT_PANEL_LOWER_VARIANCE 0))
+				
+		(_FSET (_ 'bottomSideStyleV1 __AD_PANELTHICK))
+		(_FSET (_ 'bottomSideStyleV2 0))
+		(_FSET (_ 'BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM"))
+	)
+	((equal BOTTOM_PANEL_JOINT_TYPE 2)
+		(_FSET (_ 'LEFT_PANEL_LOWER_VARIANCE 0))
+		(_FSET (_ 'RIGHT_PANEL_LOWER_VARIANCE 0))
+		(_FSET (_ 'BOTTOM_PANEL_LEFT_VARIANCE 0))
+		(_FSET (_ 'BOTTOM_PANEL_RIGHT_VARIANCE 0))
+				
+		(_FSET (_ 'bottomSideStyleV1 0))
+		(_FSET (_ 'bottomSideStyleV2 0))
+		(_FSET (_ 'BOTTOMSIDE_STYLE "45_DEGREE"))
+	)
+)
+
+(cond	
+	((or (equal TOP_PANEL_JOINT_TYPE 0) (equal THERE_IS_NO_TOP_PANEL T))
+		(_FSET (_ 'TOP_PANEL_LEFT_VARIANCE 0))
+		(_FSET (_ 'TOP_PANEL_RIGHT_VARIANCE 0))
+				
+		(_FSET (_ 'topSideStyleV1 0))
+		(_FSET (_ 'topSideStyleV2 __AD_PANELTHICK))
+		(_FSET (_ 'TOPSIDE_STYLE "TOP_BETWEEN_SIDES"))
+	)
+	((equal TOP_PANEL_JOINT_TYPE 1)
+		(_FSET (_ 'LEFT_PANEL_UPPER_VARIANCE 0))
+		(_FSET (_ 'RIGHT_PANEL_UPPER_VARIANCE 0))
+				
+		(_FSET (_ 'topSideStyleV1 __AD_PANELTHICK))
+		(_FSET (_ 'topSideStyleV2 0))
+		(_FSET (_ 'TOPSIDE_STYLE "TOP_ON_SIDES"))
+	)
+	((equal TOP_PANEL_JOINT_TYPE 2)
+		(_FSET (_ 'LEFT_PANEL_UPPER_VARIANCE 0))
+		(_FSET (_ 'RIGHT_PANEL_UPPER_VARIANCE 0))
+		(_FSET (_ 'TOP_PANEL_LEFT_VARIANCE 0))
+		(_FSET (_ 'TOP_PANEL_RIGHT_VARIANCE 0))
+		
+		(_FSET (_ 'topSideStyleV1 0))
+		(_FSET (_ 'topSideStyleV2 0))
+		(_FSET (_ 'TOPSIDE_STYLE "45_DEGREE"))
+	)
+)
+; Standard Values
+(_NONOTCH)
+

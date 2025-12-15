@@ -1,0 +1,189 @@
+(initget (strcat (Xstr "Top Bottom") " ~_Top ~_Bottom"))
+(setq kpmTB (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Top/Bottom: ")))
+(cond
+	((equal kpmTB "Bottom")	
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list (- unitD YC11_T1) YC11_T1 0.0) 
+				(list YC11_T1 YC11_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -90.0)
+			
+			(d2r -90.0)
+			
+			
+			(list 0.0 0.0 (+ (- unitH YC11_T1) dAltKot))
+			
+			"YC11_03" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 unitH 0.0) 
+				(list YC11_T1 (- unitH YC11_T1) 0.0) 
+				(list YC11_T1 0.0 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 0.0)
+			
+			
+			(list 0.0 0.0 dAltKot)
+			
+			"YC11_02" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(reverseMatRot (entlast))
+
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 unitH 0.0) 
+				(list YC11_T1 (- unitH YC11_T1) 0.0) 
+				(list YC11_T1 0.0 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 180.0)
+			
+			
+			(list unitW (- unitD) dAltKot)
+			
+			"YC11_01" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(reverseMatRot (entlast))
+
+	)
+
+	(T	
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list (- unitD YC11_T1) YC11_T1 0.0) 
+				(list YC11_T1 YC11_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -270.0)
+			
+			(d2r -90.0)
+			
+			
+			(list unitW 0.0 (+ YC11_T1 dAltKot))
+			
+			"YC11_03" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 unitH 0.0) 
+				(list YC11_T1 (- unitH 0.0) 0.0) 
+				(list YC11_T1 YC11_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 0.0)
+			
+			
+			(list 0.0 0.0 dAltKot)
+			
+			"YC11_02" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(reverseMatRot (entlast))
+
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list 0.0 unitH 0.0) 
+				(list YC11_T1 (- unitH 0.0) 0.0) 
+				(list YC11_T1 YC11_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r 0.0)
+			(d2r 180.0)
+			
+			
+			(list unitW (- unitD) dAltKot)
+			
+			"YC11_01" 
+			"" 
+			nil 
+			
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		(reverseMatRot (entlast))
+
+	)
+)
+

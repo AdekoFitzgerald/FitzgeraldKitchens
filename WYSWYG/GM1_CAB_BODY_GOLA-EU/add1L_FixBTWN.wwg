@@ -1,0 +1,2 @@
+(setq modulgolaOrderList (append modulgolaOrderList (list (_ (ph_1GolaL_fix) "1gola_profileL" T))))
+																							;^ en sondaki T parametresi gola aradamý diye belirtir.

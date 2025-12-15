@@ -1,0 +1,28 @@
+(_RUNDEFAULTHELPERRCP "BRACKET_DEFAULT" nil "p2chelper")
+(if lmm-defaultUsrRcpName (setq lmm-defaultRcpName lmm-defaultUsrRcpName lmm-defaultUsrRcpName nil)) ; if set diverted by organizer, revert back to user set
+
+(if (equal IS_BRACKET_AVAILABLE T)
+	(progn
+		(_RUNDEFAULTHELPERRCP "BACK_PANEL_DEFAULT" nil "p2chelper")
+		(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+		(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+		(_RUNDEFAULTHELPERRCP "LEFT_PANEL_DEFAULT" nil "p2chelper")
+		(_RUNDEFAULTHELPERRCP "RIGHT_PANEL_DEFAULT" nil "p2chelper")
+		(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+		(cond
+			((equal BRACKET_TYPE "INSIDE")
+				(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\95-BRACKET\\INSIDE_BRACKET_HOLES" T "p2chelper")
+			)
+			((equal BRACKET_TYPE "BACKSIDE")
+				(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\95-BRACKET\\BACKSIDE_BRACKET_HOLES" T "p2chelper")
+			)
+		)	
+		
+		(if PERFORM_BRACKET_SIDE_PANEL_OPERATIONS
+			(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\95-BRACKET\\BRACKET_SIDE_OP" T "p2chelper")
+		)
+	)
+)
+
+(_NONOTCH)

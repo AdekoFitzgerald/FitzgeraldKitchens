@@ -1,0 +1,164 @@
+; -------------------------------------------------- DEFAULT RECIPES ---------------------------------------------------------
+(_RUNDEFAULTHELPERRCP "NOTCHED_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (null THERE_IS_NO_TOP_PANEL)
+	(progn
+		(if (equal GROOVE_STATE 3)
+			(progn
+				(_DELPANEL TOP_PANEL_CODE)
+				; Global variables of notched top panel
+				(_FSET (_ 'NOTCHED_TOP_PANEL_HEI TOP_PANEL_HEI))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_WID TOP_PANEL_WID))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_LEFT_BACK (+ (- __NOTCHDIM3 topSideStyleV2 secondaryNotchedPanelStyleV2) TOP_PANEL_LEFT_VARIANCE)))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_RIGHT_BACK (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK secondaryNotchedPanelStyleV2 secondaryNotchedPanelStyleV2 __NOTCHDIM1 )))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_SECONDARY_SIDES (+ __NOTCHDIM2 secondaryNotchedPanelStyleV2 TOP_PANEL_BACK_VARIANCE)))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_ROT TOP_PANEL_ROT))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_MAT TOP_PANEL_MAT))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_THICKNESS TOP_PANEL_THICKNESS))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_LABEL TOP_PANEL_LABEL))
+				(_FSET (_ 'NOTCHED_TOP_PANEL_TAG TOP_PANEL_TAG))
+				
+				;this parameters which using in this scope, handeled on TOP_PANEL.p2chelper 
+				(if blindDoorBaseUnitGolaCheck
+					(progn
+						(cond
+							((equal moduldirection "R")
+								(_FSET (_ 'NOTCHED_TOP_PANEL_PDATA (_ (_ 0.0 0.0 0.0) 0 
+																	  (_ 0.0 NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+																	  (_ 0.0 (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+																	  (_ 0.0 NOTCHED_TOP_PANEL_WID 0.0) 0 
+																	  (_ TOP_PANEL_SECONDARY_HEI NOTCHED_TOP_PANEL_WID 0.0) 0 
+																	  (_ TOP_PANEL_SECONDARY_HEI TOP_PANEL_SECONDARY_WID 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_HEI TOP_PANEL_SECONDARY_WID 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_HEI 0.0 0.0) 0 
+																	  (_ 0.0 0.0 0.0) 0)))
+																	  
+								(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T) ; if preference of secondary notched panels are "secondary notched panels between top and bottom
+									(progn
+										(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ RIGHT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB RIGHT_EDGESTRIP_MAT))
+																				   (_ TOP_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB TOP_EDGESTRIP_MAT))
+																				   (_ LEFT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LEFT_EDGESTRIP_MAT))
+																				   (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																				   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+									)
+									(progn
+										(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																				   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+									)
+								)
+							)
+							((equal moduldirection "L")
+								(_FSET (_ 'NOTCHED_TOP_PANEL_PDATA (_ (_ 0.0 0.0 0.0) 0 
+																	  (_ 0.0 NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+																	  (_ 0.0 (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+																	  (_ 0.0 NOTCHED_TOP_PANEL_WID 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_HEI NOTCHED_TOP_PANEL_WID 0.0) 0 
+																	  (_ NOTCHED_TOP_PANEL_HEI notchDimX 0.0) 0 
+																	  (_ TOP_PANEL_SECONDARY_HEI notchDimX 0.0) 0 
+																	  (_ TOP_PANEL_SECONDARY_HEI 0.0 0.0) 0 
+																	  (_ 0.0 0.0 0.0) 0)))
+																	  
+								(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T) ; if preference of secondary notched panels are "secondary notched panels between top and bottom
+									(progn
+										(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ RIGHT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB RIGHT_EDGESTRIP_MAT))
+																				   (_ TOP_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB TOP_EDGESTRIP_MAT))
+																				   (_ LEFT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LEFT_EDGESTRIP_MAT))
+																				   (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																				   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+									)
+									(progn
+										(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+																				   (_ LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+																				   (_ BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+																				   (_ "" 0)
+																				   (_ "" 0)
+																				   (_ RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+									)
+								)
+							)
+						)
+					)
+				)
+				
+				(if (not NOTCHED_TOP_PANEL_PDATA)
+					(progn
+						(_FSET (_ 'NOTCHED_TOP_PANEL_PDATA (_ (_ 0.0 0.0 0.0) 0 
+															  (_ 0.0 NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+															  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES NOTCHED_TOP_PANEL_RIGHT_BACK 0.0) 0 
+															  (_ NOTCHED_TOP_PANEL_SECONDARY_SIDES (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+															  (_ 0.0 (- NOTCHED_TOP_PANEL_WID NOTCHED_TOP_PANEL_LEFT_BACK) 0.0) 0 
+															  (_ 0.0 NOTCHED_TOP_PANEL_WID 0.0) 0 
+															  (_ NOTCHED_TOP_PANEL_HEI NOTCHED_TOP_PANEL_WID 0.0) 0 
+															  (_ NOTCHED_TOP_PANEL_HEI 0.0 0.0) 0 
+															  (_ 0.0 0.0 0.0) 0)))
+															  
+						(if (equal SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE T) ; if preference of secondary notched panels are "secondary notched panels between top and bottom
+							(progn
+								(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (getnth 0 TOP_PANEL_EDGESTRIPS)
+																		   (_ RIGHT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB RIGHT_EDGESTRIP_MAT))
+																		   (_ TOP_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB TOP_EDGESTRIP_MAT))
+																		   (_ LEFT_EDGESTRIP_MAT (_GETEDGESTRIPWIDFROMDB LEFT_EDGESTRIP_MAT))
+																		   (getnth 0 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 1 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 2 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 3 TOP_PANEL_EDGESTRIPS))))
+							)
+							(progn
+								(_FSET (_ 'NOTCHED_TOP_PANEL_EDGESTRIPS (_ (getnth 0 TOP_PANEL_EDGESTRIPS)
+																		   (_ "" 0)
+																		   (_ "" 0)
+																		   (_ "" 0)
+																		   (getnth 0 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 1 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 2 TOP_PANEL_EDGESTRIPS)
+																		   (getnth 3 TOP_PANEL_EDGESTRIPS))))
+							)
+						)
+					)
+				)
+				
+				(_FSET (_ 'NOTCHED_TOP_PANEL_CODE (XSTR "NOTCHED_TOP_PANEL")))
+				
+				(_PANELMAIN NOTCHED_TOP_PANEL_CODE (_ NOTCHED_TOP_PANEL_PDATA NOTCHED_TOP_PANEL_ROT NOTCHED_TOP_PANEL_MAT NOTCHED_TOP_PANEL_THICKNESS))
+				
+				(_CREATEEDGESTRIPS NOTCHED_TOP_PANEL_CODE NOTCHED_TOP_PANEL_EDGESTRIPS)
+				
+				(_PUTLABEL NOTCHED_TOP_PANEL_CODE NOTCHED_TOP_PANEL_CODE NOTCHED_TOP_PANEL_LABEL)
+				(_PUTTAG NOTCHED_TOP_PANEL_CODE NOTCHED_TOP_PANEL_CODE NOTCHED_TOP_PANEL_TAG)
+				; IMPORTANT INFORMATION -> LOWER face is the primary operation face
+				; OPERATION FACE SELECTION
+				(if (_NOTNULL TOP_PANEL_OP_ON_UPPER_FACE)
+					(_FSET (_ 'NOTCHED_TOP_PANEL_OP_FACE (_CREATESFACEMAIN NOTCHED_TOP_PANEL_CODE (_ NOTCHED_TOP_PANEL_PDATA NOTCHED_TOP_PANEL_ROT NOTCHED_TOP_PANEL_MAT NOTCHED_TOP_PANEL_THICKNESS "Y"))))
+					(_FSET (_ 'NOTCHED_TOP_PANEL_OP_FACE NOTCHED_TOP_PANEL_CODE))
+				)
+			)
+		)
+	)
+)

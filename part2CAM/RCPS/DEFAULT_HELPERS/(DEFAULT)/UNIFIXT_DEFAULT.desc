@@ -1,0 +1,20 @@
+UNIFIXT_MAIN_HOLE_DEPTH -> "Depth of unifixt main hole"
+UNIFIXT_MAIN_HOLE_DIA -> "Dia of unifixt main hole"
+UNIFIXT_MAIN_HOLE_DISTANCE -> "Distance of unifixt main hole"
+UNIFIXT_BODY_WIDTH -> "Body width of unifixt"
+UNIFIXT_GROOVE_WIDTH -> "Groove width of unifixt"
+UNIFIXT_GROOVE_DEP_CHANGE -> "Groove depth change of unifixt"
+
+UNIFIXT_ADD_FLANGE -> "Add flange on unifixt hole"
+UNIFIXT_FLANGE_OUTSIDE_OVERFLOW -> "Flange overflow of unifixt hole"
+UNIFIXT_FLANGE_DEPTH -> "Flange depth of unifixt hole"
+
+UNIFIXT_APPROACH_DISTANCE -> "Approach distance of unifixt"
+
+UNIFIXT_IS_OPPOSED_HOLE_AVAILABLE -> "Is unifixt opposed hole available?"
+UNIFIXT_OPPOSED_HOLE_DEPTH -> "Depth of unifixt opposed hole"
+UNIFIXT_OPPOSED_HOLE_DIA -> "Dia of unifixt opposed hole"
+UNIFIXT_OPPOSED_HOLE_POS -> "Position of unifixt opposed hole"
+
+UNIFIXT_CODE -> "Code of unifixt"
+UNIFIXT_UNIT -> "Unit of unifixt"

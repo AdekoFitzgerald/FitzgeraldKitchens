@@ -1,0 +1,128 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+
+WARDROBE_ADJ_SHELF_HOLE_DIA -> "Diameter of wardrobe adjustable shelf holes. Default value -> ASHELF_HOLE_DIAMETER"
+WARDROBE_ADJ_SHELF_HOLE_DEPTH -> "Depth of wardrobe adjustable shelf holes. Default value -> ASHELF_HOLE_DEPTH"
+;prefvars
+(_SETA 'WARDROBE_ADJ_SHELF_HOLE_DIA ASHELF_HOLE_DIAMETER)
+(_SETA 'WARDROBE_ADJ_SHELF_HOLE_DEPTH ASHELF_HOLE_DEPTH)
+
+(if (not (equal adj_sh_dia1 nil)) (_FSET (_ 'WARDROBE_ADJ_SHELF_HOLE_DIA (convertLengthToSpecifiedUnit adj_sh_dia1 (getvar "INSUNITS") 4))))
+(if (not (equal adj_sh_dep1 nil)) (_FSET (_ 'WARDROBE_ADJ_SHELF_HOLE_DEPTH (convertLengthToSpecifiedUnit adj_sh_dep1 (getvar "INSUNITS") 4))))
+; Standard Values, WARDROBE_ADJ_SHELF_HOLE_DIA ASHELF_HOLE_DIAMETER, WARDROBE_ADJ_SHELF_HOLE_DEPTH ASHELF_HOLE_DEPTH
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(_FSET (_ 'tPanelInfo nil))
+
+(cond
+	((equal (length targetPanels) 1)
+		(_FSET (_ 'currentPanel (getnth 0 targetPanels)))
+		(_FSET (_ 'currentPanel_normal (getnth 1 currentPanel)))
+		
+		(if (_ISVERTICALFACE currentPanel_normal)
+			(_FSET (_ 'tPanelInfo currentPanel))
+			(_FSET (_ 'tPanelInfo nil))
+		)
+		(_FSET (_ 'itemControl nil))
+	)
+	((equal (length targetPanels) 2)
+		(_FSET (_ 'panel_1 (getnth 0 targetPanels)))
+		(_FSET (_ 'panel_1_normal (getnth 1 panel_1)))
+		
+		(_FSET (_ 'panel_2 (getnth 1 targetPanels)))
+		(_FSET (_ 'panel_2_normal (getnth 1 panel_2)))
+		
+		(if (lmm_XOR (_ISVERTICALFACE panel_1_normal) (_ISVERTICALFACE panel_2_normal))
+			(progn
+				(if (_ISVERTICALFACE panel_1_normal)
+					(_FSET (_ 'tPanelInfo panel_1))
+					(_FSET (_ 'tPanelInfo panel_2))
+				)
+			)
+			(_FSET (_ 'tPanelInfo nil))
+		)
+		(_FSET (_ 'itemControl T))
+	)
+	((equal (length targetPanels) 3)
+		(_FSET (_ 'panel_1 (getnth 0 targetPanels)))
+		(_FSET (_ 'panel_1_code (getnth 0 panel_1)))
+		(_FSET (_ 'panel_1_normal (getnth 1 panel_1)))
+		
+		(_FSET (_ 'panel_2 (getnth 1 targetPanels)))
+		(_FSET (_ 'panel_2_code (getnth 0 panel_2)))
+		(_FSET (_ 'panel_2_normal (getnth 1 panel_2)))
+		
+		(_FSET (_ 'panel_3 (getnth 2 targetPanels)))
+		(_FSET (_ 'panel_3_code (getnth 0 panel_3)))
+		(_FSET (_ 'panel_3_normal (getnth 1 panel_3)))
+		
+		(cond 
+			((equal panel_1_code panel_2_code)
+				(if (_ISVERTICALFACE panel_3_normal)
+					(_FSET (_ 'tPanelInfo panel_3))
+					(_FSET (_ 'tPanelInfo nil))
+				)
+			)
+			((equal panel_1_code panel_3_code)
+				(if (_ISVERTICALFACE panel_2_normal)
+					(_FSET (_ 'tPanelInfo panel_2))
+					(_FSET (_ 'tPanelInfo nil))
+				)
+			)
+			((equal panel_2_code panel_3_code)
+				(if (_ISVERTICALFACE panel_1_normal)
+					(_FSET (_ 'tPanelInfo panel_1))
+					(_FSET (_ 'tPanelInfo nil))
+				)
+			)
+			(T
+				(_FSET (_ 'tPanelInfo nil))
+			)
+		)
+		(_FSET (_ 'itemControl T))
+	)
+	(T
+		(foreach panelList targetPanels
+			(_FSET (_ 'panelToControl (getnth 0 panelList)))
+			(_FSET (_ 'controlIndex 0))
+			
+			(foreach panelList2 targetPanels
+				(if (equal panelToControl (getnth 0 panelList2))
+					(_FSET (_ 'controlIndex (+ controlIndex 1)))
+				)
+			)
+			(if (equal controlIndex 1)
+				(progn
+					(_FSET (_ 'tPanelInfo panelList))
+				)
+			)
+		)
+		(if (null tPanelInfo)
+			(_FSET (_ 'itemControl nil))
+			(_FSET (_ 'itemControl T))
+		)
+	)
+)
+(if (_NOTNULL tPanelInfo)
+	(progn
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+		
+		(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+		; Type of current face is either 0 or 1 in this case
+		(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+			(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+		)
+		(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+		(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+		(setq holePosition (replace 0 2 holePosition))
+		(_FSET (_ 'holeCodebody (_& (_ connectedFaceCode "_ADJUSTABLE_SHELF_PIN_HOLE"))))
+		(_HOLE holeCodebody connectedFaceCode (_ holePosition WARDROBE_ADJ_SHELF_HOLE_DIA WARDROBE_ADJ_SHELF_HOLE_DEPTH holeOrient))
+		
+		(if (_NOTNULL itemControl) (_ITEMMAIN WARDROBE_ADJ_SH_CODE WARDROBE_ADJ_SH_CODE (_ 1 WARDROBE_ADJ_SH_UNIT)))
+		
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

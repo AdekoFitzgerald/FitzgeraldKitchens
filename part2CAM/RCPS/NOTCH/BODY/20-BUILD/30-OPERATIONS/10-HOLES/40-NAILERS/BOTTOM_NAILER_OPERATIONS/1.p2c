@@ -1,0 +1,56 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+		; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+		; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+		
+		(if (_EXISTPANEL NOTCHED_BOTTOM_NAILER_OP_FACE)
+			(progn
+			
+				(_FSET (_ 'lengthParametersForNotchedBottomNailerAndSecondaryLeft (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBottomNailerAndSecondaryLeft (car lengthParametersForNotchedBottomNailerAndSecondaryLeft)))
+
+				(_FSET (_ 'lengthParametersForNotchedBottomNailerAndRight (_CALCULATEPANELSINTERSECTIONLENGTH NOTCHED_BOTTOM_NAILER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForNotchedBottomNailerAndRight (car lengthParametersForNotchedBottomNailerAndRight)))
+				
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'notchedBottomNailerPointListForSecondaryLeftSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForNotchedBottomNailerAndSecondaryLeft 0 (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil NOTCHED_BOTTOM_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_BOTTOM_NAILER_OP_FACE notchedBottomNailerPointListForSecondaryLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'notchedBottomNailerPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForNotchedBottomNailerAndRight NOTCHED_BOTTOM_NAILER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil NOTCHED_BOTTOM_NAILER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_BOTTOM_NAILER_OP_FACE notchedBottomNailerPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL SECONDARY_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForNotchedBottomNailer (_GETHOLEPOINTLIST operationName 
+																					(_ lengthForNotchedBottomNailerAndSecondaryLeft (- (+ SECONDARY_LEFT_PANEL_WID BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																					(_ BOTTOM_NAILER_DOWN_OFFSET 0 nil (+ NOTCHED_BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																					(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName SECONDARY_LEFT_PANEL_CODE leftPanelPointListForNotchedBottomNailer (_ nil "X+") connectorParams)
+						)
+					)
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForBottomPanel (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForNotchedBottomNailerAndRight (+ (- RIGHT_PANEL_BACK_VARIANCE BOTTOM_PANEL_BACK_VARIANCE) BOTTOM_NAILER_BACK_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																			(_ (+ RIGHT_PANEL_LOWER_VARIANCE BOTTOM_NAILER_DOWN_OFFSET) 0 nil (+ NOTCHED_BOTTOM_NAILER_HEI BOTTOM_NAILER_DOWN_OFFSET)) 
+																			(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForBottomPanel (_ nil "X-") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

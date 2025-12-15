@@ -1,0 +1,75 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "ALU_STRECHER_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		; NO_NEED_ALU_HOLES variable comes from STRECHER_NAILER_DEFAULT
+		(if (or (null IS_ALU_STRECHER_EXISTS) (_NOTNULL NO_NEED_ALU_HOLES))
+			(progn
+				; Aluminum strecher does not exist, there is no need to perform notch operation
+				; If there is no need for aluminum strecher operation holes, then there is no need for notch operations also
+				(_NONOTCH)
+			)
+			(progn
+				(if (equal STATUS_OF_STRECHERS 0)
+					(progn
+						(if (_EXISTPANEL LEFT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'holeCodeBody "LEFT_PANEL_ALU_STRECHER_HOLE_"))
+								(_HOLE (_& (_ holeCodeBody "FIRST")) LEFT_PANEL_CODE (_ (_ (+ ALU_STRECHER_HOLE_HOR_OFFSET LEFT_PANEL_FRONT_VARIANCE) (- LEFT_PANEL_HEI ALU_STRECHER_HOLE_VER_OFFSET LEFT_PANEL_UPPER_VARIANCE) 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								
+								(if (_NOTNULL IS_ALU_DOUBLE_HOLES_AVAILABLE)
+										(_HOLE (_& (_ holeCodeBody "SECOND")) LEFT_PANEL_CODE (_ (_ (+ ALU_STRECHER_HOLE_HOR_OFFSET ALU_STRECHER_HOLES_DISTANCE LEFT_PANEL_FRONT_VARIANCE) (_= "LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE") 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								)
+							)
+						)
+						(if (_EXISTPANEL RIGHT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'holeCodeBody "RIGHT_PANEL_ALU_STRECHER_HOLE_"))
+								(_HOLE (_& (_ holeCodeBody "FIRST")) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID ALU_STRECHER_HOLE_HOR_OFFSET RIGHT_PANEL_FRONT_VARIANCE) (- RIGHT_PANEL_HEI ALU_STRECHER_HOLE_VER_OFFSET RIGHT_PANEL_UPPER_VARIANCE) 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								
+								(if (_NOTNULL IS_ALU_DOUBLE_HOLES_AVAILABLE)
+									(_HOLE (_& (_ holeCodeBody "SECOND")) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID ALU_STRECHER_HOLE_HOR_OFFSET ALU_STRECHER_HOLES_DISTANCE RIGHT_PANEL_FRONT_VARIANCE) (_= "RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - RIGHT_PANEL_UPPER_VARIANCE") 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								)
+							)
+						)
+					)
+					(progn
+						(if (_EXISTPANEL LEFT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'holeCodeBody "LEFT_PANEL_ALU_STRECHER_HOLE_"))
+								(_HOLE (_& (_ holeCodeBody "FIRST")) LEFT_PANEL_CODE (_ (_ (+ ALU_STRECHER_HOLE_HOR_OFFSET LEFT_PANEL_FRONT_VARIANCE) (- LEFT_PANEL_HEI ALU_STRECHER_HOLE_VER_OFFSET LEFT_PANEL_UPPER_VARIANCE) 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								
+								(if (_NOTNULL IS_ALU_DOUBLE_HOLES_AVAILABLE)
+										(_HOLE (_& (_ holeCodeBody "SECOND")) LEFT_PANEL_CODE (_ (_ (+ ALU_STRECHER_HOLE_HOR_OFFSET LEFT_PANEL_FRONT_VARIANCE) (_= "LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - ALU_STRECHER_HOLES_DISTANCE - LEFT_PANEL_UPPER_VARIANCE") 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								)
+							)
+						)
+						(if (_EXISTPANEL RIGHT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'holeCodeBody "RIGHT_PANEL_ALU_STRECHER_HOLE_"))
+								(_HOLE (_& (_ holeCodeBody "FIRST")) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID ALU_STRECHER_HOLE_HOR_OFFSET RIGHT_PANEL_FRONT_VARIANCE) (- RIGHT_PANEL_HEI ALU_STRECHER_HOLE_VER_OFFSET RIGHT_PANEL_UPPER_VARIANCE) 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								
+								(if (_NOTNULL IS_ALU_DOUBLE_HOLES_AVAILABLE)
+									(_HOLE (_& (_ holeCodeBody "SECOND")) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID ALU_STRECHER_HOLE_HOR_OFFSET RIGHT_PANEL_FRONT_VARIANCE) (_= "RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - ALU_STRECHER_HOLES_DISTANCE - RIGHT_PANEL_UPPER_VARIANCE") 0) ALU_STRECHER_HOLE_DIAMETER ALU_STRECHER_HOLE_DEPTH))
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+		; QUESTION: 	Why do we create another file for screw operation?
+		; 			 -> Because in fact this is a operation which contains two different operation. Normally we prefer to split operations in this kind of 
+		;				situations but nature of this operation as a whole does not allow us to do so. Thats why in outer side its one recipe but in fact 
+		; 				it simply consist of two operations. That helps us to maintain both operations easily
+		; Screw holes recipe is called
+		(if (and (_NOTNULL IS_ALU_STRECHER_EXISTS) (_NOTNULL IS_SCREW_HOLES_AVAILABLE))
+			(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\31-ALU_STRECHERS\\ALU_STRECHER_SCREW_HOLES" T "p2chelper")
+		)
+	)
+)

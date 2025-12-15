@@ -1,0 +1,87 @@
+(if (_EXISTPANEL AKK_INNER_EXTRA_PART_CODE)
+	(progn
+		(if (_EXISTPANEL NOTCHED_BOTTOM_PANEL_CODE)
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "AKK_CDOOR_1_"))))
+				(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+				
+				(if (equal 2 (length __CURDIVDOORSLIST))
+					(_FSET (_ 'currentDoorWID (+ (* (_S2V (_& (_ paramBody "WID"))) 2) __DOORSBETWEENCLEAR)))
+					(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+				)
+				
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					;bottom panel, extra part operations
+					(cond	
+						((equal moduldirection "L")
+							(_FSET (_ 'reverseExtraPartOP nil))
+							
+							(_FSET (_ 'bottomPanelPointListForInnerExtraPart (_GETHOLEPOINTLIST operationName
+																		(_ INNER_EXTRA_PART_WID (+ (/ AKK_INNER_EXTRA_PART_THICKNESS 2) (- (+ currentDoorWID BOTTOM_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) bottomSideStyleV2)) 0.0 "X")
+																		(_ 0 0 nil NOTCHED_BOTTOM_PANEL_HEI)
+																		(_ FITTING_PARAMETERS nil))))
+						)
+						((equal moduldirection "R")
+							(_FSET (_ 'reverseExtraPartOP T))
+							
+							(_FSET (_ 'bottomPanelPointListForInnerExtraPart (_GETHOLEPOINTLIST operationName
+																		(_ INNER_EXTRA_PART_WID (- NOTCHED_BOTTOM_PANEL_WID (+ (/ AKK_INNER_EXTRA_PART_THICKNESS 2) (- (+ currentDoorWID BOTTOM_PANEL_RIGHT_VARIANCE __DOORSSIDECLEAR __DOORSSIDECLEAR) bottomSideStyleV2))) 0.0 "X")
+																		(_ 0 0 nil NOTCHED_BOTTOM_PANEL_HEI)
+																		(_ FITTING_PARAMETERS nil))))
+						
+						)
+					)
+					(_HOLEGROUP operationName NOTCHED_BOTTOM_PANEL_CODE bottomPanelPointListForInnerExtraPart (_ nil "Y-") connectorParams)
+					
+					;inner extra part, bottom side operations
+					(_FSET (_ 'innerExtraPartPointListForBottomPanel (_GETHOLEPOINTLIST operationName
+																(_ INNER_EXTRA_PART_WID 0.0 (* (/ AKK_INNER_EXTRA_PART_THICKNESS 2) -1) "X")
+																(_ 0.0 0.0 reverseExtraPartOP INNER_EXTRA_PART_WID)
+																(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AKK_INNER_EXTRA_PART_CODE innerExtraPartPointListForBottomPanel (_ "Y+" nil) connectorParams)
+				)
+			)
+		)
+		
+		(if (_EXISTPANEL NOTCHED_TOP_PANEL_CODE)
+			(progn
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					
+					
+					;top panel, extra part operations
+					(cond	
+						((equal moduldirection "L")
+							(_FSET (_ 'reverseExtraPartOP nil))
+							(_FSET (_ 'beginPoint (ifnull golaProfileWidth 0.0)))
+							(_FSET (_ 'topPanelPointListForInnerExtraPart 	(_GETHOLEPOINTLIST operationName
+																			(_ INNER_EXTRA_PART_REAL_WID (- (+ TOP_PANEL_LEFT_VARIANCE (/ AKK_INNER_EXTRA_PART_THICKNESS 2) __DOORSSIDECLEAR __DOORSSIDECLEAR currentDoorWID) topSideStyleV2) 0.0 "X")
+																			(_ (- INNER_EXTRA_PART_WID INNER_EXTRA_PART_REAL_WID) 0.0 T NOTCHED_TOP_PANEL_HEI)
+																			(_ FITTING_PARAMETERS nil))))
+						)
+						((equal moduldirection "R")
+							(_FSET (_ 'reverseExtraPartOP T))
+							(_FSET (_ 'beginPoint 0.0))
+							(_FSET (_ 'topPanelPointListForInnerExtraPart 	(_GETHOLEPOINTLIST operationName
+																			(_ INNER_EXTRA_PART_REAL_WID (- NOTCHED_TOP_PANEL_WID (- (+ TOP_PANEL_LEFT_VARIANCE (/ AKK_INNER_EXTRA_PART_THICKNESS 2) __DOORSSIDECLEAR __DOORSSIDECLEAR currentDoorWID) topSideStyleV2)) 0.0 "X")
+																			(_ (- INNER_EXTRA_PART_WID INNER_EXTRA_PART_REAL_WID) 0.0 T NOTCHED_TOP_PANEL_HEI)
+																			(_ FITTING_PARAMETERS nil))))
+						
+							
+						)
+					)
+					(_HOLEGROUP operationName NOTCHED_TOP_PANEL_CODE topPanelPointListForInnerExtraPart (_ nil "Y-") connectorParams)
+					
+					; inner extra part, top side operations
+					(_FSET (_ 'innerExtraPartPointListForTopPanel (_GETHOLEPOINTLIST operationName
+																(_ INNER_EXTRA_PART_REAL_WID INNER_EXTRA_PART_HEI (* (/ AKK_INNER_EXTRA_PART_THICKNESS 2) -1) "X")
+																(_ beginPoint 0.0 reverseExtraPartOP INNER_EXTRA_PART_REAL_WID)
+																(_ FITTING_PARAMETERS nil))))
+																
+					(_HOLEGROUP operationName AKK_INNER_EXTRA_PART_CODE innerExtraPartPointListForTopPanel (_ "Y-" nil) connectorParams)
+				)
+			)
+		)
+	)
+)

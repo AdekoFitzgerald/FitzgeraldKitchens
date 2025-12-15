@@ -1,0 +1,66 @@
+(_RUNDEFAULTHELPERRCP "HINGE_DEFAULT" nil "p2chelper")
+
+WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER -> "Diameter of big hinge hole. Default value -> BIG_HOLE_DIAMETER"
+WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER -> "Diameter of small hinge hole. Default value -> SMALL_HOLES_DIAMETER"
+WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X -> "Offset from big hole center to small hole center. Default value -> BIG_TO_SMALLS_OFFSET_X"
+WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET -> "Offset between center of small holes. Default value -> SMALL_TO_SMALL_OFFSET"
+WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH -> "Depth of big hinge hole. Default value -> BIG_HOLE_DEPTH"
+WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH -> "Depth of small hinge hole. Default value -> SMALL_HOLES_DEPTH"
+
+
+;prevars
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER BIG_HOLE_DIAMETER)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER SMALL_HOLES_DIAMETER)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X BIG_TO_SMALLS_OFFSET_X)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET SMALL_TO_SMALL_OFFSET)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH BIG_HOLE_DEPTH)
+(_SETA 'WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH SMALL_HOLES_DEPTH)
+
+(if (not (equal HINGE_DIA1 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_DIAMETER (convertLengthToSpecifiedUnit HINGE_DIA1 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DIA2 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_DIAMETER (convertLengthToSpecifiedUnit HINGE_DIA2 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_X11 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_X (convertLengthToSpecifiedUnit HINGE_X11 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_Y11 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET (convertLengthToSpecifiedUnit HINGE_Y11 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DEP1 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_DEPTH (convertLengthToSpecifiedUnit HINGE_DEP1 (getvar "INSUNITS") 4))))
+(if (not (equal HINGE_DEP2 nil)) (_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_SMALL_DEPTH (convertLengthToSpecifiedUnit HINGE_DEP2 (getvar "INSUNITS") 4))))
+
+(_FSET (_ 'WARDROBE_HINGE_CUP_HOLE_BIG_TO_SMALLS_OFFSET_Y (/ WARDROBE_HINGE_CUP_HOLE_SMALL_TO_SMALL_OFFSET 2.0)))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(_FSET (_ 'panelCounter 0))
+(repeat (length targetPanels)
+	(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+	
+	(_SETCURMODUL (getnth 0 tPanelInfo))
+	
+	(_FSET (_'wardrobePanelHei (convertLengthToSpecifiedUnit (get_mdata g_currentModulEnt k:HEI) (getvar "INSUNITS") 4)))
+	
+	(_FSET (_ 'WPanelUsageSubTypesString (get_mdata g_currentModulEnt k:WPanelUsageSubTypes)))
+	(_FSET (_ 'dirSideClearanceControl (if (null WPanelUsageSubTypesString) nil (if (member "doorClearanceOnOpenDirSide" (splitStrTkn WPanelUsageSubTypesString WPanelUsageSubTypes_SEPERATOR)) T nil))))
+	
+	(setq doorPlacementType (get_mdata g_currentModulEnt k:DoorPlacementType))
+	;chosing to hinge code 
+	(cond
+		(dirSideClearanceControl
+			(_FSET (_ 'wardrobeHingeCode SHARED_PANEL_HINGE_CODE))
+		)
+		((> wardrobePanelHei (convertLengthToSpecifiedUnit HINGE_PD3 (getvar "INSUNITS") 4))
+			(_FSET (_ 'wardrobeHingeCode (if (equal doorPlacementType "INNER") (iniread ad_WARDROBE-INI "hinge_codes_inner" HINGE_CODE42 nil) HINGE_CODE42)))
+		)
+		((> wardrobePanelHei (convertLengthToSpecifiedUnit HINGE_PD2 (getvar "INSUNITS") 4))
+			(_FSET (_ 'wardrobeHingeCode (if (equal doorPlacementType "INNER") (iniread ad_WARDROBE-INI "hinge_codes_inner" HINGE_CODE32 nil) HINGE_CODE32)))
+		)
+		((> wardrobePanelHei (convertLengthToSpecifiedUnit HINGE_PD1 (getvar "INSUNITS") 4))
+			(_FSET (_ 'wardrobeHingeCode (if (equal doorPlacementType "INNER") (iniread ad_WARDROBE-INI "hinge_codes_inner" HINGE_CODE22 nil) HINGE_CODE22)))
+		)
+		(T
+			(_FSET (_ 'wardrobeHingeCode (if (equal doorPlacementType "INNER") (iniread ad_WARDROBE-INI "hinge_codes_inner" HINGE1_CODE nil) HINGE1_CODE)))
+		)
+	)
+	(if (not (null wardrobeHingeCode)) (_RUNHELPERRCP  "CONNECTOR\\HINGE_CUP_GROUP" T "p2chelper"))
+	(_FSET (_ 'panelCounter (+ panelCounter 1)))
+)
+(_NONOTCH)

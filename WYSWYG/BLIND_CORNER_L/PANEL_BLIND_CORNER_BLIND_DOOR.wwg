@@ -1,0 +1,21 @@
+(setq blindoorEnding (if (equal blindDoorTouchWall 1.0) (- unitW ADEN1) 0.0))
+
+(setq golaPatternList (_GETGOLAORDER (ifnull modulgolaOrderList  "gola_horizProfileOrder_CAB_BODY")))
+(setq contourPoints (_CREATEGOLAPANELCONTOUR golaPatternList unitH (- unitW gor_GEN (- aden1 gor_gen unitd2)) 0.0 0.0 blindoorEnding))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel 
+	(nth 0 contourPoints) 
+	(nth 1 contourPoints)
+	ad_et
+	0.0
+	(d2r 90.0)
+	(list blindoorEnding (- (- unitD) ad_et) dAltKot)
+	"PANEL_BLIND_CORNER_BLIND_DOOR" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)

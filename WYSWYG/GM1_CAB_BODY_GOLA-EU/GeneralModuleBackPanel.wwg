@@ -1,0 +1,28 @@
+(_FSET (_ 'lmm-defaultRcpName "(DEFAULT)"))
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(setq wwg_grooveWid (mm GROOVE_WID))
+(setq wwg_grooveDist (mm GROOVE_DISTANCE))
+(setq wwg_grooveDep (mm GROOVE_DEPTH))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW (* 2 (- ad_et wwg_grooveDep))) 0.0 0.0) 
+		(list (- unitW (* 2 (- ad_et wwg_grooveDep))) (- unitH (* 2 (- ad_et wwg_grooveDep))) 0.0) 
+		(list 0.0 (- unitH (* 2 (- ad_et wwg_grooveDep))) 0.0) 
+	) 
+	nil
+	wwg_grooveWid
+	0.0
+	0.0 
+	(list (- ad_et wwg_grooveDep) (- wwg_grooveDist) (+ dAltKot (- ad_et wwg_grooveDep)))
+	"general_back_panel" 
+	"" 
+	nil 
+	"PANEL" 
+	(strcat kodBlock "_PANELS_WALL")
+	"PANELS_WALL"
+	"noedgedrawing"
+)

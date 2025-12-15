@@ -1,0 +1,22 @@
+(setq wwg_layerName (ifnull gm1:layerName szBodyLayer))
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD (- unitW ad_et ad_et) 0.0) 
+		(list 0.0 (- unitW ad_et ad_et) 0.0 ) 
+	) 
+	nil
+	ad_et
+	0.0 
+	(d2r 90.0)
+	(list ad_et (- unitD) (- (+ dAltKot unitH) ad_et))
+	"PANEL_BOTTOM" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)

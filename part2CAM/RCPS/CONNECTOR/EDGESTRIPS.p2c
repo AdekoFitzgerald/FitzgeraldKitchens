@@ -1,0 +1,203 @@
+(setq edgelist nil)
+(setq edgelistmat nil)
+(setq panelName (get_Mdata g_currentModulEnt k:WPanelUsageType))
+(setq wardrobeINIpath ad_WARDROBE-INI )
+
+(if (null (setq possibleEdgeList (get_Mdata g_currentModulEnt k:edgeStripsList)))
+	(progn
+		(setq possibleEdgeTypeMatName (strcat panelName "_edgestripsmat"))
+		(setq possibleEdgeList (eval (read (iniread wardrobeINIpath "part2cam_rcps" (strcat panelName "_edgestrips") "default"))))	
+	)
+	(setq possibleEdgeList (read possibleEdgeList))
+)
+
+(if (and (not (null (get_Mdata g_currentModulEnt k:WPanelUsageSubTypes))) (null possibleEdgeList))
+	(progn
+		(setq panelSubName (car (splitStrTkn (get_Mdata g_currentModulEnt k:WPanelUsageSubTypes) WPanelUsageSubTypes_SEPERATOR)))
+		(if panelSubName
+			(progn
+				(setq possibleEdgeTypeMatName (strcat panelSubName "_edgestripsmat"))
+				(setq possibleEdgeList (eval (read (iniread wardrobeINIpath "part2cam_rcps" (strcat panelSubName "_edgestrips") "default"))))
+				(if (not (null possibleEdgeList)) (setq panelName panelSubName))
+			)
+		)
+	)
+)
+
+(if (null possibleEdgeList) 
+	(progn
+		(setq possibleEdgeList (eval (read (iniread wardrobeINIpath "part2cam_rcps" (strcat "general_" (dfetch 8 g_currentModulEnt) "_edgestrips") (iniread wardrobeINIpath "part2cam_rcps" "general_edgestrips" "default")))))
+		(setq possibleEdgeTypeMatName "general_edgestripsmat")
+	)
+)
+
+(if (equal (iniread ad_MOD-INI "lmm-Sets" "lmm-s-usePosesIfPossible" "0") "1")
+	(progn
+		(if (not (or (equal (lmm_getGroupPoseIfPossibleByModuleCode __MODULCODE) nil) (equal (lmm_getGroupPoseIfPossibleByModuleCode __MODULCODE) "0")))
+			(setq tempModulCode (strcat (lmm_getPoseIfPossibleByModulCode __MODULCODE) "_" (lmm_getGroupPoseIfPossibleByModuleCode __MODULCODE)))
+			(setq tempModulCode (lmm_getPoseIfPossibleByModulCode __MODULCODE))
+		)
+	)
+	(setq tempModulCode __MODULCODE)
+)
+
+(setq tempEntity (lmm_getComponentFromCodes WARDROBE_PANELS_GENERAL_CODE WARDROBE_PANELS_GENERAL_CODE tempModulCode))
+
+(if tempEntity
+	(progn
+		(setq tempEntityPolylineData (lmm_getPolylinePoints tempEntity))
+		(setq vertexlist (- (length tempEntityPolylineData) 1))	
+	)
+)
+
+(if (or (equal __MODULTYPE "KPK") (equal __MODULTYPE "KPK2"))
+	(setq possibleEdgeList
+		(if (equal vertexlist 4)
+			(if 
+				(setq edgeFromKapakSets (read (ifnull (_GETDOORSTRIPSFROMDOOR) ""))) 
+				(list 
+					(list 
+						4 
+						(list 1 2 3 0) 
+						(if (equal -1 (dfetch 41 g_currentModulEnt))
+							(convertDoorFlagsListLeftDoorToRightDoor edgeFromKapakSets)
+							edgeFromKapakSets
+						)
+					)
+				) 
+				nil
+			)
+			nil
+		)
+	)
+)
+
+(setq possibleEdgeMat (iniread wardrobeINIpath "part2cam_rcps" (strcat panelName "_edgestripsmat") ""))
+
+(if (equal possibleEdgeMat "")
+	(progn
+		(setq possibleEdgeMat (iniread wardrobeINIpath "part2cam_rcps" "general_edgestripsmat" ""))
+	)
+)
+
+(if (equal possibleEdgeMat "") (setq possibleEdgeMat  __EDGESTRIPSMAT))
+(_SET (_ 'EDGESTRIP_MAT (ifNullorEmpty possibleEdgeMat DEFAULT_EDGESTRIP_MAT )))
+(_SET (_ 'EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB EDGESTRIP_MAT)))
+
+(if (not (null possibleEdgeList))
+	(progn
+		(if (not (null tempEntity))
+			(progn
+				(_FSET (_ 'possibleEdgeCounter 0))
+				(repeat (length possibleEdgeList)
+					(setq currentELement (getnth possibleEdgeCounter possibleEdgeList ))
+					;;burada assoc kullan?lsa daha iyi
+					(if (equal (getnth 0 currentELement) vertexlist)
+						(progn
+							(setq edgelist (getnth 1 currentELement)) 
+							(setq edgelistmat (getnth 2 currentELement)) 
+						)
+					)
+					;(setq bounding (getbbox tempEntity))
+					(_SET (_ 'possibleEdgeCounter (+ 1 possibleEdgeCounter)))
+				)
+				(_FSET (_ 'state 1))
+				(_SET (_ 'PRI_PANEL_CODE WARDROBE_PANELS_GENERAL_CODE))
+
+				
+				(if (_NOTNULL edgeList)
+					(progn
+						(setq retEdgeStripsDATA nil)
+						
+						(_FSET (_ 'edgeCounter 0))				
+						(repeat (length edgeList)
+							(setq vertex1 (getnth edgeCounter edgeList))
+							(setq vertex2 (+ (getnth edgeCounter edgeList) 1))
+							
+							(setq EDGESTRIP_MAT_ORJ EDGESTRIP_MAT EDGESTRIP_WID_ORJ EDGESTRIP_WID)
+							(setq possibleMat (getnth edgeCounter edgelistmat) )
+							(if (equal possibleMat "")
+								(progn
+									(setq possibleMat (eval (read (iniread wardrobeINIpath "part2cam_rcps" (strcat possibleEdgeTypeMatName "_" (convertstr vertexlist) "_" (convertstr vertex1) "_var" ) ""))))
+									(if (null possibleMat) (setq possibleMat (iniread wardrobeINIpath "part2cam_rcps" (strcat possibleEdgeTypeMatName "_" (convertstr vertexlist) "_" (convertstr vertex1) ) "")))
+								)
+							)
+							(if (and possibleMat (not (equal possibleMat "")))
+								(progn			
+									
+									(if  (get_visible_matname g_currentModulEnt possibleMat) 
+										(progn
+											(setq possibleMat (get_visible_matname g_currentModulEnt possibleMat))
+										)
+										(if (setq tempMat (eval (read possibleMat)))
+											(setq possibleMat (if (member (type tempMat) (list 'REAL 'INT)) (rtos tempMat) tempMat))
+										)
+									)	
+									;hala edge varsa
+									(if (checkStrInStr "_EDGE_" possibleMat)
+										(setq possibleMat __MODULBODYMAT)
+										(progn
+											(if (equal (iniread wardrobeINIpath "general_edgestrip_settings" "addPartMaterial" "0") "1")
+												(setq possibleMat (_& (_ possibleMat __MODULBODYMAT)))
+											)
+										)
+									)
+									
+									(setq EDGESTRIP_MAT possibleMat)
+									(_SET (_ 'EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB EDGESTRIP_MAT)))							
+								)
+							)					
+							(if (> vertexlist vertex1)
+								(progn
+									(if (apply 'and (setq EDGE_OVERRIDE_DATA_ACCORDING_TO_MAT_ATTRIBUTE (getEdgeStripDataAccordingToMatMatrixList (_EXISTPANEL PRI_PANEL_CODE))))
+										(progn
+											(if EDGESTRIP_MAT
+												(progn
+													(if (checkStrInStr "##" (car EDGE_OVERRIDE_DATA_ACCORDING_TO_MAT_ATTRIBUTE)) ;daha iyisini yazana kadar wildcard ##
+														(setq EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB (setq EDGESTRIP_MAT (strcat (parselft (car EDGE_OVERRIDE_DATA_ACCORDING_TO_MAT_ATTRIBUTE) "##") EDGESTRIP_MAT (parsergt (car EDGE_OVERRIDE_DATA_ACCORDING_TO_MAT_ATTRIBUTE) "##")))))
+														(mapcar 'set '(EDGESTRIP_MAT EDGESTRIP_WID) EDGE_OVERRIDE_DATA_ACCORDING_TO_MAT_ATTRIBUTE)
+													
+													)
+												)
+											)
+										)
+									)
+
+									; Preparing data for dropping edgebands' thicknesses from dxf 
+									(if (null retEdgeStripsDATA)
+										(setq retEdgeStripsDATA (list (list EDGESTRIP_MAT EDGESTRIP_WID vertex1 vertex2 )))
+										(setq retEdgeStripsDATA (insmemb (list EDGESTRIP_MAT EDGESTRIP_WID vertex1 vertex2 ) vertex1 retEdgeStripsDATA))
+									)					
+									
+
+									; Creating edgeband
+									(_EDGEROW "adeko" PRI_PANEL_CODE (list EDGESTRIP_MAT EDGESTRIP_WID vertex1 vertex2 ))
+									(_SET (_ 'edgeCounter (+ 1 edgeCounter)))
+									(setq EDGESTRIP_MAT EDGESTRIP_MAT_ORJ  EDGESTRIP_WID EDGESTRIP_WID_ORJ )
+								)
+							)
+						)
+
+						; Adjusting part dimensions according to edgebands thicknesses
+						(if (and (member lmm-outPutType (list 0 1 2 3 4 8)) (equal lmm-s-dropEdgeThicknessFromPartsInDxf "1"))
+							(progn
+								(setq retEdgeStripsDATA (lmm_fillEdgeStripDataByVertexCount (delallmemb nil retEdgeStripsDATA) vertexlist))
+
+								(lmm_changePanelPointsByEdgebands tempEntity retEdgeStripsDATA)
+								(if (setq tempEntity (_EXISTPANEL (strcat PRI_PANEL_CODE lmm-sfaceSuffix)))
+									(progn 
+										(lmm_changePanelPointsByEdgebands tempEntity retEdgeStripsDATA)
+									)
+								)
+							)
+						)
+					)
+					(progn
+						(princ)
+					)
+				)
+			)
+		)
+	)
+)
+(princ)

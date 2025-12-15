@@ -1,0 +1,137 @@
+(initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
+(setq kpmLR (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Left/Right: ")))
+(cond
+
+	((equal kpmLR "Right")
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 0.0 dAltKot)
+			
+			"SOL_YAN" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW DC10_T1) 0.0 0.0) 
+				(list (- unitW DC10_T1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0
+			(d2r 90.0) 
+			(list DC10_T1 (- unitD) dAltKot)
+			"KAPAMA_ARKASI" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW DC10_T1) 0.0 0.0) 
+				(list (- unitW DC10_T1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0
+			(d2r 90.0) 
+			(list DC10_T1 (- DC10_T1) dAltKot)
+			"KAPAMA_ARKASI" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+	)
+	(T
+				(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0 
+			0.0 
+			
+			(list (- unitW DC10_T1) 0.0 dAltKot)
+			
+			"SOL_YAN" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW DC10_T1) 0.0 0.0) 
+				(list (- unitW DC10_T1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0
+			(d2r 90.0) 
+			(list 0.0 (- unitD) dAltKot)
+			"KAPAMA_ARKASI" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitW DC10_T1) 0.0 0.0) 
+				(list (- unitW DC10_T1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DC10_T1 
+			0.0
+			(d2r 90.0) 
+			(list 0.0 (- DC10_T1) dAltKot)
+			"KAPAMA_ARKASI" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_BODY_BASE")
+			"CAB_BODY_BASE"
+		)
+	)
+)

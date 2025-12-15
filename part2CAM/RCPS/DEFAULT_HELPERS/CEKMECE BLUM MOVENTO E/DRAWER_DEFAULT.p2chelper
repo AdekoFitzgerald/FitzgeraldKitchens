@@ -1,0 +1,266 @@
+;prefvars
+(_RUNDEFAULTHELPERRCP "BACK_PANEL_BASE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_BASE_DEFAULT" nil "p2chelper")
+
+; ---------------------------------------------------------------------------------------------------------
+(_SETA 'DRAWER_TYPE "SINK")
+
+(_SETA 'DRAWER_BODY_TYPE "SLIDING")
+; Drawer-module related parameters
+(_SETA 'USE_HIDDEN_DRAWER_DOOR nil)
+(_SETA 'USE_DOOR_AS_DRAWER_FRONT_PANEL nil)
+(_SETA 'DRAWER_CABIN_ELEV 20)
+(_SETA 'CHANGE_DRAWER_WITH_BOUNDRIES nil)
+(_SETA 'DRAWER_DEPTH_UPPERBOUND 500)
+; Drawer body parameters
+(_SETA 'DRAWER_TOTAL_GAP_WID 22)
+(_SETA 'DRAWER_TOTAL_GAP_DEP 50)
+(_SETA 'GAP_BETWEEN_DRAWER_AND_RAIL 10)
+(_SETA 'DRAWER_BODY_HEI 120)
+(_SETA 'DRAWER_PANELS_WID_DIFF (* __AD_PANELTHICK 2))
+(_SETA 'DRAWER_PANELS_HEI_DIFF_TOP 0)
+(_SETA 'DRAWER_PANELS_HEI_DIFF_BOTTOM (+ 12 (+ GENERAL_GROOVE_COMPANSATION GENERAL_BACK_PANEL_THICKNESS)))
+;Notch operation parameters
+(_SETA 'NOTCH_DRAWER_PANELS_FOR_SIDES nil)
+(_SETA 'NOTCH_HEI_FOR_DRAWER_PANELS 70)
+(_SETA 'NOTCH_BEGINNING_LENGTH_FROM_TOP 90)
+; Sink unit drawer parameters
+(_SETA 'SINKU_WID_OF_DRAWER (- __WID (* 200 2) (* __AD_PANELTHICK 2) DRAWER_TOTAL_GAP_WID) )
+(_SETA 'SINKU_DEP_OF_DRAWER 284)
+
+;hidden drawer panel like door parameters
+(_SETA 'HIDDEN_DRAWER_DOOR_HEI 250)
+(_SETA 'HIDDEN_DRAWER_DOOR_WID 250)
+(_SETA 'HIDDEN_DRAWER_DOOR_HEI_DIFF_BOTTOM 20)
+
+; Material and thickness parameters of drawer panels
+(_SETA 'DRAWER_BODY_MAT __MODULBODYMAT)
+(_SETA 'DRAWER_BODY_THICKNESS __AD_PANELTHICK)
+(_SETA 'DRAWER_BOTTOM_PANEL_MAT __MODULBODYMAT)
+(_SETA 'DRAWER_BOTTOM_PANEL_THICKNESS __AD_PANELTHICK)
+(_SETA 'DRAWER_BOTTOM_PANEL_EXTRA_WIDTH_VARIANCE 0)
+(_SETA 'DRAWER_BOTTOM_PANEL_EXTRA_DEPTH_VARIANCE 0)
+(_SETA 'GROOVE_MODE_FOR_BODY_ASSEMBLY "WID")
+
+(_SETA 'PERFORM_GROOVE_ON_PANELS T)
+(_SETA 'RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE 0)
+
+(_SETA 'DBA_GROOVE_DISTANCE 12)
+(_SETA 'DBA_GROOVE_WID (+ GENERAL_GROOVE_COMPANSATION GENERAL_BACK_PANEL_THICKNESS))
+(_SETA 'DBA_GROOVE_DEPTH 8)
+
+(_SETA 'IS_THINNING_OP_AVAILABLE_FOR_BOTTOM nil)
+(_SETA 'IS_THINNING_OP_AVAILABLE_FOR_BACK nil)
+(_SETA 'DRAWER_PANELS_THINNING_OP_TYPE "POCKETING")
+(_SETA 'THINNING_OVERFLOW_VALUE 10)
+(_SETA 'THINNING_DISTANCE_BOTTOM 0)
+(_SETA 'THINNING_WIDTH_BOTTOM 10)
+(_SETA 'THINNING_DEPTH_BOTTOM 2)
+(_SETA 'THINNING_DISTANCE_BACK 0)
+(_SETA 'THINNING_WIDTH_BACK 10)
+(_SETA 'THINNING_DEPTH_BACK 2)
+
+(_SETA 'SHAVING_TARGET_PANEL_THICKNESS 16) ; op dep = thick - target
+(_SETA 'IS_SHAVING_OP_AVAILABLE_FOR_BOTTOM	nil	)
+(_SETA 'IS_SHAVING_OP_AVAILABLE_FOR_BACK	nil	)
+(_SETA 'DRAWER_PANELS_SHAVING_OP_TYPE DRAWER_PANELS_THINNING_OP_TYPE)
+(_SETA 'SHAVING_OVERFLOW_VALUE THINNING_OVERFLOW_VALUE)
+(_SETA 'SHAVING_WIDTH_BOTTOM 56)
+(_SETA 'SHAVING_WIDTH_BACK 15)
+
+(_SETA 'RAIL_BORDURE_CODE "BORDURE")
+(_SETA 'IS_RAIL_BORDURE_AVAILABLE nil)
+(_SETA 'RAIL_BACK_PANEL_HOLDER_CODE "HOLDER")
+(_SETA 'IS_RAIL_BACK_PANEL_HOLDER_AVAILABLE nil)
+; ---------------------------------------------------------------------------------------------------------		
+; Drawer door holes parameters
+(_SETA 'DRAWER_DOOR_HOLES_AVAILABLE T)
+
+(_SETA 'DRAWER_DOOR_HOLES_OFFSET 32)
+(_SETA 'DRAWER_DOOR_FIRST_HOLE_DISTANCE 72)
+(_SETA 'DRAWER_DOOR_SECOND_HOLE_DISTANCE 104)
+(_SETA 'DRAWER_DOOR_THIRD_HOLE_DISTANCE 232)
+(_SETA 'DRAWER_DOOR_HOLES_DIAMETER 5)
+(_SETA 'DRAWER_DOOR_HOLES_DEPTH 14)
+(_SETA 'DRAWER_DOOR_EXTRA_HOLES_NUMBER 0)
+(_SETA 'DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE 123)
+(_SETA 'DRAWER_DOOR_SECOND_EXTRA_HOLE_DISTANCE 139)
+(_SETA 'DRAWER_DOOR_EXTRA_HOLES_DIAMETER 5)
+(_SETA 'DRAWER_DOOR_EXTRA_HOLES_DEPTH 12.5)
+(_SETA 'DRAWER_DOOR_HEI_REQUIRED_FOR_THIRD_HOLE 250)
+
+(_SETA 'IS_HDRAWER_DOOR_CONN_HOLE_AVAILABLE nil)
+(_SETA 'HDRAWER_DOOR_CONN_HOLE_DIAMETER 25)
+(_SETA 'HDRAWER_DOOR_CONN_HOLE_DEPTH 10)
+(_SETA 'HDRAWER_DOOR_CONN_HOLE_DISTANCE 17)
+(_SETA 'HDRAWER_DOOR_CONN_MECHANISM_CODE "DRAWER_DOOR_HIDDEN_DRAWER_CONNECTION_MECHANISM")
+
+(_SETA 'IS_DRAWER_BACK_PANEL_HOLE_FOR_RAIL_AVAILABLE T)
+(_SETA 'DRAWER_BACK_PANEL_HOLE_DIA_FOR_RAIL 6.0)
+(_SETA 'DRAWER_BACK_PANEL_HOLE_DEP_FOR_RAIL 10.0)
+(_SETA 'DRAWER_BACK_PANEL_HOLE_DOWN_OFFSET_FOR_RAIL 11.0)
+(_SETA 'DRAWER_BACK_PANEL_HOLE_SIDE_OFFSET_FOR_RAIL 7.0)
+				
+; Drawer front panel-door holes parameters
+(_SETA 'IS_DRAWER_FRONT_PANEL_AND_DOOR_HOLE_AVAILABLE nil)
+(_SETA 'DRAWER_FRONT_PANEL_HOLE_DIA_FOR_DOOR 5.0)
+(_SETA 'DRAWER_FRONT_PANEL_HOLE_DEP_FOR_DOOR 18.0)
+(_SETA 'DRAWER_DOOR_HOLE_DIA_FOR_FRONT_PANEL GENERAL_MARKER_DIA)
+(_SETA 'DRAWER_DOOR_HOLE_DEP_FOR_FRONT_PANEL GENERAL_MARKER_DEP)
+(_SETA 'DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR nil)
+(_SETA 'DRAWER_FRONT_PANEL_HOLE_SIDE_OFFSET_FOR_DOOR 50)
+																								
+; ---------------------------------------------------------------------------------------------------------
+;hidden drawer extra part
+(_SETA 'IS_THERE_EXTRA_PANEL_FOR_HIDDEN_DRAWER nil)
+(_SETA 'HIDDEN_DRAWER_EXTRA_PANEL_HEI 60)
+(_SETA 'HIDDEN_DRAWER_EXTRA_PANEL_WID 490)
+(_SETA 'HIDDEN_DRAWER_EXTRA_PANEL_THICKNESS 25)
+
+; Hidden drawer extra panel holes
+(_SETA 'ARE_EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_AVAILABLE nil)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_LIST (_ 60 245 430))
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_BOTTOM_DISTANCE 30)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DEPTH 14)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DIA 5)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_FOR_SIDES_SHIFTING_VALUE 36)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_HOLES_HEI_DIFF_WITH_RAIL_HOLES_FOR_SIDES 10)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DEPTH_FOR_SIDES 14)
+(_SETA 'EXTRA_PANEL_HOLES_FOR_HIDDEN_DRAWER_DIA_FOR_SIDES 5)
+
+; ---------------------------------------------------------------------------------------------------------
+; Drawer rail holes parameters
+(_SETA 'RAIL_CODE "BLUM_MOMENTO")
+(_SETA 'RAIL_HOLES_AVAILABLE T)
+
+(_SETA 'RAIL_HOLES_DIAMETER GENERAL_MARKER_DIA)
+(_SETA 'RAIL_HOLES_DEPTH GENERAL_MARKER_DEP)
+
+; Rail params
+(_SETA 'RAIL_LENGTHS (_ 250 300 350 400 450 500))
+
+(_SETA 'RAIL_HOLES_Y_AXIS 60)
+(_SETA 'RAIL_HOLES_X_AXIS_LIST (_ 37 197 261 293 357))
+(_SETA 'RAIL_HOLES_NUMBER 5)
+
+;First rail hole is default and will be available all the time
+(_SETA 'RAIL_HOLES_RAIL_LENGTH_LIMITS (_ 0 250 300 300 250))
+
+; Drawer rail holes parameters for drawer sides
+(_SETA 'RAIL_HOLES_FOR_DRAWER_SIDES_AVAILABLE nil)
+
+(_SETA 'RAIL_HOLES_FOR_DRAWER_SIDES_DIAMETER GENERAL_MARKER_DIA)
+(_SETA 'RAIL_HOLES_FOR_DRAWER_SIDES_DEPTH GENERAL_MARKER_DEP)
+
+(_SETA 'RAIL_HOLES_FOR_DRAWER_SIDES_Y_AXIS 60)
+(_SETA 'RAIL_HOLES_FOR_DRAWER_SIDES_X_AXIS_LIST (_ 37 165 229 293 357))
+
+;Creating all available holes list
+(_FSET (_ 'RAIL_HOLES_LIST nil))
+(foreach xAxisValue RAIL_HOLES_X_AXIS_LIST
+	(_FSET (_ 'RAIL_HOLES_LIST (cons (_ RAIL_HOLES_DIAMETER RAIL_HOLES_DEPTH (_ xAxisValue RAIL_HOLES_Y_AXIS 0)) RAIL_HOLES_LIST)))
+)
+(_FSET (_ 'RAIL_HOLES_LIST (reverse RAIL_HOLES_LIST)))
+	
+;Creating rail holes list for rail packages
+(_FSET (_ 'RAIL_HOLES_FOR_RAIL_PACKAGES nil))
+(foreach railLength RAIL_LENGTHS
+	(_FSET (_ 'RAIL_LENGTH_RELATED_HOLE_LIST nil))
+	(setq i 0)
+	(while (< i RAIL_HOLES_NUMBER)
+		(if (>= railLength (nth i RAIL_HOLES_RAIL_LENGTH_LIMITS))
+			(progn
+				(_FSET (_ 'RAIL_LENGTH_RELATED_HOLE_LIST (cons (nth i RAIL_HOLES_LIST) RAIL_LENGTH_RELATED_HOLE_LIST)))
+			)
+		)
+		(i++)
+	)
+	(_FSET (_ 'RAIL_LENGTH_RELATED_HOLE_LIST (reverse RAIL_LENGTH_RELATED_HOLE_LIST)))
+	(_FSET (_ 'RAIL_HOLES_FOR_RAIL_PACKAGES (cons (append (_ railLength (_& (_ RAIL_CODE "_" (convertStr railLength)))) RAIL_LENGTH_RELATED_HOLE_LIST) RAIL_HOLES_FOR_RAIL_PACKAGES)))
+)
+(_FSET (_ 'RAIL_HOLES_FOR_RAIL_PACKAGES (reverse RAIL_HOLES_FOR_RAIL_PACKAGES)))
+
+;Creating all available holes list for drawer side panels
+(_FSET (_ 'RAIL_HOLES_FOR_DRAWER_SIDES_LIST nil))
+(foreach xAxisValue RAIL_HOLES_FOR_DRAWER_SIDES_X_AXIS_LIST
+	(_FSET (_ 'RAIL_HOLES_FOR_DRAWER_SIDES_LIST (cons (_ xAxisValue RAIL_HOLES_FOR_DRAWER_SIDES_Y_AXIS 0) RAIL_HOLES_FOR_DRAWER_SIDES_LIST)))
+)
+(_FSET (_ 'RAIL_HOLES_FOR_DRAWER_SIDES_LIST (reverse RAIL_HOLES_FOR_DRAWER_SIDES_LIST)))
+
+; ---------------------------------------------------------------------------------------------------------
+; CONTINGENCIES
+; USE_DOOR_AS_DRAWER_FRONT_PANEL
+(if (null (member USE_DOOR_AS_DRAWER_FRONT_PANEL (_ nil T))) (_FSET (_ 'USE_DOOR_AS_DRAWER_FRONT_PANEL T)))
+; CHANGE_DRAWER_WITH_BOUNDRIES
+(if (null (member CHANGE_DRAWER_WITH_BOUNDRIES (_ nil T))) (_FSET (_ 'CHANGE_DRAWER_WITH_BOUNDRIES nil)))
+; HIDDEN DRAWER CONNECTOR MECHANISM UNIT
+(if (null HDRAWER_DOOR_CONN_MECHANISM_UNIT) (_FSET (_ 'HDRAWER_DOOR_CONN_MECHANISM_UNIT "pc")))
+
+; PRELIMINARY CONTROLS
+(if (null CHANGE_DRAWER_WITH_BOUNDRIES)
+	(_FSET (_ 'DRAWER_DEPTH (- __DEP GROOVE_BACK_OFFSET DRAWER_TOTAL_GAP_DEP)))	; Height of panel directly relates to module depth, not boundries
+	(_FSET (_ 'DRAWER_DEPTH DRAWER_DEPTH_UPPERBOUND GROOVE_BACK_OFFSET)) ; Boundry for actual module calculated here. Via this boundry, drawer bottom panels height will be calculated
+)
+
+; According to the notch type, possible maximum drawer depth and actualDrawerDepth are calculated
+(if (or (equal __NOTCHTYPE 0) (equal __NOTCHTYPE 4))
+	(progn
+		(_FSET (_ 'maxDrawerDepthPossible (- __DEP GROOVE_BACK_OFFSET)))
+		(_FSET (_ 'actualDrawerDepth DRAWER_DEPTH))
+	)
+	(progn
+		(_FSET (_ 'maxDrawerDepthPossible (- __DEP __NOTCHDIM2 GROOVE_BACK_OFFSET)))
+		(_FSET (_ 'actualDrawerDepth (- DRAWER_DEPTH __NOTCHDIM2 GROOVE_BACK_OFFSET)))
+	)
+)
+
+(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+(_FSET (_ 'currentDoorELEV (_S2V (_& (_ paramBody "ELEV")))))
+; General validation control for RAIL_HOLES_FOR_RAIL_PACKAGES
+(if (and (_NOTNULL RAIL_HOLES_FOR_RAIL_PACKAGES) (equal (type RAIL_HOLES_FOR_RAIL_PACKAGES) 'LIST))
+	(progn
+		; LIMIT CONTROLS
+		(_FSET (_ 'loopControl nil))
+		(_FSET (_ 'numberOfPackages (length RAIL_HOLES_FOR_RAIL_PACKAGES)))
+		(_FSET (_ 'packageCounter 1))
+		(_FSET (_ 'limitOfRail 0))
+		(_FSET (_ 'indexOfRail nil))
+		(while (and (null loopControl) (< packageCounter (+ numberOfPackages 1)))
+			(_FSET (_ 'packageIndex (- packageCounter 1)))
+			(_FSET (_ 'currentPackage (getnth packageIndex RAIL_HOLES_FOR_RAIL_PACKAGES)))
+			(_FSET (_ 'currentPackLimit (getnth 0 currentPackage)))
+			(cond
+				((equal actualDrawerDepth currentPackLimit)
+					; No need for further investigation. We are sure this is the package we need
+					(_FSET (_ 'loopControl T))
+					(_FSET (_ 'limitOfRail currentPackLimit))
+					(_FSET (_ 'indexOfRail packageIndex))
+				)
+				((> actualDrawerDepth currentPackLimit)
+					; It is a valid package but is it the best choice for us???
+					(if (> currentPackLimit limitOfRail)
+						(progn
+							(_FSET (_ 'limitOfRail currentPackLimit))
+							(_FSET (_ 'indexOfRail packageIndex))
+						)
+					)
+				)
+			)
+			(_FSET (_ 'packageCounter (+ 1 packageCounter)))
+		)
+		
+		(if (_NOTNULL indexOfRail)
+			(_FSET (_ 'activeRailPackage (getnth indexOfRail RAIL_HOLES_FOR_RAIL_PACKAGES)))
+		)
+	)
+)
+
+(_NONOTCH)
+
+; IMPORTANT INFORMATION
+; Format of RAIL_HOLES_FOR_RAIL_PACKAGES
+
+; Format of RAIL_HOLES_FOR_RAIL_PACKAGES list 	-> 		list RAIL_PACKAGE_1 RAIL_PACKAGE_2 ....
+; Format of RAIL_PACKAGE_1 list 			  	->		list upperLimitForRail RAIL_PACKAGE_CODE firstHoleParams secondHoleParams ....
+; Format of firstHoleParams list			  	->		list holeDiameter holeDepth holePosition
+; Format of holePosition list				  	->		list positionOnAxisX positionOnAxisY positionOnAxisZ

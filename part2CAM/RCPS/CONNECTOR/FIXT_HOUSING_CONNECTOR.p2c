@@ -1,0 +1,49 @@
+;(_RUNDEFAULTHELPERRCP "FIXT_DEFAULT" nil "p2chelper")
+
+(setq WARDROBE_FIXT_VER_HOLE_DEPTH (cu2mm FIXT_MAIN_DEP))
+(setq WARDROBE_FIXT_VER_HOLE_DIA (cu2mm FIXT_MAIN_DIA))
+(setq WARDROBE_FIXT_APP_DIS (cu2mm FIXT_APP_DIS))
+
+(setq WARDROBE_FIXT_ADD_FLANGE				(equal FIXT_W_ADD_FLANGE 1.0)			)
+(setq WARDROBE_FIXT_FLANGE_OUTSIDE_OVERFLOW	(cu2mm FIXT_W_FLANGE_OUTSIDE_OVERFLOW)	)
+(setq WARDROBE_FIXT_FLANGE_DEPTH			(cu2mm FIXT_W_FLANGE_DEPTH)				)
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			(if (_ISHORIZONTALFACE currentFaceNormal)
+				(progn
+					(if (null (minusp (getnth 2 holePosition)))
+						(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+					)
+					(if (not (equal (* -1 (getnth 2 holePosition)) (- (cu2mm FIXT_OPP_POS) (cu2mm FIXT_H)) 0.01))
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(setq holePosition (replace 0 2 holePosition))
+					
+					; Type of current face is either 2, 3, 4 or 5 in this case
+					;(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_FIXT_HOUSING_HOLE"))))
+					(_FIXT "HOUSING_CONN" connectedFaceCode (list holePosition (list WARDROBE_FIXT_VER_HOLE_DEPTH WARDROBE_FIXT_VER_HOLE_DIA nil nil WARDROBE_FIXT_APP_DIS WARDROBE_FIXT_CODE WARDROBE_FIXT_UNIT nil WARDROBE_FIXT_ADD_FLANGE WARDROBE_FIXT_FLANGE_OUTSIDE_OVERFLOW WARDROBE_FIXT_FLANGE_DEPTH)) holeOrient)
+				)
+			)
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

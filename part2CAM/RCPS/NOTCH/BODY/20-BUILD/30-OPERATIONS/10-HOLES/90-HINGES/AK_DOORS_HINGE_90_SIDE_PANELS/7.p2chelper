@@ -1,0 +1,26 @@
+; SIDE OPERATION
+(if (null NO_NEED_HINGE_CONN_HOLES)
+	(progn
+		(_FSET (_ 'secondaryDoorHEI (getnth 4 secondaryDoor_PARAMS)))
+		(_FSET (_ 'secondaryDoorWID (getnth 5 secondaryDoor_PARAMS)))
+		(_FSET (_ 'secondaryDoorELEV (getnth 6 secondaryDoor_PARAMS)))
+		(_FSET (_ 'secondaryDoorFRAME (getnth 7 secondaryDoor_PARAMS)))
+		
+		(_FSET (_ 'topFrameVAL (getnth 0 secondaryDoorFRAME)))
+		(_FSET (_ 'holeCodeBody "HINGE_CONN_HOLE_"))
+			
+		(if (_EXISTPANEL AK_NOTCHED_LEFT_PANEL_CODE)
+			(progn
+				(_FSET (_ 'upperFirstHolePOS (_ HINGE_CONNECTION_HOLES_OFFSET (- AK_NOTCHED_LEFT_PANEL_HEI (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE + distOfConnHolesToCenter")) 0)))
+				(_FSET (_ 'upperSecondHolePOS (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff) (- AK_NOTCHED_LEFT_PANEL_HEI (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE - distOfConnHolesToCenter")) 0)))
+				(_FSET (_ 'lowerFirstHolePOS (_ HINGE_CONNECTION_HOLES_OFFSET (- AK_NOTCHED_LEFT_PANEL_HEI (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE + distOfConnHolesToCenter")) 0)))
+				(_FSET (_ 'lowerSecondHolePOS (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff) (- AK_NOTCHED_LEFT_PANEL_HEI (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE - distOfConnHolesToCenter")) 0)))
+				
+				(_HOLE (_& (_ holeCodeBody "UF")) AK_NOTCHED_LEFT_PANEL_CODE (_ upperFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+				(_HOLE (_& (_ holeCodeBody "US")) AK_NOTCHED_LEFT_PANEL_CODE (_ upperSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+				(_HOLE (_& (_ holeCodeBody "LF")) AK_NOTCHED_LEFT_PANEL_CODE (_ lowerFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+				(_HOLE (_& (_ holeCodeBody "LS")) AK_NOTCHED_LEFT_PANEL_CODE (_ lowerSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+			)
+		)
+	)
+)

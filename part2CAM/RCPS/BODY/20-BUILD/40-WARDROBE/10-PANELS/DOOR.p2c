@@ -1,0 +1,91 @@
+PANEL_MAIN_ROTATION -> "MAIN ROTATION"
+PANEL_CUTLIST_ROTATION -> "GRAIN ROTATION OF CUTLIST"
+PANEL_DXF_ROTATION -> "DXF ROTATION OF DXF OUTPUT"
+PANEL_MIRRORING_AXIS -> "AXIS OF MIRRORING OPERATION"
+
+PANEL_LABEL -> "LABEL OF PANEL"
+PANEL_TAG -> "TAG OF PANEL"
+
+PANEL_SFACE_ROTATION_AXIS  -> "ROTATION AXIS FOR SECONDARY FACE PANELS Y OR X"
+
+(_SETA 'PANEL_MAIN_ROTATION __PANELBODYMATROT)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'PANEL_LABEL "")
+(_SETA 'PANEL_TAG nil)
+
+(_SETA 'PANEL_SFACE_ROTATION_AXIS "Y")
+
+
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(kpk:getData (getEntPro g_currentModulEnt 2)  'currentDoorTYPE 'currentDoorHandle 'currentDoorModel nil nil nil nil nil nil)
+
+(setq currentDoorWID (cu2mm (get_mdata g_currentmodulEnt k:WID)))
+(setq currentDoorHEI (cu2mm (get_mdata g_currentmodulEnt k:HEI)))
+
+(if (or (null currentDoorModel) (equal currentDoorModel ""))
+	(progn
+		(setq currentDoorModel (GetKapakNameFor currentDoorTYPE currentDoorHandle))
+	)
+)
+
+(_FSET (_ 'currentDoorGroup (getnth 4 (getnth 1 (getnth 3 (assoc currentDoorModel kapak:mlofl))))))
+(_FSET (_ 'currentDoorID (get_mdata g_currentmodulent k:CDoorId)))
+(_FSET (_ 'currentDoorSource (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CDoorSource  )))
+	
+(if (not (member currentDoorSource (list "OUTSOURCE" "INSOURCE" "" " " 0 0.0 nil "nil")))
+	(progn
+		(setq currentDoorSource0 currentDoorSource currentDoorSource "INSOURCE")
+		(if (equal (type (_s2v currentDoorSource0)) 'LIST)
+			(progn
+				(setq currentDoorSource1 (getnth 1 (_s2v currentDoorSource0)))
+				(setq currentDoorSource0 (getnth 0 (_s2v currentDoorSource0)))
+			)
+			(setq currentDoorSource1 nil)
+		)
+	)
+	(setq currentDoorSource0 nil currentDoorSource1 nil)
+)
+
+(_FSET (_ 'currentDoorTAGS (ifnull (getDoorMDataFromBlockName (getEntPro g_currentmodulent 2 ) k:P2CTags) "")))
+(_FSET (_ 'doorCostType (_CONVERTDOORTYPETOCOSTTYPE currentDoorTYPE)))
+
+(setq doorRcpPath (strcat (parseLFT rcpFileFullPath "DOOR.p2c") "DOOR_" currentDoorModel "_" currentDoorTYPE ".p2chelper"))
+
+(if (not (equal currentDoorSource "INSOURCE"))
+	(if (equal OUTSOURCE_DOORS_MATERIAL_MODE 2)
+		(progn
+			; When material mode equals to 2, model with cost type entered as an item
+			(_FSET (_ 'areaOfPanel (* (* currentDoorWID 0.001) (* currentDoorHEI 0.001))))
+			(_FSET (_ 'panelAsItem (_& (_ currentDoorMODEL "_" doorCostType))))
+			
+			(_ITEMMAIN panelAsItem panelAsItem (_ areaOfPanel "m2"))
+		)
+	)
+	(progn
+		(if (findfileex doorRcpPath)
+			(lmm_loadRcp doorRcpPath (list T))
+			(lmm_loadRcp (strcat (parseLFT rcpFileFullPath "DOOR.p2c") "DOOR_" currentDoorTYPE ".p2chelper") (list T))
+		)
+	)
+)
+	
+
+(if (and p2C_Labour_Calc Post_Door_P2C_Labour_Process)
+	(progn
+		(defun Post_Door_P2C_Labour_Process_TEMP (/ areaOfDoor currentDoorForm) ;fail safe for local parameters b4 labour
+			(setq areaOfDoor (* (* currentDoorWID 0.001) (* currentDoorHEI 0.001))) ;mm to m2
+			(setq currentDoorForm (getDoorMDataFromBlockName (getEntPro g_CurrentModulEnt 2 ) k:DoorForm))
+			(Post_Door_P2C_Labour_Process)
+		)
+		(Post_Door_P2C_Labour_Process_TEMP)
+		(setq Post_Door_P2C_Labour_Process_TEMP nil)
+	)
+)
+
+(_NONOTCH)

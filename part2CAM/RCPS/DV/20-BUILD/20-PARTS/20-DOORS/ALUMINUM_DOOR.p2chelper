@@ -1,0 +1,25 @@
+; GLOBAL_DOOR_PARAMS are taken from original door recipes
+(_FSET (_ 'GDP_doorIndex (getnth 0 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_doorInfo (getnth 1 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_changeCodeFlag (getnth 2 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_moduleDef (getnth 3 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_divisionOrder (getnth 4 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_uniParamsPrefix (getnth 5 GLOBAL_DOOR_PARAMS)))
+
+(_FSET (_ 'currentDoorTYPE (getnth 4 GDP_doorInfo)))
+(_FSET (_ 'aluFrameLayerMAT (_GETDOORMATS currentDoorID ALUMINIUM_FRAME_LAYER)))
+
+(if (and (equal (_CONVERTDOORTYPETOCOSTTYPE currentDoorTYPE) "B") (_NOTNULL aluFrameLayerMAT))
+	(progn
+		(_FSET (_ 'glassDoorLayerMAT (_GETDOORMATS currentDoorID GLASS_DOOR_LAYER)))
+		(if (_NOTNULL glassDoorLayerMAT)
+			(_FSET (_ 'currentDoorMAT (_& (_ aluFrameLayerMAT "_KAPAK_" glassDoorLayerMAT))))
+			(_FSET (_ 'currentDoorMAT (_& (_ aluFrameLayerMAT "_KAPAK"))))
+		)
+		(_FSET (_ 'currentDoorHEI (getnth 1 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorWID (getnth 2 GDP_doorInfo)))
+		
+		(_PANEL (XSTR "ALUMINIUM_GLASS_DOOR") (_ currentDoorWID currentDoorHEI (_ nil nil nil nil) currentDoorMAT))
+	)
+)
+(_NONOTCH)

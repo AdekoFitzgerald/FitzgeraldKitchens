@@ -1,0 +1,1 @@
+(setq modulgolaOrderList (append modulgolaOrderList (list (_ 72 "2gola_profileL"))))

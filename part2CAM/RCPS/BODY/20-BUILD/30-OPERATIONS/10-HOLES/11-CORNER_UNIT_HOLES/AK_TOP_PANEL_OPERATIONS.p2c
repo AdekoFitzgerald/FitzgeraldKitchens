@@ -1,0 +1,96 @@
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "LEFT_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "RIGHT_PANEL_DEFAULT" nil "p2chelper")
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(if (_EXISTPANEL AK_TOP_PANEL_CODE)
+			(progn
+				
+				(if DEDUCT_GROOVE_SHARE_FROM_BACK
+					(setq DEDUCTION_VALUE (* -1 (+ GROOVE_WID GROOVE_DISTANCE)))
+					(setq DEDUCTION_VALUE 0)
+				)
+				
+				(_FSET (_ 'lengthParametersForTopAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH __DEP2 (_ AK_TOP_PANEL_FRONT_VARIANCE (+ AK_TOP_PANEL_BACK_VARIANCE DEDUCTION_VALUE) LEFT_PANEL_FRONT_VARIANCE (+ LEFT_PANEL_BACK_VARIANCE DEDUCTION_VALUE)))))
+				(mapcar '_SETA '(lengthForTopAndLeft frontStartingPointTopL backStartingPointTopL frontStartingPointLeft backStartingPointLeft) lengthParametersForTopAndLeft)
+
+				(_FSET (_ 'lengthParametersForTopAndRight (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ AK_TOP_PANEL_FRONT_VARIANCE (+ AK_TOP_PANEL_BACK_VARIANCE DEDUCTION_VALUE) RIGHT_PANEL_FRONT_VARIANCE (+ RIGHT_PANEL_BACK_VARIANCE DEDUCTION_VALUE)))))
+				(mapcar '_SETA '(lengthForTopAndRight frontStartingPointTopR backStartingPointTopR frontStartingPointRight backStartingPointRight) lengthParametersForTopAndRight)
+				
+				; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+				; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+				; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+				
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(cond
+						((equal TOP_PANEL_JOINT_TYPE 1)
+							(_FSET (_ 'LeftPanelOrientType "Y-"))
+							(_FSET (_ 'topPanelOrientTypeForLeft nil))
+							(_FSET (_ 'RightPanelOrientType "Y-"))
+							(_FSET (_ 'topPanelOrientTypeForRight nil))
+							
+							(_FSET (_ 'SidePanelsZValue (car horizontalHolePos)))
+							(_FSET (_ 'topPanelZValue 0.0))
+
+							(_FSET (_ 'LeftPanelsConstAxisValue LEFT_PANEL_LOWER_VARIANCE))
+							(_FSET (_ 'RightPanelsConstAxisValue RIGHT_PANEL_LOWER_VARIANCE))
+							(_FSET (_ 'topPanelConstAxisValue (+ (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+						)
+						((equal TOP_PANEL_JOINT_TYPE 0)
+							(_FSET (_ 'LeftPanelOrientType nil))
+							(_FSET (_ 'topPanelOrientTypeForLeft "X-"))
+							(_FSET (_ 'RightPanelOrientType nil))
+							(_FSET (_ 'topPanelOrientTypeForRight "Y+"))
+							
+							(_FSET (_ 'SidePanelsZValue 0.0))
+							(_FSET (_ 'topPanelZValue (car horizontalHolePos)))
+
+							(_FSET (_ 'LeftPanelsConstAxisValue (+ LEFT_PANEL_UPPER_VARIANCE (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'RightPanelsConstAxisValue (+ RIGHT_PANEL_UPPER_VARIANCE (cadr horizontalHolePos) OFFSET_FOR_OPPOSITE_OF_HOR_HOLES)))
+							(_FSET (_ 'topPanelConstAxisValue 0.0))
+						)
+					)
+					
+					(_FSET (_ 'topPanelPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+						(_ lengthForTopAndLeft (- AK_TOP_PANEL_HEI topPanelConstAxisValue) topPanelZValue "Y") 
+						(_ (+ frontStartingPointTopL (- AK_TOP_PANEL_WID AK_TOP_PANEL_DEP2)) backStartingPointTopL nil AK_TOP_PANEL_WID) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE topPanelPointListForLeftSide (_ topPanelOrientTypeForLeft "X+") connectorParams)
+					
+					(_FSET (_ 'topPanelPointListForRightSide (_GETHOLEPOINTLIST operationName 
+						(_ lengthForTopAndRight topPanelConstAxisValue topPanelZValue "X") 
+						(_ frontStartingPointTopR backStartingPointTopR T AK_TOP_PANEL_DEP) 
+						(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName AK_TOP_PANEL_OP_FACE topPanelPointListForRightSide (_ topPanelOrientTypeForRight "Y-") connectorParams)
+					
+					(if (_EXISTPANEL AK_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForTopAndLeft (- AK_LEFT_PANEL_HEI LeftPanelsConstAxisValue) SidePanelsZValue "X") 
+								(_ frontStartingPointLeft backStartingPointLeft nil AK_LEFT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_LEFT_PANEL_CODE leftPanelPointListForTopPanel (_ LeftPanelOrientType "Y+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL AK_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForTopPanel (_GETHOLEPOINTLIST operationName 
+								(_ lengthForTopAndRight (- AK_RIGHT_PANEL_HEI RightPanelsConstAxisValue) SidePanelsZValue "X") 
+								(_ frontStartingPointRight backStartingPointRight T AK_RIGHT_PANEL_WID) 
+								(_ FITTING_PARAMETERS nil))))
+							(_HOLEGROUP operationName AK_RIGHT_PANEL_CODE rightPanelPointListForTopPanel (_ RightPanelOrientType "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

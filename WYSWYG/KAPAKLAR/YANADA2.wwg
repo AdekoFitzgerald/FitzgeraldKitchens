@@ -1,0 +1,83 @@
+(setq 	ox  unitW 
+		oy (+ (* unitD 0.5) 1.9) 
+		oz dAltKot  
+		tip "R" 
+		kulp "0-" 
+		doorname "YANAADA2"  
+		modelOfTheDoor "YANAADA2" 
+		en  (+ unitD 1.8)
+		boy unitH  
+		rotang -90.0 
+		orient nil 
+		isFixedD ""
+)
+
+(loadDoorModel modelOfTheDoor)
+(setq validFunctionName (detectKanatDrawingFunction tip modelOfTheDoor))
+(setq kblk (strcat (constDoorName tip kulp doorName en boy) isFixedD))
+(kapakblkciz 'kblk tip kulp doorname modelOfTheDoor en boy  nil nil )
+
+(setq kapak_szMData 
+	(convertStr
+		(list "KPK" 'KPK ;KPK2 idi burasý
+			en
+			boy
+			ad_ET
+			(cons 'QUOTE (list (list tip kulp orient doorName)))
+			""
+			"Kapak - Door"
+		)
+	)
+)
+
+(setq additionalData
+	(list
+		(cons k:MTYP "KPK") ; KPK2 idi burasý
+		(cons k:WID en)
+		(cons k:HEI boy)
+		(cons k:DEP ad_ET)
+		(cons k:myon orient)
+		(cons k:CMtip "")
+		(cons k:CDoorId (setq doorResultId (lmm_createUniqueRandomId)))		  
+		(cons k:panelDataList (convertStr (list ad_et  (lmm_convertHeiWidToPolyLineData en boy))))
+		(cons k:CAuxRcps "")
+		(cons k:mData kapak_szMData)
+		(cons k:WPanelUsageType "")
+		(cons k:WPanelUsageSubTypes "")
+		(cons k:panelProfileNormal (list 0.0 -1.0 0.0))
+		(cons k:animateScript "")
+		(if LRMode_OVR 			(cons k:DoorLRMode LRMode_OVR))		;OVR's sett by kapakblkciz->f:exectip->Falanca_Akanat
+		(if DRMode_OVR			(cons k:DoorDRMode DRMode_OVR))
+		(if kpkTck_OVR			(cons k:DoorKpkTck kpkTck_OVR))
+		(cond 
+			((and Ta Sa) 	(cons k:DoorFrameCenterLineOffsets (list Ta Sa))) 
+			(Ta				(cons k:DoorFrameCenterLineOffsets (list Ta Ta)))
+			(Sa				(cons k:DoorFrameCenterLineOffsets (list Sa Sa)))
+		)
+	)
+)
+
+;(if (member simetri '("saG" "R" "r")) ;solsa veya nilse oburu
+;	(command cmdINSERT kblk (list 0.0 (+ (- oy) 1.0) oz) "XYZ"  1 -1 1 rotang)
+;	(command cmdINSERT kblk (list ox (+ (- oy) 1.0) oz) "XYZ"  1 1 1 rotang)
+;)
+
+
+(initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
+(setq kpmLR (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Left/Right: ")))
+(cond
+	((equal kpmLR "Left")
+	(command cmdINSERT kblk (list 0.0 (+ (- oy) 1.0) oz) "XYZ"  1 -1 1 rotang)
+	)
+	(T
+	(command cmdINSERT kblk (list ox (+ (- oy) 1.0) oz) "XYZ"  1 1 1 rotang)
+	)
+)
+
+(setq g_lastDrawnDoor (entlast))
+(set_Mdata (entlast) additionalData)
+
+
+;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+(setq doorsPropList (cons (list 0.0  unitD (+ unitH dAltkot) "0-" "A" nil 0 doorResultId)  doorsPropList))
+; (watch '(doorsPropList))

@@ -1,0 +1,87 @@
+(_FSET (_ 'halfOfThickness (/ __AD_PANELTHICK 2.0)))
+(if (_EXISTPANEL AKK_BLIND_DOOR_CODE)
+	(progn
+		; IMPORTANT INFORMATION
+		; 	To discriminate holes on each side of blind door shortkeys are used. Meaning of shortkeys, ds,DS -> Door side, bs,BS -> blind side
+		; 	Door side assumed as front side and blind side assumed as back side. According to this assumption, rafix parameters are used
+		
+		; Blind door top-bottom loss parameters are taken via AKK_PARTS_LOSSES global variable which is set in AKK_MANUFACTURER.p2c
+		(_FSET (_ 'topSideLoss (getnth 0 AKK_PARTS_LOSSES)))
+		(_FSET (_ 'bottomSideLoss (getnth 1 AKK_PARTS_LOSSES)))
+		; According to module direction, hole positions on X-axis are determined
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisX (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisX BLIND_DOOR_CONN_RIGHT_OFFSET))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisX (+ DISTANCE_TO_WALL BLIND_DOOR_CONN_LEFT_OFFSET)))
+				(_FSET (_ 'ds_holePosOnAxisX (- AKK_BLIND_DOOR_WID BLIND_DOOR_CONN_RIGHT_OFFSET)))
+			)
+		)
+		; Meaning of shortkeys, U -> Up, D -> Down
+		(_FSET (_ 'holeCodeBody (_& (_ "BLIND_CORNER_BLIND_DOOR_RAFIX_HOLE_"))))
+		(_HOLE (_& (_ holeCodeBody "BSU")) AKK_BLIND_DOOR_CODE (_ (_ bs_holePosOnAxisX (_= "AKK_BLIND_DOOR_HEI + topSideLoss - halfOfThickness") 0) RAFIX_HOR_DIAMETER RAFIX_HOR_DEPTH))
+		(_HOLE (_& (_ holeCodeBody "BSD")) AKK_BLIND_DOOR_CODE (_ (_ bs_holePosOnAxisX (- halfOfThickness bottomSideLoss) 0) RAFIX_HOR_DIAMETER RAFIX_HOR_DEPTH))
+		(_HOLE (_& (_ holeCodeBody "DSU")) AKK_BLIND_DOOR_CODE (_ (_ ds_holePosOnAxisX (_= "AKK_BLIND_DOOR_HEI + topSideLoss - halfOfThickness") 0) RAFIX_HOR_DIAMETER RAFIX_HOR_DEPTH))
+		(_HOLE (_& (_ holeCodeBody "DSD")) AKK_BLIND_DOOR_CODE (_ (_ ds_holePosOnAxisX (- halfOfThickness bottomSideLoss) 0) RAFIX_HOR_DIAMETER RAFIX_HOR_DEPTH))
+		(_ITEMMAIN RAFIX_CODE AKK_BLIND_DOOR_CODE (_ (* QUANTITY_OF_ITEM 4) RAFIX_UNIT))
+	)
+)
+; IMPORTANT INFORMATION
+; 	Priority of top panel is higher than front top strechers. If both of them exists by the way it is not logical, then operation performs on top panel
+(cond
+	((_EXISTPANEL TOP_PANEL_CODE)
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (_= "TOP_PANEL_WID + __AD_PANELTHICK - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "TOP_PANEL_WID + __AD_PANELTHICK + DISTANCE_TO_WALL - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY (- BLIND_DOOR_CONN_LEFT_OFFSET __AD_PANELTHICK)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - __AD_PANELTHICK - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holePosition_BS (_ (- TOP_PANEL_HEI RAFIX_VER_CENTER) bs_holePosOnAxisY 0)))
+		(_FSET (_ 'holePosition_DS (_ (- TOP_PANEL_HEI RAFIX_VER_CENTER) ds_holePosOnAxisY 0)))
+		
+		(_RAFIX "BS" TOP_PANEL_OP_FACE (_ holePosition_BS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "X+" TAIL_HOLE_PARAMS))
+		(_RAFIX "DS" TOP_PANEL_OP_FACE (_ holePosition_DS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "X+" TAIL_HOLE_PARAMS))
+	)
+	((_EXISTPANEL FRONT_TOP_STRECHER_CODE)
+		(cond
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisX (- BLIND_DOOR_CONN_LEFT_OFFSET __AD_PANELTHICK)))
+				(_FSET (_ 'ds_holePosOnAxisX (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - __AD_PANELTHICK - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisX (_= "FRONT_TOP_STRECHER_WID + __AD_PANELTHICK - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisX (_= "FRONT_TOP_STRECHER_WID + __AD_PANELTHICK + DISTANCE_TO_WALL - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holePosition_BS (_ bs_holePosOnAxisX RAFIX_VER_CENTER 0)))
+		(_FSET (_ 'holePosition_DS (_ ds_holePosOnAxisX RAFIX_VER_CENTER 0)))
+		
+		(_RAFIX "BS" FRONT_TOP_STRECHER_OP_FACE (_ holePosition_BS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "Y+" TAIL_HOLE_PARAMS))
+		(_RAFIX "DS" FRONT_TOP_STRECHER_OP_FACE (_ holePosition_DS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "Y+" TAIL_HOLE_PARAMS))
+	)
+)
+(if (_EXISTPANEL BOTTOM_PANEL_CODE)
+	(progn
+		(cond
+			((equal __MODULDIRECTION "L")
+				(_FSET (_ 'bs_holePosOnAxisY (_= "BOTTOM_PANEL_WID + bottomSideStyleV2 - BLIND_DOOR_CONN_LEFT_OFFSET")))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "BOTTOM_PANEL_WID + bottomSideStyleV2 + DISTANCE_TO_WALL - AKK_BLIND_DOOR_WID + BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+			((equal __MODULDIRECTION "R")
+				(_FSET (_ 'bs_holePosOnAxisY (- BLIND_DOOR_CONN_LEFT_OFFSET bottomSideStyleV2)))
+				(_FSET (_ 'ds_holePosOnAxisY (_= "AKK_BLIND_DOOR_WID - DISTANCE_TO_WALL - bottomSideStyleV2 - BLIND_DOOR_CONN_RIGHT_OFFSET")))
+			)
+		)
+		(_FSET (_ 'holePosition_BS (_ RAFIX_VER_CENTER bs_holePosOnAxisY 0)))
+		(_FSET (_ 'holePosition_DS (_ RAFIX_VER_CENTER ds_holePosOnAxisY 0)))
+		
+		(_RAFIX "BS" BOTTOM_PANEL_OP_FACE (_ holePosition_BS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "X-" TAIL_HOLE_PARAMS))
+		(_RAFIX "DS" BOTTOM_PANEL_OP_FACE (_ holePosition_DS RAFIX_VER_CENTER RAFIX_VER_DIAMETER RAFIX_VER_DEPTH "X-" TAIL_HOLE_PARAMS))
+	)
+)

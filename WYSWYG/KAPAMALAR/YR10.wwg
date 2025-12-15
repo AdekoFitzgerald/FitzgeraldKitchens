@@ -1,0 +1,58 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- YR10_D1 ad_et) 0.0 0.0) 
+		(list (- YR10_D1 ad_et) YR10_T1 0.0) 
+		(list 0.0 YR10_T1 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r -90.0)
+	
+	(d2r -90.0)
+	
+	
+	(list 0.0 (+ (- unitD) YR10_D1) YR10_H1)
+	
+	"YR10_01" 
+	"" 
+	nil 
+	
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0)
+		(list 0.0 unitH 0.0)
+		(list YR10_T1 unitH 0.0)
+		(list YR10_T1 0.0 0.0)
+	) 
+	nil
+	
+	unitW
+	
+	(d2r 0.0)
+	(d2r 180.0)
+	
+	
+	(list unitW (- unitD) dAltKot)
+	
+	"YR10_02" 
+	"" 
+	nil 
+	
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+		

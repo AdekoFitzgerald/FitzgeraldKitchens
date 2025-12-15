@@ -1,0 +1,237 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "MECHANISM_DEFAULT" nil "p2chelper")
+
+(if (or (_NOTNULL USE_PROJECT_PRICING_RECIPES) (not (_ISDOORSINGLE __CURDIVDOORSLIST)))
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		
+		
+		(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+		
+		(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+		(if (not (_ISDOOROPENUP currentDoorTYPE))
+			(progn
+				; Type of door is not valid for this operation
+				(_FSET (_ 'HF_TOP_DOOR_ORDER nil))
+				(_FSET (_ 'HF_BOTTOM_DOOR_ORDER nil))
+				(_NONOTCH)
+			)
+			(progn
+				; Behavior of operation is determined in here
+				(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+				(cond
+					((or (> currentDoorWID LIMIT_FOR_TWO_MECHANISMS) (equal MECHANISM_SIDE "LR") (equal MECHANISM_SIDE "RL"))
+						(_FSET (_ 'activateLeftSideHole T))
+						(_FSET (_ 'activateRightSideHole T))
+						(_FSET (_ 'itemFactor 2))
+					)
+					((equal MECHANISM_SIDE "L")
+						(_FSET (_ 'activateLeftSideHole T))
+						(_FSET (_ 'activateRightSideHole nil))
+						(_FSET (_ 'itemFactor 1))
+					)
+					((equal MECHANISM_SIDE "R")
+						(_FSET (_ 'activateLeftSideHole nil))
+						(_FSET (_ 'activateRightSideHole T))
+						(_FSET (_ 'itemFactor 1))
+					)
+				)
+				
+				;----------------------------------	SIDE OPERATIONS	---------------------------------------
+				(_FSET (_ 'currentDoorELEV (_S2V (_& (_ paramBody "ELEV")))))
+				(if (equal __CURDIVORDER (- __DIVISIONSCOUNT 1))
+					(progn
+						(_FSET (_ 'upperDivisionAxisYVariance 0))
+						(_FSET (_ 'upperDivisionAxisXVariance 0))
+					)
+					(progn
+						(_FSET (_ 'upperDivisionAxisYVariance MECHANISM_HOLES_UPPER_VER_VARIANCE))
+						(_FSET (_ 'upperDivisionAxisXVariance MECHANISM_HOLES_UPPER_HOR_VARIANCE))
+					)
+				)
+				
+				(_FSET (_ 'holeCounter 0))
+				(repeat (length MECHANISM_HOLES_LIST_ON_SIDES)
+					(_FSET (_ 'currentHole (getnth holeCounter MECHANISM_HOLES_LIST_ON_SIDES)))
+					(_FSET (_ 'holeOffset_X (getnth 0 currentHole)))
+					(_FSET (_ 'holeOffset_Y (getnth 1 currentHole)))
+					(_FSET (_ 'offsetOnAxisX (_= "holeOffset_X - upperDivisionAxisXVariance")))
+					
+					(if (null ARE_MECHANISM_HOLES_DISTANCES_FROM_MODULE_TOP)
+						(progn
+							(if (null ARE_MECHANISM_HOLES_DISTANCES_FROM_DIV_TOP)
+								(progn
+									(_FSET (_ 'offsetOnAxisYLeft (_= "currentDoorELEV + holeOffset_Y - bottomSideStyleV1 - upperDivisionAxisYVariance")))
+									(_FSET (_ 'offsetOnAxisYRight (_= "currentDoorELEV + holeOffset_Y - bottomSideStyleV1 - upperDivisionAxisYVariance")))
+								)
+								(progn
+									(_FSET (_ 'offsetOnAxisYLeft (_= "__CURDIVELEV + __CURDIVINSIDEHEI - bottomSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance + LEFT_PANEL_LOWER_VARIANCE")))
+									(_FSET (_ 'offsetOnAxisYRight (_= "__CURDIVELEV + __CURDIVINSIDEHEI - bottomSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance + RIGHT_PANEL_LOWER_VARIANCE")))
+								)
+							)
+						)
+						(progn
+							(_FSET (_ 'offsetOnAxisYLeft (_= "__HEI - topSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance + LEFT_PANEL_LOWER_VARIANCE - bottomSideStyleV1")))
+							(_FSET (_ 'offsetOnAxisYRight (_= "__HEI - topSideStyleV1 - holeOffset_Y + upperDivisionAxisYVariance + RIGHT_PANEL_LOWER_VARIANCE - bottomSideStyleV1")))
+						)
+					)
+					
+
+					(_FSET (_ 'holeCodeBody (_& (_ "MECHANISM_HOLE_" holeCounter))))
+					(if (and (_EXISTPANEL LEFT_PANEL_CODE) (_NOTNULL activateLeftSideHole))
+						(_HOLE holeCodeBody LEFT_PANEL_CODE (_ (_ (+ offsetOnAxisX LEFT_PANEL_FRONT_VARIANCE) offsetOnAxisYLeft 0) MECHANISM_HOLES_DIA MECHANISM_HOLES_DEPTH))
+					)
+					(if (and (_EXISTPANEL RIGHT_PANEL_CODE) (_NOTNULL activateRightSideHole))
+						(_HOLE holeCodeBody RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID offsetOnAxisX RIGHT_PANEL_FRONT_VARIANCE) offsetOnAxisYRight 0) MECHANISM_HOLES_DIA MECHANISM_HOLES_DEPTH))
+					)
+					
+					(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+				)
+				;----------------------------------	DOOR OPERATIONS	---------------------------------------
+				(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+				(if (not (_EXISTPANEL currentDoorCODE))
+					(progn
+						; There is no eligible door for operation. Thats why the situation of items are investigated
+						(if (_NOTNULL (_S2V (_& (_ paramBody "VIRTUAL")))) 
+							(_ITEMMAIN MECHANISM_CODE MECHANISM_CODE (_ (* MECHANISM_QUANTITY itemFactor) MECHANISM_UNIT))
+						)
+					)
+					(progn
+						(_FSET (_ 'holeSemiDiameter (/ MECHANISM_DOOR_HOLES_DIA 2.0)))
+
+						(if (null NO_NEED_MECHANISM_HOLES_ON_DOORS)
+							(progn
+								(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+								(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ paramBody "FRAME")))))
+								
+								(_FSET (_ 'topFrameVAL (getnth 0 currentDoorFRAME)))
+								(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+								(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+									
+								(_FSET (_ 'holeCounter 0))
+								(repeat (length MECHANISM_DOOR_HOLES_LIST)
+									(_FSET (_ 'currentHole (getnth holeCounter MECHANISM_DOOR_HOLES_LIST)))
+									(_FSET (_ 'holeOffset_X (getnth 0 currentHole)))
+									(_FSET (_ 'holeOffset_Y (getnth 1 currentHole)))
+									(_FSET (_ 'offsetOnAxisY (_= "currentDoorHEI + topFrameVAL - holeOffset_Y")))
+									
+									(_FSET (_ 'innerBoundry (+ holeOffset_X holeSemiDiameter)))
+									(_FSET (_ 'outerBoundry (- holeOffset_X holeSemiDiameter)))
+									
+									(_FSET (_ 'frameControl (_CONTROLFRAME paramBody currentDoorTYPE innerBoundry outerBoundry 0)))
+									(if (null frameControl)
+										(progn
+											(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (XSTR "DOOR CODE") " : " currentDoorCODE "\n" "\n" 
+														   (XSTR "Mechanism holes operations can not be performed on door frame with current parameters!") "\n"))
+										)
+										(progn
+											(_FSET (_ 'holeCodeBody (_& (_ "MECHANISM_HOLES_" holeCounter))))
+											(if (_NOTNULL activateLeftSideHole)
+												(progn
+													(_FSET (_ 'offsetOnAxisX (_= "currentDoorWID + leftFrameVAL - holeOffset_X")))
+													(_HOLE holeCodeBody currentDoorCODE (_ (_ offsetOnAxisX offsetOnAxisY 0) MECHANISM_DOOR_HOLES_DIA MECHANISM_DOOR_HOLES_DEPTH))
+												)
+											)
+											(if (_NOTNULL activateRightSideHole)
+												(progn
+													(_FSET (_ 'offsetOnAxisX (- holeOffset_X rightFrameVAL)))
+													(_HOLE holeCodeBody currentDoorCODE (_ (_ offsetOnAxisX offsetOnAxisY 0) MECHANISM_DOOR_HOLES_DIA MECHANISM_DOOR_HOLES_DEPTH))
+												)
+											)
+										)
+									)
+									
+									(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+								)
+								;----------------------------------	BIFOLDING DOOR OPERATIONS ---------------------------------------
+								; Other mechanism's operation parameters
+								(if (and (_NOTNULL IS_MECHANISM_FOR_BIFOLDING_DOOR_MODULE) (_NOTNULL ARE_OPERATIONS_BETWEEN_DOORS_AVAILABLE))
+									(progn
+										; Bottom door operations for bifolding door module mechanisms
+										(_FSET (_ 'holeCounter 0))
+										(repeat (length MECHANISM_BOTTOM_DOOR_HOLES_LIST)
+											(_FSET (_ 'currentHole (getnth holeCounter MECHANISM_BOTTOM_DOOR_HOLES_LIST)))
+											(_FSET (_ 'holeOffset_X (getnth 0 currentHole)))
+											(_FSET (_ 'holeOffset_Y (getnth 1 currentHole)))
+											(_FSET (_ 'offsetOnAxisY (_= "currentDoorHEI + topFrameVAL - holeOffset_Y")))
+											
+											(_FSET (_ 'holeCodeBody (_& (_ "BIFOLDING_DOOR_MECHANISM_HOLES_FOR_BOTTOM_DOOR_" holeCounter))))
+											(if (_NOTNULL activateLeftSideHole)
+												(progn
+													(_FSET (_ 'offsetOnAxisX (_= "currentDoorWID + leftFrameVAL - holeOffset_X")))
+													(_HOLE holeCodeBody currentDoorCODE (_ (_ offsetOnAxisX offsetOnAxisY 0) MECHANISM_DOOR_HOLES_DIA_FOR_BIFOLD_DOORS MECHANISM_DOOR_HOLES_DEPTH_FOR_BIFOLD_DOORS))
+												)
+											)
+											(if (_NOTNULL activateRightSideHole)
+												(progn
+													(_FSET (_ 'offsetOnAxisX (- holeOffset_X rightFrameVAL)))
+													(_HOLE holeCodeBody currentDoorCODE (_ (_ offsetOnAxisX offsetOnAxisY 0) MECHANISM_DOOR_HOLES_DIA_FOR_BIFOLD_DOORS MECHANISM_DOOR_HOLES_DEPTH_FOR_BIFOLD_DOORS))
+												)
+											)
+											(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+										)
+										
+										; Top door operations for bifolding door module mechanisms
+										(_FSET (_ 'topDoorCODE (_CREATEDOORCODE currentDoorTYPE (- MECHANISM_TOP_DOOR_DIV_NUMBER 1) 1 CHANGE_DOOR_CODES "ST")))
+										(if (_EXISTPANEL topDoorCODE)
+											(progn
+												(_FSET (_ 'holeCounter 0))
+												(repeat (length MECHANISM_TOP_DOOR_HOLES_LIST)
+													(_FSET (_ 'currentHole (getnth holeCounter MECHANISM_TOP_DOOR_HOLES_LIST)))
+													(_FSET (_ 'holeOffset_X (getnth 0 currentHole)))
+													(_FSET (_ 'holeOffset_Y (getnth 1 currentHole)))
+													
+													(_FSET (_ 'holeCodeBody (_& (_ "BIFOLDING_DOOR_MECHANISM_HOLES_FOR_TOP_DOOR_" holeCounter))))
+													(if (_NOTNULL activateLeftSideHole)
+														(progn
+															(_FSET (_ 'offsetOnAxisX (_= "currentDoorWID + leftFrameVAL - holeOffset_X")))
+															(_HOLE holeCodeBody topDoorCODE (_ (_ offsetOnAxisX holeOffset_Y 0) MECHANISM_DOOR_HOLES_DIA_FOR_BIFOLD_DOORS MECHANISM_DOOR_HOLES_DEPTH_FOR_BIFOLD_DOORS))
+														)
+													)
+													(if (_NOTNULL activateRightSideHole)
+														(progn
+															(_FSET (_ 'offsetOnAxisX (- holeOffset_X rightFrameVAL)))
+															(_HOLE holeCodeBody topDoorCODE (_ (_ offsetOnAxisX holeOffset_Y 0) MECHANISM_DOOR_HOLES_DIA_FOR_BIFOLD_DOORS MECHANISM_DOOR_HOLES_DEPTH_FOR_BIFOLD_DOORS))
+														)
+													)
+													(_FSET (_ 'holeCounter (+ 1 holeCounter)))
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+						(_ITEMMAIN MECHANISM_CODE currentDoorCODE (_ (* MECHANISM_QUANTITY itemFactor) MECHANISM_UNIT))
+						
+						; Adding power unit as item
+						(if (_NOTNULL IS_POWER_UNIT_AVAILABLE_FOR_MECHANISM)
+							(progn
+								(cond
+									((<= currentDoorWID (getnth 0 POWER_UNIT_LIMITS_LIST))
+										(_ITEMMAIN (getnth 0 POWER_UNIT_CODES_LIST) currentDoorCODE (_ POWER_UNIT_QUANTITY UNIT_OF_POWER_UNIT))
+									)
+									((and (> currentDoorWID (getnth 0 POWER_UNIT_LIMITS_LIST)) (<= currentDoorWID (getnth 1 POWER_UNIT_LIMITS_LIST)))
+										(_ITEMMAIN (getnth 1 POWER_UNIT_CODES_LIST) currentDoorCODE (_ POWER_UNIT_QUANTITY UNIT_OF_POWER_UNIT))
+									)
+									((and (> currentDoorWID (getnth 1 POWER_UNIT_LIMITS_LIST)) (<= currentDoorWID (getnth 2 POWER_UNIT_LIMITS_LIST)))
+										(_ITEMMAIN (getnth 2 POWER_UNIT_CODES_LIST) currentDoorCODE (_ POWER_UNIT_QUANTITY UNIT_OF_POWER_UNIT))
+									)
+									((> currentDoorWID (getnth 2 POWER_UNIT_LIMITS_LIST))
+										(_ITEMMAIN (getnth 3 POWER_UNIT_CODES_LIST) currentDoorCODE (_ POWER_UNIT_QUANTITY UNIT_OF_POWER_UNIT))
+									)
+								)
+							)
+						)
+					)
+				)
+				; Activation parameters of sides are saved for notch operations
+				(if (not (equal __NOTCHTYPE 0)) (_FSET (_ 'MECH_CONTROLS (_ activateLeftSideHole activateRightSideHole currentDoorELEV))))
+			)
+		)
+	)
+)

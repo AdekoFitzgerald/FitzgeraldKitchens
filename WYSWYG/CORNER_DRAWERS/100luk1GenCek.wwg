@@ -1,0 +1,138 @@
+(SETQ BCekmece 23.0)
+(SETQ KCekmece 10.0)
+(SETQ CTaban 0.8)
+(SETQ 1CekKot (+ (+ dAltKot (* unitH 0.75)) 3.0))
+(SETQ 2CekKot (+ (+ dAltKot (* unitH 0.5)) 3.0))
+(SETQ 3GCekKot (+ dAltKot 3.0))
+(SETQ 3DCekKot (+ (+ dAltKot (* unitH 0.25)) 3.0))
+(SETQ 4CekKot (+ dAltKot 3.0))
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 56.2 -98.2 0.0) 
+	(list 56.2 -95.65 0.0) 
+	(list 4.65 -44.11 0.0) 
+	(list 3.38 -45.38 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 54.1 2CekKot)
+"SOL_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_SOL_PANEL")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 44.11 -4.65 0.0) 
+	(list 95.65 -56.2 0.0) 
+	(list 98.2 -56.2 0.0) 
+	(list 45.38 -3.38 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 52.8 2CekKot)
+"SAG_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_SAG_PANEL")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 56.2 -56.2 0.0) 
+	(list 56.2 -98.2 0.0) 
+	(list 58.0 -98.2 0.0) 
+	(list 58.0 -58.0 0.0) 
+	(list 98.2 -58.0 0.0) 
+	(list 98.2 -56.2 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 42.0 2CekKot)
+"ON_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ON_PANEL")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 45.38 -5.93 0.0) 
+	(list 44.11 -4.65 0.0) 
+	(list 4.65 -44.11 0.0) 
+	(list 5.93 -45.38 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 40.71 2CekKot)
+"ARKA_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ARKA_PANEL")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 3.38 -45.38 0.0) 
+	(list 56.2 -98.2 0.0) 
+	(list 56.2 -56.2 0.0) 
+	(list 98.2 -56.2 0.0) 
+	(list 45.38 -3.38 0.0) 
+) 
+nil
+CTaban
+
+;(d2r 90.0)
+0.0
+0.0
+(list 0.0 94.8 (- 2CekKot 0.8))
+"TABAN"
+""
+nil
+"SHELF"
+(strcat kodBlock "_TABAN")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)

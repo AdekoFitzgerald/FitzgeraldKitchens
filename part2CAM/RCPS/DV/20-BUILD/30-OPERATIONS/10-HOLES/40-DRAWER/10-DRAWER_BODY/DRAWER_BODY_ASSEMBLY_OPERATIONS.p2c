@@ -1,0 +1,314 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+
+; (_HOLEGROUP holeOperation panelCode pointList orientType connectorParameters)
+; (_GETHOLEPOINTLIST operationType pointParams panelParams fittingParams)
+; (_GETHOLEPOINTLIST operationType (list holesCalculationLength constantAxis axisZ offsetingAxis) (list frontStartingLength backStartingLength reverseStartingPoint panelLength) (list fittingParameters shiftOffsetValues)))
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(if (_NOTNULL CURRENT_DRAWER_DATA)
+			(progn
+				(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+				(if (equal currentDrawerOrder __CURDIVORDER)
+					(progn
+						(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+
+						;door id
+						(_FSET (_ 'doorParamBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+						(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ doorParamBody "TYPE")))))
+						(if (_NOTNULL currentDoorTYPE)
+							(if (_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+								(progn
+									(_FSET (_ 'currentDoorHEI (_S2V (_& (_ doorParamBody "HEI")))))
+									(_FSET (_ 'currentDoorWID (_S2V (_& (_ doorParamBody "WID")))))
+									(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ doorParamBody "FRAME")))))
+									
+									(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+									(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+									(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+									
+									(_FSET (_ 'railGapOneSide (/ DRAWER_TOTAL_GAP_WID 2.0)))
+									(_FSET (_ 'panelsWidDiffOneSide (/ DRAWER_PANELS_WID_DIFF 2.0)))
+								)
+							)
+						)
+						
+						
+						; Unique code of drawer panels
+						(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+						(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+						
+						(_FSET (_ 'DRAWER_LEFT_PANEL_CODE (_& (_ codeBody (XSTR "LEFT_PANEL")))))
+						(_FSET (_ 'DRAWER_RIGHT_PANEL_CODE (_& (_ codeBody (XSTR "RIGHT_PANEL")))))
+						(_FSET (_ 'DRAWER_FRONT_PANEL_CODE (_& (_ codeBody (XSTR "FRONT_PANEL")))))
+						
+						(if (and (_EXISTPANEL DRAWER_FRONT_PANEL_CODE))
+							(progn
+								(_FSET (_ 'paramBody (_& (_ paramRoot "FRONT_PANEL_"))))
+								(_FSET (_ 'dFrontPanelHEI (_S2V (_& (_ paramBody "HEI")))))
+								(_FSET (_ 'dFrontPanelWID (_S2V (_& (_ paramBody "WID")))))
+								(_FSET (_ 'dFrontPanelTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+							)
+						)
+						
+						; BACKSIDE OPERATIONS
+						; Backside panel of drawer is determined in here
+						(cond
+							((_EXISTPANEL (_& (_ codeBody (XSTR "BACK_PANEL"))))
+								; DRAWER BACK PANEL
+								(_FSET (_ 'backSideOperation T))
+								
+								(_FSET (_ 'drawerBackPanel_LEFT (_& (_ codeBody (XSTR "BACK_PANEL")))))
+								(_FSET (_ 'drawerBackPanel_RIGHT (_& (_ codeBody (XSTR "BACK_PANEL")))))
+								
+								(_FSET (_ 'paramBody (_& (_ paramRoot "BACK_PANEL_"))))
+								
+								(_FSET (_ 'dBackPanelHEI_LEFT (_S2V (_& (_ paramBody "HEI")))))
+								; No need for left side width
+								(_FSET (_ 'dBackPanelTHICKNESS_LEFT (_S2V (_& (_ paramBody "THICKNESS")))))
+								
+								(_FSET (_ 'dBackPanelHEI_RIGHT dBackPanelHEI_LEFT))
+								(_FSET (_ 'dBackPanelWID_RIGHT (_S2V (_& (_ paramBody "WID")))))
+								(_FSET (_ 'dBackPanelTHICKNESS_RIGHT dBackPanelTHICKNESS_LEFT))
+							)
+							((_NOTNULL (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT"))))
+								; SINK UNIT DRAWER BACK PANEL
+								(_FSET (_ 'backSideOperation T))
+								
+								(_FSET (_ 'drawerBackPanel_LEFT (_& (_ codeBody (XSTR "SINK_UNIT_BACK_PANEL") "_" (XSTR "LEFT")))))
+								(_FSET (_ 'drawerBackPanel_RIGHT (_& (_ codeBody (XSTR "SINK_UNIT_BACK_PANEL") "_" (XSTR "RIGHT")))))
+								
+								(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BACK_PANEL_LEFT_"))))
+								
+								(_FSET (_ 'dBackPanelHEI_LEFT (_S2V (_& (_ paramBody "HEI")))))
+								; No need for left side width
+								(_FSET (_ 'dBackPanelTHICKNESS_LEFT (_S2V (_& (_ paramBody "THICKNESS")))))
+								
+								(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BACK_PANEL_RIGHT_"))))
+								
+								(_FSET (_ 'dBackPanelHEI_RIGHT (_S2V (_& (_ paramBody "HEI")))))
+								(_FSET (_ 'dBackPanelWID_RIGHT (_S2V (_& (_ paramBody "WID")))))
+								(_FSET (_ 'dBackPanelTHICKNESS_RIGHT (_S2V (_& (_ paramBody "THICKNESS")))))
+							)
+							(T
+								(_FSET (_ 'backSideOperation nil))
+							)
+						)
+				
+						(if IS_DRAWER_BACK_PANEL_HOLE_FOR_RAIL_AVAILABLE
+							(progn
+								(_HOLE "DRAWER_BACK_PANEL_RAIL_HOLE_1" (strcat drawerBackPanel_LEFT "!!SFACE") (_ (_ DRAWER_BACK_PANEL_HOLE_SIDE_OFFSET_FOR_RAIL DRAWER_BACK_PANEL_HOLE_DOWN_OFFSET_FOR_RAIL 0) DRAWER_BACK_PANEL_HOLE_DIA_FOR_RAIL DRAWER_BACK_PANEL_HOLE_DEP_FOR_RAIL))
+								
+								(_HOLE "DRAWER_BACK_PANEL_RAIL_HOLE_2" (strcat drawerBackPanel_RIGHT "!!SFACE") (_ (_ (- dBackPanelWID_RIGHT DRAWER_BACK_PANEL_HOLE_SIDE_OFFSET_FOR_RAIL) DRAWER_BACK_PANEL_HOLE_DOWN_OFFSET_FOR_RAIL 0) DRAWER_BACK_PANEL_HOLE_DIA_FOR_RAIL DRAWER_BACK_PANEL_HOLE_DEP_FOR_RAIL))
+							)
+						)
+						
+						(if (not (equal DRAWER_BODY_TYPE "SYSTEM"))
+							(progn
+								(foreach operationParams OPERATION_LIST
+									(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+									
+									(if (equal DRAWER_PANELS_WID_DIFF (* __AD_PANELTHICK 2)) ;arka ve ön panel arada
+										(progn
+											(_FSET (_ 'drawerFrontBackPanelHoleDirectionLeft "X+"))
+											(_FSET (_ 'drawerFrontBackPanelHoleDirectionRight "X-"))
+											
+											(_FSET (_ 'drawerFrontBackPanelHoleZValue (car horizontalHolePos)))
+											(_FSET (_ 'drawerFrontBackPanelConstAxisValue 0.0))
+											
+											
+											(_FSET (_ 'drawerLeftPanelPanelHoleDirectionFront nil))
+											(_FSET (_ 'drawerLeftPanelPanelHoleDirectionBack nil))
+											
+											(_FSET (_ 'drawerRightPanelPanelHoleDirectionFront nil))
+											(_FSET (_ 'drawerRightPanelPanelHoleDirectionBack nil))
+											
+											(_FSET (_ 'drawerSidePanelZValue 0.0))
+											(_FSET (_ 'drawerSidePanelConstAxisValue (cadr horizontalHolePos)))
+										)
+										(progn
+											(_FSET (_ 'drawerFrontBackPanelHoleDirectionLeft nil))
+											(_FSET (_ 'drawerFrontBackPanelHoleDirectionRight nil))
+											
+											(_FSET (_ 'drawerFrontBackPanelHoleZValue 0.0))
+											(_FSET (_ 'drawerFrontBackPanelConstAxisValue (cadr horizontalHolePos)))
+											
+											
+											(_FSET (_ 'drawerLeftPanelPanelHoleDirectionFront "X+"))
+											(_FSET (_ 'drawerLeftPanelPanelHoleDirectionBack "X-"))
+											
+											(_FSET (_ 'drawerRightPanelPanelHoleDirectionFront "X-"))
+											(_FSET (_ 'drawerRightPanelPanelHoleDirectionBack "X+"))
+											
+											(_FSET (_ 'drawerSidePanelZValue (car horizontalHolePos)))
+											(_FSET (_ 'drawerSidePanelConstAxisValue 0.0))
+										)
+									)
+									
+									(if (_NOTNULL backSideOperation)
+										(progn
+											(_FSET (_ 'lengthParametersForBackAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH dBackPanelHEI_LEFT (_ 0 0 0 0))))
+											(_FSET (_ 'lengthForBackAndLeft (car lengthParametersForBackAndLeft)))
+
+											(_FSET (_ 'lengthParametersForBackAndRight (_CALCULATEPANELSINTERSECTIONLENGTH dBackPanelHEI_LEFT (_ 0 0 0 0))))
+											(_FSET (_ 'lengthForBackAndRight (car lengthParametersForBackAndRight)))
+
+											(_FSET (_ 'backPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																				(_ lengthForBackAndLeft drawerFrontBackPanelConstAxisValue drawerFrontBackPanelHoleZValue "Y") 
+																				(_ 0 0 nil dBackPanelHEI_LEFT) 
+																				(_ FITTING_PARAMETERS nil))))
+																					
+											(_HOLEGROUP operationName drawerBackPanel_LEFT backPointListForLeftSide (list drawerFrontBackPanelHoleDirectionLeft "X-") connectorParams)
+											
+											(_FSET (_ 'backPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																				 (_ lengthForBackAndRight (- dBackPanelWID_RIGHT drawerFrontBackPanelConstAxisValue) drawerFrontBackPanelHoleZValue "Y") 
+																				 (_ 0 0 nil dBackPanelHEI_RIGHT) 
+																				 (_ FITTING_PARAMETERS nil))))
+																				 
+											(_HOLEGROUP operationName drawerBackPanel_RIGHT backPointListForRightSide (list drawerFrontBackPanelHoleDirectionRight "X+") connectorParams)
+
+											(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'dLeftPanelWID (_S2V (_& (_ paramRoot "LEFT_PANEL_WID")))))
+													(_FSET (_ 'leftPanelPointListForBack (_GETHOLEPOINTLIST operationName 
+																						 (_ lengthForBackAndLeft (- dLeftPanelWID drawerSidePanelConstAxisValue) drawerSidePanelZValue "Y") 
+																						 (_ DRAWER_PANELS_HEI_DIFF_BOTTOM (* -1 DRAWER_PANELS_HEI_DIFF_BOTTOM) nil dBackPanelHEI_LEFT) 
+																						 (_ FITTING_PARAMETERS nil))))
+																						 
+													(_HOLEGROUP operationName DRAWER_LEFT_PANEL_CODE leftPanelPointListForBack (list drawerLeftPanelPanelHoleDirectionBack "X+") connectorParams)
+												)
+											)
+											
+											(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'rightPanelPointListForBack (_GETHOLEPOINTLIST operationName 
+																						  (_ lengthForBackAndRight drawerSidePanelConstAxisValue drawerSidePanelZValue "Y") 
+																						  (_ DRAWER_PANELS_HEI_DIFF_BOTTOM (* -1 DRAWER_PANELS_HEI_DIFF_BOTTOM) nil dBackPanelHEI_LEFT) 
+																						  (_ FITTING_PARAMETERS nil))))
+																						  
+													(_HOLEGROUP operationName DRAWER_RIGHT_PANEL_CODE rightPanelPointListForBack (list drawerRightPanelPanelHoleDirectionBack "X-") connectorParams)
+												)
+											)
+										)
+									)
+									; FRONTSIDE OPERATIONS
+									(cond 
+										((_EXISTPANEL DRAWER_FRONT_PANEL_CODE)
+											; Drawer front panel
+											(_FSET (_ 'lengthParametersForFrontAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH dFrontPanelHEI (_ 0 0 0 0))))
+											(_FSET (_ 'lengthForFrontAndLeft (car lengthParametersForFrontAndLeft)))
+
+											(_FSET (_ 'lengthParametersForFrontAndRight (_CALCULATEPANELSINTERSECTIONLENGTH dFrontPanelHEI (_ 0 0 0 0))))
+											(_FSET (_ 'lengthForFrontAndRight (car lengthParametersForFrontAndRight)))
+
+											(_FSET (_ 'frontPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																				 (_ lengthForFrontAndLeft (- dFrontPanelWID drawerFrontBackPanelConstAxisValue) drawerFrontBackPanelHoleZValue "Y") 
+																				 (_ 0 0 nil dFrontPanelHEI) 
+																				 (_ FITTING_PARAMETERS nil))))
+																				 
+											(_HOLEGROUP operationName DRAWER_FRONT_PANEL_CODE frontPointListForLeftSide (list drawerFrontBackPanelHoleDirectionRight "X+") connectorParams)
+											
+											(_FSET (_ 'frontPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																				  (_ lengthForFrontAndRight drawerFrontBackPanelConstAxisValue drawerFrontBackPanelHoleZValue "Y") 
+																				  (_ 0 0 nil dFrontPanelHEI) 
+																				  (_ FITTING_PARAMETERS nil))))
+																				  
+											(_HOLEGROUP operationName DRAWER_FRONT_PANEL_CODE frontPointListForRightSide (list drawerFrontBackPanelHoleDirectionLeft "X-") connectorParams)
+											
+											(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'leftPanelPointListForFront (_GETHOLEPOINTLIST operationName 
+																						  (_ lengthForFrontAndLeft drawerSidePanelConstAxisValue drawerSidePanelZValue "Y") 
+																						  (_ DRAWER_PANELS_HEI_DIFF_BOTTOM (* -1 DRAWER_PANELS_HEI_DIFF_BOTTOM) nil dFrontPanelHEI) 
+																						  (_ FITTING_PARAMETERS nil))))
+																						  
+													(_HOLEGROUP operationName DRAWER_LEFT_PANEL_CODE leftPanelPointListForFront (list drawerLeftPanelPanelHoleDirectionFront "X-") connectorParams)
+												)
+											)
+											
+											(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+												(progn
+													(_FSET (_ 'dRightPanelWID (_S2V (_& (_ paramRoot "RIGHT_PANEL_WID")))))
+													(_FSET (_ 'rightPanelPointListForFront (_GETHOLEPOINTLIST operationName 
+																						   (_ lengthForFrontAndRight (- dRightPanelWID drawerSidePanelConstAxisValue) drawerSidePanelZValue "Y") 
+																						   (_ DRAWER_PANELS_HEI_DIFF_BOTTOM (* -1 DRAWER_PANELS_HEI_DIFF_BOTTOM) nil dFrontPanelHEI) 
+																						   (_ FITTING_PARAMETERS nil))))
+																						   
+													(_HOLEGROUP operationName DRAWER_RIGHT_PANEL_CODE rightPanelPointListForFront (list drawerRightPanelPanelHoleDirectionFront "X+") connectorParams)
+												)
+											)
+										)
+										((_NOTNULL USE_DOOR_AS_DRAWER_FRONT_PANEL)
+											; Drawer door
+											(if (and (_NOTNULL currentDoorTYPE) (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE))
+												(progn
+													(_FSET (_ 'lengthParametersForDoorAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH currentDoorHEI (_ 0 0 0 0))))
+													(_FSET (_ 'lengthForDoorAndLeft (car lengthParametersForDoorAndLeft)))
+
+													(_FSET (_ 'lengthParametersForDoorAndRight (_CALCULATEPANELSINTERSECTIONLENGTH currentDoorHEI (_ 0 0 0 0))))
+													(_FSET (_ 'lengthForDoorAndRight (car lengthParametersForDoorAndRight)))
+
+													(_FSET (_ 'dLeftPanelHEI (_S2V (_& (_ paramRoot "LEFT_PANEL_HEI")))))
+													(_FSET (_ 'dRightPanelHEI (_S2V (_& (_ paramRoot "RIGHT_PANEL_HEI")))))
+													(_FSET (_ 'dLeftPanelTHICKNESS (_S2V (_& (_ paramRoot "LEFT_PANEL_THICKNESS")))))
+													(_FSET (_ 'halfOfThickness (/ dLeftPanelTHICKNESS 2.0)))
+													
+													; DRAWER FRONT PANEL HOLES
+													(_FSET (_ 'offsetOnAxisX (_= "currentDoorWID + leftFrameVAL + __DOORSSIDECLEAR - __AD_PANELTHICK - railGapOneSide - halfOfThickness")))
+													
+													(_FSET (_ 'doorPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+													(_ dLeftPanelHEI offsetOnAxisX 0 "Y") 
+													(_ (_= "DRAWER_CABIN_ELEV - bottomFrameVAL") (- currentDoorHEI dLeftPanelHEI DRAWER_CABIN_ELEV) nil currentDoorHEI) 
+													(_ FITTING_PARAMETERS nil))))
+													(_HOLEGROUP operationName currentDoorCODE doorPointListForLeftSide (list nil "X+") connectorParams)
+													
+													(_FSET (_ 'offsetOnAxisX (_= "__AD_PANELTHICK + railGapOneSide + halfOfThickness - __DOORSSIDECLEAR - rightFrameVAL")))
+													(_FSET (_ 'doorPointListForRightSide (_GETHOLEPOINTLIST operationName (_ dRightPanelHEI offsetOnAxisX 0 "Y") (_ (_= "DRAWER_CABIN_ELEV - bottomFrameVAL") (- currentDoorHEI dLeftPanelHEI DRAWER_CABIN_ELEV) nil currentDoorHEI) (_ FITTING_PARAMETERS nil))))
+													(_HOLEGROUP operationName currentDoorCODE doorPointListForRightSide (list nil "X-") connectorParams)
+													
+													(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+														(progn
+															(_FSET (_ 'leftPanelPointListForDoor (_GETHOLEPOINTLIST operationName (_ dLeftPanelHEI 0 (car horizontalHolePos) "Y") (_ 0 0 nil dLeftPanelHEI) (_ FITTING_PARAMETERS nil))))
+															(_HOLEGROUP operationName DRAWER_LEFT_PANEL_CODE leftPanelPointListForDoor (list "X+" nil) connectorParams)
+														)
+													)
+													
+													(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+														(progn
+															(_FSET (_ 'dRightPanelWID (_S2V (_& (_ paramRoot "RIGHT_PANEL_WID")))))
+															(_FSET (_ 'rightPanelPointListForDoor (_GETHOLEPOINTLIST operationName (_ dRightPanelHEI dRightPanelWID (car horizontalHolePos) "Y") (_ 0 0 nil dRightPanelHEI) (_ FITTING_PARAMETERS nil))))
+															(_HOLEGROUP operationName DRAWER_RIGHT_PANEL_CODE rightPanelPointListForDoor (list "X-" nil) connectorParams)
+														)
+													)
+												)
+											)
+										)
+									)
+								)
+								
+								(if (and (_NOTNULL IS_DRAWER_FRONT_PANEL_AND_DOOR_HOLE_AVAILABLE) (_NOTNULL currentDoorTYPE) (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE) (_EXISTPANEL DRAWER_FRONT_PANEL_CODE))
+									;If door and front panel exist at same time 
+									(progn
+										(if (not DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR)
+											(setq DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR (/ dFrontPanelHEI 2.0)) ;half of front
+										)
+										(setq aditionalHeiForGrooveMode (if (and PERFORM_GROOVE_ON_PANELS (not (equal GROOVE_MODE_FOR_BODY_ASSEMBLY "BOTH"))) DRAWER_PANELS_HEI_DIFF_BOTTOM 0.0))
+										(_HOLE "DRAWER_FRONT_PANEL_HOLE_FOR_DOOR_1" DRAWER_FRONT_PANEL_CODE (_ (_ (- dFrontPanelWID DRAWER_FRONT_PANEL_HOLE_SIDE_OFFSET_FOR_DOOR) DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR 0) DRAWER_FRONT_PANEL_HOLE_DIA_FOR_DOOR DRAWER_FRONT_PANEL_HOLE_DEP_FOR_DOOR))
+										(_HOLE "DRAWER_FRONT_PANEL_HOLE_FOR_DOOR_2" DRAWER_FRONT_PANEL_CODE (_ (_ DRAWER_FRONT_PANEL_HOLE_SIDE_OFFSET_FOR_DOOR DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR 0) DRAWER_FRONT_PANEL_HOLE_DIA_FOR_DOOR DRAWER_FRONT_PANEL_HOLE_DEP_FOR_DOOR))
+										(_HOLE "DRAWER_DOOR_HOLE_FOR_FRONT_PANEL_1" currentDoorCODE (_ (_ (_= "currentDoorWID + leftFrameVAL + __DOORSSIDECLEAR - __AD_PANELTHICK - railGapOneSide - panelsWidDiffOneSide - DRAWER_FRONT_PANEL_HOLE_SIDE_OFFSET_FOR_DOOR") (_= "DRAWER_CABIN_ELEV - bottomFrameVAL + aditionalHeiForGrooveMode + DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR") 0) DRAWER_DOOR_HOLE_DIA_FOR_FRONT_PANEL DRAWER_DOOR_HOLE_DEP_FOR_FRONT_PANEL))
+										(_HOLE "DRAWER_DOOR_HOLE_FOR_FRONT_PANEL_1" currentDoorCODE (_ (_ (_= "__AD_PANELTHICK + railGapOneSide + panelsWidDiffOneSide + DRAWER_FRONT_PANEL_HOLE_SIDE_OFFSET_FOR_DOOR - rightFrameVAL - __DOORSSIDECLEAR") (_= "DRAWER_CABIN_ELEV - bottomFrameVAL + aditionalHeiForGrooveMode + DRAWER_FRONT_PANEL_HOLE_DOWN_OFFSET_FOR_DOOR") 0) DRAWER_DOOR_HOLE_DIA_FOR_FRONT_PANEL DRAWER_DOOR_HOLE_DEP_FOR_FRONT_PANEL))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

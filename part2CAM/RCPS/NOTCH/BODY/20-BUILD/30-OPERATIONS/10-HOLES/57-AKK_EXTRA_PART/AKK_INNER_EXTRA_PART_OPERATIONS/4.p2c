@@ -1,0 +1,43 @@
+(if (_EXISTPANEL AKK_INNER_EXTRA_PART_CODE)
+	(progn
+		(if (_EXISTPANEL NOTCHED_TOP_PANEL_CODE)
+			(progn
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+					
+					
+					;top panel, extra part operations
+					(cond	
+						((equal moduldirection "L")
+							(_FSET (_ 'reverseExtraPartOP nil))
+							(_FSET (_ 'beginPoint (ifnull golaProfileWidth 0.0)))
+							(_FSET (_ 'topPanelPointListForInnerExtraPart 	(_GETHOLEPOINTLIST operationName
+																			(_ INNER_EXTRA_PART_REAL_WID (- (+ TOP_PANEL_LEFT_VARIANCE (/ AKK_INNER_EXTRA_PART_THICKNESS 2) __DOORSSIDECLEAR __DOORSSIDECLEAR currentDoorWID) topSideStyleV2) 0.0 "X")
+																			(_ (- INNER_EXTRA_PART_WID INNER_EXTRA_PART_REAL_WID) 0.0 T NOTCHED_TOP_PANEL_HEI)
+																			(_ FITTING_PARAMETERS nil))))
+						)
+						((equal moduldirection "R")
+							(_FSET (_ 'reverseExtraPartOP T))
+							(_FSET (_ 'beginPoint 0.0))
+							(_FSET (_ 'topPanelPointListForInnerExtraPart 	(_GETHOLEPOINTLIST operationName
+																			(_ INNER_EXTRA_PART_REAL_WID (- NOTCHED_TOP_PANEL_WID (- (+ TOP_PANEL_LEFT_VARIANCE (/ AKK_INNER_EXTRA_PART_THICKNESS 2) __DOORSSIDECLEAR __DOORSSIDECLEAR currentDoorWID) topSideStyleV2)) 0.0 "X")
+																			(_ (- INNER_EXTRA_PART_WID INNER_EXTRA_PART_REAL_WID) 0.0 T NOTCHED_TOP_PANEL_HEI)
+																			(_ FITTING_PARAMETERS nil))))
+						
+							
+						)
+					)
+					(_HOLEGROUP operationName NOTCHED_TOP_PANEL_CODE topPanelPointListForInnerExtraPart (_ nil "Y-") connectorParams)
+					
+					; inner extra part, top side operations
+					(_FSET (_ 'innerExtraPartPointListForTopPanel (_GETHOLEPOINTLIST operationName
+																(_ INNER_EXTRA_PART_REAL_WID INNER_EXTRA_PART_HEI (* (/ AKK_INNER_EXTRA_PART_THICKNESS 2) -1) "X")
+																(_ beginPoint 0.0 reverseExtraPartOP INNER_EXTRA_PART_REAL_WID)
+																(_ FITTING_PARAMETERS nil))))
+																
+					(_HOLEGROUP operationName AKK_INNER_EXTRA_PART_CODE innerExtraPartPointListForTopPanel (_ "Y-" nil) connectorParams)
+				)
+			)
+		)
+	)
+)

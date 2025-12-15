@@ -1,0 +1,5 @@
+
+(_FSET (_ 'HANGER_ROD_WIDTH (* 80 (getEntPro g_currentModulEnt 41))))
+(_ITEMMAIN "HANGER_ROD" "HANGER_ROD" (_ (/ HANGER_ROD_WIDTH 100) "m"))
+
+(_NONOTCH)

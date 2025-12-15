@@ -1,0 +1,35 @@
+(_RUNDEFAULTHELPERRCP "ALU_STRECHER_DEFAULT" nil "p2chelper")
+
+; This variable will be used as a control in operation recipes
+(_FSET (_ 'IS_ALU_STRECHER_EXISTS T))
+
+; Control for item variables
+(if (and (null ALU_STRECHER_CODE) (null ALU_STRECHER_UNIT)) 
+	(progn
+		(_FSET (_ 'QUANTITY_OF_ALU_ITEM 0))
+		(_FSET (_ 'aluItemCODE ALU_STRECHER_CODE))
+	)
+	(progn
+		(if (_NOTNULL ALU_ITEM_UNIT_AS_LENGTH)
+			(progn
+				(_FSET (_ 'lossOnWID (+ (* __AD_PANELTHICK 2.0) PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM (/ (- __WID lossOnWID) 1000.0)))
+				
+				(_FSET (_ 'aluItemCODE ALU_STRECHER_CODE))
+			)
+			(progn
+				(_FSET (_ 'lossOnWID (+ (* __AD_PANELTHICK 2.0) PLASTIC_PART_THICKNESS)))
+				(_FSET (_ 'aluStrecherLength (/ (- __WID lossOnWID) 1.0)))
+				(_FSET (_ 'QUANTITY_OF_ALU_ITEM 1))
+				
+				(if (_NOTNULL USE_LENGTH_IN_ALU_CODE)
+					(_FSET (_ 'aluItemCODE (_& (_ ALU_STRECHER_CODE "_" aluStrecherLength))))
+					(_FSET (_ 'aluItemCODE ALU_STRECHER_CODE))
+				)
+			)
+		)
+	)
+)
+; Item added in anyway
+(_ITEMMAIN aluItemCODE aluItemCODE (_ QUANTITY_OF_ALU_ITEM ALU_STRECHER_UNIT))	
+(_NONOTCH)

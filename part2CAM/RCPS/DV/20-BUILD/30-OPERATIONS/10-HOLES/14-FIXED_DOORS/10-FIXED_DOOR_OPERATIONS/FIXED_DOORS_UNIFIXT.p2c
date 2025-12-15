@@ -1,0 +1,128 @@
+(_RUNDEFAULTHELPERRCP "UNIFIXT_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+
+; Control for item variables
+(if (equal DO_NOT_ADD_CONN_AS_ITEM T)
+	(_FSET (_ 'QUANTITY_OF_UNIFIXT 0))
+	(_FSET (_ 'QUANTITY_OF_UNIFIXT 1))
+)
+
+(cond 
+	((equal FIXED_DOOR_DOUBLE_CONN_OFFSET_TYPE 1)
+		(_FSET (_ 'fxTopHoleOffset (+ (/ currentDoorHEI 2) FIXED_DOOR_DOUBLE_CONN_MID_TYPE_TOP_OFFSET)))
+		(_FSET (_ 'fxBottomHoleOffset (- (/ currentDoorHEI 2) FIXED_DOOR_DOUBLE_CONN_MID_TYPE_BOTTOM_OFFSET)))
+	)
+	((equal FIXED_DOOR_DOUBLE_CONN_OFFSET_TYPE 2)
+		(_FSET (_ 'fxTopHoleOffset FIXED_DOOR_DOUBLE_CONN_SIDE_TYPE_TOP_OFFSET))
+		(_FSET (_ 'fxBottomHoleOffset (- currentDoorHEI FIXED_DOOR_DOUBLE_CONN_SIDE_TYPE_BOTTOM_OFFSET)))
+	)
+)
+
+(if (null USE_PROJECT_PRICING_RECIPES)
+	(progn
+		(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+		
+		(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+		(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+		
+		(_FSET (_ 'currentDoorHEI (cadr (car __CURDIVDOORSLIST))))
+		(_FSET (_ 'currentDoorWID (caddr (car __CURDIVDOORSLIST))))
+		
+		(_FSET (_ 'halfOfThickness (/ __AD_PANELTHICK 2.0)))
+		
+		;Kapak yan boþluðunu dik delik pozisyonundan düþ
+		(_FSET (_ 'verticalHolePos (if UNIFIXT_ADD_FLANGE (- UNIFIXT_OPPOSED_HOLE_POS UNIFIXT_FLANGE_DEPTH (* g_ClearBaseXSide 10)) (- UNIFIXT_OPPOSED_HOLE_POS (* g_ClearBaseXSide 10)))))
+		
+		(if (equal THERE_IS_NO_TOP_PANEL T)
+			(_FSET (_ 'HeiUpDiff (- __HEI currentDoorHEI (car (car __CURDIVDOORSLIST)))))
+			(_FSET (_ 'HeiUpDiff (- __HEI currentDoorHEI (car (car __CURDIVDOORSLIST)) topSideStyleV1)))
+		)
+		
+		(if (equal FIXED_DOOR_CONNECTOR_OPERATION_TYPE 1)
+			(progn
+				(if (_EXISTPANEL currentDoorCODE)
+					(progn
+						(_FSET (_ 'holePanelCode currentDoorCODE))
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "RU"))))
+						(_FSET (_ 'holePosition (_ (- currentDoorWID verticalHolePos) (+ (/ currentDoorHEI 2) FIXED_DOOR_SINGLE_CONN_OFFSET_FROM_MID) 0)))
+						(_HOLE (_& (_ holeCodeBody "UP")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH n))
+						
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "LU"))))
+						(_FSET (_ 'holePosition (_ verticalHolePos (+ (/ currentDoorHEI 2) FIXED_DOOR_SINGLE_CONN_OFFSET_FROM_MID) 0)))
+						(_HOLE (_& (_ holeCodeBody "UP")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH nil))
+						
+					)
+				)
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'holePanelCode LEFT_PANEL_CODE))
+						(_FSET (_ 'holeCodeBody "LEFT_PANEL_UNIFIXT_HOUSING_"))
+						(_FSET (_ 'holePosition (_ 0 (- LEFT_PANEL_HEI HeiUpDiff (- (/ currentDoorHEI 2) FIXED_DOOR_SINGLE_CONN_OFFSET_FROM_MID)) (* halfOfThickness -1))))				
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X+")
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'holePanelCode RIGHT_PANEL_CODE))
+						(_FSET (_ 'holeCodeBody "RIGHT_PANEL_UNIFIXT_HOUSING_"))
+						(_FSET (_ 'holePosition (_ RIGHT_PANEL_WID (- RIGHT_PANEL_HEI HeiUpDiff (- (/ currentDoorHEI 2) FIXED_DOOR_SINGLE_CONN_OFFSET_FROM_MID)) (* halfOfThickness -1))))	
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X-")
+					)
+				)
+				(_ITEMMAIN UNIFIXT_CODE currentDoorCODE (_ (* QUANTITY_OF_UNIFIXT 2) UNIFIXT_UNIT))	
+			)
+			(progn
+				(if (_EXISTPANEL currentDoorCODE)
+					(progn
+						(_FSET (_ 'holePanelCode currentDoorCODE))
+					
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "LU"))))
+						(_FSET (_ 'holePosition (_ verticalHolePos fxTopHoleOffset 0)))
+						(_HOLE (_& (_ holeCodeBody "UP")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH nil))
+						
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "LD"))))
+						(_FSET (_ 'holePosition (_ verticalHolePos fxBottomHoleOffset 0)))
+						(_HOLE (_& (_ holeCodeBody "DOWN")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH nil))
+						
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "RU"))))
+						(_FSET (_ 'holePosition (_ (- currentDoorWID verticalHolePos) fxTopHoleOffset 0)))
+						(_HOLE (_& (_ holeCodeBody "UP")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH nil))
+						
+						(_FSET (_ 'holeCodeBody (_& (_ currentDoorCODE "RD"))))
+						(_FSET (_ 'holePosition (_ (- currentDoorWID verticalHolePos) fxBottomHoleOffset 0)))
+						(_HOLE (_& (_ holeCodeBody "DOWN")) holePanelCode (_ holePosition UNIFIXT_OPPOSED_HOLE_DIA UNIFIXT_OPPOSED_HOLE_DEPTH nil))
+					)
+				)
+				(if (_EXISTPANEL LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'holePanelCode LEFT_PANEL_CODE))
+						
+						(_FSET (_ 'holeCodeBody "LEFT_PANEL_UNIFIXT_TOP_HOUSING_"))
+						(_FSET (_ 'holePosition (_ 0 (- LEFT_PANEL_HEI HeiUpDiff fxTopHoleOffset) (* halfOfThickness -1))))				
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X+")
+						
+						(_FSET (_ 'holeCodeBody "LEFT_PANEL_UNIFIXT_BOTTOM_HOUSING_"))
+						(_FSET (_ 'holePosition (_ 0 (- LEFT_PANEL_HEI HeiUpDiff fxBottomHoleOffset) (* halfOfThickness -1))))				
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X+")
+					)
+				)
+				(if (_EXISTPANEL RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'holePanelCode RIGHT_PANEL_CODE))
+						
+						(_FSET (_ 'holeCodeBody "RIGHT_PANEL_UNIFIXT_TOP_HOUSING_"))
+						(_FSET (_ 'holePosition (_ RIGHT_PANEL_WID (- RIGHT_PANEL_HEI HeiUpDiff fxTopHoleOffset) (* halfOfThickness -1))))	
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X-")
+						
+						(_FSET (_ 'holeCodeBody "RIGHT_PANEL_UNIFIXT_BOTTOM_HOUSING_"))
+						(_FSET (_ 'holePosition (_ RIGHT_PANEL_WID (- RIGHT_PANEL_HEI HeiUpDiff fxBottomHoleOffset) (* halfOfThickness -1))))	
+						(_UNIFIXT "1" holePanelCode (_ holePosition UNIFIXT_PARAMETERS) "X-")
+					)
+				)
+				(_ITEMMAIN UNIFIXT_CODE currentDoorCODE (_ (* QUANTITY_OF_UNIFIXT 4) UNIFIXT_UNIT))
+			)
+		)
+	)
+)
+; In any case there is no notch operation of this recipe
+(_NONOTCH)

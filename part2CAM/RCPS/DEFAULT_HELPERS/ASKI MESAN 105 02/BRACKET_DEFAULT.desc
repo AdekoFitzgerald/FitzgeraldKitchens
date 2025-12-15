@@ -1,0 +1,46 @@
+IS_BRACKET_AVAILABLE -> "Is bracket available?"
+BRACKET_TYPE -> "Bracket type: INSIDE or BACKSIDE"
+
+;Inside bracket parameters
+PERFORM_INSIDE_BRACKET_BACK_PANEL_OPERATIONS -> "Perform inside bracket holes on sides"
+
+INSIDE_BRACKET_HOLES_DIA -> "Diameter of inside bracket holes on sides"
+INSIDE_BRACKET_HOLES_DEPTH -> "Depth of inside bracket holes on sides"
+
+INSIDE_BRACKET_HOLES_VER_DIST_FOR_TOP -> "Distance from inside bracket holes to topside of sides"
+INSIDE_BRACKET_HOLES_HOR_AXIS_LIST_FOR_TOP -> "Top hole list for inside bracket hole to back edge of sides"
+INSIDE_BRACKET_HOLES_VER_SHIFTING_VALUE-> "Shifting value for inside bracket holes"
+
+PERFORM_INSIDE_BRACKET_BOTTOM_HOLES_OPERATIONS -> "Perform inside bracket holes for bottom of sides"
+INSIDE_BRACKET_HOLES_VER_DIST_FOR_BOTTOM -> "Distance from inside bracket holes to bottomside of sides"
+INSIDE_BRACKET_HOLES_HOR_AXIS_LIST_FOR_BOTTOM-> "Bottom hole list for inside bracket hole to back edge of sides"
+
+FLIP_INSIDE_BRACKET_HOLES_HOR_TO_VER-> "Flip inside bracket holes from horizontal to vertical"
+
+INSIDE_BRACKET_NOTCH_SHARE_HEI -> "Height of notched part of back panel"
+INSIDE_BRACKET_NOTCH_SHARE_WID -> "Width of notched part of back panel"
+
+INSIDE_BRACKET_CODE_LEFT -> "Code of left inside bracket"
+INSIDE_BRACKET_CODE_RIGHT -> "Code of right inside bracket"
+INSIDE_BRACKET_UNIT -> "Unit of inside bracket"
+
+;Backside bracket parameters
+PERFORM_BACKSIDE_BRACKET_BACK_PANEL_OPERATIONS -> "Perform backside bracket holes on sides"
+
+BACKSIDE_BRACKET_REQUIRED_GROOVE_DISTANCE -> "Required groove distance for backside bracket holes"
+
+BACKSIDE_BRACKET_HOLES_DIA -> "Diameter of backside bracket holes on sides"
+BACKSIDE_BRACKET_HOLES_DEPTH -> "Depth of backside bracket holes on sides"
+BACKSIDE_BRACKET_HOLES_VER_DIST -> "Distance from backside bracket holes to topside of sides"
+BACKSIDE_BRACKET_HOLES_HOR_DIST -> "Distance from hindmost backside bracket hole to back edge of sides"
+BACKSIDE_BRACKET_HOLES_GROUP_DIST -> "Distance between backside bracket holes"
+
+BACKSIDE_BRACKET_BACK_PANEL_HOLES_DIA -> "Diameter of backside bracket holes on back panel"
+BACKSIDE_BRACKET_BACK_PANEL_HOLES_VER_DIST_LIST -> "List of backside bracket back panel holes vertical distance from bottomside"
+BACKSIDE_BRACKET_BACK_PANEL_HOLES_HOR_DIST -> "Backside bracket back panel hole horizontal distance from nearest side"
+
+NUMBER_OF_BACKSIDE_BRACKET_HOLES -> "Number of backside bracket holes on sides"
+
+BACKSIDE_BRACKET_CODE_LEFT -> "Code of left backside bracket"
+BACKSIDE_BRACKET_CODE_RIGHT -> "Code of right backside bracket"
+BACKSIDE_BRACKET_UNIT -> "Unit of backside bracket"

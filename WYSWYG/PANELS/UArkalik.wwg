@@ -1,0 +1,20 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW 2.0) 0.0 0.0) 
+(list (- unitW 2.0) (- unitH 2.0) 0.0) 
+(list 0.0 (- unitH 2.0) 0.0) 
+) 
+nil
+0.8 
+0.0
+(d2r 90.0) 
+(list 1.0 (- ad_et) (+ dAltKot 1.0))
+"ARKALIK" 
+"" 
+nil 
+"SIDE" 
+(strcat kodBlock "_ARKALIK")
+"CAB_BODY_WALL"
+)

@@ -1,0 +1,5 @@
+
+(setq dummyKulpPayX (cm 9.75))	;DUMMY KULP YANA KAYDIRMA
+(setq dummyKulpPayY (cm 2.80))	;DUMMY KULP ALTA KAYDIRMA
+
+(setq doorId (kapak_ciz (list "R" (getUpKapakname)) "KD" (+ (* gor_gen 0.5) dummyKulpPayX) (- adDer (cm 0.02)) (- (+ dAltKot (cm 72.0)) dummyKulpPayY) 0.5 0.5 nil 0.0))

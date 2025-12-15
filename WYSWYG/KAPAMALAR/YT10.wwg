@@ -1,0 +1,122 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD YT10_T1 0.0) 
+		(list 0.0 YT10_T1 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r -90.0)
+	
+	(d2r -90.0)
+	
+	
+	(list 0.0 0.0 (+ (- unitH YT10_T1) dAltKot))
+	
+	"YT10_02" 
+	"" 
+	nil 
+	
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD YT10_T1 0.0) 
+		(list 0.0 YT10_T1 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r -270.0)
+	
+	(d2r -90.0)
+	
+	
+	(list unitW 0.0 (+ YT10_T1 dAltKot))
+	
+	"YT10_03" 
+	"" 
+	nil 
+	
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.0 (- unitH YT10_T1 YT10_T1) 0.0) 
+		(list YT10_T1 (- unitH YT10_T1 YT10_T1) 0.0) 
+		(list YT10_T1 0.0 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r 0.0)
+	(d2r 180.0)
+	
+	
+	(list unitW (- unitD) (+ dAltKot YT10_T1))
+	
+	"YT10_01" 
+	"" 
+	nil 
+	
+	"SIDE" 
+	;"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(reverseMatRot (entlast))
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.0 (- unitH YT10_T1 YT10_T1) 0.0) 
+		(list YT10_T1 (- unitH YT10_T1 YT10_T1) 0.0) 
+		(list YT10_T1 0.0 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r 0.0)
+	(d2r 180.0)
+	
+	
+	(list unitW (- YT10_T1) (+ dAltKot YT10_T1))
+	
+	"YT10_04" 
+	"" 
+	nil 
+	
+	"SIDE" 
+	;"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(reverseMatRot (entlast))
+
+
+

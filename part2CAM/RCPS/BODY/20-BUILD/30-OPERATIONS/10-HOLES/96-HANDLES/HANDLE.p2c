@@ -1,0 +1,107 @@
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "BOTTOM_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "HINGE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "HANDLE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "SCREW_DEFAULT" nil "p2chelper")
+
+(if ARE_HANDEL_HOLES_AVAILABLE
+	(progn
+		(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+			(progn
+				; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+				(_NONOTCH)
+			)
+			(progn
+				(setq isItDKanat nil performHolesInDKanat nil)
+				(_FSET (_ 'doorCounter 0))
+				(while (< doorCounter (length __CURDIVDOORSLIST))
+					(_FSET (_ 'doorCounter (+ 1 doorCounter)))
+					(_FSET (_ 'paramBody (_& (_ "__DOOR" (- doorCounter 1) "_"))))
+
+					(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+					(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+					(_FSET (_ 'currentDoorOpenDirection (_S2V (_& (_ paramBody "OPENDIRECTION")))))
+					(_FSET (_ 'tempHANDLECOORDINATE (_S2V (_& (_ paramBody "HANDLECOORDINATE")))))
+
+					(setq ii 0)
+					(repeat (length tempHANDLECOORDINATE)
+						(if (setq handleCoorList (getnth 1 (getnth ii tempHANDLECOORDINATE)))
+							(progn
+								(_FSET (_ 'handleName (getnth 0 (getnth ii tempHANDLECOORDINATE))))
+								(setq i 0)
+								(repeat (length handleCoorList)
+									(_FSET (_ 'handleCoordinateX (cu2mm (getnth 0 (getnth i handleCoorList)))))
+									(_FSET (_ 'handleCoordinateY (cu2mm (getnth 1 (getnth i handleCoorList)))))
+									
+									(cond 
+										((or (equal __MODULTYPE "AK1") (equal __MODULTYPE "UK1"))
+											(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "BLIND_CORNER") "_" (XSTR "DOOR") "_" doorCounter "_" currentDoorTYPE))))
+											(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))							
+										)
+										((or (equal __MODULTYPE "AK2") (equal __MODULTYPE "UK2"))
+											;(if (null ARE_HINGES_CONNECTED_TO_SIDE_PANELS)
+											;	(progn
+													(if (equal (substr (dfetch 2 (car (listDoorEnamesIn g_CurrentModulEnt "." nil))) 2 1) "D")
+														(progn
+															(setq isItDKanat T)
+															(cond
+																((equal currentDoorOpenDirection "L")
+																	(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "DOOR") "_1_" currentDoorTYPE))))
+																	(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))	
+																)
+																((equal currentDoorOpenDirection "R")
+																	(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "DOOR") "_2_" currentDoorTYPE))))
+																	(setq handleCoordinateX (+ (/ currentDoorWID 2) handleCoordinateX))	
+																)
+															)
+														)
+														(progn
+															(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "DOOR") "_" doorCounter "_" currentDoorTYPE))))
+															(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))
+														)
+													)
+											;	)
+											;	(progn
+											;		(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "DOOR") "_" doorCounter "_" currentDoorTYPE))))
+											;		(if (equal doorCounter 1)
+											;			(setq handleCoordinateX (+ (/ currentDoorWID 2) handleCoordinateX))
+											;			(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))
+											;		)
+											;	)
+											;)		
+										)
+										((or (equal __MODULTYPE "AK3") (equal __MODULTYPE "UK3"))
+											(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "DOOR") "_"doorCounter "_" currentDoorTYPE))))
+											(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))
+										)
+										((equal __MODULTYPE "BC")
+											(_FSET (_ 'currentDoorCODE (_& (_ (XSTR "FRIDGE_CABINET_DOOR") "_" doorCounter "_" currentDoorTYPE))))
+											(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))
+										)
+										(T
+											(_FSET (_ 'currentDoorCODE nil))
+										)
+									)			
+									
+									(if (and (_EXISTPANEL currentDoorCODE) (null performHolesInDKanat))
+										(progn
+											(_HOLE "HANDLE_HOLE" currentDoorCODE (_ (_ handleCoordinateX handleCoordinateY 0) HANDLE_HOLE_DIAMETER HANDLE_HOLE_DEPTH))
+											(_ITEMMAIN SCREW_CODE currentDoorCODE (_ 1 SCREW_UNIT))					
+										)
+									)
+									
+									(setq i (1+ i))
+								)
+							)	
+						)
+						(setq ii (+ ii 1))
+					)
+					(if isItDKanat (setq performHolesInDKanat T))					
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

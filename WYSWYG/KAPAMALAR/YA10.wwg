@@ -1,0 +1,23 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW unitD 0.0) 
+		(list unitD unitD 0.0 ) 
+		(list unitD unitW2 0.0 ) 
+		(list 0.0 unitW2 0.0 ) 
+	)
+	nil
+	ad_et 
+	0.0 
+	(d2r 270.00)
+	(list unitW 0.0 0.0 )
+	"PANEL_TOP" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)

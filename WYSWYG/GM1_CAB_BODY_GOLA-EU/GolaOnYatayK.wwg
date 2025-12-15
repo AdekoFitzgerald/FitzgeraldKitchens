@@ -1,0 +1,25 @@
+(setq golaPatternList (_GETGOLAORDER (ifnull modulgolaOrderList  "gola_horizProfileOrder_CAB_BODY")))
+(setq isThereGolaProfile (_GETGOLACLEARANCE golaPatternList unitH))
+(setq wwg_kayitEni (cm 8.0))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) 0.0 0.0) 
+		(list (- unitW (* 2 ad_et)) wwg_kayitEni 0.0) 
+		(list 0.0 wwg_kayitEni 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	0.0
+	(list ad_et (+ (+ (- unitD) wwg_kayitEni) isThereGolaProfile) (- (+ unitH dAltKot) ad_et))
+	"CAB_BODY_BASE"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_CAB_BODY_BASE")
+	"CAB_BODY_BASE"
+	"noedgedrawing"
+)

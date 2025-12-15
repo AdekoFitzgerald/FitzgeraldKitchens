@@ -1,0 +1,109 @@
+(if (> __NOTCHDIM2 __AD_PANELTHICK)
+	(progn
+		(if (_EXISTPANEL LEFT_BACK_TOP_STRECHER_OP_FACE)
+			(progn
+				(_FSET (_ 'lengthParametersForLeftBackTopStrecherAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH LEFT_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForLeftBackTopStrecherAndLeft (car lengthParametersForLeftBackTopStrecherAndLeft)))
+
+				(_FSET (_ 'lengthParametersForLeftBackTopStrecherAndSecondaryRight (_CALCULATEPANELSINTERSECTIONLENGTH LEFT_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForLeftBackTopStrecherAndSecondaryRight (car lengthParametersForLeftBackTopStrecherAndSecondaryRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'leftBackTopStrecherPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForLeftBackTopStrecherAndLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil LEFT_BACK_TOP_STRECHER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName LEFT_BACK_TOP_STRECHER_OP_FACE leftBackTopStrecherPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'leftBackTopStrecherPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForLeftBackTopStrecherAndSecondaryRight LEFT_BACK_TOP_STRECHER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil LEFT_BACK_TOP_STRECHER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName LEFT_BACK_TOP_STRECHER_OP_FACE leftBackTopStrecherPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForLeftBackTopStrecherAndLeft (- LEFT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET LEFT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																			(_ (_= "LEFT_PANEL_WID - BACK_TOP_STRECHER_HEI - LEFT_PANEL_BACK_VARIANCE - BACK_TOP_STRECHER_BACK_OFFSET") 0 nil BACK_TOP_STRECHER_HEI) 
+																			(_ FITTING_PARAMETERS nil))))
+																			
+							(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'secondaryRightPanelPointListForLeftBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																		 (_ lengthForLeftBackTopStrecherAndSecondaryRight (- SECONDARY_RIGHT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																		 (_ (* -1 BACK_TOP_STRECHER_BACK_OFFSET) 0 T LEFT_BACK_TOP_STRECHER_HEI) 
+																		 (_ FITTING_PARAMETERS nil))))
+																		 
+							(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE secondaryRightPanelPointListForLeftBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+		
+		(if (_EXISTPANEL RIGHT_BACK_TOP_STRECHER_OP_FACE)
+			(progn
+				(_FSET (_ 'lengthParametersForRightBackTopStrecherAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH RIGHT_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForRightBackTopStrecherAndSecondaryLeft (car lengthParametersForRightBackTopStrecherAndLeft)))
+
+				(_FSET (_ 'lengthParametersForRightBackTopStrecherAndSecondaryRight (_CALCULATEPANELSINTERSECTIONLENGTH RIGHT_BACK_TOP_STRECHER_HEI (_ 0 0 0 0))))
+				(_FSET (_ 'lengthForRightBackTopStrecherAndRight (car lengthParametersForRightBackTopStrecherAndSecondaryRight)))
+
+				(_FSET (_ 'index 0))
+				(foreach operationParams OPERATION_LIST
+					(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+					(_FSET (_ 'rightBackTopStrecherPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+																   (_ lengthForRightBackTopStrecherAndSecondaryLeft 0 (car horizontalHolePos) "Y") 
+																   (_ 0 0 nil RIGHT_BACK_TOP_STRECHER_HEI) 
+																   (_ FITTING_PARAMETERS nil))))
+																   
+					(_HOLEGROUP operationName RIGHT_BACK_TOP_STRECHER_OP_FACE rightBackTopStrecherPointListForLeftSide (_ "X+" nil) connectorParams)
+					
+					(_FSET (_ 'rightBackTopStrecherPointListForRightSide (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForRightBackTopStrecherAndRight RIGHT_BACK_TOP_STRECHER_WID (car horizontalHolePos) "Y") 
+																	(_ 0 0 nil RIGHT_BACK_TOP_STRECHER_HEI) 
+																	(_ FITTING_PARAMETERS nil))))
+																	
+					(_HOLEGROUP operationName RIGHT_BACK_TOP_STRECHER_OP_FACE rightBackTopStrecherPointListForRightSide (_ "X-" nil) connectorParams)
+					
+					(if (_EXISTPANEL SECONDARY_LEFT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'leftPanelPointListForBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																			(_ lengthForRightBackTopStrecherAndSecondaryLeft (- SECONDARY_LEFT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																			(_ (_= "SECONDARY_LEFT_PANEL_WID - RIGHT_BACK_TOP_STRECHER_HEI - BACK_TOP_STRECHER_BACK_OFFSET") 0 nil RIGHT_BACK_TOP_STRECHER_HEI) 
+																			(_ FITTING_PARAMETERS nil))))
+																			
+							(_HOLEGROUP operationName SECONDARY_LEFT_PANEL_CODE leftPanelPointListForBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(if (_EXISTPANEL RIGHT_PANEL_CODE)
+						(progn
+							(_FSET (_ 'rightPanelPointListForRightBackTopStrecher (_GETHOLEPOINTLIST operationName 
+																		 (_ lengthForRightBackTopStrecherAndRight (- RIGHT_PANEL_HEI BACK_TOP_STRECHER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "X") 
+																		 (_ (* -1 (+ BACK_TOP_STRECHER_BACK_OFFSET RIGHT_PANEL_BACK_VARIANCE)) 0 T RIGHT_BACK_TOP_STRECHER_HEI) 
+																		 (_ FITTING_PARAMETERS nil))))
+																		 
+							(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForRightBackTopStrecher (_ nil "Y+") connectorParams)
+						)
+					)
+					
+					(_FSET (_ 'index (+ index 1)))
+				)
+			)
+		)
+	)
+)

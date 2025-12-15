@@ -1,0 +1,65 @@
+(_RUNDEFAULTHELPERRCP "HINGE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "SCREW_DEFAULT" nil "p2chelper")
+
+
+WARDROBE_HINGE_CONNECTION_HOLES_DISTANCE -> "Distance between hinge connection holes. Default value -> HINGE_CONNECTION_HOLES_DISTANCE"
+WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER -> "Diameter of hinge connection holes. Default value -> HINGE_CONNECTION_HOLES_DIAMETER"
+WARDROBE_HINGE_CONNECTION_HOLES_DEPTH -> "Depth of hinge connection holes. Default value -> HINGE_CONNECTION_HOLES_DEPTH"
+
+;prevars
+(_SETA 'WARDROBE_HINGE_CONNECTION_HOLES_DISTANCE HINGE_CONNECTION_HOLES_DISTANCE)
+(_SETA 'WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DIAMETER)
+(_SETA 'WARDROBE_HINGE_CONNECTION_HOLES_DEPTH HINGE_CONNECTION_HOLES_DEPTH)
+
+
+(if (not (equal HINGE_Y12 nil)) (_FSET (_ 'WARDROBE_HINGE_CONNECTION_HOLES_DISTANCE (convertLengthToSpecifiedUnit HINGE_Y12 (getvar "INSUNITS") 4))))
+(if (not (equal HINDE_DIA3 nil)) (_FSET (_ 'WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER (convertLengthToSpecifiedUnit HINDE_DIA3 (getvar "INSUNITS") 4))))
+(if (not (equal HINDE_DEP3 nil)) (_FSET (_ 'WARDROBE_HINGE_CONNECTION_HOLES_DEPTH (convertLengthToSpecifiedUnit HINDE_DEP3 (getvar "INSUNITS") 4))))
+
+(_FSET (_ 'distOfConnHolesToCenter (/ WARDROBE_HINGE_CONNECTION_HOLES_DISTANCE 2)))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (equal (length targetPanels) 1)
+	(progn
+
+		(_FSET (_ 'tPanelInfo (getnth 0 targetPanels)))
+		
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+		
+		(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+		(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+		
+		(if (_ISVERTICALFACE currentFaceNormal)
+			(progn
+				(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+					(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+					(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+				)
+				(setq holePosition (replace 0 2 holePosition))
+				(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "HINGE_BASE_HOLE_"))))
+				
+				(cond
+					((equal WARDROBE_HINGE_BASE_HOLES_ORIENT_TYPE "VERTICAL")
+						(_FSET (_ 'holeList (_  (getnth 0 holePosition) (+ (getnth 1 holePosition) distOfConnHolesToCenter) (getnth 2 holePosition))))
+						(_HOLE (_& (_ holeCodeBody "1")) connectedFaceCode (_ holeList WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER WARDROBE_HINGE_CONNECTION_HOLES_DEPTH))
+						(_FSET (_ 'holeList (_  (getnth 0 holePosition) (- (getnth 1 holePosition) distOfConnHolesToCenter) (getnth 2 holePosition))))
+						(_HOLE (_& (_ holeCodeBody "2")) connectedFaceCode (_ holeList WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER WARDROBE_HINGE_CONNECTION_HOLES_DEPTH))
+					)
+					((equal WARDROBE_HINGE_BASE_HOLES_ORIENT_TYPE "HORIZONTAL")
+						(_FSET (_ 'holeList (_  (+ (getnth 0 holePosition) distOfConnHolesToCenter)  (getnth 1 holePosition) (getnth 2 holePosition))))
+						(_HOLE (_& (_ holeCodeBody "1")) connectedFaceCode (_ holeList WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER WARDROBE_HINGE_CONNECTION_HOLES_DEPTH))
+						(_FSET (_ 'holeList (_  (- (getnth 0 holePosition) distOfConnHolesToCenter)  (getnth 1 holePosition) (getnth 2 holePosition))))
+						(_HOLE (_& (_ holeCodeBody "2")) connectedFaceCode (_ holeList WARDROBE_HINGE_CONNECTION_HOLES_DIAMETER WARDROBE_HINGE_CONNECTION_HOLES_DEPTH))
+					)
+				)
+				(_ITEMMAIN SCREW_CODE connectedFaceCode (_ 4 SCREW_UNIT))
+			)
+		)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

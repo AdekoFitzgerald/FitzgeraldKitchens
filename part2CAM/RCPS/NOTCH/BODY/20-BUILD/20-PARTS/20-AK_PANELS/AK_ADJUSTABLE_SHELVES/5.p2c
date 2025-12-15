@@ -1,0 +1,343 @@
+(cond 
+	((or (equal __MODULTYPE "AK2") (equal __MODULTYPE "UK2"))
+		; 90 degree corner unit
+		(cond 
+			((equal AK_GROOVE_STATE 3)
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfWIDOPPWID (_= "__WIDOPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfWIDOPPHEI (_= "__WID2OPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE")))
+
+				(_FSET (_ 'shelfNWID (_= "__NOTCHDIM1 + AK_SECONDARY_PANELS_SHARE - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfNHEI (_= "__NOTCHDIM2 + AK_SECONDARY_PANELS_SHARE - AK_GROOVE_SHARE")))
+
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(repeat __SHELFNO
+						(_FSET (_ 'orjShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						(if (_EXISTPANEL orjShelfCODE)
+							(progn
+								; Original adjustable shelf is deleted
+								(_DELPANEL orjShelfCODE)
+								
+								(_FSET (_ 'paramBody (_& (_ "AK_NOTCHED_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+								(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+								(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+								(_FSET (_ 'tempWIDOPPWID (_& (_ paramBody "WIDOPPWID"))))
+								(_FSET (_ 'tempWIDOPPHEI (_& (_ paramBody "WIDOPPHEI"))))
+								(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+								
+								(_FSET (_ 'tempNWID (_& (_ paramBody "NWID"))))
+								(_FSET (_ 'tempNHEI (_& (_ paramBody "NHEI"))))
+								
+								(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+								(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+								(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+								
+								(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+								(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+								(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+								
+								(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+								(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+								
+								(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "NOTCHED_ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+								
+								(_FSET (_ (read tempHEI) shelfHEI))
+								(_FSET (_ (read tempWID) shelfWID))
+								(_FSET (_ (read tempDEP) shelfDEP))
+								(_FSET (_ (read tempWIDOPPWID) shelfWIDOPPWID))
+								(_FSET (_ (read tempWIDOPPHEI) shelfWIDOPPHEI))
+								(_FSET (_ (read tempDEP2) shelfDEP2))
+								
+								(_FSET (_ (read tempNWID) shelfNWID))
+								(_FSET (_ (read tempNHEI) shelfNHEI))
+								
+								(_FSET (_ 'orjParamBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ (read tempROT) (_S2V (_& (_ orjParamBody "ROT")))))
+								(_FSET (_ (read tempMAT) (_S2V (_& (_ orjParamBody "MAT")))))
+								(_FSET (_ (read tempTHICKNESS) (_S2V (_& (_ orjParamBody "THICKNESS")))))
+								
+								(_FSET (_ (read tempELEV) (_S2V (_& (_ orjParamBody "ELEV")))))
+								(_FSET (_ (read tempLABEL) (_S2V (_& (_ orjParamBody "LABEL")))))
+								(_FSET (_ (read tempTAG) (_S2V (_& (_ orjParamBody "TAG")))))
+								
+								(_FSET (_ (read tempPDATA) (_ (_ 0.0 (_S2V tempNWID) 0.0) 0
+															  (_ 0.0 (_S2V tempWID) 0.0) 0
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0
+															  (_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0
+															  (_ (_S2V tempHEI) 0.0 0.0) 0
+															  (_ (_S2V tempNHEI) 0.0 0.0) 0
+															  (_ (_S2V tempNHEI) (_S2V tempNWID) 0.0) 0
+															  (_ 0.0 (_S2V tempNWID) 0.0) 0)))
+								
+								(_FSET (_ 'originalEdgestrips (_S2V (_& (_ orjParamBody "EDGESTRIPS")))))
+								(_FSET (_ (read tempEDGESTRIPS) (_ (getnth 0 originalEdgestrips)
+																   (getnth 1 originalEdgestrips)
+																   (getnth 2 originalEdgestrips)
+																   (getnth 3 originalEdgestrips)
+																   (getnth 4 originalEdgestrips)
+																   (getnth 0 originalEdgestrips)
+																   (getnth 5 originalEdgestrips)
+																   (getnth 5 originalEdgestrips))))
+								
+								(_PANELMAIN notchedShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+								
+								(_CREATEEDGESTRIPS notchedShelfCODE (_S2V tempEDGESTRIPS))
+								
+								(_PUTLABEL notchedShelfCODE notchedShelfCODE (_S2V tempLABEL))
+								(_PUTTAG notchedShelfCODE notchedShelfCODE (_S2V tempTAG))
+							)
+						)
+						(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+			((equal AK_GROOVE_STATE 2)
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - AK_GROOVE_SHARE_RIGHT")))
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - AK_GROOVE_SHARE_LEFT")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE_RIGHT")))
+				(_FSET (_ 'shelfWIDOPPWID (_= "__WIDOPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfWIDOPPHEI (_= "__WID2OPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE_LEFT")))
+				
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(repeat __SHELFNO
+						(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						(if (_EXISTPANEL currentShelfCODE)
+							(progn
+								; Original adjustable shelf is deleted
+								(_DELPANEL currentShelfCODE)
+								
+								(_FSET (_ 'paramBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+								(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+								(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+								(_FSET (_ 'tempWIDOPPWID (_& (_ paramBody "WIDOPPWID"))))
+								(_FSET (_ 'tempWIDOPPHEI (_& (_ paramBody "WIDOPPHEI"))))
+								(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+								
+								(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+								(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+								(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+								
+								(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+								(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+								
+								(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+								(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+								
+								(_FSET (_ (read tempHEI) shelfHEI))
+								(_FSET (_ (read tempWID) shelfWID))
+								(_FSET (_ (read tempDEP) shelfDEP))
+								(_FSET (_ (read tempWIDOPPWID) shelfWIDOPPWID))
+								(_FSET (_ (read tempWIDOPPHEI) shelfWIDOPPHEI))
+								(_FSET (_ (read tempDEP2) shelfDEP2))
+								
+								; Rotation, material, thickness, elevation, label, tag and edgestrip variables are same with original recipe
+								
+								(_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ 0.0 0.0 0.0) 0)))
+								
+								(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+								
+								(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+								
+								(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+								(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+							)
+						)
+						(_FSET(_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+		)
+	)
+	((or (equal __MODULTYPE "AK3") (equal __MODULTYPE "UK3") (equal __MODULTYPE "AKF"))
+		; 135 degree corner unit
+		(cond 
+			((equal AK_GROOVE_STATE 3)
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfSLOPINGEDGE (sqrt (+ (expt (- shelfHEI shelfDEP) 2) (expt (- shelfWID shelfDEP2) 2)))))
+				
+				(_FSET (_ 'shelfNWID (_= "__NOTCHDIM1 + AK_SECONDARY_PANELS_SHARE - AK_GROOVE_SHARE")))
+				(_FSET (_ 'shelfNHEI (_= "__NOTCHDIM2 + AK_SECONDARY_PANELS_SHARE - AK_GROOVE_SHARE")))
+
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(repeat __SHELFNO
+						(_FSET (_ 'orjShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						(if (_EXISTPANEL orjShelfCODE)
+							(progn
+								; Original adjustable shelf is deleted
+								(_DELPANEL orjShelfCODE)
+								
+								(_FSET (_ 'paramBody (_& (_ "AK_NOTCHED_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+								(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+								(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+								(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+								(_FSET (_ 'tempSlopingEdge (_& (_ paramBody "SLOPING_EDGE"))))
+								
+								(_FSET (_ 'tempNWID (_& (_ paramBody "NWID"))))
+								(_FSET (_ 'tempNHEI (_& (_ paramBody "NHEI"))))
+								
+								(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+								(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+								(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+								
+								(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+								(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+								(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+								
+								(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+								(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+								
+								(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "NOTCHED_ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+								
+								(_FSET (_ (read tempHEI) shelfHEI))
+								(_FSET (_ (read tempWID) shelfWID))
+								(_FSET (_ (read tempDEP) shelfDEP))
+								(_FSET (_ (read tempDEP2) shelfDEP2))
+								(_FSET (_ (read tempSlopingEdge) shelfSLOPINGEDGE))
+								
+								(_FSET (_ (read tempNWID) shelfNWID))
+								(_FSET (_ (read tempNHEI) shelfNHEI))
+								
+								(_FSET (_ 'orjParamBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ (read tempROT) (_S2V (_& (_ orjParamBody "ROT")))))
+								(_FSET (_ (read tempMAT) (_S2V (_& (_ orjParamBody "MAT")))))
+								(_FSET (_ (read tempTHICKNESS) (_S2V (_& (_ orjParamBody "THICKNESS")))))
+								
+								(_FSET (_ (read tempELEV) (_S2V (_& (_ orjParamBody "ELEV")))))
+								(_FSET (_ (read tempLABEL) (_S2V (_& (_ orjParamBody "LABEL")))))
+								(_FSET (_ (read tempTAG) (_S2V (_& (_ orjParamBody "TAG")))))
+								
+								(_FSET (_ (read tempPDATA) (_ (_ 0.0 (_S2V tempNWID) 0.0) 0 
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ (_S2V tempNHEI) 0.0 0.0) 0 
+															  (_ (_S2V tempNHEI) (_S2V tempNWID) 0.0) 0 
+															  (_ 0.0 (_S2V tempNWID) 0.0) 0)))
+								
+								(_FSET (_ 'originalEdgestrips (_S2V (_& (_ orjParamBody "EDGESTRIPS")))))
+								(_FSET (_ (read tempEDGESTRIPS) (_ (getnth 0 originalEdgestrips)
+																   (getnth 1 originalEdgestrips)
+																   (getnth 2 originalEdgestrips)
+																   (getnth 3 originalEdgestrips)
+																   (getnth 4 originalEdgestrips)
+																   (getnth 0 originalEdgestrips)
+																   (getnth 4 originalEdgestrips))))
+								
+								(_PANELMAIN notchedShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+								
+								(_CREATEEDGESTRIPS notchedShelfCODE (_S2V tempEDGESTRIPS))
+								
+								(_PUTLABEL notchedShelfCODE notchedShelfCODE (_S2V tempLABEL))
+								(_PUTTAG notchedShelfCODE notchedShelfCODE (_S2V tempTAG))
+							)
+						)
+						(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+			((equal AK_GROOVE_STATE 2)
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - AK_GROOVE_SHARE_LEFT")))
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - AK_GROOVE_SHARE_RIGHT")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE_RIGHT")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - ASHELF_FRONT_OFFSET - AK_GROOVE_SHARE_LEFT")))
+				(_FSET (_ 'shelfSLOPINGEDGE (sqrt (+ (expt (- shelfHEI shelfDEP) 2) (expt (- shelfWID shelfDEP2) 2)))))
+
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(repeat __SHELFNO
+						(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						(if (_EXISTPANEL currentShelfCODE)
+							(progn
+								; Original adjustable shelf is deleted
+								(_DELPANEL currentShelfCODE)
+								
+								(_FSET (_ 'paramBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+								
+								(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+								(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+								(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+								(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+								(_FSET (_ 'tempSlopingEdge (_& (_ paramBody "SLOPING_EDGE"))))
+								
+								(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+								(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+								(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+								
+								(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+								(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+								
+								(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+								(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+								
+								(_FSET (_ (read tempWID) shelfWID))
+								(_FSET (_ (read tempHEI) shelfHEI))
+								(_FSET (_ (read tempDEP) shelfDEP))
+								(_FSET (_ (read tempDEP2) shelfDEP2))
+								(_FSET (_ (read tempSlopingEdge) shelfSLOPINGEDGE))
+								
+								; Rotation, material, thickness, elevation, label, tag and edgestrip parameters are same with original recipe
+								
+								(_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ 0.0 0.0 0.0) 0)))
+								
+								(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+								
+								(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+								
+								(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+								(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+							)
+						)
+						(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,147 @@
+;kaydýrmalý
+
+(setq ad_masterwoodCAMOperationList (list
+										(list "TOP_DIA3.0" "T3" "HOLE" "F2" "F1" "F1")
+										(list "TOP_DIA8.0" "T3" "HOLE" "F2" "F1" "F1")
+										(list "TOP_DIA15.0" "T2" "HOLE" "F1" "F1" "F1")
+										(list "TOP_DIA35.0" "T1" "HOLE" "F1" "F1" "F1")
+										(list "TOP_DIA5.0" "T9" "HOLE" "F1" "F1" "F1")
+										(list "TOP_DIA4.0" "T7" "HOLE" "F1" "F1" "F1")
+										(list "TOP_DIA10.0" "T5" "HOLE" "F1" "F1" "F1")
+										(list "NOTCH" "T41" "MILLING" 2 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "LEFT_DIA8.0" "T35" "HOLE" "F1" "F1" "F1")
+										(list "LEFT_DIA10.0" "T35" "HOLE" "F1" "F1" "F1")
+										(list "FRONT_DIA8.0" "T31" "HOLE" "F1" "F1" "F1")
+										(list "FRONT_DIA10.0" "T31" "HOLE" "F1" "F1" "F1")
+										(list "RIGHT_DIA8.0" "T37" "HOLE" "F1" "F1" "F1")
+										(list "RIGHT_DIA10.0" "T37" "HOLE" "F1" "F1" "F1")
+										(list "REAR_DIA8.0" "T33" "HOLE" "F1" "F1" "F1")
+										(list "REAR_DIA10.0" "T33" "HOLE" "F1" "F1" "F1")
+										(list "BOTTOM_DIA10.0" "T33" "HOLE" "F1" "F1" "F1")
+										(list "GROOVE_5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_5.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_6." "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_6.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_8" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_8.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_9" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_9.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_10" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_10.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_11" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_11.5" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_12" "T41" "MILLING" 1 0 0 0 "INSIDE" 0 "S18" "F10" "E20")
+										(list "GROOVE_4" "T40" "SAW" 1 0 0 0 "CENTER" 0 "S9" "F5" "E10" 4)
+										;(list "GROOVE" "T39" "SAWY" 1 0 0 0 "INSIDE" 0 "S9" "F5" "E10")
+										;(list "BOTTOM_8.0" "T1" "BO")
+										;(list "GROOVE" "T50" "SAW" 1 0 0 0 "OUTSIDE" 0 "S18" "F10" "E20")
+										
+ ))
+ 
+ (setq selectMWMachines nil)
+ (defun selectMWMachines ( cPnl / )
+	(list 	;(list "MWMachine1" ad_masterwoodCAMOperationList) 
+			;(list "MWMachine2" ad_masterwoodCAMOperationList)
+			(list "MWMachineTLF" ad_masterwoodCAMOperationList)
+	)
+ )
+
+(setq mwAllEntities nil)
+(setq mwNotFreeEntities nil)
+(setq mwEntitiesThatCanNotBeCAM nil) ; iþlen atanamayan layerlarý toplamak için. Eðer bu liste doluysa "Bu layerlara iþlem ypaýlmadýðýný bildirir"
+(setq mwIgnoreLayerNameList (list "0" "PANEL" "LMM_EDGESTRIP" "TOP_DIA0.0_DEPTH0.0" "REAR_DIA0.0_DEPTH0.0" "FRONT_DIA0.0_DEPTH0.0" "LEFT_DIA0.0_DEPTH0.0" "RIGHT_DIA0.0_DEPTH0.0")) ; bu layerlara iþlem yapýlmadý diye carlamaz
+
+(setq lmm_exportMasterWoodPRGFilesDesiredCAMOp nil)
+(defun lmm_exportMasterWoodPRGFilesDesiredCAMOp ( / allPanelsList tempPanel currentMachinesAndOperationLists
+																			currentMachineAndOperationList
+																			alertMsg tempIter
+												) 
+	
+	(setq mwAllEntities nil)
+	(setq mwNotFreeEntities nil)
+	(setq mwEntitiesThatCanNotBeCAM nil) ; to collect entities that can not cam
+	(setq allPanelsList (lmm_getAllPanelsList))
+	(foreach tempPanel allPanelsList
+		(setq currentMachinesAndOperationLists (selectMWMachines tempPanel))
+		(foreach currentMachineAndOperationList currentMachinesAndOperationLists
+			(if (equal "MWMachine1" (nth 0 currentMachineAndOperationList))
+				(sendMWMachine1 tempPanel (nth 1 currentMachineAndOperationList))
+			)
+			(if (equal "MWMachine2" (nth 0 currentMachineAndOperationList))
+				(sendMWMachine2 tempPanel (nth 1 currentMachineAndOperationList))
+			)
+			(if (equal "MWMachineTLF" (nth 0 currentMachineAndOperationList))
+				(sendMWMachineTLF tempPanel (nth 1 currentMachineAndOperationList))
+			)
+		)
+	)
+	
+	;Ýþlem yapýlamayan layer ismindeki varlýklarý yakalamak için tüm varlýklara iþlem yapýlýp yapýmadýðý kontrol ediliyor 
+	(foreach tempItem mwAllEntities
+		(if (and (not (member tempItem mwNotFreeEntities)) (not (member tempItem mwEntitiesThatCanNotBeCAM)))
+			(setq mwEntitiesThatCanNotBeCAM (append mwEntitiesThatCanNotBeCAM (list tempItem)))
+		)
+	)
+	
+	;Eðer iþlem yapýlamayan varlýk varsa bunu kullanýcýya bildir.
+	(if mwEntitiesThatCanNotBeCAM
+		(progn
+			(setq mwEntitiesThatCanNotBeCAM (append (list (xstr "No CAM operation is defined for entities below.")) mwEntitiesThatCanNotBeCAM ))
+			(setq tempIter 0 alertMsg "")
+			(repeat (1- (length mwEntitiesThatCanNotBeCAM))
+				(setq alertMsg (strcat alertMsg (nth tempIter mwEntitiesThatCanNotBeCAM) "\n"))
+				(setq tempIter (+ tempIter 1))
+			)
+			(setq alertMsg (strcat alertMsg (nth tempIter mwEntitiesThatCanNotBeCAM)))
+			(alert alertMsg)
+		)
+		;(yesNo (xstr "görünen o ki ok her yolunda"))
+	)
+)
+
+;returns a temporarily layer name by geometry UCS
+(defun mwInterpretHoleLayerName ( tempEnt / isOnTheSFace currentReturn tempHoleDia tempHoleDepth)
+	(setq isOnTheSFace (getEntPro tempEnt 8))
+	(if (equal "_SF" (substr isOnTheSFace (- (strlen isOnTheSFace) 2) 3))
+		(setq isOnTheSFace T)
+		(setq isOnTheSFace nil)
+	)
+	(cond 
+		( ;Z - 
+			(and (equal (getnth 2 (getEntPro tempEnt 210)) 1.00000) 
+				(not isOnTheSFace)
+			)
+			(setq currentReturn "TOP_" )
+		)
+		( ;X - 
+			(equal (getnth 0 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "RIGHT_" )
+		)
+		( ;X + 
+			(equal (getnth 0 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "LEFT_" )
+		)
+		( ;Y - 
+			(equal (getnth 1 (getEntPro tempEnt 210)) 1.000000)
+			(setq currentReturn "REAR_" )
+		)
+		( ;Y + 
+			(equal (getnth 1 (getEntPro tempEnt 210)) -1.000000)
+			(setq currentReturn "FRONT_" )
+		)
+		( ;Z + 
+			(or (equal (getnth 2 (getEntPro tempEnt 210)) -1.000000)
+				isOnTheSFace
+			)
+			(setq currentReturn "BOTTOM_" )
+		)
+	)
+
+	(setq tempHoleDia (lmm_getLMMdata tempEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata tempEnt lmm-k-depth))
+	(setq currentReturn (strcat currentReturn "DIA" (lmm_convertNumtoStringWithDigit tempHoleDia 1) ))
+	currentReturn
+)
+
+
+(princ)

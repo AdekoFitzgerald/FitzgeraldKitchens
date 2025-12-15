@@ -1,0 +1,281 @@
+; CORNER UNIT 90 DEGREE -> AK2, UK2
+(_FSET (_ 'paramBody1 "AK_CDOOR_1_"))
+(_FSET (_ 'paramBody2 "AK_CDOOR_2_"))
+
+(if (_FSET (_ 'doorOpenDirection1 (_S2V (_& (_ paramBody1 "ODIR")))))
+	(progn
+		; According to open direction of doors, behavior of hinge operation is determined
+		(cond
+			((equal doorOpenDirection1 "L")
+				(_FSET (_ 'operationDirection "LEFT"))
+				
+				(_FSET (_ 'doorWithHandleParamBODY paramBody1))
+				(_FSET (_ 'doorWithHandle_INDEX 1))
+				
+				(_FSET (_ 'secondaryDoorParamBODY paramBody2))
+				(_FSET (_ 'secondaryDoor_INDEX 2))
+			)
+			((equal doorOpenDirection1 "R")
+				(_FSET (_ 'operationDirection "RIGHT"))
+				
+				(_FSET (_ 'doorWithHandleParamBODY paramBody2))
+				(_FSET (_ 'doorWithHandle_INDEX 2))
+				
+				(_FSET (_ 'secondaryDoorParamBODY paramBody1))
+				(_FSET (_ 'secondaryDoor_INDEX 1))
+			)
+		)
+
+		; Control for item variables
+		(if (equal DO_NOT_ADD_CONN_AS_ITEM T)
+			(_FSET (_ 'QUANTITY_OF_ITEM 0))
+			(if (equal DO_NOT_ADD_HINGE_SCREW_AS_ITEM T)
+				(_FSET (_ 'QUANTITY_OF_ITEM 0))
+				(_FSET (_ 'QUANTITY_OF_ITEM HINGE_SCREW_QUAN))
+			)
+		)
+
+		; Door parameters are taken
+		(_FSET (_ 'doorWithHandle_TYPE (_S2V (_& (_ doorWithHandleParamBODY "TYPE")))))
+		(_FSET (_ 'doorWithHandle_PARAMS (_ doorWithHandleParamBODY
+											doorWithHandle_TYPE
+											(_CREATEDOORCODE doorWithHandle_TYPE __CURDIVORDER doorWithHandle_INDEX CHANGE_CU_DOOR_CODES "CU")
+											(_S2V (_& (_ doorWithHandleParamBODY "VIRTUAL")))
+											(_S2V (_& (_ doorWithHandleParamBODY "HEI")))
+											(_S2V (_& (_ doorWithHandleParamBODY "WID")))
+											(_S2V (_& (_ doorWithHandleParamBODY "ELEV")))
+											(_S2V (_& (_ doorWithHandleParamBODY "FRAME"))))))
+
+		(_FSET (_ 'secondaryDoor_TYPE (_S2V (_& (_ secondaryDoorParamBODY "TYPE")))))
+		(_FSET (_ 'secondaryDoor_PARAMS (_ secondaryDoorParamBODY
+										   secondaryDoor_TYPE
+										   (_CREATEDOORCODE secondaryDoor_TYPE __CURDIVORDER secondaryDoor_INDEX CHANGE_CU_DOOR_CODES "CU")
+										   (_S2V (_& (_ secondaryDoorParamBODY "VIRTUAL")))
+										   (_S2V (_& (_ secondaryDoorParamBODY "HEI")))
+										   (_S2V (_& (_ secondaryDoorParamBODY "WID")))
+										   (_S2V (_& (_ secondaryDoorParamBODY "ELEV")))
+										   (_S2V (_& (_ secondaryDoorParamBODY "FRAME"))))))
+
+		(_FSET (_ 'iBoundry_Hinge (+ HINGE_OFFSET BIG_TO_SMALLS_OFFSET_X (/ SMALL_HOLES_DIAMETER 2.0))))
+		(_FSET (_ 'oBoundry_Hinge (- HINGE_OFFSET (/ BIG_HOLE_DIAMETER 2.0))))
+
+		; DOOR OPERATIONS
+
+		; DOOR TO DOOR CONNECTION STATE TABLE
+
+		; activeDoor -> The door hinge operation will be performed on
+		; passiveDoor -> The door hinge connection holes will be performed on
+
+		; Operation Direction 		CU_HINGES_ON_ONE_DOOR		 Active door		 Passive door
+		; 		LEFT						T					secondaryDoor		doorWithHandle
+		;		LEFT						nil					doorWithHandle		secondaryDoor
+		;		RIGHT						T					secondaryDoor		doorWithHandle
+		;		RIGHT						nil					doorWithHandle		secondaryDoor
+
+		; According to operation direction frames which have to be controlled are selected numerically
+		; NUMBER refers to FRAME0->top,1->right,2->bottom,3->left
+		(if (_NOTNULL CU_HINGES_ON_ONE_DOOR)
+			(progn	
+				(_FSET (_ 'actualHingeOffset SECONDARY_HINGE_OFFSET))
+				(_FSET (_ 'actualBigToSmallOffsetX SECONDARY_BIG_TO_SMALLS_OFFSET_X))
+				(_FSET (_ 'actualHingeConnectionHoleOffset SECONDARY_HINGE_CONNECTION_HOLES_OFFSET))
+				
+				; Operation direction does not effect active and passive door selection
+				(_FSET (_ 'activeDoor_PARAMS secondaryDoor_PARAMS))
+				(_FSET (_ 'passiveDoor_PARAMS doorWithHandle_PARAMS))
+				(cond
+					((equal operationDirection "LEFT")
+						(_FSET (_ 'doorToDoorHingeFrame 1))
+						(_FSET (_ 'doorToSideHingeFrame 3))
+						(_FSET (_ 'connHolesFrame 3))
+					)
+					((equal operationDirection "RIGHT")
+						(_FSET (_ 'doorToDoorHingeFrame 3))
+						(_FSET (_ 'doorToSideHingeFrame 1))
+						(_FSET (_ 'connHolesFrame 1))
+					)
+				)
+			)
+			(progn
+				(_FSET (_ 'actualHingeOffset HINGE_OFFSET))
+				(_FSET (_ 'actualBigToSmallOffsetX BIG_TO_SMALLS_OFFSET_X))
+				(_FSET (_ 'actualHingeConnectionHoleOffset HINGE_CONNECTION_HOLES_OFFSET))
+			
+				(_FSET (_ 'activeDoor_PARAMS doorWithHandle_PARAMS))
+				(_FSET (_ 'passiveDoor_PARAMS secondaryDoor_PARAMS))
+				(cond
+					((equal operationDirection "LEFT")
+						(_FSET (_ 'doorToDoorHingeFrame 3))
+						(_FSET (_ 'doorToSideHingeFrame 3))
+						(_FSET (_ 'connHolesFrame 1))
+					)
+					((equal operationDirection "RIGHT")
+						(_FSET (_ 'doorToDoorHingeFrame 1))
+						(_FSET (_ 'doorToSideHingeFrame 1))
+						(_FSET (_ 'connHolesFrame 3))
+					)
+				)
+			)
+		)
+
+		; ACTIVE DOOR OPERATION
+		(_FSET (_ 'activeDoorCODE (getnth 2 activeDoor_PARAMS)))
+		(if (not (_EXISTPANEL activeDoorCODE))
+			(progn
+				; Active door does not exist, then situation of items have to be determined
+				(if (_NOTNULL (getnth 3 activeDoor_PARAMS)) 
+					(_ITEMMAIN A1K9090_HINGE1_CODE A1K9090_HINGE1_CODE (_ A1K9090_HINGE1_QUAN HINGE_UNIT))
+				)
+			)
+			(progn
+				(_FSET (_ 'frameControl (_CONTROLFRAME (getnth 0 activeDoor_PARAMS) (getnth 1 activeDoor_PARAMS) iBoundry_Hinge oBoundry_Hinge doorToDoorHingeFrame)))
+				(if (null frameControl)
+					(progn
+						(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (XSTR "DOOR CODE") " : " activeDoorCODE "\n" "\n" 
+									   (XSTR "Corner unit hinge operation can not be performed on door frame with current parameters!") " -90DTD-HINGE-" "\n"))
+					)
+					(progn
+						(if (null NO_NEED_HINGE_HOLES_ON_DOORS)
+							(progn
+								(_FSET (_ 'currentDoorHEI (getnth 4 activeDoor_PARAMS)))
+								(_FSET (_ 'currentDoorWID (getnth 5 activeDoor_PARAMS)))
+								(_FSET (_ 'currentDoorFRAME (getnth 7 activeDoor_PARAMS)))
+								
+								(_FSET (_ 'topFrameVAL (getnth 0 currentDoorFRAME)))
+								(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+								(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+								(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+												
+								(if (equal operationDirection "LEFT")
+									(progn
+										(_FSET (_ 'hingeDirection "X-"))
+										
+										;(_FSET (_ 'upperHingePOS (_ (_= "currentDoorWID + leftFrameVAL - actualHingeOffset") (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										;(_FSET (_ 'lowerHingePOS (_ (_= "currentDoorWID + leftFrameVAL - actualHingeOffset") (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+										(_FSET (_ 'upperHingePOS (_ (_= "rightFrameVAL + actualHingeOffset") (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										(_FSET (_ 'lowerHingePOS (_ (_= "rightFrameVAL + actualHingeOffset") (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+									)
+									(progn
+										(_FSET (_ 'hingeDirection "X+"))
+										
+										;(_FSET (_ 'upperHingePOS (_ (- actualHingeOffset rightFrameVAL) (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										;(_FSET (_ 'lowerHingePOS (_ (- actualHingeOffset rightFrameVAL) (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+										(_FSET (_ 'upperHingePOS (_ (_= "currentDoorWID + leftFrameVAL - actualHingeOffset") (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										(_FSET (_ 'lowerHingePOS (_ (_= "currentDoorWID + leftFrameVAL - actualHingeOffset") (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+									)
+								)
+								(_HINGEMAIN "HINGE_DTD_UP" activeDoorCODE (_ upperHingePOS hingeDirection BIG_HOLE_DIAMETER SMALL_HOLES_DIAMETER actualBigToSmallOffsetX BIG_TO_SMALLS_OFFSET_Y BIG_HOLE_DEPTH SMALL_HOLES_DEPTH))
+								(_HINGEMAIN "HINGE_DTD_DOWN" activeDoorCODE (_ lowerHingePOS hingeDirection BIG_HOLE_DIAMETER SMALL_HOLES_DIAMETER actualBigToSmallOffsetX BIG_TO_SMALLS_OFFSET_Y BIG_HOLE_DEPTH SMALL_HOLES_DEPTH))
+								
+								(_ITEMMAIN HINGE_SCREW_CODE activeDoorCODE (_ QUANTITY_OF_ITEM HINGE_SCREW_UNIT))
+							)
+						)
+						(_ITEMMAIN A1K9090_HINGE1_CODE activeDoorCODE (_ A1K9090_HINGE1_QUAN HINGE_UNIT))
+					)
+				)
+			)
+		)
+
+		; DOOR TO SIDE OPERATION
+		; In every condition secondary door connects to side panels
+		(_FSET (_ 'secondaryDoorCODE (getnth 2 secondaryDoor_PARAMS)))
+		(if (not (_EXISTPANEL secondaryDoorCODE))
+			(progn
+				; Secondary door does not exist, then situation of items have to be determined
+				(if (_NOTNULL (getnth 3 secondaryDoor_PARAMS)) 
+					(_ITEMMAIN A1K9090_HINGE2_CODE A1K9090_HINGE2_CODE (_ A1K9090_HINGE2_QUAN HINGE_UNIT))
+				)
+			)
+			(progn
+				(_FSET (_ 'frameControl (_CONTROLFRAME (getnth 0 secondaryDoor_PARAMS) (getnth 1 secondaryDoor_PARAMS) iBoundry_Hinge oBoundry_Hinge doorToSideHingeFrame)))
+				(if (null frameControl)
+					(progn
+						(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (XSTR "DOOR CODE") " : " secondaryDoorCODE "\n" "\n" 
+									   (XSTR "Corner unit hinge operation can not be performed on door frame with current parameters!") " -90DTS-HINGE-" "\n"))
+					)
+					(progn
+						(if (null NO_NEED_HINGE_HOLES_ON_DOORS)
+							(progn
+								(_FSET (_ 'currentDoorHEI (getnth 4 secondaryDoor_PARAMS)))
+								(_FSET (_ 'currentDoorWID (getnth 5 secondaryDoor_PARAMS)))
+								(_FSET (_ 'currentDoorFRAME (getnth 7 secondaryDoor_PARAMS)))
+								
+								(_FSET (_ 'topFrameVAL (getnth 0 currentDoorFRAME)))
+								(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+								(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+								(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+								
+								(cond
+									((equal operationDirection "LEFT")
+										(_FSET (_ 'hingeDirection "X+"))
+										
+										(_FSET (_ 'upperHingePOS (_ (_= "currentDoorWID + leftFrameVAL - HINGE_OFFSET") (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										(_FSET (_ 'lowerHingePOS (_ (_= "currentDoorWID + leftFrameVAL - HINGE_OFFSET") (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+									)
+									((equal operationDirection "RIGHT")
+										(_FSET (_ 'hingeDirection "X-"))
+										
+										(_FSET (_ 'upperHingePOS (_ (- HINGE_OFFSET rightFrameVAL) (_= "currentDoorHEI + topFrameVAL - HINGE_UP_DISTANCE") 0)))
+										(_FSET (_ 'lowerHingePOS (_ (- HINGE_OFFSET rightFrameVAL) (- HINGE_DOWN_DISTANCE bottomFrameVAL) 0)))
+									)
+								)
+								(_HINGEMAIN "HINGE_DTS_UP" secondaryDoorCODE (_ upperHingePOS hingeDirection BIG_HOLE_DIAMETER SMALL_HOLES_DIAMETER BIG_TO_SMALLS_OFFSET_X BIG_TO_SMALLS_OFFSET_Y BIG_HOLE_DEPTH SMALL_HOLES_DEPTH))
+								(_HINGEMAIN "HINGE_DTS_DOWN" secondaryDoorCODE (_ lowerHingePOS hingeDirection BIG_HOLE_DIAMETER SMALL_HOLES_DIAMETER BIG_TO_SMALLS_OFFSET_X BIG_TO_SMALLS_OFFSET_Y BIG_HOLE_DEPTH SMALL_HOLES_DEPTH))
+								
+								(_ITEMMAIN HINGE_SCREW_CODE secondaryDoorCODE (_ QUANTITY_OF_ITEM HINGE_SCREW_UNIT))
+							)
+						)
+						(_ITEMMAIN A1K9090_HINGE2_CODE secondaryDoorCODE (_ A1K9090_HINGE2_QUAN HINGE_UNIT))
+					)
+				)
+			)
+		)
+		; SIDE OPERATION
+		(if (null NO_NEED_HINGE_CONN_HOLES)
+			(progn
+				(_FSET (_ 'secondaryDoorHEI (getnth 4 secondaryDoor_PARAMS)))
+				(_FSET (_ 'secondaryDoorELEV (getnth 6 secondaryDoor_PARAMS)))
+				(_FSET (_ 'secondaryDoorFRAME (getnth 7 secondaryDoor_PARAMS)))
+				
+				(_FSET (_ 'topFrameVAL (getnth 0 secondaryDoorFRAME)))
+				(_FSET (_ 'holeCodeBody "HINGE_CONN_HOLE_"))
+				
+				(if (_EXISTPANEL AK_LEFT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'upperFirstHolePOS (_ HINGE_CONNECTION_HOLES_OFFSET (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE + distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'upperSecondHolePOS (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff) (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE - distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'lowerFirstHolePOS (_ HINGE_CONNECTION_HOLES_OFFSET (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE + distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'lowerSecondHolePOS (_ (+ HINGE_CONNECTION_HOLES_OFFSET connHolesHorDiff) (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE - distOfConnHolesToCenter") 0)))
+						
+						(_HOLE (_& (_ holeCodeBody "UF")) AK_LEFT_PANEL_CODE (_ upperFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "US")) AK_LEFT_PANEL_CODE (_ upperSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "LF")) AK_LEFT_PANEL_CODE (_ lowerFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "LS")) AK_LEFT_PANEL_CODE (_ lowerSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						
+						(_ITEMMAIN HINGE_SCREW_CODE AK_LEFT_PANEL_CODE (_ QUANTITY_OF_ITEM HINGE_SCREW_UNIT))
+					)
+				)
+				
+				(if (_EXISTPANEL AK_RIGHT_PANEL_CODE)
+					(progn
+						(_FSET (_ 'upperFirstHolePOS (_ (- AK_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET) (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE + distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'upperSecondHolePOS (_ (_= "AK_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff") (_= "secondaryDoorELEV - bottomSideStyleV1 + secondaryDoorHEI + topFrameVAL - HINGE_UP_DISTANCE - distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'lowerFirstHolePOS (_ (- AK_RIGHT_PANEL_WID HINGE_CONNECTION_HOLES_OFFSET) (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE + distOfConnHolesToCenter") 0)))
+						(_FSET (_ 'lowerSecondHolePOS (_ (_= "AK_RIGHT_PANEL_WID - HINGE_CONNECTION_HOLES_OFFSET - connHolesHorDiff") (_= "secondaryDoorELEV - bottomSideStyleV1 + HINGE_DOWN_DISTANCE - distOfConnHolesToCenter") 0)))
+						
+						(_HOLE (_& (_ holeCodeBody "UF")) AK_RIGHT_PANEL_CODE (_ upperFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "US")) AK_RIGHT_PANEL_CODE (_ upperSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "LF")) AK_RIGHT_PANEL_CODE (_ lowerFirstHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						(_HOLE (_& (_ holeCodeBody "LS")) AK_RIGHT_PANEL_CODE (_ lowerSecondHolePOS HINGE_CONNECTION_HOLES_DIAMETER HINGE_CONNECTION_HOLES_DEPTH))
+						
+						(_ITEMMAIN HINGE_SCREW_CODE AK_RIGHT_PANEL_CODE (_ QUANTITY_OF_ITEM HINGE_SCREW_UNIT))
+					)
+				)
+			)
+			(progn
+				; If there is no side operation at all then there is no need to call notch recipes
+				(_NONOTCH)
+			)
+		)
+	)
+)

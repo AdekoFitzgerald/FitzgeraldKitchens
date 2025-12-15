@@ -1,0 +1,8 @@
+
+
+(defun lmm_exportBiesseNCCodesDesiredCAMOp ( / )
+	(princ "Biesse postu boþ doldurulmasý gerekiyor.......................................................................................................")
+)
+
+
+(princ)

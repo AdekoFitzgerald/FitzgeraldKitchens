@@ -1,0 +1,145 @@
+(cond
+	((or  (< unitW kpmThick2Min) (> unitW kpmThick2Max) (< unitH kpmMin) (> unitH kpmMax) (< unitD kpmMin) (> unitD kpmMax))
+        (alert "\nGirilen olculer uretilemez.!
+Lutfen genislik,yukseklik ve derinlik olculerinizi gozden geciriniz.")
+        (/ 0 0)
+       (princ)
+       )
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.1 0.0 0.0) 
+		(list 0.1 unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	(+ DS20_T1 DS20_T2)
+	0.0 
+	0.0 
+	
+	(list 0.0 (+ (- unitD) 0.1) dAltKot)
+	
+	"ON_BANT" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
+(setq kpmLR (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Left/Right: ")))
+(cond
+	
+	((equal kpmLR "Right")
+
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD 0.1) 0.0 0.0) 
+				(list (- unitD 0.1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DS20_T1 
+			0.0 
+			0.0 
+			
+			(list 0.0 0.0 dAltKot)
+			
+			"DS20_01" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS20_D1 0.0 0.0) 
+				(list DS20_D1 unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DS20_T2 
+			0.0 
+			0.0 
+			
+			(list DS20_T1 (+ (- unitD) DS20_D1 0.1) dAltKot)
+			
+			"DS20_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+	(T
+
+
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list (- unitD 0.1) 0.0 0.0) 
+				(list (- unitD 0.1) unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DS20_T1
+			0.0 
+			0.0 
+			
+			(list DS20_T2 0.0 dAltKot)
+			
+			"DS20_01" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list DS20_D1 0.0 0.0) 
+				(list DS20_D1 unitH 0.0) 
+				(list 0.0 unitH 0.0) 
+			) 
+			nil
+			DS20_T2 
+			0.0 
+			0.0 
+			
+			(list 0.0 (+ (- unitD) DS20_D1 0.1) dAltKot)
+			
+			"DS20_02" 
+			"" 
+			nil 
+			"SIDE" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+)

@@ -1,0 +1,35 @@
+(cond
+	((or  (< unitW kpmThickMin) (> unitW kpmThickMax) (< unitH kpmMin) (> unitH kpmMax) (< unitD kpmMin) (> unitD kpmMax))
+        (alert "\nGirilen olculer uretilemez.!
+Lutfen genislik,yukseklik ve derinlik olculerinizi gozden geciriniz.")
+        (/ 0 0)
+       (princ)
+       )
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	unitW 
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"DK20_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+

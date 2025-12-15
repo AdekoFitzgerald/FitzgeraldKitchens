@@ -1,0 +1,2 @@
+
+(("dwg\\Dolap Alti Led" ("{(- unitD gm1_altledofset)}" "{(- (- unitD) (- gm1_altledofset))}" -0.500000) "" ("{(- (/ unitW 60) (/ (- unitD gm1_altledofset) 60))}" "{(/ gm1_altledwid 2)}" 1.00000) 2.00000 "" "" "") ("dwg\\Dolap Alti Led2" ("{(- unitD gm1_altledofset gm1_altledwid)}" "{(+ (- unitD2) gm1_altledofset)}" -0.500000) "" ("{(/ gm1_altledwid 2)}" "{(- (/ unitW 60) (/ (- unitD gm1_altledofset) 60))}" 1.00000) 2.00000 "" "" "") 2)

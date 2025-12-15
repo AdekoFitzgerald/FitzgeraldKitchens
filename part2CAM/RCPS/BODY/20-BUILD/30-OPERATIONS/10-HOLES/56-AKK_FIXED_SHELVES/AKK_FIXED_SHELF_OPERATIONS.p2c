@@ -1,0 +1,90 @@
+(_RUNDEFAULTHELPERRCP "AKK_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "FIXED_SHELF_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "CONNECTORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "LEFT_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "RIGHT_PANEL_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'shelfCounter 1))
+		(repeat (length BLIND_CORNER_FIXED_SHELF_ELEV_LIST)
+			(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FIXED_SHELF") "_0_" shelfCounter))))
+
+			(if (_EXISTPANEL currentShelfCODE)
+				(progn
+					(_FSET (_ 'paramBody (_& (_ "FIXED_SHELF_0_" shelfCounter "_"))))
+					
+					(_FSET (_ 'currentShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+					(_FSET (_ 'currentShelfWID (_S2V (_& (_ paramBody "WID")))))
+					(_FSET (_ 'currentShelfELEV (_S2V (_& (_ paramBody "ELEV")))))
+					(_FSET (_ 'currentShelfTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+					(if (_NOTNULL FIXED_SHELF_HOLES_ON_LOWER_SURFACE)
+						(progn
+							(_FSET (_ 'currentShelfPDATA (_S2V (_& (_ paramBody "PDATA")))))
+							(_FSET (_ 'currentShelfROT (_S2V (_& (_ paramBody "ROT")))))
+							(_FSET (_ 'currentShelfMAT (_S2V (_& (_ paramBody "MAT")))))
+							
+							(_FSET (_ 'currentShelfCODE (_CREATESFACEMAIN currentShelfCODE (_ currentShelfPDATA currentShelfROT currentShelfMAT currentShelfTHICKNESS "Y"))))
+						)
+					)
+					(_FSET (_ 'lengthParametersFixedShelfAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH currentShelfHEI (_ 0 0 LEFT_PANEL_FRONT_VARIANCE LEFT_PANEL_BACK_VARIANCE))))
+					(mapcar '_SETA '(lengthForFixedShelfAndLeft frontStartingPointFixedShelfL backStartingPointFixedShelfL frontStartingPointLeft backStartingPointLeft) lengthParametersFixedShelfAndLeft)
+
+					(_FSET (_ 'lengthParametersForFixedShelfAndRight (_CALCULATEPANELSINTERSECTIONLENGTH currentShelfHEI (_ 0 0 RIGHT_PANEL_FRONT_VARIANCE RIGHT_PANEL_BACK_VARIANCE))))
+					(mapcar '_SETA '(lengthForFixedShelfAndRight frontStartingPointFixedShelfR backStartingPointFixedShelfR frontStartingPointRight backStartingPointRight) lengthParametersForFixedShelfAndRight)
+
+					(foreach operationParams OPERATION_LIST
+						(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+						(_FSET (_ 'fixedShelfPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+							   (_ lengthForFixedShelfAndLeft 0 (car horizontalHolePos) "Y") 
+							   (_ frontStartingPointFixedShelfL backStartingPointFixedShelfL nil currentShelfHEI) 
+							   (_ FITTING_PARAMETERS nil))))
+							   
+						(_HOLEGROUP operationName currentShelfCODE fixedShelfPointListForLeftSide (_ "X+" nil) connectorParams)
+						
+						(_FSET (_ 'fixedShelfPointListForRightSide (_GETHOLEPOINTLIST operationName
+							   (_ lengthForFixedShelfAndRight currentShelfWID (car horizontalHolePos) "Y") 
+							   (_ 0 0 nil currentShelfHEI) 
+							   (_ FITTING_PARAMETERS nil))))
+							   
+						(_HOLEGROUP operationName currentShelfCODE fixedShelfPointListForRightSide (_ "X-" nil) connectorParams)
+						
+						(_FSET (_ 'halfOfThickness (/ currentShelfTHICKNESS 2.0)))
+						(_FSET (_ 'holePosOnAxisY (_= "currentShelfELEV + halfOfThickness + bottomSideStyleV2")))
+
+						(if (_EXISTPANEL LEFT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'leftPanelPointListForFixedShelf (_GETHOLEPOINTLIST operationName 
+									   (_ lengthForFixedShelfAndLeft holePosOnAxisY 0 "X") 
+									   (_ (+ frontStartingPointLeft FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE FIXED_SHELF_FRONT_OFFSET) (- backStartingPointLeft FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE FIXED_SHELF_FRONT_OFFSET) nil currentShelfHEI) 
+									   (_ FITTING_PARAMETERS nil))))
+									   
+								(_HOLEGROUP operationName LEFT_PANEL_CODE leftPanelPointListForFixedShelf (_ nil "Y-") connectorParams)
+							)
+						)
+						(if (_EXISTPANEL RIGHT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'rightPanelPointListForFixedShelf (_GETHOLEPOINTLIST operationName 
+									   (_ lengthForFixedShelfAndRight holePosOnAxisY 0 "X") 
+									   (_ (_= "currentShelfHEI - RIGHT_PANEL_WID + frontStartingPointRight + FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE + FIXED_SHELF_FRONT_OFFSET") (_= "RIGHT_PANEL_WID - currentShelfHEI + backStartingPointRight - FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE - FIXED_SHELF_FRONT_OFFSET") T currentShelfHEI) 
+									   (_ FITTING_PARAMETERS nil))))
+									   
+								(_HOLEGROUP operationName RIGHT_PANEL_CODE rightPanelPointListForFixedShelf (_ nil "Y-") connectorParams)
+							)
+						)
+					)
+				)
+			)
+			(_FSET (_ 'shelfCounter (+ shelfCounter 1)))
+		)
+	)
+)
+
+(_NONOTCH)

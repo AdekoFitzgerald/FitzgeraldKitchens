@@ -1,0 +1,193 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_PANELS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+; Definition of hole shorcuts
+; L -> Left, R -> Right, F -> First, S -> Second, T -> Third
+(if DRAWER_DOOR_HOLES_AVAILABLE
+	(progn
+		(if (null USE_PROJECT_PRICING_RECIPES)
+			(progn
+				(cond
+					((and (equal DRAWER_TYPE "HIDDEN") USE_HIDDEN_DRAWER_DOOR)
+						(if (_EXISTPANEL HIDDEN_DRAWER_DOOR_CODE)
+							(progn
+								(_FSET (_ 'halfOfHoleDia (/ DRAWER_DOOR_HOLES_DIAMETER 2.0)))
+								; Validation controls for drawer door holes
+								(if (and (> DRAWER_DOOR_FIRST_HOLE_DISTANCE halfOfHoleDia)
+										 (> HIDDEN_DRAWER_DOOR_HEI (_= "DRAWER_DOOR_FIRST_HOLE_DISTANCE + halfOfHoleDia ")))
+									(_FSET (_ 'firstDrawerDoorHole T))
+									(_FSET (_ 'firstDrawerDoorHole nil))
+								)
+								(if (and (> DRAWER_DOOR_SECOND_HOLE_DISTANCE halfOfHoleDia)
+										 (> HIDDEN_DRAWER_DOOR_HEI (_= "DRAWER_DOOR_SECOND_HOLE_DISTANCE + halfOfHoleDia")))
+									(_FSET (_ 'secondDrawerDoorHole T))
+									(_FSET (_ 'secondDrawerDoorHole nil))
+								)
+								(if (and (> DRAWER_DOOR_THIRD_HOLE_DISTANCE halfOfHoleDia)
+										 (> HIDDEN_DRAWER_DOOR_HEI (_= "DRAWER_DOOR_THIRD_HOLE_DISTANCE + halfOfHoleDia")) 
+										 (> HIDDEN_DRAWER_DOOR_HEI DRAWER_DOOR_HEI_REQUIRED_FOR_THIRD_HOLE))
+									(_FSET (_ 'thirdDrawerDoorHole T))
+									(_FSET (_ 'thirdDrawerDoorHole nil))
+								)
+								; Hole operations are from now on
+								; Meaning of shortkeys
+								; L -> Left, R -> Right, F -> First, S -> Second, T -> Third
+								(_FSET (_ 'holeCodeBody "DRAWER_DOOR_HOLE_"))
+								(_FSET (_ 'offsetOnAxisX_LEFT (_= "HIDDEN_DRAWER_DOOR_WID - DRAWER_DOOR_HOLES_OFFSET")))
+								(_FSET (_ 'offsetOnAxisX_RIGHT DRAWER_DOOR_HOLES_OFFSET))
+								(if (_NOTNULL firstDrawerDoorHole)
+									(progn
+										(_HOLE (_& (_ holeCodeBody "LF")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_FIRST_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RF")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_FIRST_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+									)
+								)
+								(if (_NOTNULL secondDrawerDoorHole)
+									(progn
+										(_HOLE (_& (_ holeCodeBody "LS")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_SECOND_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RS")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_SECOND_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+									)
+								)
+								(if (_NOTNULL thirdDrawerDoorHole)
+									(progn
+										(_HOLE (_& (_ holeCodeBody "LT")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_THIRD_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RT")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_THIRD_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+									)
+								)
+								(cond
+									((equal DRAWER_DOOR_EXTRA_HOLES_NUMBER 1)
+										(_HOLE (_& (_ holeCodeBody "LFE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RFE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+									)
+									((equal DRAWER_DOOR_EXTRA_HOLES_NUMBER 2)
+										; First extra holes
+										(_HOLE (_& (_ holeCodeBody "LFE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RFE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+									
+										; Second extra holes
+										(_HOLE (_& (_ holeCodeBody "LSE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_LEFT (+ DRAWER_DOOR_SECOND_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+										(_HOLE (_& (_ holeCodeBody "RSE")) HIDDEN_DRAWER_DOOR_CODE (_ (_ offsetOnAxisX_RIGHT (+ DRAWER_DOOR_SECOND_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+									)
+								)
+									
+								(if IS_RAIL_BORDURE_AVAILABLE
+									(if (not (equal (getnth 0 activeRailPackage) nil))
+										(_ITEMMAIN (strcat RAIL_BORDURE_CODE "_" (convertStr (getnth 0 activeRailPackage))) HIDDEN_DRAWER_DOOR_CODE (_ 1 "kit"))
+										(_ITEMMAIN RAIL_BORDURE_CODE HIDDEN_DRAWER_DOOR_CODE (_ 1 "kit"))
+									)
+								)
+							)
+						)
+					)
+					(T
+						(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+				
+						(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+						(if (_NOTNULL currentDoorTYPE)
+							(progn
+								(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+								(if (and (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE))
+									(progn
+										(_FSET (_ 'halfOfHoleDia (/ DRAWER_DOOR_HOLES_DIAMETER 2.0)))
+										(_FSET (_ 'innerBoundry (+ DRAWER_DOOR_HOLES_OFFSET halfOfHoleDia)))
+										(_FSET (_ 'outerBoundry (- DRAWER_DOOR_HOLES_OFFSET halfOfHoleDia)))
+										
+										(_FSET (_ 'frameControlLEFT (_CONTROLFRAME paramBody currentDoorTYPE innerBoundry outerBoundry 3)))
+										(_FSET (_ 'frameControlRIGHT (_CONTROLFRAME paramBody currentDoorTYPE innerBoundry outerBoundry 1)))
+										
+										(if (or (null frameControlLEFT) (null frameControlRIGHT))
+											(progn
+												(princ (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (XSTR "DOOR CODE") " : " currentDoorCODE "\n" "\n" 
+															   (XSTR "Drawer door holes operation can not be performed on door frame with current parameters!") "\n"))
+											)
+											(progn
+												(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+												(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+												(_FSET (_ 'currentDoorFRAME (_S2V (_& (_ paramBody "FRAME")))))
+												
+												(_FSET (_ 'rightFrameVAL (getnth 1 currentDoorFRAME)))
+												(_FSET (_ 'bottomFrameVAL (getnth 2 currentDoorFRAME)))
+												(_FSET (_ 'leftFrameVAL (getnth 3 currentDoorFRAME)))
+												
+												; Validation controls for drawer door holes
+												(if (and (> DRAWER_DOOR_FIRST_HOLE_DISTANCE (+ halfOfHoleDia bottomFrameVAL)) 
+														 (> currentDoorHEI (_= "DRAWER_DOOR_FIRST_HOLE_DISTANCE + halfOfHoleDia - bottomFrameVAL")))
+													(_FSET (_ 'firstDrawerDoorHole T))
+													(_FSET (_ 'firstDrawerDoorHole nil))
+												)
+												(if (and (> DRAWER_DOOR_SECOND_HOLE_DISTANCE (+ halfOfHoleDia bottomFrameVAL))
+														 (> currentDoorHEI (_= "DRAWER_DOOR_SECOND_HOLE_DISTANCE + halfOfHoleDia - bottomFrameVAL")))
+													(_FSET (_ 'secondDrawerDoorHole T))
+													(_FSET (_ 'secondDrawerDoorHole nil))
+												)
+												(if (and (> DRAWER_DOOR_THIRD_HOLE_DISTANCE (+ halfOfHoleDia bottomFrameVAL)) 
+														 (> currentDoorHEI (_= "DRAWER_DOOR_THIRD_HOLE_DISTANCE + halfOfHoleDia - bottomFrameVAL")) 
+														 (> currentDoorHEI DRAWER_DOOR_HEI_REQUIRED_FOR_THIRD_HOLE))
+													(_FSET (_ 'thirdDrawerDoorHole T))
+													(_FSET (_ 'thirdDrawerDoorHole nil))
+												)
+												; Hole operations are from now on
+												; Meaning of shortkeys
+												; L -> Left, R -> Right, F -> First, S -> Second, T -> Third
+												(_FSET (_ 'holeCodeBody "DRAWER_DOOR_HOLE_"))
+												(_FSET (_ 'offsetOnAxisX_LEFT (_= "currentDoorWID + leftFrameVAL - DRAWER_DOOR_HOLES_OFFSET")))
+												(_FSET (_ 'offsetOnAxisX_RIGHT (- DRAWER_DOOR_HOLES_OFFSET rightFrameVAL)))
+												(if (_NOTNULL firstDrawerDoorHole)
+													(progn
+														(_HOLE (_& (_ holeCodeBody "LF")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_FIRST_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RF")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_FIRST_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+													)
+												)
+												(if (_NOTNULL secondDrawerDoorHole)
+													(progn
+														(_HOLE (_& (_ holeCodeBody "LS")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_SECOND_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RS")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_SECOND_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+													)
+												)
+												(if (_NOTNULL thirdDrawerDoorHole)
+													(progn
+														(_HOLE (_& (_ holeCodeBody "LT")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_THIRD_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RT")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_THIRD_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_HOLES_DIAMETER DRAWER_DOOR_HOLES_DEPTH))
+													)
+												)
+												
+												(if IS_RAIL_BORDURE_AVAILABLE
+													(if (not (equal (getnth 0 activeRailPackage) nil))
+														(_ITEMMAIN (strcat RAIL_BORDURE_CODE "_" (convertStr (getnth 0 activeRailPackage))) currentDoorCODE (_ 1 "kit"))
+														(_ITEMMAIN RAIL_BORDURE_CODE currentDoorCODE (_ 1 "kit"))
+													)
+												)
+												
+												(cond
+													((equal DRAWER_DOOR_EXTRA_HOLES_NUMBER 1)
+														(_HOLE (_& (_ holeCodeBody "LFE")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RFE")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+													)
+													((equal DRAWER_DOOR_EXTRA_HOLES_NUMBER 2)
+														; First extra holes
+														(_HOLE (_& (_ holeCodeBody "LFE")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RFE")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_FIRST_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+													
+														; Second extra holes
+														(_HOLE (_& (_ holeCodeBody "LSE")) currentDoorCODE (_ (_ offsetOnAxisX_LEFT (- (+ DRAWER_DOOR_SECOND_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+														(_HOLE (_& (_ holeCodeBody "RSE")) currentDoorCODE (_ (_ offsetOnAxisX_RIGHT (- (+ DRAWER_DOOR_SECOND_EXTRA_HOLE_DISTANCE RAIL_DOOR_GROOVE_BOTTOM_OFFSET_VALUE) bottomFrameVAL) 0) DRAWER_DOOR_EXTRA_HOLES_DIAMETER DRAWER_DOOR_EXTRA_HOLES_DEPTH))
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(if (and (equal DRAWER_TYPE "HIDDEN") IS_HDRAWER_DOOR_CONN_HOLE_AVAILABLE)
+	(_RUNHELPERRCP "DV\\20-BUILD\\30-OPERATIONS\\10-HOLES\\40-DRAWER\\20-DRAWER_DOOR\\HIDDEN_DRAWER_DOOR_CONN_HOLE" T "p2chelper")
+)
+; In any case there is no notch operation for this recipe
+(_NONOTCH)

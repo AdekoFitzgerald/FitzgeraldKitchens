@@ -1,0 +1,70 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW DU10_T1 DU10_T1) 0.0 0.0) 
+		(list (- unitW DU10_T1 DU10_T1) unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	DU10_T1 
+	0.0
+	(d2r 90.0) 
+	(list DU10_T1 (- unitD) dAltKot)
+	"DU10_01" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	DU10_T1 
+	0.0 
+	0.0 
+	
+	(list 0.0 0.0 dAltKot)
+	
+	"DU10_02" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitD 0.0 0.0) 
+		(list unitD unitH 0.0) 
+		(list 0.0 unitH 0.0) 
+	) 
+	nil
+	DU10_T1 
+	0.0 
+	0.0 
+	
+	(list (- unitW DU10_T1) 0.0 dAltKot)
+	
+	"DU10_03" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)

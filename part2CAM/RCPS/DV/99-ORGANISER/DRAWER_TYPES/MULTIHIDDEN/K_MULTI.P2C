@@ -1,0 +1,9 @@
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'divisionCounter __CURDIVORDER))
+(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+(_FSET (_ 'numberOfShelves (length (_S2V (_& (_ currentDivision "_SHELVESOFFSETS"))))))
+
+(repeat numberOfShelves
+	(_RUNHELPERRCP "DV\\99-ORGANISER\\DRAWER_TYPES\\K_HIDDEN_LARDER" T "p2c")
+)

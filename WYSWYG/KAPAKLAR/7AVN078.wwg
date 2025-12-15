@@ -1,0 +1,42 @@
+
+;tip   : A= Duz kapak B=Camli C=Cekmece D=Ic Kivrik
+;        E=Dis Kivrik F=Serit Camli G=Stor Z=Z kapak(=> EN='(en wid1 wid2 deltaY))
+;kulp  : Kulp yonu (K)uzey KD (D)ogu GD (G)uney (O)rta (K2) Kuzeyde 2 (O2) Ortada 2
+;(setq doorId (kapak_ciz tipAndModel kulp ox oy oz en boy orient rotang))
+
+;(setq doorId (kapak_ciz "A" "G-" 0.0 0.0 0.0 20.0 30.0 nil 0.0))
+;(setq doorId (kapak_ciz (list "A" "FUGAYAN578") "0-" unitW (+ (* unitD 0.5) 1.0)  dAltKot 57.8 unitH nil -90))
+
+(setq 	ox  (+ ( * unitW 0.5) unitW) 
+		oy (+ unitD ad_et)
+		oz dAltKot  
+		tip "R" 
+		kulp "0-" 
+		doorname "AVN078"  
+		modelOfTheDoor "AVN078" 
+		en  unitW
+		boy unitH  
+		rotang 0.0 
+		orient nil 		
+)
+
+ (loadDoorModel modelOfTheDoor)
+ (setq validFunctionName (detectKanatDrawingFunction tip modelOfTheDoor))
+(setq kblk (strcat kod "AVN078"))
+(kapakblkciz 'kblk tip kulp doorname modelOfTheDoor en boy  nil nil )
+(if (member simetri '("saG" "R" "r")) ;solsa veya nilse oburu
+	(command cmdINSERT kblk (list (- ( * unitW 0.5)) (+ (- oy) 1.0) oz) "XYZ"  -1 1 1 rotang)
+	(command cmdINSERT kblk (list ox (+ (- oy) 1.0) oz) "XYZ"  1 1 1 rotang)
+)
+
+;
+;(explodeentLast)
+;(changeEntPro (entlast) 8 gm1:layerName)
+;(grx_setmaterial (entlast) (md_GetMaterial "CAB_DOORS" ""))
+;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+;(setq doorsPropList (cons (list 0.0  unitW (+ unitH dAltKot) "0-" "A" nil 0 doorId)  doorsPropList))
+;(changeEntPro (entlast) 8 "YUSUF")
+
+
+;(list door_Elevation_to_module doorH doorW handlePosition doorType fixedDoorOpenDirection divIndex doorEntityName )
+(setq doorsPropList (cons (list unitD (- unitH 0.2) unitW "0-" "A" nil 0 doorId)  doorsPropList))

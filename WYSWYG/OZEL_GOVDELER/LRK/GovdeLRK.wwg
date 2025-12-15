@@ -1,0 +1,72 @@
+(setq bazadep (- ad_adder ad_bazaY))
+(setq wwg_layerName (ifnull gm1:layerName szBodyLayer))
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list
+		(list 0.0 0.0 0.0)
+		(list 0.0 unitH 0.0)
+		(list unitD unitH 0.0)
+		(list unitD ad_bazaH 0.0)
+		(list ad_bazay ad_bazaH 0.0)
+		(list ad_bazay 0.0 0.0)
+	)
+	nil
+	ad_et
+	0.0
+	0.0
+	(list 0.0 0.0 dAltKot)
+	(XSTR "LEFT_PANEL")
+	""
+	nil
+	"SIDE"
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list
+		(list 0.0 0.0 0.0)
+		(list 0.0 unitH 0.0)
+		(list unitD unitH 0.0)
+		(list unitD ad_bazaH 0.0)
+		(list ad_bazay ad_bazaH 0.0)
+		(list ad_bazay 0.0 0.0)
+	)
+	nil
+	ad_et
+	0.0
+	0.0
+	(list (- unitW ad_et) 0.0 dAltKot)
+	(XSTR "RIGHT_PANEL")
+	""
+	nil
+	"SIDE"
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)))
+(createGPanel
+	(list
+		(list 0.0 0.0 0.0)
+		(list (- unitW ad_et ad_et) 0.0 0.0)
+		(list (- unitW ad_et ad_et) unitD 0.0)
+		(list 0.0 unitD 0.0)
+	)
+	nil
+	ad_et
+	0.0
+	0.0
+	(list ad_et 0.0 (+ dAltKot (- unith ad_et)))
+	(XSTR "TOP_PANEL")
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)

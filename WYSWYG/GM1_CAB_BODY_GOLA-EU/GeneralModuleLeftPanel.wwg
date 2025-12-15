@@ -1,0 +1,20 @@
+(setq golaPatternList (_GETGOLAORDER (ifnull modulgolaOrderList  "gola_horizProfileOrder_CAB_BODY")))
+(setq contourPoints (_CREATEGOLAPANELCONTOUR golaPatternList unitH unitD 0.0 0.0 0.0))
+
+(setq wwg_layerName (ifnull gm1:layerName szBodyLayer))
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(nth 0 contourPoints) 
+	(nth 1 contourPoints)
+	ad_et 
+	0.0 
+	0.0 
+	(list 0.0 0.0 dAltKot)
+	(XSTR "LEFT_PANEL")
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_" wwg_layerName)
+	wwg_layerName
+	"noedgedrawing"
+)

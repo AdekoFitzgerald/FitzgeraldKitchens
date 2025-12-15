@@ -1,0 +1,80 @@
+(_RUNDEFAULTHELPERRCP "CABINEO_DEFAULT" nil "p2chelper")
+
+WARDROBE_CABINEO_HOR_HOLE_DIA -> "Diameter of wardrobe cabineo drill holes. Default value -> CABINEO_HOR_DIAMETER"
+WARDROBE_CABINEO_HOR_HOLE_DEPTH -> "Depth of wardrobe cabineo drill holes. Default value -> CABINEO_HOR_DEPTH"
+WARDROBE_CABINEO_VER_HOLE_DEPTH -> "Depth of wardrobe cabineo main holes. Default value -> CABINEO_VER_DEPTH"
+WARDROBE_CABINEO_HOLE_GEOMETRY -> "Geometry of cabineo hole. CICRLE or POLYLINE. Default value -> CABINEO_GEOMETRY"
+WARDROBE_CABINEO_F_WIDTH -> "Width of cabineo flange. Default value -> CABINEO_FLANGE_WIDTH"
+WARDROBE_CABINEO_F_THICKNESS -> "Thickness of cabineo flange. Default value -> CABINEO_FLANGE_THICKNESS"
+WARDROBE_CABINEO_F_OVERFLOW -> "Thickness of cabineo flange. Default value -> CABINEO_FLANGE_OVERFLOW"
+
+;CABINEO_HOR_HOLE_POS and CABINEO_HOR_DIAMETER is stabil. Declared in CABINEO_DEFAULT.P2CHELPER
+;prefvars
+(_SETA 'WARDROBE_CABINEO_HOR_HOLE_DIA CABINEO_HOR_DIAMETER)
+(_SETA 'WARDROBE_CABINEO_HOR_HOLE_DEPTH CABINEO_HOR_DEPTH)
+(_SETA 'WARDROBE_CABINEO_VER_HOLE_DEPTH CABINEO_VER_DEPTH)
+(_SETA 'WARDROBE_CABINEO_F_WIDTH CABINEO_FLANGE_WIDTH)
+(_SETA 'WARDROBE_CABINEO_F_THICKNESS CABINEO_FLANGE_THICKNESS)
+(_SETA 'WARDROBE_CABINEO_F_OVERFLOW CABINEO_FLANGE_OVERFLOW)
+
+(if (not (equal CABINEO_DEP nil)) (_FSET (_ 'WARDROBE_CABINEO_HOR_HOLE_DEPTH (convertLengthToSpecifiedUnit CABINEO_DEP (getvar "INSUNITS") 4))))
+(if (not (equal CABINEO_DEP2 nil)) (_FSET (_ 'WARDROBE_CABINEO_VER_HOLE_DEPTH (convertLengthToSpecifiedUnit CABINEO_DEP2 (getvar "INSUNITS") 4))))
+(if (not (equal CABINEO_DIA nil)) (_FSET (_ 'WARDROBE_CABINEO_HOR_HOLE_DIA (convertLengthToSpecifiedUnit CABINEO_DIA (getvar "INSUNITS") 4))))
+(if (not (equal CABINEO_F_WIDTH nil)) (_FSET (_ 'WARDROBE_CABINEO_F_WIDTH (convertLengthToSpecifiedUnit CABINEO_F_WIDTH (getvar "INSUNITS") 4))))
+(if (not (equal CABINEO_F_THICKNESS nil)) (_FSET (_ 'WARDROBE_CABINEO_F_THICKNESS (convertLengthToSpecifiedUnit CABINEO_F_THICKNESS (getvar "INSUNITS") 4))))
+(if (not (equal CABINEO_F_OVERFLOW nil)) (_FSET (_ 'WARDROBE_CABINEO_F_OVERFLOW (convertLengthToSpecifiedUnit CABINEO_F_OVERFLOW (getvar "INSUNITS") 4))))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(_FSET (_ 'connCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			(cond
+				((_ISVERTICALFACE currentFaceNormal)
+					;Type of current face is either 0 or 1 in this case
+					(setq holePosition (replace 0 2 holePosition))
+					(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_CABINEO_VER_HOLE"))))
+					(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_CABINEO_HOR_HOLE_DIA WARDROBE_CABINEO_HOR_HOLE_DEPTH holeOrient))
+					(_FSET (_ 'connCounter (+ 1 connCounter)))
+				)
+				((_ISHORIZONTALFACE currentFaceNormal)
+					(if (null (minusp (getnth 2 holePosition)))
+						(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+					)
+					(if (not (equal (* -1 (getnth 2 holePosition)) (convertLengthToSpecifiedUnit (+ CABINEO_D (if (eq CABINEO_F_ADD 1) CABINEO_F_THICKNESS 0)) (getvar "INSUNITS") 4) 0.01))
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					
+					(setq holePosition (replace 0 2 holePosition))
+					
+					; Type of current face is either 2, 3, 4 or 5 in this case
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_CABINEO_HOR_HOLE"))))
+					(_CABINEOMAIN holeCodeBody connectedFaceCode (_ holePosition (_ WARDROBE_CABINEO_GEOMETRY WARDROBE_CABINEO_HOR_HOLE_DIA WARDROBE_CABINEO_HOR_HOLE_DEPTH WARDROBE_CABINEO_VER_HOLE_DEPTH (eq CABINEO_F_ADD 1) WARDROBE_CABINEO_F_WIDTH WARDROBE_CABINEO_F_THICKNESS WARDROBE_CABINEO_F_OVERFLOW WARDROBE_CABINEO_CODE WARDROBE_CABINEO_UNIT)) holeOrient)
+					
+					(_FSET (_ 'connCounter (+ 1 connCounter)))
+				)
+			)
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		;(if (equal connCounter 2) (_ITEMMAIN WARDROBE_CABINEO_CODE WARDROBE_CABINEO_CODE (_ 1 WARDROBE_CABINEO_UNIT)))
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

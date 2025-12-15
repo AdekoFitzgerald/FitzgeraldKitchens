@@ -1,0 +1,8 @@
+RINGO_MAIN_HOLE_DEPTH -> "Depth of ringo main hole"
+
+RINGO_OPPOSED_HOLE_DEPTH -> "Depth of ringo opposed hole"
+RINGO_OPPOSED_HOLE_DIA -> "Dia of ringo opposed hole"
+RINGO_OPPOSED_HOLE_POS -> "Position of ringo opposed hole"
+
+RINGO_CODE -> "Code of ringo"
+RINGO_UNIT -> "Unit of ringo"

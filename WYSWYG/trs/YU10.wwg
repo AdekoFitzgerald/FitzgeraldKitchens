@@ -1,0 +1,28 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD ad_et) 0.0 0.0) 
+		(list (- unitD ad_et) YU10_T1 0.0) 
+		(list 0.0 YU10_T1 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r -270.0)
+	
+	(d2r -90.0)
+	
+	
+	(list unitW 0.0 (+ ad_et YU10_T1 dAltKot))
+	
+	"YU10_03" 
+	"" 
+	nil 
+	
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)

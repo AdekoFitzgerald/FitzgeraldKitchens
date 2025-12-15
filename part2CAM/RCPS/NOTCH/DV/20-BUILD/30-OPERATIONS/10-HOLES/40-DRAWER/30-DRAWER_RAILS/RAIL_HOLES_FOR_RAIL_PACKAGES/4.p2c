@@ -1,0 +1,66 @@
+(if (> __NOTCHDIM3 __AD_PANELTHICK)
+	(progn
+		(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+		
+		(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+		(if (_NOTNULL currentDoorTYPE)
+			(progn
+				(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_DOOR_CODES "ST")))
+				(if (and (_EXISTPANEL currentDoorCODE) (_ISDOORDRAWER currentDoorTYPE))
+					(progn
+						; Possible maximum drawer depth is calculated
+						(_FSET (_ 'maxDrawerDepthPossible __DEP))
+						; Elevation of current drawer
+						(_FSET (_ 'currentDoorELEV (_S2V (_& (_ paramBody "ELEV")))))
+						; General validation control for RAIL_HOLES_FOR_RAIL_PACKAGES
+						(if (and (_NOTNULL RAIL_HOLES_FOR_RAIL_PACKAGES) (equal (type RAIL_HOLES_FOR_RAIL_PACKAGES) 'LIST))
+							(progn
+								; LIMIT CONTROLS are performed in original recipe
+								; HOLE OPERATIONS
+								; If our drawer depth is a valid one for any package then operations are performed
+								(if (_NOTNULL SELECTED_RAIL_INDEX)
+									(progn
+										(_FSET (_ 'activeRailPackage (getnth SELECTED_RAIL_INDEX RAIL_HOLES_FOR_RAIL_PACKAGES)))
+										(_FSET (_ 'currentPackageCode (getnth 1 activeRailPackage)))
+										; 0 and 1 indexes are occupied by upper limit of rail package and rail package code
+										(_FSET (_ 'railCounter 2))
+										(while (< railCounter (length activeRailPackage))
+											(_FSET (_ 'currentHole (getnth railCounter activeRailPackage)))
+											
+											(_FSET (_ 'currentHoleDiameter (getnth 0 currentHole)))
+											(_FSET (_ 'currentHoleDepth (getnth 1 currentHole)))
+											(_FSET (_ 'currentHolePosition (getnth 2 currentHole)))
+											
+											(_FSET (_ 'holePosX (getnth 0 currentHolePosition)))
+											(_FSET (_ 'holePosY (getnth 1 currentHolePosition)))
+											(_FSET (_ 'holePosZ (getnth 2 currentHolePosition)))
+											; According to the position of drawer in module, hole position on Y-axis is updated
+											(_FSET (_ 'holePosY (_= "holePosY + currentDoorElev - bottomSideStyleV1")))
+											; Validation controls for current hole
+											(_FSET (_ 'frontSideControl (< (/ currentHoleDiameter 2.0) holePosX)))
+											(_FSET (_ 'backSideControl (> maxDrawerDepthPossible (+ holePosX (/ currentHoleDiameter 2.0)))))
+											(if (and frontSideControl backSideControl)
+												(progn
+													(_FSET (_ 'holeCodeEnd (_& (_ "_DRAWER_RAIL_HOLE_" (- railCounter 1)))))
+													(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+														(_HOLE (_& (_ "NOTCHED_LEFT_PANEL" holeCodeEnd)) NOTCHED_LEFT_PANEL_CODE (_ (_ holePosX holePosY holePosZ) currentHoleDiameter currentHoleDepth))
+													)
+													(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+														(_HOLE (_& (_ "NOTCHED_RIGHT_PANEL" holeCodeEnd)) NOTCHED_RIGHT_PANEL_CODE (_ (_ (- NOTCHED_RIGHT_PANEL_WID holePosX) holePosY holePosZ) currentHoleDiameter currentHoleDepth))
+													)
+												)
+											)
+											(_FSET (_ 'railCounter (+ 1 railCounter)))
+										)
+										; Item of rail package has been already added in original recipe
+										(_FSET (_ 'SELECTED_RAIL_INDEX nil))
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)

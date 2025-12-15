@@ -1,0 +1,52 @@
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 3.38 -45.38 0.0) 
+	(list 56.2 -98.2 0.0) 
+	(list 56.2 -56.2 0.0) 
+	(list 98.2 -56.2 0.0) 
+	(list 45.38 -3.38 0.0) 
+) 
+nil
+0.8
+
+0.0
+0.0
+(list 0.0 94.8 0.0)
+"TABAN"
+""
+nil
+"SHELF"
+(strcat kodBlock "_TABAN")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 56.2 -98.2 0.0) 
+	(list 56.2 -95.65 0.0) 
+	(list 4.65 -44.11 0.0) 
+	(list 3.38 -45.38 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 54.1 3GCekKot)
+"SOL_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_SOL_PANEL")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)

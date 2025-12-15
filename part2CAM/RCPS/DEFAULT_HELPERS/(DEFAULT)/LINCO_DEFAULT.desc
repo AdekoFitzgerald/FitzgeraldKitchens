@@ -1,0 +1,8 @@
+LINCO_GEOMETRY -> "Geometry of linco hole. POLYLINE or CIRCLE ?"
+LINCO_ADD_FLANGE -> "Add flange on linco hole"
+LINCO_HOR_DEPTH -> "Depth of linco bolt hole"
+LINCO_HOR_DIAMETER -> "Diameter of linco bolt hole"
+LINCO_VER_DEPTH -> "Depth of main linco hole"
+LINCO_BOLT_HOLE_POS -> "Position of vertical linco hole"
+LINCO_CODE -> "Code of linco"
+LINCO_UNIT -> "Unit of linco"

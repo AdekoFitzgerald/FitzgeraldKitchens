@@ -1,0 +1,30 @@
+PANEL_MAIN_ROTATION -> "Main rotation"
+PANEL_CUTLIST_ROTATION -> "Grain rotation of cutlist"
+PANEL_DXF_ROTATION -> "Dxf rotation of dxf output"
+PANEL_MIRRORING_AXIS -> "Axis of mirroring operation"
+
+PANEL_LABEL -> "Label of panel"
+PANEL_TAG -> "Tag of panel"
+
+LEFT_EDGESTRIP_MAT -> "Material of left edgestrip"
+RIGHT_EDGESTRIP_MAT -> "Material of right edgestrip"
+TOP_EDGESTRIP_MAT -> "Material of top edgestrip"
+BOTTOM_EDGESTRIP_MAT -> "Material of bottom edgestrip"
+;prefvars
+(_SETA 'PANEL_MAIN_ROTATION nil)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'PANEL_LABEL nil)
+(_SETA 'PANEL_TAG nil)
+
+(_SETA 'LEFT_EDGESTRIP_MAT nil)
+(_SETA 'RIGHT_EDGESTRIP_MAT nil)
+(_SETA 'TOP_EDGESTRIP_MAT nil)
+(_SETA 'BOTTOM_EDGESTRIP_MAT nil)
+; Standard Values, PANEL_MAIN_ROTATION nil, PANEL_CUTLIST_ROTATION nil, PANEL_DXF_ROTATION nil, PANEL_MIRRORING_AXIS nil
+; Standard Values, PANEL_LABEL nil, PANEL_TAG nil
+; Standard Values, LEFT_EDGESTRIP_MAT nil, RIGHT_EDGESTRIP_MAT nil, TOP_EDGESTRIP_MAT nil, BOTTOM_EDGESTRIP_MAT nil
+(_RUNHELPERRCP "BODY\\20-BUILD\\20-PARTS\\10-GENERAL_PANELS\\PRIMITIVE_UNITS\\PANEL" T "p2chelper")
+(_NONOTCH)

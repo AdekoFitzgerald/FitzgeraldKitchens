@@ -1,0 +1,333 @@
+; GLOBAL_DOOR_PARAMS are taken from original door recipes
+(_FSET (_ 'GDP_doorIndex (getnth 0 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_doorInfo (getnth 1 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_changeCodeFlag (getnth 2 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_moduleDef (getnth 3 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_divisionOrder (getnth 4 GLOBAL_DOOR_PARAMS)))
+(_FSET (_ 'GDP_uniParamsPrefix (getnth 5 GLOBAL_DOOR_PARAMS)))
+
+(_FSET (_ 'currentDoorID (getnth 7 GDP_doorInfo)))
+
+(_FSET (_ 'glassDoorLayerMAT (_GETDOORMATS currentDoorID GLASS_DOOR_LAYER)))
+(if (_NOTNULL glassDoorLayerMAT)
+	(progn
+		(_FSET (_ 'currentDoorHEI (getnth 1 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorWID (getnth 2 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorTYPE (getnth 4 GDP_doorInfo)))
+		(_FSET (_ 'currentDoorMODEL (_GETDOORMODEL currentDoorID)))
+		(_FSET (_ 'currentDoorTAGS (_GETDOORTAGS currentDoorID)))
+		(_FSET (_ 'currentDoorOpenDirection (getnth 5 GDP_doorInfo)))
+		
+		; Material of specific layers
+		(_FSET (_ 'doorLayerMAT (_GETDOORMATS currentDoorID GENERAL_DOORS_LAYER)))
+		(_FSET (_ 'doorFramesLayerMAT (_GETDOORMATS currentDoorID DOOR_FRAMES_LAYER)))
+		(_FSET (_ 'aluFrameLayerMAT (_GETDOORMATS currentDoorID ALUMINIUM_FRAME_LAYER)))
+		(_FSET (_ 'doorEdgebandsLayerMAT (_GETDOORMATS currentDoorID DOOR_EDGEBANDS_LAYER)))
+		(_FSET (_ 'handlesKnobsLayerMAT (_GETDOORMATS currentDoorID HANDLES_KNOBS_LAYER)))
+		
+		(cond
+			((_NOTNULL doorLayerMAT)
+				; Classic Band, With Edgebands, No Edgebands -> With Frame GLASS
+				(cond 
+					((_NOTNULL aluFrameLayerMAT)
+						; (_FSET (_ 'doorLayerMAT aluFrameLayerMAT))
+						(_FSET (_ 'profileList (_GETDOORPROFILES currentDoorID)))
+
+						(if (apply 'OR profileList)
+							(progn
+								(_FSET (_ 'topProfileMAT (getnth 0 profileList)))
+								(_FSET (_ 'rightProfileMAT (getnth 1 profileList)))
+								(_FSET (_ 'bottomProfileMAT (getnth 2 profileList)))
+								(_FSET (_ 'leftProfileMAT (getnth 3 profileList)))
+							)
+							(progn
+								(_FSET (_ 'topProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'rightProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'bottomProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'leftProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+							)
+						)
+						
+						; Profiles add as item four each side
+						(_ITEMMAIN topProfileMAT topProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+						(_ITEMMAIN rightProfileMAT rightProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+						(_ITEMMAIN bottomProfileMAT bottomProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+						(_ITEMMAIN leftProfileMAT leftProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+						
+						; Width of profiles are taken from database
+						(_FSET (_ 'leftProfileWID (_GETPROFILEWIDFROMDB leftProfileMAT)))
+						(_FSET (_ 'rightProfileWID (_GETPROFILEWIDFROMDB rightProfileMAT)))
+						(_FSET (_ 'topProfileWID (_GETPROFILEWIDFROMDB topProfileMAT)))
+						(_FSET (_ 'bottomProfileWID (_GETPROFILEWIDFROMDB bottomProfileMAT)))
+						
+						(_FSET (_ 'frameThickness (ifnull (_GETDOORFRAMETHICK currentDoorID) 0.0)))
+
+						(_FSET (_ 'lostInHEIDoor (+ topProfileWID bottomProfileWID)))
+						(_FSET (_ 'lostInWIDDoor (+ leftProfileWID rightProfileWID)))
+
+						(_FSET (_ 'lostInHEI (+ lostInHEIDoor (* frameThickness 2))))
+						(_FSET (_ 'lostInWID (+ lostInWIDDoor (* frameThickness 2))))
+
+						(_FSET (_ 'frameShares (_ topProfileWID rightProfileWID bottomProfileWID leftProfileWID)))
+					)
+					((_NOTNULL handlesKnobsLayerMAT)
+						(_FSET (_ 'profileHandleList (_GETDOORPROFILEHANDLES currentDoorID)))
+						(if (apply 'OR profileHandleList)
+							(progn
+								(_FSET (_ 'topProfileMAT (getnth 0 profileHandleList)))
+								(_FSET (_ 'rightProfileMAT (getnth 1 profileHandleList)))
+								(_FSET (_ 'bottomProfileMAT (getnth 2 profileHandleList)))
+								(_FSET (_ 'leftProfileMAT (getnth 3 profileHandleList)))
+							)
+							(progn
+								(_FSET (_ 'topProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'rightProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'bottomProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+								(_FSET (_ 'leftProfileMAT DOOR_ALU_PROFILE_DEFAULT))
+							)
+						)
+						
+						; Width of profiles are taken from database
+						(_FSET (_ 'leftProfileWID (_GETPROFILEWIDFROMDB leftProfileMAT)))
+						(_FSET (_ 'rightProfileWID (_GETPROFILEWIDFROMDB rightProfileMAT)))
+						(_FSET (_ 'topProfileWID (_GETPROFILEWIDFROMDB topProfileMAT)))
+						(_FSET (_ 'bottomProfileWID (_GETPROFILEWIDFROMDB bottomProfileMAT)))
+						
+						(_FSET (_ 'frameThickness (ifnull (_GETDOORFRAMETHICK currentDoorID) 0.0)))
+
+						(_FSET (_ 'lostInHEIDoor (+ topProfileWID bottomProfileWID)))
+						(_FSET (_ 'lostInWIDDoor (+ leftProfileWID rightProfileWID)))
+
+						(_FSET (_ 'lostInHEI (+ lostInHEIDoor (* frameThickness 2))))
+						(_FSET (_ 'lostInWID (+ lostInWIDDoor (* frameThickness 2))))
+
+						(_FSET (_ 'frameShares (_ topProfileWID rightProfileWID bottomProfileWID leftProfileWID)))
+					)
+					(T
+						; No aluminum frame
+						; GLASS PART
+						(_FSET (_ 'frameThickness (ifnull (_GETDOORFRAMETHICK currentDoorID) 0.0)))
+						
+						(_FSET (_ 'lostInHEI (* frameThickness 2)))
+						(_FSET (_ 'lostInHEIDoor 0.0))
+						(_FSET (_ 'lostInWIDDoor 0.0))
+						(_FSET (_ 'lostInWID (* frameThickness 2)))
+						(_FSET (_ 'frameShares (_ 0.0 0.0 0.0 0.0)))
+					)
+				)
+				
+				(_FSET (_ 'curDoorDATA (_ (getnth 0 GDP_doorInfo)
+										  (- currentDoorHEI lostInHEIDoor)
+										  (- currentDoorWID lostInWIDDoor)
+										  currentDoorTYPE
+										  (getnth 5 GDP_doorInfo)
+										  currentDoorID
+										  (_GETDOORMATROTS currentDoorID GENERAL_DOORS_LAYER)
+										  doorLayerMAT
+										  frameShares
+										  "INSOURCE")))
+				
+				(_FSET (_ 'paramBody (_GENERATEDOORPARAMS curDoorDATA GDP_divisionOrder GDP_doorIndex GDP_moduleDef GDP_uniParamsPrefix)))
+				
+				; Unique variables of current door
+				(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+				(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+				(_FSET (_ 'tempGRAIN (_& (_ paramBody "GRAIN"))))
+				(_FSET (_ 'tempTYPE (_& (_ paramBody "TYPE"))))
+				(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'tempID (_& (_ paramBody "ID"))))
+				
+				; This parameter is not set by _GENERATEDOORPARAMS
+				(_FSET (_ (read (_& (_ paramBody "VIRTUAL"))) nil))
+				
+				(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE (_S2V tempTYPE) GDP_divisionOrder GDP_doorIndex GDP_changeCodeFlag GDP_moduleDef)))
+				
+				(_FSET (_ 'doorGrain nil))
+				(if (equal lmm-s-doorDxfRotationIsNotImpressedByGrain "1")
+					(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) 0.0)))
+				)
+				(if (> (_S2V tempHEI) MIN_HEIGHT_FOR_DOOR_ROTATION) 
+					(if (equal currentDoorOpenDirection "L")
+						(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) DOOR_ROTATION_VALUE_FOR_LEFT_OPEN_DIR)))
+						(_FSET (_ 'doorGrain (_ nil (_S2V tempGRAIN) DOOR_ROTATION_VALUE_FOR_RIGHT_OPEN_DIR)))
+					)
+				)
+				
+				(if currentDoorSource0 
+					(if (checkStrInStr "##" currentDoorSource0) ;daha iyisini yazana kadar wildcard ##
+						(setq currentDoorSource0 (strcat (parselft currentDoorSource0 "##") (_S2V tempMAT) (parsergt currentDoorSource0 "##")))
+					)
+					(setq currentDoorSource0 (_S2V tempMAT))
+				)
+				
+				(_PANEL currentDoorCODE (_ (_S2V tempWID) (_S2V tempHEI) (ifnull doorGrain (_S2V tempGRAIN)) currentDoorSource0 currentDoorSource1))
+				
+				(_FSET (_ 'edgestripList (_GETDOORSTRIPS (_S2V tempID))))
+				(if (apply 'OR edgestripList)
+					(progn
+						(_FSET (_ 'topEdgestripMAT (getnth 0 edgestripList)))
+						(_FSET (_ 'rightEdgestripMAT (getnth 1 edgestripList)))
+						(_FSET (_ 'bottomEdgestripMAT (getnth 2 edgestripList)))
+						(_FSET (_ 'leftEdgestripMAT (getnth 3 edgestripList)))
+						(if GET_MATERIAL_COLOR_FROM_DOOR_LAYER
+							(_FSET (_ 'edgeBandMat doorLayerMAT))
+							(_FSET (_ 'edgeBandMat doorEdgebandsLayerMAT))
+						)
+						
+						(if (_NOTNULL ADD_MATERIAL_COLOR)
+							(progn
+								(if (_NOTNULL topEdgestripMAT) (_FSET (_ 'topEdgestripMAT (_& (_ topEdgestripMAT edgeBandMat)))))
+								(if (_NOTNULL rightEdgestripMAT) (_FSET (_ 'rightEdgestripMAT (_& (_ rightEdgestripMAT edgeBandMat)))))
+								(if (_NOTNULL bottomEdgestripMAT) (_FSET (_ 'bottomEdgestripMAT (_& (_ bottomEdgestripMAT edgeBandMat)))))
+								(if (_NOTNULL leftEdgestripMAT) (_FSET (_ 'leftEdgestripMAT (_& (_ leftEdgestripMAT edgeBandMat)))))
+							)
+						)
+						; Width of edgestrips are taken from database
+						(_FSET (_ 'leftEdgestripWID (_GETEDGESTRIPWIDFROMDB leftEdgestripMAT)))
+						(_FSET (_ 'rightEdgestripWID (_GETEDGESTRIPWIDFROMDB rightEdgestripMAT)))
+						(_FSET (_ 'topEdgestripWID (_GETEDGESTRIPWIDFROMDB topEdgestripMAT)))
+						(_FSET (_ 'bottomEdgestripWID (_GETEDGESTRIPWIDFROMDB bottomEdgestripMAT)))
+						
+						(_FSET (_ 'DOOR_EDGESTRIPS (_ (_ bottomEdgestripMAT bottomEdgestripWID)
+														(_ leftEdgestripMAT leftEdgestripWID)
+														(_ topEdgestripMAT topEdgestripWID)
+														(_ rightEdgestripMAT rightEdgestripWID))))	
+				
+						(_CREATEEDGESTRIPS currentDoorCODE DOOR_EDGESTRIPS)	
+					)
+				)
+				; Tag operations
+				(_PUTDOORSPECIFICATIONS
+					(list
+						currentDoorCODE
+						currentDoorTYPE
+						"INSOURCE"
+						currentDoorMODEL
+						doorCostType
+						currentDoorTAGS
+						(_GETDOORFORM currentDoorID)
+						(getDoorDirectionWithDoorPosition g_CurrentModulEnt currentDoorID)
+						(_GETHANDLEPOSINDEX currentDoorID)
+					)
+				)
+				
+				(_FSET (_ 'paramBody (_& (_ paramBody "GLASS_"))))
+				; Unique variables of glass part of door
+				(_FSET (_ 'glassWID (_& (_ paramBody "WID"))))
+				(_FSET (_ 'glassHEI (_& (_ paramBody "HEI"))))
+				(_FSET (_ 'glassMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'glassGRAIN (_& (_ paramBody "GRAIN"))))
+				(_FSET (_ 'glassFRAME (_& (_ paramBody "FRAME"))))
+				
+				; WARNING -> We know the type of glass part
+				
+				(_FSET (_ (read glassWID) (_= "currentDoorWID - lostInWID")))
+				(_FSET (_ (read glassHEI) (_= "currentDoorHEI - lostInHEI")))
+				(_FSET (_ (read glassMAT) glassDoorLayerMAT))
+				(_FSET (_ (read glassGRAIN) 0))
+				(_FSET (_ (read glassFRAME) (mapcar '+ frameShares (_ frameThickness frameThickness frameThickness frameThickness))))
+				
+				(_FSET (_ 'glassPartCODE (_& (_ currentDoorCODE "_" (XSTR "GLASS")))))
+				
+				(_PANEL glassPartCODE (_ (_S2V glassWID) (_S2V glassHEI) (_S2V glassGRAIN) (_S2V glassMAT) __AD_GLASSTHICK))
+			)
+			((or (_NOTNULL doorFramesLayerMAT) (_NOTNULL aluFrameLayerMAT))
+				; Aluminium profile, profile framed GLASS
+				; It is sure that both doorFramesLayerMAT and aluFrameLayerMAT can not have material in the same time
+				(if (_NOTNULL doorFramesLayerMAT)
+					(progn
+						(_FSET (_ 'profileMAT doorFramesLayerMAT))
+						(_FSET (_ 'defaultProfile DOOR_PROFILE_DEFAULT))
+					)
+					(progn
+						(_FSET (_ 'profileMAT aluFrameLayerMAT))
+						(_FSET (_ 'defaultProfile DOOR_ALU_PROFILE_DEFAULT))
+					)
+				)
+				
+				(_FSET (_ 'profileList (_GETDOORPROFILES currentDoorID)))
+				(if (apply 'OR profileList)
+					(progn
+						(_FSET (_ 'topProfileMAT (getnth 0 profileList)))
+						(_FSET (_ 'rightProfileMAT (getnth 1 profileList)))
+						(_FSET (_ 'bottomProfileMAT (getnth 2 profileList)))
+						(_FSET (_ 'leftProfileMAT (getnth 3 profileList)))
+					)
+					(progn
+						(_FSET (_ 'topProfileMAT defaultProfile))
+						(_FSET (_ 'rightProfileMAT defaultProfile))
+						(_FSET (_ 'bottomProfileMAT defaultProfile))
+						(_FSET (_ 'leftProfileMAT defaultProfile))
+					)
+				)
+				
+				;Bu case de doorLayerMAT olmadýðý için kapak materyalini al (GET_MATERIAL_COLOR_FROM_DOOR_LAYER) seçeneðini gerçekleþtiremiyoruz.
+				; Aluminyum çerçeveli kapaklarda profilin sonuna çizimdeki materyalin gelmemesi gerek.
+				(if (and (_NOTNULL ADD_MATERIAL_COLOR) (_NOTNULL doorFramesLayerMAT))
+					(progn
+						(if (_NOTNULL topProfileMAT) (_FSET (_ 'topProfileMAT (_& (_ topProfileMAT profileMAT)))))
+						(if (_NOTNULL rightProfileMAT) (_FSET (_ 'rightProfileMAT (_& (_ rightProfileMAT profileMAT)))))
+						(if (_NOTNULL bottomProfileMAT) (_FSET (_ 'bottomProfileMAT (_& (_ bottomProfileMAT profileMAT)))))
+						(if (_NOTNULL leftProfileMAT) (_FSET (_ 'leftProfileMAT (_& (_ leftProfileMAT profileMAT)))))
+					)
+				)
+				; Profiles add as item four each side
+				(_ITEMMAIN topProfileMAT topProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+				(_ITEMMAIN rightProfileMAT rightProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+				(_ITEMMAIN bottomProfileMAT bottomProfileMAT (_ (/ currentDoorWID 1000.0) "m"))
+				(_ITEMMAIN leftProfileMAT leftProfileMAT (_ (/ currentDoorHEI 1000.0) "m"))
+				
+				; Width of profiles are taken from database
+				(_FSET (_ 'leftProfileWID (_GETPROFILEWIDFROMDB leftProfileMAT)))
+				(_FSET (_ 'rightProfileWID (_GETPROFILEWIDFROMDB rightProfileMAT)))
+				(_FSET (_ 'topProfileWID (_GETPROFILEWIDFROMDB topProfileMAT)))
+				(_FSET (_ 'bottomProfileWID (_GETPROFILEWIDFROMDB bottomProfileMAT)))
+				
+				(_FSET (_ 'lostInHEI (+ topProfileWID bottomProfileWID)))
+				(_FSET (_ 'lostInWID (+ leftProfileWID rightProfileWID)))
+				(_FSET (_ 'frameShares (_ topProfileWID rightProfileWID bottomProfileWID leftProfileWID)))
+				
+				; GLASS PART
+				(if (equal GDP_moduleDef "ST")
+					(_FSET (_ 'paramBody (_& (_ GDP_uniParamsPrefix "_" GDP_divisionOrder "_" GDP_doorIndex "_GLASS_"))))
+					(_FSET (_ 'paramBody (_& (_ GDP_uniParamsPrefix "_" GDP_doorIndex "_GLASS_"))))
+				)
+				; Unique variables of glass part of door
+				(_FSET (_ 'glassWID (_& (_ paramBody "WID"))))
+				(_FSET (_ 'glassHEI (_& (_ paramBody "HEI"))))
+				(_FSET (_ 'glassMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'glassGRAIN (_& (_ paramBody "GRAIN"))))
+				(_FSET (_ 'glassFRAME (_& (_ paramBody "FRAME"))))
+				
+				; WARNING -> We know the type of glass part
+				
+				(_FSET (_ (read glassWID) (- currentDoorWID lostInWID)))
+				(_FSET (_ (read glassHEI) (- currentDoorHEI lostInHEI)))
+				(_FSET (_ (read glassMAT) glassDoorLayerMAT))
+				(_FSET (_ (read glassGRAIN) 0))
+				(_FSET (_ (read glassFRAME) frameShares))
+
+				(_FSET (_ 'glassPartCODE (_& (_ (_CREATEDOORCODE currentDoorTYPE GDP_divisionOrder GDP_doorIndex GDP_changeCodeFlag GDP_moduleDef) "_" (XSTR "GLASS")))))
+				(_FSET (_ 'stretchedDoorCODE (_& (_ (_CREATEDOORCODE currentDoorTYPE GDP_divisionOrder GDP_doorIndex GDP_changeCodeFlag GDP_moduleDef)))))
+
+				(_PANEL glassPartCODE (_ (_S2V glassWID) (_S2V glassHEI) (_S2V glassGRAIN) (_S2V glassMAT)))
+			
+				; For operations global variables of door must be set
+				(_FSET (_ 'curDoorDATA (_ (getnth 0 GDP_doorInfo)
+										  currentDoorHEI
+										  currentDoorWID
+										  currentDoorTYPE
+										  (getnth 5 GDP_doorInfo)
+										  currentDoorID
+										  nil
+										  nil
+										  nil
+										  "INSOURCE")))
+				
+				(_FSET (_ 'paramBody (_GENERATEDOORPARAMS curDoorDATA GDP_divisionOrder GDP_doorIndex GDP_moduleDef GDP_uniParamsPrefix)))
+				
+				(_FSET (_ (read (_& (_ GDP_uniParamsPrefix "_" GDP_divisionOrder "_" GDP_doorIndex "_VIRTUAL"))) T))
+			)
+		)
+	)
+)

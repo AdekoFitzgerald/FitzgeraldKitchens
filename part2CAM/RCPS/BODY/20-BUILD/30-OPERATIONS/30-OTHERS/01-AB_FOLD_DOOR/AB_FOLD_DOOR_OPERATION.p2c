@@ -1,0 +1,44 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "AB_DEFAULT" nil "p2chelper")
+
+
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(if ENDING_UNIT_CONTROL
+			(progn
+				(_FSET (_ 'paramBody (_& (_ "AB_CDOOR_" 1 "_"))))
+				(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+				(_FSET (_ 'currentDoorHEI (_S2V (_& (_ paramBody "HEI")))))
+				(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+				
+				(if (and
+						(get_Mdata g_currentModulEnt k:CDoorList) ;modulun kapak bilgileri varsa
+						(equal (length (read (get_Mdata g_currentModulEnt k:CDoorList))) 1) ;modulde tek kapak varsa
+						(member currentDoorTYPE (_ "E" "K" "L" "J")) ;moduldeki kapak, kirik kapaksa
+						(getnth 8 (getnth 0 (read (get_Mdata g_currentModulEnt k:CDoorList)))) ;kapakta kirilma noktasi parametresi varsa
+					)
+					(progn
+						(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER 1 CHANGE_CU_DOOR_CODES "AB")))
+
+						(if (_EXISTPANEL currentDoorCODE)
+							(progn
+								(foreach foldPoint (getnth 8 (getnth 0 (read (get_Mdata g_currentModulEnt k:CDoorList))))
+									
+									(_FSET (_ 'polylineFoldData (list 	(list (cu2mm foldPoint) 0.0 0.0) 0.0
+																		(list (cu2mm foldPoint) currentDoorHEI 0.0) 0.0)))
+						 
+									(_POLYLINEHOLE "AB_FOLD_DOOR_OP" currentDoorCODE (_ polylineFoldData __AD_PANELTHICK "FOLD"))
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

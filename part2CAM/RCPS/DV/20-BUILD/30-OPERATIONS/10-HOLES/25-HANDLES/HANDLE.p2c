@@ -1,0 +1,55 @@
+(_RUNDEFAULTHELPERRCP "DOORS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "HINGE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "HANDLE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "SCREW_DEFAULT" nil "p2chelper")
+
+(if ARE_HANDEL_HOLES_AVAILABLE
+	(progn
+		(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+			(progn
+				; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+				(_NONOTCH)
+			)
+			(progn	
+				(_FSET (_ 'doorCounter 0))
+				(while (< doorCounter (length __CURDIVDOORSLIST))
+					(_FSET (_ 'doorCounter (+ 1 doorCounter)))
+					
+					(_FSET (_ 'paramBody (_& (_ "__DOOR_" __CURDIVORDER "_" doorCounter "_"))))
+					(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+					(_FSET (_ 'currentDoorWID (_S2V (_& (_ paramBody "WID")))))
+					(_FSET (_ 'tempHANDLECOORDINATE (_S2V(_& (_ paramBody "HANDLECOORDINATE")))))
+
+					(setq ii 0)
+					(repeat (length tempHANDLECOORDINATE)
+						(if (setq handleCoorList (getnth 1 (getnth ii tempHANDLECOORDINATE)))
+							(progn
+								(_FSET (_ 'handleName (getnth 0 (getnth ii tempHANDLECOORDINATE))))
+								(setq i 0)
+								(repeat (length handleCoorList)
+									(_FSET (_ 'handleCoordinateX (cu2mm (getnth 0 (getnth i handleCoorList)))))
+									(_FSET (_ 'handleCoordinateY (cu2mm (getnth 1 (getnth i handleCoorList)))))
+									
+									(setq handleCoordinateX (- (/ currentDoorWID 2) handleCoordinateX))
+									(_FSET (_ 'currentDoorCODE (_CREATEDOORCODE currentDoorTYPE __CURDIVORDER doorCounter CHANGE_DOOR_CODES "ST")))
+
+									(if (_EXISTPANEL currentDoorCODE)
+										(progn
+											(_HOLE "HANDLE_HOLE" currentDoorCODE (_ (_ handleCoordinateX handleCoordinateY 0) HANDLE_HOLE_DIAMETER HANDLE_HOLE_DEPTH))
+											(_ITEMMAIN SCREW_CODE currentDoorCODE (_ 1 SCREW_UNIT))					
+										)
+									)
+									
+									(setq i (1+ i))
+								)
+							)	
+						)
+						(setq ii (+ ii 1))
+					)						
+				)
+			)
+		)
+	)
+)
+(_NONOTCH)

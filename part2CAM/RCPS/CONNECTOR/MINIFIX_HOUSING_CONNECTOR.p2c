@@ -1,0 +1,49 @@
+(_RUNDEFAULTHELPERRCP "MINIFIX_DEFAULT" nil "p2chelper")
+
+
+WARDROBE_MSCREW_HOLE_DIA -> "Diameter of wardrobe minifix screw holes. Default value -> MINIFIX_VER_DIAMETER"
+WARDROBE_MSCREW_HOLE_DEPTH -> "Depth of wardrobe minifix screw holes. Default value -> MINIFIX_VER_DEPTH"
+;prefvars
+(_SETA 'WARDROBE_MSCREW_HOLE_DIA MINIFIX_VER_DIAMETER)
+(_SETA 'WARDROBE_MSCREW_HOLE_DEPTH MINIFIX_VER_DEPTH)
+
+;This parameters in (wardrobe.ini)
+(if (not (equal MINIFIX_DIA1 nil)) (_FSET (_ 'WARDROBE_MSCREW_HOLE_DIA (convertLengthToSpecifiedUnit MINIFIX_DIA1 (getvar "INSUNITS") 4))))
+(if (not (equal MINIFIX_DEP1 nil)) (_FSET (_ 'WARDROBE_MSCREW_HOLE_DEPTH (convertLengthToSpecifiedUnit MINIFIX_DEP1 (getvar "INSUNITS") 4))))
+
+; Standard Values, WARDROBE_MSCREW_HOLE_DIA MINIFIX_VER_DIAMETER, WARDROBE_MSCREW_HOLE_DEPTH MINIFIX_VER_DEPTH
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+
+(if (_NOTNULL (car targetPanels))
+	(progn
+		(_FSET (_ 'tPanelInfo (getnth 0 targetPanels)))
+
+		(_SETCURMODUL (getnth 0 tPanelInfo))
+
+		(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+		(if (_ISVERTICALFACE currentFaceNormal)
+			(progn
+				; Type of current face is either 0 or 1 in this case
+				(if (equal (_DETERMINEFACETYPE currentFaceNormal) 1)
+					(_FSET (_ 'connectedFaceCode (_& (_ WARDROBE_PANELS_GENERAL_CODE "!!SFACE"))))
+					(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+				)
+				(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+				(setq holePosition (replace 0 2 holePosition))
+				(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+				
+				(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_MINIFIX_VER_HOLE"))))
+				(_HOLE holeCodeBody connectedFaceCode (_ holePosition WARDROBE_MSCREW_HOLE_DIA WARDROBE_MSCREW_HOLE_DEPTH holeOrient))
+				
+				(_ITEMMAIN WARDROBE_MINIFIX_CODE WARDROBE_MINIFIX_CODE (_ 1 WARDROBE_MINIFIX_UNIT))
+			)
+		)
+	)
+)
+
+(_RESETCURMODUL)
+		
+(_NONOTCH)

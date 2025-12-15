@@ -1,0 +1,7 @@
+(setq ptlst 
+	(govde_ciz BDEN BDH ADDer dAltKot nil gm1:layerName nil nil xros isSinkUnit) ;gm1
+)
+(if (equal how2put 5)
+	(grx_setmaterial (entlast) (GetUpKapakMat))
+	(grx_setmaterial (entlast) (GetKapakMat))
+)

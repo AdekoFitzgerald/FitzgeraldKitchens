@@ -1,0 +1,43 @@
+(setq WARDROBE_LINCO_VER_HOLE_DEPTH (cu2mm LINCO_DEP2))
+(setq WARDROBE_LINCO_FLANGE_OVERFLOW (cu2mm LINCO_W_FLANGE_OUTSIDE_OVERFLOW))
+(setq WARDROBE_LINCO_FLANGE_OFFSET (cu2mm LINCO_W_FLANGE_OFFSET))
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			(if (_ISHORIZONTALFACE currentFaceNormal)
+				(progn
+					(if (null (minusp (getnth 2 holePosition)))
+						(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+					)
+					(if (not (equal (* -1 (getnth 2 holePosition)) (- (cu2mm LINCO_D) (cu2mm LINCO_H)) (mm 0.25)))
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(setq holePosition (replace 0 2 holePosition))
+					
+					; Type of current face is either 2, 3, 4 or 5 in this case
+					(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_LINCO_HOUSING_HOLE"))))
+					(_LINCOMAIN holeCodeBody connectedFaceCode (list holePosition (list WARDROBE_LINCO_GEOMETRY nil nil WARDROBE_LINCO_VER_HOLE_DEPTH WARDROBE_LINCO_CODE WARDROBE_LINCO_UNIT (equal LINCO_W_ADD_FLANGE 1.0) WARDROBE_LINCO_FLANGE_OVERFLOW WARDROBE_LINCO_FLANGE_OFFSET nil)) holeOrient)
+				)
+			)
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

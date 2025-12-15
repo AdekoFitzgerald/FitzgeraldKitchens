@@ -1,0 +1,54 @@
+(if (> __NOTCHDIM3 __AD_PANELTHICK)
+	(progn
+		; (_FSET (_ 'halfOfScrewDia (/ SCREW_HOLES_DIAMETER 2.0)))
+		; (_FSET (_ 'halfOfAluStrecherDia (/ ALU_STRECHER_HOLE_DIAMETER 2.0)))
+		
+		; (if (> SCREW_HOLES_HOR_OFFSET (+ halfOfScrewDia halfOfAluStrecherDia))
+			; (progn
+				; Left panel operations are performed in original recipe
+				(if (equal STATUS_OF_STRECHERS 0)
+					(progn
+						(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'offsetOnAxisX (+ ALU_STRECHER_HOLE_HOR_OFFSET SCREW_HOLES_HOR_OFFSET LEFT_PANEL_FRONT_VARIANCE)))
+								(_FSET (_ 'offsetOnAxisY (_= "NOTCHED_LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE")))
+								
+								(_FSET (_ 'holeCodeBody "NOTCHED_LEFT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+								(_HOLE holeCodeBody NOTCHED_LEFT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+							)
+						)
+						(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'offsetOnAxisX (_= "NOTCHED_RIGHT_PANEL_WID - ALU_STRECHER_HOLE_HOR_OFFSET - SCREW_HOLES_HOR_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+								(_FSET (_ 'offsetOnAxisY (_= "NOTCHED_RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - RIGHT_PANEL_UPPER_VARIANCE")))
+								
+								(_FSET (_ 'holeCodeBody "NOTCHED_RIGHT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+								(_HOLE holeCodeBody	NOTCHED_RIGHT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+							)
+						)
+					)
+					(progn
+						(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'offsetOnAxisX  (+ ALU_STRECHER_HOLE_HOR_OFFSET LEFT_PANEL_FRONT_VARIANCE)))
+								(_FSET (_ 'offsetOnAxisY (_= "NOTCHED_LEFT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - SCREW_HOLES_VER_OFFSET - LEFT_PANEL_UPPER_VARIANCE")))
+								
+								(_FSET (_ 'holeCodeBody "NOTCHED_LEFT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+								(_HOLE holeCodeBody NOTCHED_LEFT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+							)
+						)
+						(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+							(progn
+								(_FSET (_ 'offsetOnAxisX (_= "NOTCHED_RIGHT_PANEL_WID - ALU_STRECHER_HOLE_HOR_OFFSET - RIGHT_PANEL_FRONT_VARIANCE")))
+								(_FSET (_ 'offsetOnAxisY (_= "NOTCHED_RIGHT_PANEL_HEI - ALU_STRECHER_HOLE_VER_OFFSET - SCREW_HOLES_VER_OFFSET - RIGHT_PANEL_UPPER_VARIANCE")))
+								
+								(_FSET (_ 'holeCodeBody "NOTCHED_RIGHT_PANEL_ALU_STRECHER_SCREW_HOLE"))
+								(_HOLE holeCodeBody	NOTCHED_RIGHT_PANEL_CODE (_ (_ offsetOnAxisX offsetOnAxisY 0) SCREW_HOLES_DIAMETER SCREW_HOLES_DEPTH))
+							)
+						)
+					)
+				)
+			; )
+		; )
+	)
+)

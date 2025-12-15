@@ -1,0 +1,154 @@
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "DRAWER_DEFAULT" nil "p2chelper")
+
+(if IS_THINNING_OP_AVAILABLE_FOR_BACK
+	(progn
+		(if (null USE_PROJECT_PRICING_RECIPES)
+			(progn
+				(if (and (_NOTNULL CURRENT_DRAWER_DATA) (> THINNING_WIDTH_BACK 0) (> THINNING_DEPTH_BACK 0))
+					(progn
+						(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+						(if (equal currentDrawerOrder __CURDIVORDER)
+							(progn
+								(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+								(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+								(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+								; BACK panel of drawer is determined
+								(cond 
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BACK_PANEL"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBACKPanelCODE (_& (_ codeBody (XSTR "BACK_PANEL")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "BACK_PANEL_"))))
+									)
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBACKPanelCODE (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BACK_PANEL_"))))
+									)
+									(T
+										(_FSET (_ 'performOperation nil))
+									)
+								)
+								(if (_NOTNULL performOperation)
+									(progn
+										(_FSET (_ 'dBACKPanelHEI (_S2V (_& (_ paramBody "HEI")))))
+										(_FSET (_ 'dBACKPanelWID (_S2V (_& (_ paramBody "WID")))))
+										(cond
+											((equal DRAWER_PANELS_THINNING_OP_TYPE "MILLING")
+												; Left side thinning
+												(_GROOVE (_& (_ paramBody "LEFT_THINNING")) drawerBACKPanelCODE (_ (_ (_ (+ THINNING_DISTANCE_BACK (/ THINNING_WIDTH_BACK 2)) 0 0)
+																														(_ (+ (/ THINNING_WIDTH_BACK 2) THINNING_DISTANCE_BACK) dBACKPanelHEI 0)) THINNING_WIDTH_BACK THINNING_DEPTH_BACK))
+												; Right side thinning
+												(_GROOVE (_& (_ paramBody "RIGHT_THINNING")) drawerBACKPanelCODE (_ (_ (_ (- dBACKPanelWID (/ THINNING_WIDTH_BACK 2) THINNING_DISTANCE_BACK) 0 0)
+																												 (_ (- dBACKPanelWID (/ THINNING_WIDTH_BACK 2) THINNING_DISTANCE_BACK) dBACKPanelHEI 0)) THINNING_WIDTH_BACK THINNING_DEPTH_BACK))
+											)
+											((equal DRAWER_PANELS_THINNING_OP_TYPE "POCKETING")
+												(_FSET (_ 'tempPolylineDataLeft (list (list THINNING_DISTANCE_BACK (/ dBACKPanelHEI 2) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BACK (+ dBACKPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ THINNING_WIDTH_BACK THINNING_DISTANCE_BACK) (+ dBACKPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ THINNING_WIDTH_BACK THINNING_DISTANCE_BACK) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BACK (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list THINNING_DISTANCE_BACK (/ dBACKPanelHEI 2) 0.0) 0.0)))
+																 
+												(_POLYLINEHOLE (_& (_ paramBody "LEFT_THINNING")) drawerBACKPanelCODE (_ tempPolylineDataLeft THINNING_DEPTH_BACK "PK"))
+												
+												(_FSET (_ 'tempPolylineDataRight (list (list (- dBACKPanelWID THINNING_DISTANCE_BACK) (/ dBACKPanelHEI 2) 0.0) 0.0
+																					   (list (- dBACKPanelWID THINNING_DISTANCE_BACK) (+ dBACKPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBACKPanelWID THINNING_WIDTH_BACK THINNING_DISTANCE_BACK) (+ dBACKPanelHEI THINNING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBACKPanelWID THINNING_WIDTH_BACK THINNING_DISTANCE_BACK) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBACKPanelWID THINNING_DISTANCE_BACK) (* THINNING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBACKPanelWID THINNING_DISTANCE_BACK) (/ dBACKPanelHEI 2) 0.0) 0.0)))
+																					  
+												(_POLYLINEHOLE (_& (_ paramBody "RIGHT_THINNING")) drawerBACKPanelCODE (_ tempPolylineDataRight THINNING_DEPTH_BACK "PK"))
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(if IS_SHAVING_OP_AVAILABLE_FOR_BACK
+	(progn
+		(if (null USE_PROJECT_PRICING_RECIPES)
+			(progn
+				(setq SHAVING_DISTANCE_BACK 0 SHAVING_DEPTH_BACK (- DRAWER_BODY_THICKNESS SHAVING_TARGET_PANEL_THICKNESS) )
+				(if (and (_NOTNULL CURRENT_DRAWER_DATA) (> SHAVING_WIDTH_BACK 0) (> SHAVING_DEPTH_BACK 0))
+					(progn
+						(_FSET (_ 'currentDrawerOrder (getnth 0 CURRENT_DRAWER_DATA)))
+						(if (equal currentDrawerOrder __CURDIVORDER)
+							(progn
+								(_FSET (_ 'currentDrawerId (getnth 1 CURRENT_DRAWER_DATA)))
+								(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" currentDrawerOrder "_" currentDrawerId "_"))))
+								(_FSET (_ 'paramRoot (_& (_ "DRAWER_" currentDrawerOrder "_" currentDrawerId "_"))))
+								; BACK panel of drawer is determined
+								(cond 
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BACK_PANEL"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBACKPanelCODE (_& (_ codeBody (XSTR "BACK_PANEL")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "BACK_PANEL_"))))
+									)
+									((_EXISTPANEL (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT"))))
+										(_FSET (_ 'performOperation T))
+										
+										(_FSET (_ 'drawerBACKPanelCODE (_& (_ codeBody (XSTR "BACK_PANEL_FOR_SINK_UNIT")))))
+										(_FSET (_ 'paramBody (_& (_ paramRoot "SINKU_BACK_PANEL_"))))
+									)
+									(T
+										(_FSET (_ 'performOperation nil))
+									)
+								)
+								(if (_NOTNULL performOperation)
+									(progn
+										(_FSET (_ 'dBACKPanelHEI (_S2V (_& (_ paramBody "HEI")))))
+										(_FSET (_ 'dBACKPanelWID (_S2V (_& (_ paramBody "WID")))))
+										(cond
+											((equal DRAWER_PANELS_SHAVING_OP_TYPE "MILLING")
+												; Left side SHAVING
+												(_GROOVE (_& (_ paramBody "LEFT_SHAVING")) drawerBACKPanelCODE (_ (_ (_ (+ SHAVING_DISTANCE_BACK (/ SHAVING_WIDTH_BACK 2)) 0 0)
+																														(_ (+ (/ SHAVING_WIDTH_BACK 2) SHAVING_DISTANCE_BACK) dBACKPanelHEI 0)) SHAVING_WIDTH_BACK SHAVING_DEPTH_BACK))
+												; Right side SHAVING
+												(_GROOVE (_& (_ paramBody "RIGHT_SHAVING")) drawerBACKPanelCODE (_ (_ (_ (- dBACKPanelWID (/ SHAVING_WIDTH_BACK 2) SHAVING_DISTANCE_BACK) 0 0)
+																												 (_ (- dBACKPanelWID (/ SHAVING_WIDTH_BACK 2) SHAVING_DISTANCE_BACK) dBACKPanelHEI 0)) SHAVING_WIDTH_BACK SHAVING_DEPTH_BACK))
+											)
+											((equal DRAWER_PANELS_SHAVING_OP_TYPE "POCKETING")
+												(_FSET (_ 'tempPolylineDataLeft (list (list SHAVING_DISTANCE_BACK (/ dBACKPanelHEI 2) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BACK (+ dBACKPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ SHAVING_WIDTH_BACK SHAVING_DISTANCE_BACK) (+ dBACKPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					  (list (+ SHAVING_WIDTH_BACK SHAVING_DISTANCE_BACK) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BACK (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					  (list SHAVING_DISTANCE_BACK (/ dBACKPanelHEI 2) 0.0) 0.0)))
+																 
+												(_POLYLINEHOLE (_& (_ paramBody "LEFT_SHAVING")) drawerBACKPanelCODE (_ tempPolylineDataLeft SHAVING_DEPTH_BACK "PK"))
+												
+												(_FSET (_ 'tempPolylineDataRight (list (list (- dBACKPanelWID SHAVING_DISTANCE_BACK) (/ dBACKPanelHEI 2) 0.0) 0.0
+																					   (list (- dBACKPanelWID SHAVING_DISTANCE_BACK) (+ dBACKPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBACKPanelWID SHAVING_WIDTH_BACK SHAVING_DISTANCE_BACK) (+ dBACKPanelHEI SHAVING_OVERFLOW_VALUE) 0.0) 0.0
+																					   (list (- dBACKPanelWID SHAVING_WIDTH_BACK SHAVING_DISTANCE_BACK) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBACKPanelWID SHAVING_DISTANCE_BACK) (* SHAVING_OVERFLOW_VALUE -1) 0.0) 0.0
+																					   (list (- dBACKPanelWID SHAVING_DISTANCE_BACK) (/ dBACKPanelHEI 2) 0.0) 0.0)))
+																					  
+												(_POLYLINEHOLE (_& (_ paramBody "RIGHT_SHAVING")) drawerBACKPanelCODE (_ tempPolylineDataRight SHAVING_DEPTH_BACK "PK"))
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(_NONOTCH)

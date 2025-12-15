@@ -1,0 +1,377 @@
+(_RUNDEFAULTHELPERRCP "AK_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (null CORNER_UNIT_CONTROL)
+	(progn
+		; No need to perform notch operations
+		(_NONOTCH)
+	)
+	(progn
+		; Control for cutlist and dxf rotation
+		(if (null AK_ASHELF_CUTLIST_ROTATION) (_FSET (_ 'AK_ASHELF_CUTLIST_ROTATION __MODULBODYMATROT)))
+		(if (null AK_ASHELF_DXF_ROTATION) (_FSET (_ 'AK_ASHELF_DXF_ROTATION __MODULBODYMATROT)))
+		(_FSET (_ 'shelfROT (_ AK_ASHELF_MAIN_ROTATION AK_ASHELF_CUTLIST_ROTATION AK_ASHELF_DXF_ROTATION AK_ASHELF_MIRRORING_AXIS)))
+		; Material controls for cornet unit adjustable shelves
+		(if (and (equal (length __CURDIVDOORSLIST) 0) (not (equal g_iUnitShelfLayer 1)))
+			(_FSET (_ 'shelfMAT (_GETLAYERMAT "SHELVES")))
+			(_FSET (_ 'shelfMAT __MODULBODYMAT))
+		)
+		(cond
+			((or (equal __MODULTYPE "AK2") (equal __MODULTYPE "UK2"))
+				; 90 degree corner unit
+				; Edgestrip material controls
+				(if (null AK_ASHELF_WID_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_WID_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_HEI_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_HEI_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_DEP_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_DEP_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+				(if (null AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+				(if (null AK_ASHELF_DEP2_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_DEP2_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				
+				(_ADDPARTMAT2EDGESTRIPS (_ 'AK_ASHELF_WID_EDGESTRIP_MAT 'AK_ASHELF_HEI_EDGESTRIP_MAT 'AK_ASHELF_DEP_EDGESTRIP_MAT 'AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT 'AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT 'AK_ASHELF_DEP2_EDGESTRIP_MAT) shelfMAT ADD_PART_MATERIAL)
+				; Width of edgestrips are taken from database
+				(_FSET (_ 'WID_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_WID_EDGESTRIP_MAT)))
+				(_FSET (_ 'HEI_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_HEI_EDGESTRIP_MAT)))
+				(_FSET (_ 'DEP_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_DEP_EDGESTRIP_MAT)))
+				(_FSET (_ 'WIDOPPWID_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT)))
+				(_FSET (_ 'WIDOPPHEI_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT)))
+				(_FSET (_ 'DEP2_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_DEP2_EDGESTRIP_MAT)))
+				
+				; Variables which are used for each adjustable shelf
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - GROOVE_WID - GROOVE_DISTANCE - ASHELF_SIDE_OFFSET - ASHELF_SIDE_OFFSET")))
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - GROOVE_WID - GROOVE_DISTANCE - ASHELF_SIDE_OFFSET - ASHELF_SIDE_OFFSET")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - GROOVE_WID - GROOVE_DISTANCE - ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfWIDOPPWID (_= "__WIDOPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfWIDOPPHEI (_= "__WID2OPPWID - __AD_PANELTHICK + ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - GROOVE_WID - GROOVE_DISTANCE - ASHELF_FRONT_OFFSET")))
+				
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(_FSET (_ 'curDivShelvesOFFSETS (_S2V (_& (_ currentDivision "_SHELVESOFFSETS")))))
+					(repeat (length curDivShelvesOFFSETS)
+						(_FSET (_ 'paramBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+						
+						(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+						(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+						(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+						(_FSET (_ 'tempWIDOPPWID (_& (_ paramBody "WIDOPPWID"))))
+						(_FSET (_ 'tempWIDOPPHEI (_& (_ paramBody "WIDOPPHEI"))))
+						(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+						
+						(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+						(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+						(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+						
+						(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+						(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+						(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+						
+						(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+						(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+						
+						(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						
+						(_FSET (_ (read tempHEI) shelfHEI))
+						(_FSET (_ (read tempWID) shelfWID))
+						(_FSET (_ (read tempDEP) shelfDEP))
+						(_FSET (_ (read tempWIDOPPWID) shelfWIDOPPWID))
+						(_FSET (_ (read tempWIDOPPHEI) shelfWIDOPPHEI))
+						(_FSET (_ (read tempDEP2) shelfDEP2))
+						
+						(_FSET (_ (read tempROT) shelfROT))
+						(_FSET (_ (read tempMAT) shelfMAT))
+						(_FSET (_ (read tempTHICKNESS) AK_ASHELF_THICKNESS))
+						
+						(_FSET (_ (read tempELEV) (getnth (- shelfCounter 1) curDivShelvesOFFSETS)))
+						(_FSET (_ (read tempLABEL) (XSTR AK_ASHELF_LABEL)))
+						(_FSET (_ (read tempTAG) AK_ASHELF_TAG))
+
+						(cond   
+							((_EXISTPANEL AK_CORNER_STRECHER_CODE)
+								(cond 
+									((or (equal DOMINANT_SIDE "L") (equal CORNER_STRECHERS_SIDE "L"))
+										(_FSET (_ (read tempPDATA) (_ (_ AK_CORNER_STRECHER_HEI 0.0 0.0) 0
+																	(_ AK_CORNER_STRECHER_HEI AK_CORNER_STRECHER_THICKNESS 0.0) 0
+																	(_ 0.0 AK_CORNER_STRECHER_THICKNESS 0.0) 0 
+																	(_ 0.0 (_S2V tempWID) 0.0) 0 
+																	(_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+																	(_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+																	(_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+																	(_ (_S2V tempHEI) 0.0 0.0) 0 
+																	(_ AK_CORNER_STRECHER_HEI 0.0 0.0) 0))
+										)
+										(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT WIDOPPWID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT WIDOPPHEI_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+										)
+								   )
+								   ((or (equal DOMINANT_SIDE "R") (equal CORNER_STRECHERS_SIDE "R"))
+										(_FSET (_ (read tempPDATA) (_ (_ AK_CORNER_STRECHER_THICKNESS 0.0 0.0) 0
+																	(_ AK_CORNER_STRECHER_THICKNESS AK_CORNER_STRECHER_HEI 0.0) 0
+																	(_ 0.0 AK_CORNER_STRECHER_HEI 0.0) 0 
+																	(_ 0.0 (_S2V tempWID) 0.0) 0 
+																	(_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+																	(_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+																	(_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+																	(_ (_S2V tempHEI) 0.0 0.0) 0 
+																	(_ AK_CORNER_STRECHER_THICKNESS 0.0 0.0) 0))
+										)
+										(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT WIDOPPWID_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT WIDOPPHEI_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																		(_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+										)
+								   )
+								)									
+							)
+							((or (_EXISTPANEL AK_DC_LEFT_STRECHER_CODE) (_EXISTPANEL AK_DC_RIGHT_STRECHER_CODE))
+								(cond 
+									((equal DOMINANT_SIDE "L")
+										(setq lsWid AK_PRIMARY_STRECHER_WID)
+										(setq rsWid AK_SECONDARY_STRECHER_WID)
+									)
+									((equal DOMINANT_SIDE "R")
+										(setq lsWid AK_SECONDARY_STRECHER_WID)
+										(setq rsWid AK_PRIMARY_STRECHER_WID)
+									)
+								)
+								
+								(_FSET (_ (read tempPDATA) (_ (_ lsWid 0.0 0.0) 0
+															  (_ lsWid AK_DC_LEFT_STRECHER_THICKNESS 0.0) 0
+															  (_ AK_DC_RIGHT_STRECHER_THICKNESS AK_DC_LEFT_STRECHER_THICKNESS 0.0) 0
+															  (_ AK_DC_RIGHT_STRECHER_THICKNESS rsWid 0.0) 0
+															  (_ 0.0 rsWid 0.0) 0
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ lsWid 0.0 0.0) 0))
+								)
+								(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT WIDOPPWID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT WIDOPPHEI_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+								)
+							)
+							(T  (_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ 0.0 0.0 0.0) 0))
+								)
+								(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WIDOPPWID_EDGESTRIP_MAT WIDOPPWID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WIDOPPHEI_EDGESTRIP_MAT WIDOPPHEI_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+								)
+							)
+						)					
+						
+						(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+						
+						(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+						
+						(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+						(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+						
+						(_FSET(_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+			((or (equal __MODULTYPE "AK3") (equal __MODULTYPE "UK3") (equal __MODULTYPE "AKF"))
+				; 135 degree corner unit
+				; Edgestrip material controls
+				(if (null AK_ASHELF_WID_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_WID_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_HEI_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_HEI_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_DEP_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_DEP_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_DEP2_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_DEP2_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+				(if (null AK_ASHELF_SLOPING_EDGESTRIP_MAT) (_FSET (_ 'AK_ASHELF_SLOPING_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+				
+				(_ADDPARTMAT2EDGESTRIPS (_ 'AK_ASHELF_WID_EDGESTRIP_MAT 'AK_ASHELF_HEI_EDGESTRIP_MAT 'AK_ASHELF_DEP_EDGESTRIP_MAT 'AK_ASHELF_DEP2_EDGESTRIP_MAT 'AK_ASHELF_SLOPING_EDGESTRIP_MAT) shelfMAT ADD_PART_MATERIAL)
+				; Width of edgestrips are taken from database
+				(_FSET (_ 'WID_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_WID_EDGESTRIP_MAT)))
+				(_FSET (_ 'HEI_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_HEI_EDGESTRIP_MAT)))
+				(_FSET (_ 'DEP_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_DEP_EDGESTRIP_MAT)))
+				(_FSET (_ 'DEP2_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_DEP2_EDGESTRIP_MAT)))
+				(_FSET (_ 'SLOPING_EDGESTRIP_WIDTH (_GETEDGESTRIPWIDFROMDB AK_ASHELF_SLOPING_EDGESTRIP_MAT)))
+				
+				; Variables which are used for each adjustable shelf
+				(_FSET (_ 'shelfWID (_= "__WID - __AD_PANELTHICK - GROOVE_WID - GROOVE_DISTANCE")))
+				(_FSET (_ 'shelfHEI (_= "__WID2 - __AD_PANELTHICK - GROOVE_WID - GROOVE_DISTANCE")))
+				(_FSET (_ 'shelfDEP (_= "__DEP - GROOVE_WID - GROOVE_DISTANCE - ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfDEP2 (_= "__DEP2 - GROOVE_WID - GROOVE_DISTANCE - ASHELF_FRONT_OFFSET")))
+				(_FSET (_ 'shelfSLOPINGEDGE (sqrt (+ (expt (- shelfHEI shelfDEP) 2) (expt (- shelfWID shelfDEP2) 2)))))
+				
+				(_FSET (_ 'divisionCounter 0))
+				(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				(while (_S2V currentDivision)
+					(_FSET (_ 'shelfCounter 1))
+					(_FSET (_ 'curDivShelvesOFFSETS (_S2V (_& (_ currentDivision "_SHELVESOFFSETS")))))
+					(repeat (length curDivShelvesOFFSETS)
+						(_FSET (_ 'paramBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+						
+						(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+						(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+						(_FSET (_ 'tempDEP (_& (_ paramBody "DEP"))))
+						(_FSET (_ 'tempDEP2 (_& (_ paramBody "DEP2"))))
+						(_FSET (_ 'tempSlopingEdge (_& (_ paramBody "SLOPING_EDGE"))))
+						
+						(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+						(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+						(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+						
+						(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+						(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+						(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+						
+						(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+						(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+						
+						(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+						
+						(_FSET (_ (read tempWID) shelfWID))
+						(_FSET (_ (read tempHEI) shelfHEI))
+						(_FSET (_ (read tempDEP) shelfDEP))
+						(_FSET (_ (read tempDEP2) shelfDEP2))
+						(_FSET (_ (read tempSlopingEdge) shelfSLOPINGEDGE))
+						
+						(_FSET (_ (read tempROT) shelfROT))
+						(_FSET (_ (read tempMAT) shelfMAT))
+						(_FSET (_ (read tempTHICKNESS) AK_ASHELF_THICKNESS))
+						
+						(_FSET (_ (read tempELEV) (getnth (- shelfCounter 1) curDivShelvesOFFSETS)))
+						(_FSET (_ (read tempLABEL) (XSTR AK_ASHELF_LABEL)))
+						(_FSET (_ (read tempTAG) AK_ASHELF_TAG))
+						
+						(cond   ((_EXISTPANEL AK_CORNER_STRECHER_CODE)
+								(cond ((equal DOMINANT_SIDE "L")
+									(_FSET (_ (read tempPDATA) (_ (_ AK_CORNER_STRECHER_HEI 0.0 0.0) 0
+																  (_ AK_CORNER_STRECHER_HEI AK_CORNER_STRECHER_THICKNESS 0.0) 0
+																  (_ 0.0 AK_CORNER_STRECHER_THICKNESS 0.0) 0 
+																  (_ 0.0 (_S2V tempWID) 0.0) 0 
+																  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+																  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+																  (_ (_S2V tempHEI) 0.0 0.0) 0 
+																  (_ AK_CORNER_STRECHER_HEI 0.0 0.0) 0))
+									)
+									(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_SLOPING_EDGESTRIP_MAT SLOPING_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+									)
+								   )
+								   ((equal DOMINANT_SIDE "R")
+									(_FSET (_ (read tempPDATA) (_ (_ AK_CORNER_STRECHER_THICKNESS 0.0 0.0) 0
+																  (_ AK_CORNER_STRECHER_THICKNESS AK_CORNER_STRECHER_HEI 0.0) 0
+																  (_ 0.0 AK_CORNER_STRECHER_HEI 0.0) 0 
+																  (_ 0.0 (_S2V tempWID) 0.0) 0 
+																  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+																  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+																  (_ (_S2V tempHEI) 0.0 0.0) 0 
+																  (_ AK_CORNER_STRECHER_THICKNESS 0.0 0.0) 0))
+									)
+									(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_SLOPING_EDGESTRIP_MAT SLOPING_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																	   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+									)
+								   )
+								)									
+							)
+							((or (_EXISTPANEL AK_DC_LEFT_STRECHER_CODE) (_EXISTPANEL AK_DC_RIGHT_STRECHER_CODE))
+								(cond 
+									((equal DOMINANT_SIDE "L")
+										(setq lsWid AK_PRIMARY_STRECHER_WID)
+										(setq rsWid AK_SECONDARY_STRECHER_WID)
+									)
+									((equal DOMINANT_SIDE "R")
+										(setq lsWid AK_SECONDARY_STRECHER_WID)
+										(setq rsWid AK_PRIMARY_STRECHER_WID)
+									)
+								)
+								
+								(_FSET (_ (read tempPDATA) (_ (_ lsWid 0.0 0.0) 0
+															  (_ lsWid AK_DC_LEFT_STRECHER_THICKNESS 0.0) 0
+															  (_ AK_DC_RIGHT_STRECHER_THICKNESS AK_DC_LEFT_STRECHER_THICKNESS 0.0) 0
+															  (_ AK_DC_RIGHT_STRECHER_THICKNESS rsWid 0.0) 0
+															  (_ 0.0 rsWid 0.0) 0
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ lsWid 0.0 0.0) 0))
+								)
+								(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_SLOPING_EDGESTRIP_MAT SLOPING_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+								)
+							)
+							(T  (_FSET (_ (read tempPDATA) (_ (_ 0.0 0.0 0.0) 0 
+															  (_ 0.0 (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempDEP) (_S2V tempWID) 0.0) 0 
+															  (_ (_S2V tempHEI) (_S2V tempDEP2) 0.0) 0 
+															  (_ (_S2V tempHEI) 0.0 0.0) 0 
+															  (_ 0.0 0.0 0.0) 0))
+								)
+								(_FSET (_ (read tempEDGESTRIPS) (_ (_ AK_ASHELF_WID_EDGESTRIP_MAT WID_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP_EDGESTRIP_MAT DEP_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_SLOPING_EDGESTRIP_MAT SLOPING_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_DEP2_EDGESTRIP_MAT DEP2_EDGESTRIP_WIDTH)
+																   (_ AK_ASHELF_HEI_EDGESTRIP_MAT HEI_EDGESTRIP_WIDTH)))
+								)
+							)
+						)
+						
+						(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+						
+						(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+						
+						(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+						(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+						
+						(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+					)
+					(_FSET (_ 'divisionCounter (+ 1 divisionCounter)))
+					(_FSET (_ 'currentDivision (_& (_ "__DIV" divisionCounter))))
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,140 @@
+(if (equal __CURDIVTYPE "FS")
+	(progn
+		(if (> __NOTCHDIM1 __AD_PANELTHICK)
+			(progn
+				(if (equal GROOVE_STATE 3)
+					(progn
+						(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "NOTCHED_FIXED_SHELF") "_" __CURDIVORDER))))
+						(if (_EXISTPANEL notchedShelfCODE)
+							(progn
+								(_FSET (_ 'paramBody (_& (_ "NOTCHED_FIXED_SHELF_" __CURDIVORDER "_"))))
+								; Global parameters of current shelf
+								(_FSET (_ 'notchedShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+								(_FSET (_ 'notchedShelfWID (_S2V (_& (_ paramBody "WID")))))
+								(_FSET (_ 'notchedSECONDARYSIDES (- notchedShelfHEI (_S2V tempSECONDARYSIDES))))
+								(_FSET (_ 'notchedLEFTBACK (_S2V tempLEFTBACK)))
+								(_FSET (_ 'notchedRIGHTBACK (+ (_S2V tempMIDDLEBACK) (_S2V tempLEFTBACK))))
+								(_FSET (_ 'notchedShelfELEV (_S2V (_& (_ paramBody "ELEV")))))
+								(_FSET (_ 'notchedShelfTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+								(if (_NOTNULL FIXED_SHELF_HOLES_ON_LOWER_SURFACE)
+									(progn
+										(_FSET (_ 'notchedShelfPDATA (_S2V (_& (_ paramBody "PDATA")))))
+										(_FSET (_ 'notchedShelfROT (_S2V (_& (_ paramBody "ROT")))))
+										(_FSET (_ 'notchedShelfMAT (_S2V (_& (_ paramBody "MAT")))))
+										
+										(_FSET (_ 'notchedShelfCODE (_CREATESFACEMAIN notchedShelfCODE (_ notchedShelfPDATA notchedShelfROT notchedShelfMAT notchedShelfTHICKNESS "Y"))))
+									)
+								)
+								
+								(_FSET (_ 'lengthParametersFixedShelfAndLeft (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ (* -1 FIXED_SHELF_FRONT_OFFSET) (* -1 (- __DEP notchedShelfHEI FIXED_SHELF_FRONT_OFFSET)) LEFT_PANEL_FRONT_VARIANCE LEFT_PANEL_BACK_VARIANCE))))
+								(mapcar '_SETA '(lengthForFixedShelfAndLeft frontStartingPointFixedShelfL backStartingPointFixedShelfL frontStartingPointLeft backStartingPointLeft) lengthParametersFixedShelfAndLeft)
+								(_FSET (_ 'lengthParametersForFixedShelfAndRight (_CALCULATEPANELSINTERSECTIONLENGTH __DEP (_ (* -1 FIXED_SHELF_FRONT_OFFSET) (* -1 (- __DEP notchedShelfHEI FIXED_SHELF_FRONT_OFFSET)) RIGHT_PANEL_FRONT_VARIANCE RIGHT_PANEL_BACK_VARIANCE))))
+								(mapcar '_SETA '(lengthForFixedShelfAndRight frontStartingPointFixedShelfR backStartingPointFixedShelfR frontStartingPointRight backStartingPointRight) lengthParametersForFixedShelfAndRight)
+
+								(_FSET (_ 'index 0))
+								(foreach operationParams OPERATION_LIST
+									(mapcar 'set '(operationName connectorParams horizontalHolePos) operationParams)
+									
+									(if FIXED_SHELF_HOLES_ON_LOWER_SURFACE
+										(progn
+											(setq oppositePos "Y+")
+											(_FSET (_ 'halfOfThickness (- notchedShelfTHICKNESS (cadr horizontalHolePos))))
+										)
+										(progn
+											(setq oppositePos "Y-")
+											(_FSET (_ 'halfOfThickness (cadr horizontalHolePos)))
+										)
+									)
+									(_FSET (_ 'holePosOnAxisY (_= "notchedShelfELEV + halfOfThickness - bottomSideStyleV1")))
+									(_FSET (_ 'holePosOnAxisYForSecondaryPanels (_= "notchedShelfELEV + halfOfThickness - secondaryNotchedPanelStyleV1")))
+									
+									;LEFT SIDE
+									(if (_EXISTPANEL LEFT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'fixedShelfPointListForLeftSide (_GETHOLEPOINTLIST operationName 
+												(_ lengthForFixedShelfAndRight 0.0 (car horizontalHolePos) "Y")
+												(_ frontStartingPointFixedShelfL backStartingPointFixedShelfL nil notchedShelfHEI) 
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForLeftSide (_ "X+" nil) connectorParams)
+											
+											(_FSET (_ 'leftSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ lengthForFixedShelfAndLeft holePosOnAxisY 0.0 "X")
+												(_ (+ frontStartingPointLeft FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE) (- backStartingPointLeft FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE) nil LEFT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName LEFT_PANEL_CODE leftSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									;RIGHT SIDE
+									(if (_EXISTPANEL RIGHT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'fixedShelfPointListForRightSide (_GETHOLEPOINTLIST operationName 
+												(_ lengthForFixedShelfAndRight notchedShelfWID (car horizontalHolePos) "Y")
+												(_ frontStartingPointFixedShelfR backStartingPointFixedShelfR nil notchedShelfHEI) 
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForRightSide (_ "X-" nil) connectorParams)
+											
+											(_FSET (_ 'rideSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ lengthForFixedShelfAndRight holePosOnAxisY 0.0 "X")
+												(_ (_= "frontStartingPointRight + FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE")  (- backStartingPointRight FIXED_SHELF_HOLES_FRONT_SHIFT_VALUE) T RIGHT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName RIGHT_PANEL_CODE rideSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									;SECONDARY_LEFT_SIDE
+									(if (_EXISTPANEL SECONDARY_LEFT_PANEL_CODE)
+										(progn
+											(if (equal ARE_SECONDARY_NOTCHED_BACK_PANELS_DATA_SAME_WITH_NOTCHED_BACK_PANEL T)
+												(_FSET (_ 'tempExtraTouchingLength 0.0))
+												(_FSET (_ 'tempExtraTouchingLength __AD_PANELTHICK))
+											)
+											(_FSET (_ 'fixedShelfPointListForSecondaryLeftSide (_GETHOLEPOINTLIST operationName 
+												(_ (_= "notchedShelfHEI - notchedSECONDARYSIDES - tempExtraTouchingLength" ) notchedRIGHTBACK (car horizontalHolePos) "Y")
+												(_  (+ notchedSECONDARYSIDES tempExtraTouchingLength) 0 nil notchedShelfHEI)
+												(_ FITTING_PARAMETERS nil))))
+												
+											(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForSecondaryLeftSide (_ "X+" nil) connectorParams)
+
+											(_FSET (_ 'secondaryLeftSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ (_= "notchedShelfHEI - notchedSECONDARYSIDES - tempExtraTouchingLength" ) holePosOnAxisYForSecondaryPanels 0.0 "X")
+												(_ 0.0 (_= "SECONDARY_LEFT_PANEL_WID - LEFT_PANEL_BACK_VARIANCE - notchedShelfHEI + notchedSECONDARYSIDES + tempExtraTouchingLength" ) nil SECONDARY_LEFT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+
+											(_HOLEGROUP operationName SECONDARY_LEFT_PANEL_CODE secondaryLeftSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									;SECONDARY_RIGHT_SIDE
+									(if (_EXISTPANEL SECONDARY_RIGHT_PANEL_CODE)
+										(progn
+											(if (equal ARE_SECONDARY_NOTCHED_BACK_PANELS_DATA_SAME_WITH_NOTCHED_BACK_PANEL T)
+												(_FSET (_ 'tempExtraTouchingLength 0.0))
+												(_FSET (_ 'tempExtraTouchingLength __AD_PANELTHICK))
+											)
+											(_FSET (_ 'fixedShelfPointListForSecondaryRightSide (_GETHOLEPOINTLIST operationName 
+												(_ (_= "notchedShelfHEI - notchedSECONDARYSIDES - tempExtraTouchingLength" ) notchedLEFTBACK (car horizontalHolePos) "Y")
+												(_  (+ notchedSECONDARYSIDES tempExtraTouchingLength) 0 nil notchedShelfHEI)
+												(_ FITTING_PARAMETERS nil))))
+												
+											(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForSecondaryRightSide (_ "X-" nil) connectorParams)
+
+											(_FSET (_ 'secondaryRightSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ (_= "notchedShelfHEI - notchedSECONDARYSIDES - tempExtraTouchingLength" ) holePosOnAxisYForSecondaryPanels 0.0 "X")
+												(_ 0.0 (_= "SECONDARY_RIGHT_PANEL_WID - RIGHT_PANEL_BACK_VARIANCE - notchedShelfHEI + notchedSECONDARYSIDES + tempExtraTouchingLength" ) T SECONDARY_RIGHT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+
+											(_HOLEGROUP operationName SECONDARY_RIGHT_PANEL_CODE secondaryRightSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									(_FSET (_ 'index (+ index 1)))
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)

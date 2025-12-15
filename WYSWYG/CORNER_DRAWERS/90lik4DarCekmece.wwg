@@ -1,0 +1,188 @@
+(SETQ BCekmece 10.0)
+(SETQ KCekmece 10.0)
+(SETQ CTaban 0.8)
+(SETQ 1CekKot (+ (+ dAltKot (* unitH 0.75)) 3.0))
+(SETQ 2CekKot (+ (+ dAltKot (* unitH 0.5)) 3.0))
+(SETQ 3GCekKot (+ dAltKot 3.0))
+(SETQ 3DCekKot (+ (+ dAltKot (* unitH 0.25)) 3.0))
+(SETQ 4CekKot (+ dAltKot 3.0))
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 7.11 -39.11 0.0) 
+	(list 56.2 -88.2 0.0) 
+	(list 56.2 -85.65 0.0) 
+	(list 8.38 -37.83 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 50.37 4CekKot)
+"SOL_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 37.83 -8.38 0.0) 
+	(list 39.11 -7.11 0.0) 
+	(list 88.2 -56.2 0.0) 
+	(list 85.65 -56.2 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 49.09 4CekKot)
+"SAG_PANEL"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 56.2 -56.2 0.0) 
+	(list 56.2 -88.2 0.0) 
+	(list 58.0 -88.2 0.0) 
+	(list 58.0 -58.0 0.0) 
+	(list 88.2 -58.0 0.0) 
+	(list 88.2 -56.2 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 32.0  4CekKot)
+"ON"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 8.38 -37.83 0.0) 
+	(list 9.65 -39.11 0.0) 
+	(list 39.11 -9.65 0.0) 
+	(list 37.83 -8.38 0.0) 
+) 
+nil
+BCekmece
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 30.73 4CekKot)
+"ARKA"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 7.11 -39.11 0.0) 
+	(list 39.11  -7.1 0.0) 
+	(list 88.2 -56.2 0.0) 
+	(list 56.2 -56.2 0.0) 
+	(list 56.2 -88.2 0.0) 
+) 
+nil
+0.8
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 81.09 (- 4CekKot 0.8))
+"TABAN"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 2.6 -39.69 0.0) 
+	(list 51.11 -88.2 0.0) 
+	(list 53.65 -88.2 0.0) 
+	(list 2.6 -37.15 0.0) 
+) 
+nil
+(- unitH 3.6)
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 51.1 (+ dAltKot 1.8))
+"ARA_YAN"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+
+(list 
+	(list 39.69 -2.6 0.0) 
+	(list 88.2  -51.11 0.0) 
+	(list 88.2 -53.65 0.0) 
+	(list 37.15 -2.6 0.0) 
+) 
+nil
+(- unitH 3.6)
+0.0
+;(d2r 90.0)
+0.0
+(list 0.0 51.8 (+ dAltKot 1.8))
+"ARA_YAN"
+""
+nil
+"SHELF"
+(strcat kodBlock "_ALT_TABLA")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+

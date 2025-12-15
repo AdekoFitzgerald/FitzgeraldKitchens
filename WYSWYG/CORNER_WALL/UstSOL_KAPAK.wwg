@@ -1,0 +1,15 @@
+(setq cornerwalldoorwyswyg (cond ((equal gm1:layername "CAB_BODY_WALL")
+							(getUpKapakname)
+							)
+							((equal gm1:layername "CAB_BODY_TALL")
+							(getTallKapakname)
+							)
+							(T
+								(getKapakname)
+							)
+					)
+)
+
+
+(setq doorId (kapak_ciz (list "A" cornerwalldoorwyswyg) "GD"  unitD (- unitW2 (* akd90_doorWidth1 0.5 ) (- 1.4)) (* g_ClearWallZBtwn 0.5) (- unitW2 unitD  g_ClearBaseXSide g_ClearBaseXSide 2.4) (- unitH g_ClearBaseZTop) nil 90))
+(setq doorsPropList (cons (list 0.0  (- unitH g_ClearBaseZTop) (- unitW2 unitD  g_ClearBaseXSide g_ClearBaseXSide) "GD" "A" nil 0 doorId)  doorsPropList))

@@ -1,0 +1,23 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(SETQ golaSideH  (- unitH ad_et ad_et))
+(createGPanel 
+(list 
+(list 0.0 0.0 0.0) 
+(list unitD 0.0 0.0) 
+(list unitD unitH 0.0) 
+(list 0.0 unitH 0.0) 
+) 
+nil
+ad_et 
+0.0 
+0.0 
+
+(list (- unitW ad_et) 0.0 dAltKot)
+
+"SAG_YAN" 
+"" 
+nil 
+"SIDE" 
+(strcat kodBlock "_SAG_YAN")
+"CAB_DOORS"
+)

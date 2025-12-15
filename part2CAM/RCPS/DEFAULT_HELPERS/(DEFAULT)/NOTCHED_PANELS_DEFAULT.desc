@@ -1,0 +1,2 @@
+SECONDARY_NOTCHED_PANELS_MANUFACTURING_TYPE -> "Secondary notched panels manufacturing type. Enter 'T' for secondary notched panels between top and bottom; 'nil' for secondary notched panels outside of top and bottom"
+ARE_SECONDARY_NOTCHED_BACK_PANELS_DATA_SAME_WITH_NOTCHED_BACK_PANEL -> "Are secondary notched back panels data(thickness, material...) same with notched back panel?"

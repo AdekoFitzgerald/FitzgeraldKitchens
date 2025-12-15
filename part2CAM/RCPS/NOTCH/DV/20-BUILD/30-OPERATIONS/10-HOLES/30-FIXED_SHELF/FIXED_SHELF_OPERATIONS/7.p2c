@@ -1,0 +1,92 @@
+(if (equal __CURDIVTYPE "FS")
+	(progn
+		(if (> __NOTCHDIM1 __AD_PANELTHICK)
+			(progn
+				(if (equal GROOVE_STATE 3)
+					(progn
+						(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "NOTCHED_FIXED_SHELF") "_" __CURDIVORDER))))
+						(if (_EXISTPANEL notchedShelfCODE)
+							(progn
+								(_FSET (_ 'paramBody (_& (_ "NOTCHED_FIXED_SHELF_" __CURDIVORDER "_"))))
+								; Global parameters of current shelf
+								(_FSET (_ 'notchedShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+								(_FSET (_ 'notchedShelfWID (_S2V (_& (_ paramBody "WID")))))
+								(_FSET (_ 'notchedShelfDEP (_S2V (_& (_ paramBody "DEP")))))
+								(_FSET (_ 'notchedShelfWIDOPPWID (_& (_ paramBody "WIDOPPWID"))))
+								(_FSET (_ 'notchedShelfWIDOPPHEI (_& (_ paramBody "WIDOPPHEI"))))
+								(_FSET (_ 'notchedShelfDEP2 (_& (_ paramBody "DEP2"))))
+								(_FSET (_ 'notchedShelfELEV (_S2V (_& (_ paramBody "ELEV")))))
+								(_FSET (_ 'notchedShelfTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+								(if (_NOTNULL FIXED_SHELF_HOLES_ON_LOWER_SURFACE)
+									(progn
+										(_FSET (_ 'notchedShelfPDATA (_S2V (_& (_ paramBody "PDATA")))))
+										(_FSET (_ 'notchedShelfROT (_S2V (_& (_ paramBody "ROT")))))
+										(_FSET (_ 'notchedShelfMAT (_S2V (_& (_ paramBody "MAT")))))
+										
+										(_FSET (_ 'notchedShelfCODE (_CREATESFACEMAIN notchedShelfCODE (_ notchedShelfPDATA notchedShelfROT notchedShelfMAT notchedShelfTHICKNESS "Y"))))
+									)
+								)
+
+								(_FSET (_ 'index 0))
+								(foreach operationParams OPERATION_LIST
+									(mapcar 'set '(operationName connectorParams horizontalHolePos) operationParams)
+									
+									(if FIXED_SHELF_HOLES_ON_LOWER_SURFACE
+										(progn
+											(setq oppositePos "Y+")
+											(_FSET (_ 'halfOfThickness (- notchedShelfTHICKNESS (cadr horizontalHolePos))))
+										)
+										(progn
+											(setq oppositePos "Y-")
+											(_FSET (_ 'halfOfThickness (cadr horizontalHolePos)))
+										)
+									)
+									(_FSET (_ 'holePosOnAxisY (_= "notchedShelfELEV + halfOfThickness - bottomSideStyleV1")))
+									(_FSET (_ 'holePosOnAxisYForSecondaryPanels (_= "notchedShelfELEV + halfOfThickness - secondaryNotchedPanelStyleV1")))
+									
+									;NOTCHED_RIGHT_SIDE
+									(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'fixedShelfPointListForNotchedRightSide (_GETHOLEPOINTLIST operationName 
+												(_ notchedShelfHEI notchedShelfWID (car horizontalHolePos) "Y")
+												(_ 0.0 0.0 nil notchedShelfHEI) 
+												(_ FITTING_PARAMETERS nil))))
+
+												(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForNotchedRightSide (_ "X-" nil) connectorParams)
+											
+											(_FSET (_ 'notchedRightSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ notchedShelfHEI holePosOnAxisY 0.0 "X")
+												(_ (+ RIGHT_PANEL_FRONT_VARIANCE FIXED_SHELF_FRONT_OFFSET) (_= "NOTCHED_RIGHT_PANEL_WID - RIGHT_PANEL_BACK_VARIANCE - notchedShelfHEI - FIXED_SHELF_FRONT_OFFSET") T NOTCHED_RIGHT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName NOTCHED_RIGHT_PANEL_CODE notchedRightSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									;NOTCHED_LEFT_SIDE
+									(if (_EXISTPANEL NOTCHED_LEFT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'fixedShelfPointListForNotchedLeftSide (_GETHOLEPOINTLIST operationName 
+												(_ notchedShelfHEI 0.0 (car horizontalHolePos) "Y")
+												(_ 0.0 0.0  nil notchedShelfHEI)
+												(_ FITTING_PARAMETERS nil))))
+
+												(_HOLEGROUP operationName notchedShelfCODE fixedShelfPointListForNotchedLeftSide (_ "X+" nil) connectorParams)
+											
+											(_FSET (_ 'notchedLeftSidePointListForFS (_GETHOLEPOINTLIST operationName 
+												(_ notchedShelfHEI holePosOnAxisY 0.0 "X")
+												(_ (+ LEFT_PANEL_FRONT_VARIANCE FIXED_SHELF_FRONT_OFFSET) (_= "NOTCHED_LEFT_PANEL_WID - LEFT_PANEL_BACK_VARIANCE - notchedShelfHEI - FIXED_SHELF_FRONT_OFFSET") nil NOTCHED_LEFT_PANEL_WID)
+												(_ FITTING_PARAMETERS nil))))
+											
+											(_HOLEGROUP operationName NOTCHED_LEFT_PANEL_CODE notchedLeftSidePointListForFS (_ nil oppositePos) connectorParams)
+										)
+									)
+									(_FSET (_ 'index (+ index 1)))
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)

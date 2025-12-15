@@ -1,0 +1,86 @@
+(_FSET (_ 'orjShelfCODE (_& (_ (XSTR "FIXED_SHELF") "_" __CURDIVORDER))))
+(if (_EXISTPANEL orjShelfCODE)
+	(progn
+		(cond
+			((equal GROOVE_STATE 3)
+				(_DELPANEL orjShelfCODE)
+				
+				(_FSET (_ 'paramBody (_& (_ "NOTCHED_FIXED_SHELF_" __CURDIVORDER "_"))))
+				
+				(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+				(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+				
+				(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+				(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+				
+				(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+				(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+				(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+				
+				(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+				(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+				
+				(_FSET (_ 'orjParamBody (_& (_ "FIXED_SHELF_" __CURDIVORDER "_"))))
+				
+				(_FSET (_ (read tempHEI) (_= "__DEP - FIXED_SHELF_FRONT_OFFSET - __NOTCHDIM2 - GROOVE_WID - GROOVE_DISTANCE")))
+				(_FSET (_ (read tempWID) (_S2V (_& (_ orjParamBody "WID")))))
+				
+				(_FSET (_ (read tempROT) (_S2V (_& (_ orjParamBody "ROT")))))
+				(_FSET (_ (read tempMAT) (_S2V (_& (_ orjParamBody "MAT")))))
+				(_FSET (_ (read tempTHICKNESS) (_S2V (_& (_ orjParamBody "THICKNESS")))))
+				
+				(_FSET (_ (read tempELEV) (_S2V (_& (_ orjParamBody "ELEV")))))
+				(_FSET (_ (read tempLABEL) (_S2V (_& (_ orjParamBody "LABEL")))))
+				(_FSET (_ (read tempTAG) (_S2V (_& (_ orjParamBody "TAG")))))
+				
+				(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+				(_FSET (_ (read tempEDGESTRIPS) (_S2V (_& (_ orjParamBody "EDGESTRIPS")))))
+				
+				(_FSET (_ 'notchedShelfCODE (_& (_ (XSTR "NOTCHED_FIXED_SHELF") "_" __CURDIVORDER))))
+				
+				(_PANELMAIN notchedShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+				
+				(_CREATEEDGESTRIPS notchedShelfCODE (_S2V tempEDGESTRIPS))
+				
+				(_PUTLABEL notchedShelfCODE notchedShelfCODE (_S2V tempLABEL))
+				(_PUTTAG notchedShelfCODE notchedShelfCODE (_S2V tempTAG))
+			)
+			((equal GROOVE_STATE 2)
+				(_DELPANEL currentShelfCODE)
+
+				(_FSET (_ 'paramBody (_& (_ "FIXED_SHELF_" __CURDIVORDER "_"))))
+				; Unique variables of notched fixed shelf
+				; Same code of fixed shelf will be used for new fixed shelf
+				(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+				(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+				
+				(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+				(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+				
+				; No need for elevation parameter
+				(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+				(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+				
+				(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+				(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+				
+				(_FSET (_ (read tempHEI) (_= "__DEP - FIXED_SHELF_FRONT_OFFSET - __NOTCHDIM2 - GROOVE_WID - GROOVE_DISTANCE_FOR_STATE2")))
+				; Width, rotation, material and thickness variables are same with original recipe
+				; Label and tag variables are same with original recipe
+				(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+				
+				(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+				
+				(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+				
+				(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+				(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+			)
+		)
+	)
+)
+; Operations from former divisions are controlled in here
+(_FSET (_ 'operationControl (_S2V (_& (_ "FIXED_SHELF_" __CURDIVORDER "_OPC")))))
+(if (_NOTNULL operationControl) (_RUNHELPERRCP "DV\\20-BUILD\\20-PARTS\\10-PANELS\\FIXED_SHELF_OPR_CONTROLLER" nil "p2chelper"))

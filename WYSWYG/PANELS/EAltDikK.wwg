@@ -1,0 +1,21 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(SETQ KayitEni 8.0)
+(createGPanel
+(list 
+(list 0.0 0.0 0.0) 
+(list (- unitW 3.6) 0.0 0.0) 
+(list (- unitW 3.6) KayitEni 0.0) 
+(list 0.0 KayitEni 0.0) 
+) 
+nil
+ad_et
+(d2r 90.0)
+0.0
+(list ad_et -7.0 (+ dAltKot ad_et KayitEni))
+"UST_KAYIT"
+""
+nil
+"SHELF"
+(strcat kodBlock "_UST_KAYIT")
+"CAB_BODY_BASE"
+)

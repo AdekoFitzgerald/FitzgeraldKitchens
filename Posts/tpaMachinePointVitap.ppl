@@ -1,0 +1,692 @@
+
+(setq tpaPointVitap_HoleCamOperation nil)
+(defun tpaPointVitap_HoleCamOperation (currentEnt entLayerName tempCAMStyle currentPanel tpafile / tempHolePos mHoleDepth mHoleDia tempHoleDepth ikiyuzon tempHolePosWorld
+																									mHoleX mHoleY)
+
+	; Also see TpaCAD Programing editor page 35    	
+	;  					5
+	;				|---------|
+	;				|         |
+	;	sol üst 6	|    1    |  4 sað alt
+	;				|         |
+	;				|*________|
+	;					3
+	;
+	;Set DXF layer as Z origin bottom of the panel.
+	(setq tempHolePos (getEntPro currentEnt 10))
+	(setq mHoleDia (lmm_getLMMdata currentEnt lmm-k-diameter))
+	(setq tempHoleDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(cond
+		((equal "TOP" (substr entLayerName 1 3)); top hole routines
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePos) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePos) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+		((equal "RIG" (substr entLayerName 1 3)); right hole routines
+			(setq ikiyuzon (getEntPro currentEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePosWorld) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit  (getnth 2 tempHolePosWorld) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+		((equal "LEF" (substr entLayerName 1 3)); left hole routines
+			(setq ikiyuzon (getEntPro currentEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 1 tempHolePosWorld) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit  (getnth 2 tempHolePosWorld) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+		((equal "REA" (substr entLayerName 1 3)); rear hole routines
+			(setq ikiyuzon (getEntPro currentEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePosWorld) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit  (getnth 2 tempHolePosWorld) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+		((equal "FRO" (substr entLayerName 1 3)); front hole routines
+			(setq ikiyuzon (getEntPro currentEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePosWorld) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit  (getnth 2 tempHolePosWorld) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+		((equal "BOT" (substr entLayerName 1 3)); bottom hole routines
+			(setq ikiyuzon (getEntPro currentEnt 210))
+			(setq tempHolePosWorld (trans tempHolePos ikiyuzon 0))
+			(setq mHoleX (lmm_convertNumtoStringWithDigit (getnth 0 tempHolePosWorld) 2))
+			(setq mHoleY (lmm_convertNumtoStringWithDigit  (getnth 1 tempHolePosWorld) 2))
+			(setq mHoleDepth (lmm_convertNumtoStringWithDigit (* -1 tempHoleDepth) 2))
+			(setq mHoleDia (lmm_convertNumtoStringWithDigit mHoleDia 2))
+			(setq tpaVarWS (1+ tpaVarWS))
+			(princ (sprintf "\nW#81{ ::WTp WS=~s  #1=~s #2=~s #3=~s #1002=~s #201=1 #203=1 }W" (_ (lmm_convertNumtoStringWithDigit tpaVarWS 0) mHoleX mHoleY mHoleDepth mHoleDia)) tpafile)
+		)
+	)
+	
+	
+	
+)
+
+
+(setq tpaPointVitap_ContourCAMOperation nil)
+(defun tpaPointVitap_ContourCAMOperation (currentEnt entLayerName tempCAMStyle currentPanel file / 
+								tempDepth stepOfPasses bottomZComponent topZComponent stepZComponets
+								spindleSpeed cutFeedRate plungeFeedRate currentTool iteration tempPoint
+								currentZLevel tempPoints tempPointsWB bulgeOfSegment firstPoint secondPoint firstSecondNormal 
+								fieldPoint deleteHelper ijkOfSegment centerOfSegment lengthOfSegment helperEntity maxSegDistance arcValues
+								totalRadOfSegment stepVal buffRadVec deltaAngle bufferPoint)
+	(setq maxSegDistance 1.0)
+	(setq deleteHelper nil)
+	(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+	(setq stepOfPasses 	(nth 3 tempCAMStyle))
+	(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+	(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+	(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+	(setq spindleSpeed (nth 9 tempCAMStyle))
+	(setq cutFeedRate (nth 10 tempCAMStyle))
+	(setq plungeFeedRate (nth 11 tempCAMStyle))
+	(setq currentTool (nth 1 tempCAMStyle))		
+	(cond
+		( (or (equal "CENTER" (nth 7 tempCAMStyle)) (equal (nth 8 tempCAMStyle) 0) ) 
+			(setq tempPoints  (lmm_getPolylinePoints currentEnt) )
+			(setq helperEntity currentEnt)
+		)
+		
+		( (equal "INSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+		
+		( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+			(setq tempPoints (lmm_getPolylinePoints currentEnt))
+			(setq firstPoint (nth 0 tempPoints))
+			(setq secondPoint (nth 1 tempPoints))
+			(setq firstSecondNormal (normalizeVector (VectorSub secondPoint firstPoint)))
+			(if (equal "CCW" (GetIrregularPointlistClockwiseOrder_2 tempPoints currentPanel (nth 11 tempCAMStyle)))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal -1))
+				(setq firstSecondNormal (VectorRotate firstSecondNormal 1))
+			)
+			(setq fieldPoint (VectorAdd firstPoint firstSecondNormal))
+			(OFFSET (nth 8 tempCAMStyle) (list currentEnt firstPoint) fieldPoint)
+			(setq tempPoints (lmm_getPolylinePoints(entlast)))
+			(setq helperEntity (entlast))
+			(setq deleteHelper T)
+		)
+	)
+	(setq tempPointsWB (lmm_getPolylineDataAsProfile helperEntity (_ 0.0 0.0 0.0)))
+	
+	(if (equal 1 (getentpro helperEntity 70))
+		(progn
+			(setq tempPoints (append tempPoints (list (nth 0 tempPoints))))
+			(setq tempPointsWB (append tempPointsWB (list (nth 0 tempPointsWB))))
+			(setq tempPointsWB (append tempPointsWB (list (nth 1 tempPointsWB))))
+		)
+	)
+
+	(foreach currentZLevel stepZComponets
+		(setq iteration 1)
+		(foreach tempPoint tempPoints
+			(cond
+				; first move 
+				( (equal 1 iteration)
+					(setq tpaVarWS (1+ tpaVarWS))
+					(princ (sprintf "\nW#89{ ::WTs WS=~s  #8015=0 #1=~s #2=~s #3=~s #201=1 #203=1 #205=~s #1001=100 #9502=0 #8101=0 #8096=0 #8095=0 #40=0 #8135=0 #8136=0 #8180=0 #8181=0 #8185=0 #8186=0 }W" 
+					(_ 
+					(lmm_convertNumtoStringWithDigit tpaVarWS 0)
+					(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+					(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+					(lmm_convertNumtoStringWithDigit currentZLevel 3)
+					currentTool
+					)) file)
+				)
+				
+				; last moves
+				( (equal (length tempPoints) iteration)
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq lengthOfSegment (nth 3 arcValues))
+							(setq totalRadOfSegment (nth 4 arcValues))
+							(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+							(setq buffRadVec (VectorSub firstPoint centerOfSegment))
+							(setq deltaAngle (* -1 (/ totalRadOfSegment stepVal)))
+							(setq stepVal (- stepVal 1))
+							(repeat stepVal
+								(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+								(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+								(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+								(_ 
+								(lmm_convertNumtoStringWithDigit (nth 0 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit (nth 1 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit currentZLevel 3)
+								)) file)
+							)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq lengthOfSegment (nth 3 arcValues))
+							(setq totalRadOfSegment (nth 4 arcValues))
+							(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+							(setq buffRadVec (VectorSub firstPoint centerOfSegment))
+							(setq deltaAngle (/ totalRadOfSegment stepVal))
+							(setq stepVal (- stepVal 1))
+							(repeat stepVal
+								(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+								(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+								(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+								(_ 
+								(lmm_convertNumtoStringWithDigit (nth 0 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit (nth 1 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit currentZLevel 3)
+								)) file)
+							)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+					)
+					
+					;safety move
+					(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+					(_ 
+					(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+					(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+					(lmm_convertNumtoStringWithDigit 10 3)
+					)) file)
+				)
+				
+				
+				; middle moves
+				( (and (< 1 iteration) (> (length tempPoints) iteration))
+					(setq bulgeOfSegment (nth (- (* 2 iteration) 3) tempPointsWB))
+					(cond 
+						((equal bulgeOfSegment 0.0)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 tempPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+						((> 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq lengthOfSegment (nth 3 arcValues))
+							(setq totalRadOfSegment (nth 4 arcValues))
+							(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+							(setq buffRadVec (VectorSub firstPoint centerOfSegment))
+							(setq deltaAngle (* -1 (/ totalRadOfSegment stepVal)))
+							(setq stepVal (- stepVal 1))
+							(repeat stepVal
+								(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+								(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+								(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+								(_ 
+								(lmm_convertNumtoStringWithDigit (nth 0 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit (nth 1 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit currentZLevel 3)
+								)) file)
+							)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+						((< 0.0 bulgeOfSegment)
+							(setq secondPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+							(setq arcValues (calculatePolylineSegmentRadius firstPoint secondPoint bulgeOfSegment))
+							(setq centerOfSegment (nth 2 arcValues))
+							(setq lengthOfSegment (nth 3 arcValues))
+							(setq totalRadOfSegment (nth 4 arcValues))
+							(setq stepVal  (fix (round (/ lengthOfSegment maxSegDistance) 0)))
+							(setq buffRadVec (VectorSub firstPoint centerOfSegment))
+							(setq deltaAngle (/ totalRadOfSegment stepVal))
+							(setq stepVal (- stepVal 1))
+							(repeat stepVal
+								(setq buffRadVec (rotatepoint buffRadVec deltaAngle (_ 0 0 0) ))
+								(setq bufferPoint (VectorAdd centerOfSegment buffRadVec))
+								(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+								(_ 
+								(lmm_convertNumtoStringWithDigit (nth 0 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit (nth 1 bufferPoint) 3)
+								(lmm_convertNumtoStringWithDigit currentZLevel 3)
+								)) file)
+							)
+							(princ (sprintf "\nW#2201{ ::WTl  #1=~s #2=~s #3=~s }W" 
+							(_ 
+							(lmm_convertNumtoStringWithDigit (nth 0 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit (nth 1 secondPoint) 3)
+							(lmm_convertNumtoStringWithDigit currentZLevel 3)
+							)) file)
+						)
+					)
+				)
+			)
+			(setq iteration (+ 1 iteration))
+			(setq firstPoint (_ (nth 0 tempPoint) (nth 1 tempPoint) currentZLevel))
+		)
+	)
+	
+	(if deleteHelper (deleteEntity (entlast)))
+	(princ )
+)
+
+
+
+
+ ;ÖNEMLÝ NOT : Testere sadece x ekseninde bir çizgi üzerinde iþlme yapar.
+ (setq tpaPointVitapSawCAMOperation nil)
+ (defun tpaPointVitapSawCAMOperation ( currentEnt entLayerName tempCAMStyle currentPanel file / tempPoint tempPoints startPoint endPoint middlePoint 
+																	polylineIsStraitAlongByXAxis currentZLevel stepZComponets
+																	bottomZComponent topZComponent stepOfPasses tempDepth  
+																	tempEndPoint tempPanelName)
+	(setq polylineIsStraitAlongByXAxis T)
+	(setq tempPoints (lmm_getPolylinePoints currentEnt))
+	(setq startPoint (nth 0 tempPoints))
+	(foreach tempPoint tempPoints ;SAW blade can cut only x direction. so we must check whether given polyline is suitable to cut or not.
+		(if (not (equal (nth 1 startPoint) (nth 1 tempPoint) 6))
+			(progn
+				(setq polylineIsStraitAlongByXAxis nil)
+			)
+		)
+	)
+	(if polylineIsStraitAlongByXAxis 
+		(progn 
+			(setq endPoint (last tempPoints))
+			(if (> (nth 0 startPoint) (nth 0 endpoint))
+				(progn
+					(setq tempEndPoint endPoint)
+					(setq endPoint startPoint)
+					(setq startPoint tempEndPoint)
+				)
+			)
+			(setq tempDepth (lmm_getLMMdata currentEnt lmm-k-depth))
+			(setq stepOfPasses 	(nth 3 tempCAMStyle))
+			(setq bottomZComponent (+ (- tempDepth) (nth 4 tempCAMStyle) ) )
+			(setq topZComponent (- 0.0 (nth 5 tempCAMStyle) ) )
+			(setq stepZComponets (_calculateZlevels stepOfPasses topZComponent  bottomZComponent  (nth 6 tempCAMStyle)) )
+			(cond 
+				( (equal "CENTER" (nth 7 tempCAMStyle))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "INSIDE" (nth 7 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (* (nth 8 tempCAMStyle) -1) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (* (nth 8 tempCAMStyle) -1) 0) ))
+					(setq tempPoints (list startPoint endPoint))
+				)
+				( (equal "OUTSIDE" (nth 7 tempCAMStyle))
+					(setq startPoint (VectorAdd startPoint (list 0 (nth 8 tempCAMStyle) 0) ))
+					(setq endPoint (VectorAdd endPoint (list 0 (nth 8 tempCAMStyle) 0) ))
+					(setq tempPoints (list startPoint endPoint))
+				)
+			)
+			
+			(foreach currentZLevel stepZComponets
+				(setq tpaVarWS (1+ tpaVarWS))
+				(princ (sprintf "\nW#1050{ ::WT2 WS=~s  #8098=..\\custom\\mcr\\lame.tmcr #6=1 #8020=~s #8021=~s #8022=~s #8503=0 #8509=0 #8514=1 #8515=1 #8516=2001 #8517=~s #8525=0 #8526=0 #8527=0 }W" 
+					(_ 
+						(lmm_convertNumtoStringWithDigit tpaVarWS 0)
+						(lmm_convertNumtoStringWithDigit (nth 0 startPoint) 3)
+						(lmm_convertNumtoStringWithDigit (nth 1 startPoint) 3) 
+						(lmm_convertNumtoStringWithDigit currentZLevel 3)
+						(lmm_convertNumtoStringWithDigit (nth 0 endPoint) 3)
+					)
+				) file)
+				;(if (equal mrtn "")
+				;	(setq mrtn (strcat mrtn "" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+				;	(setq mrtn (strcat mrtn "\n" (nth 2 tempCAMStyle) " " (nth 1 tempCAMStyle) "\n" (nth 9 tempCAMStyle)))
+				;)
+				;(setq mrtn (strcat mrtn "\n" 	"G0 X" (lmm_convertNumtoStringWithDigit (nth 0 startPoint) 3)
+				;								" Y"   (lmm_convertNumtoStringWithDigit (nth 1 startPoint) 3)
+				;								" Z"   (lmm_convertNumtoStringWithDigit topZComponent 3) ))
+				;(setq mrtn (strcat mrtn "\n" 	"G1 X" (lmm_convertNumtoStringWithDigit (nth 0 endPoint) 3)
+				;								" Y"   (lmm_convertNumtoStringWithDigit (nth 1 endPoint) 3)
+				;								" Z"   (lmm_convertNumtoStringWithDigit currentZLevel 3) ))
+			)
+		)
+		(progn
+			;(tpaPointVitap_ContourCAMOperation currentEnt entLayerName (list "NOTCH" "1002" "CONTOUR" 2 0 0 0 "INSIDE" 2.5 "16000" "4000") currentPanel file)
+			(princ (strcat "\nTestere islemi uygulanamdi. Y yonunda tanimli!->" (lmm_getDXFFileNameByFileMode (list currentPanel)) "\n"))
+			nil
+			;(setq tempPanelName (lmm_getLMMdata currentPanel lmm-k-customCode))
+			;(alert (sprintf "Testere uygulanamadý. Geometri uygun deðil.->~s" (_ tempPanelName)))
+			;(setq mrtn (strcat "//Testere uygulanamadý. Geometri uygun deðil."))
+		)
+	)
+ )
+
+
+(setq getTheSideThatAreInOperation nil)
+(defun getTheSideThatAreInOperation ( sideList / returnVal iterI) 
+	(setq iterI 1)
+	(setq returnVal "")
+	(foreach side sideList
+		(if (not (equal side nil))
+			(setq returnVal (strcat returnVal (lmm_convertNumtoStringWithDigit iterI 0) ";"))
+		)
+		(setq iterI (1+ iterI))
+	)
+	returnVal
+)
+
+(setq divideEntitiesToSides nil)
+(defun divideEntitiesToSides ( / tempPanelSS tempPanelSSList tempEnt tempDerivedLayerName
+								side1 side2 side3 side4 side5 side6 )
+	;side1 Top
+	;side2 Bottom
+	;side3 Front
+	;side4 Right
+	;side5 Rear
+	;side6 Left
+	(setq side1 nil side2 nil side3 nil side4 nil side5 nil side6 nil)
+	
+	(setq tempPanelSS (lmm_getComponentWithChild cPnl "ALL"))
+	(setq tempPanelSSList (convertSStolist tempPanelSS))
+	(foreach tempEnt tempPanelSSList
+		(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+			(progn
+				(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+				(cond
+					((equal "TOP" (substr tempDerivedLayerName 1 3))
+						(setq side1 (append side1 (_ tempEnt)))
+					)
+					((equal "BOT" (substr tempDerivedLayerName 1 3))
+						(setq side2 (append side2 (_ tempEnt)))
+					)
+					((equal "FRO" (substr tempDerivedLayerName 1 3))
+						(setq side3 (append side3 (_ tempEnt)))
+					)
+					((equal "RIG" (substr tempDerivedLayerName 1 3))
+						(setq side4 (append side4 (_ tempEnt)))
+					)
+					((equal "REA" (substr tempDerivedLayerName 1 3))
+						(setq side5 (append side5 (_ tempEnt)))
+					)
+					((equal "LEF" (substr tempDerivedLayerName 1 3))
+						(setq side6 (append side6 (_ tempEnt)))
+					)
+				)
+			)
+			(progn
+				(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+				(if (> (strlen tempDerivedLayerName) 3)
+					(if (equal "_SF" (substr tempDerivedLayerName (- (strlen tempDerivedLayerName) 2) 3))
+						(setq side2 (append side2 (_ tempEnt)))
+						(setq side1 (append side1 (_ tempEnt)))
+					)
+					(setq side1 (append side1 (_ tempEnt)))
+				)
+			)
+		)
+	)
+	(list side1 side2 side3 side4 side5 side6)
+)
+
+;Add all hole entities to cam operation list
+(setq fillTPACAMOperationList nil)
+(defun fillTPACAMOperationList (sides / sideIteration side)
+	(setq ad_tpaCAMOperationList nil)
+	(setq sideIteration 1)
+	(foreach side sides
+		(cond
+			((equal sideIteration 1)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "TOP" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+				;; NOTCH operations are must be add after top hole operations 
+				(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "NOTCH" "1002" "CONTOUR" 2 0 0 0 "INSIDE" 2.5 "16000" "4000"))))
+			)
+			((equal sideIteration 2)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "BOT" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 3)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "FRO" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 4)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "RIG" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 5)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "REA" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+			)
+			((equal sideIteration 6)
+				(foreach tempEnt side
+					(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE")
+						(progn
+							(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							(if	(equal "LEF" (substr tempDerivedLayerName 1 3))
+								(if (not (member (list tempDerivedLayerName "" "HOLE" "") ad_tpaCAMOperationList))
+									(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list tempDerivedLayerName "" "HOLE" ""))))
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+		(setq sideIteration (1+ sideIteration))
+	)
+	;; All milling and saw  operations are must be add after sides hole operations. Except notch milling
+	;(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "GROOVE" "" "SAWX" 1 0 0 0 "OUTSIDE" 2.5 "16000" "4000"))))
+	;(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "TYPW45" "1001" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil))))
+	;(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "GROOVE" "1001" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil))))
+	(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "GROOVE_9" "1001" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil))))
+	(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "GROOVE_5" "" "SAWX" 1 0 0 0 "CENTER" 0 "16000" "3000"))))
+	(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "GROOVE" "1001" "CONTOUR" 1 0 0 0 "CENTER" 0 "16000" "3000" nil))))
+	(setq ad_tpaCAMOperationList (append ad_tpaCAMOperationList (_ (list "POLYLINE_CIRCLE" "1001" "CONTOUR" 1 0 0 0 "INSIDE" 4 "16000" "3000" nil))))
+)
+
+(setq sendTpaPointVitapMachine nil)
+(defun sendTpaPointVitapMachine (cPnl / tpaVarWS tpaFilesPath tempPanelName tempPanelDepth 
+													tempPanelLength tempPanelWidth tpaFile 
+													currentOp tempOpLayerName tempOpOpName tempPanelSS tempPanelSSList 
+													tempEnt tempDerivedLayerName sides side entList)
+	(setq tpaVarWS 0)
+	
+	(setq tpaFilesPath (strcat (lmm_prepareOutDirs) "\\"))
+	(setq tempPanelName (lmm_getLMMdata cPnl lmm-k-customCode))
+	(setq tempPanelDepth (lmm_getLMMdata cPnl lmm-k-depth))
+	(setq tempPanelLength (getnth 2 (getBBox cPnl)))
+	(setq tempPanelWidth (getnth 3 (getBBox cPnl)))
+	
+	(setq sides (divideEntitiesToSides))
+	(fillTPACAMOperationList sides)
+	
+	(createDir (strcat tpaFilesPath "Vitap\\"))
+	(setq tpaFile (open (strcat tpaFilesPath "Vitap\\" (lmm_getDXFFileNameByFileMode (list cPnl)) ".tcn") "w"))
+	(princ "TPA\\ALBATROS\\EDICAD\\01.00:4:r0w0h0" tpaFile)
+	(princ (sprintf "\n::SIDE=~s" (_ (getTheSideThatAreInOperation sides)))tpaFile)
+	(princ (sprintf "\n::UNm DL=~s DH=~s DS=~s" (_ (lmm_convertNumtoStringWithDigit tempPanelLength 1) (lmm_convertNumtoStringWithDigit tempPanelWidth 1) (lmm_convertNumtoStringWithDigit tempPanelDepth 1) )) tpaFile)
+	(princ "\n'tcn version=2.6.0" tpaFile)
+	(princ "\n'code=ansi" tpaFile)
+	(princ "\nEXE{" tpaFile)
+	(princ "\n#0=0" tpaFile)
+	(princ "\n#1=0" tpaFile)
+	(princ "\n#2=0" tpaFile)
+	(princ "\n#3=0" tpaFile)
+	(princ "\n#4=0" tpaFile)
+	(princ "\n}EXE" tpaFile)
+	(princ "\nOFFS{" tpaFile)
+	(princ "\n#0=0.0|0" tpaFile)
+	(princ "\n}OFFS" tpaFile)
+	(princ "\nVARV{" tpaFile)
+	(princ "\n}VARV" tpaFile)
+	(princ "\nVAR{" tpaFile)
+	(princ "\n}VAR" tpaFile)
+	(princ "\nSPEC{" tpaFile)
+	(princ "\n}SPEC" tpaFile)
+	(princ "\nINFO{" tpaFile)
+	(princ "\n}INFO" tpaFile)
+	(princ "\nOPTI{" tpaFile)
+	(princ "\n}OPTI" tpaFile)
+	(princ "\nLINK{" tpaFile)
+	(princ "\n}LINK" tpaFile)
+	
+	(setq sideIteration 1)
+	(foreach side sides
+		(if (member sideIteration (_ 1 3 4 5 6))
+			(progn
+				(princ (sprintf "\nSIDE#~s{" (_ (lmm_convertNumtoStringWithDigit sideIteration 0)) ) tpaFile)
+				(if (member sideIteration (_ 3 4 5 6))
+					(princ "\n::DX=0 XY=1" tpaFile)
+				)
+				(foreach currentOp ad_tpaCAMOperationList
+					(setq tempOpLayerName (nth 0 currentOp))
+					(setq tempOpOpName (nth 2 currentOp))
+					(setq entList (entOptimization side))
+					(foreach tempEnt entList
+						(if (equal (lmm_getLMMdata tempEnt lmm-k-type) "HOLE") ; delikler geometrisine göre yorumlanýyor geçici bir layer ismi belirleniyor
+							(progn 
+								(setq tempDerivedLayerName (tpaInterpretHoleLayerName tempEnt))
+							)
+							(progn 
+								(setq tempDerivedLayerName (getentpro  tempEnt 8 ))
+							)
+						)
+						
+						(if (not (member tempDerivedLayerName tpaIgnoreLayerNameList))
+							(if  (not (member (strcat tempPanelName "->"  tempDerivedLayerName) tpaAllEntities))
+								(setq tpaAllEntities (append tpaAllEntities (list (strcat tempPanelName "->"  tempDerivedLayerName))))
+							)
+						)
+						
+						(if (equal tempDerivedLayerName tempOpLayerName) ;; cam yapýlmasý gereken etity
+							(progn
+								(cond 
+									((equal tempOpOpName "HOLE") 
+										(tpaPointVitap_HoleCamOperation tempEnt tempDerivedLayerName currentOp cPnl tpaFile)
+										(setq tpaNotFreeEntities (append tpaNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									) 
+									((equal tempOpOpName "SAWX") ;testere iþlemi
+										;Eðer testere iþlemi uygulanmazsa freze yap
+										(if (not (tpaPointVitapSawCAMOperation tempEnt tempDerivedLayerName currentOp cPnl tpaFile))
+											(progn
+												(princ "\nUygulanamayan testere islemine freze uygulaniyor!..\n")
+												(tpaPointVitap_ContourCAMOperation tempEnt tempDerivedLayerName (list "NOTCH" "1002" "CONTOUR" 2 0 0 0 "INSIDE" 2.5 "16000" "4000" T) cPnl tpaFile)
+											)
+										)
+										(setq tpaNotFreeEntities (append tpaNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+									((equal tempOpOpName "CONTOUR") ;freze iþlemi
+										(tpaPointVitap_ContourCAMOperation tempEnt tempDerivedLayerName currentOp cPnl tpaFile)
+										(setq tpaNotFreeEntities (append tpaNotFreeEntities (list (strcat tempPanelName "->" tempDerivedLayerName))))
+									)
+								)
+							)
+						)
+					)
+				)
+				(princ "\n}SIDE" tpaFile)
+			)
+		)
+		(setq sideIteration (1+ sideIteration))
+	)
+	
+	
+	
+	(close tpaFile)
+)
+
+(princ)

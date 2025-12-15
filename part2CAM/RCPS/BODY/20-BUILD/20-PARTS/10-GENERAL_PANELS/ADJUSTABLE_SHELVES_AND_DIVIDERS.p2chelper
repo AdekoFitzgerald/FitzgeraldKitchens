@@ -1,0 +1,168 @@
+; IMPORTANT INFORMATIONS
+
+; ADJUSTABLE_SHELF_x_y_CONN contains four cases
+;		  VALUE						CASES FOR ADJUSTABLE SHELF CONNECTIONS
+;	 	   -1  							Left panel <-> Right panel
+;	  		0							Left panel <-> First divider
+;	 0 < value < LastDiv*					Divider	<-> Divider
+;		  LastDiv						Last Divider <-> Right Panel
+
+; DATA SHEET OF DIVIDER_SHELF_DATA
+; Index			DATA
+; 0				Index of current division
+; 1				Information about shelves of current division
+; 2				Information about dividers of current division
+; SHELF INFORMATION
+; Index			DATA
+; 0				Number of shelves in current division
+; 1				Material of shelves in current division
+; 2				Rotation list of shelves in current division
+; 3				Edge statues of shelves in current division
+
+; *		LastDiv value is the index value of last virtual division**
+; **	Virtual division is a division which is created in real division of modules by dividers
+; ***	Divider information is completely same with shelves information
+
+; DSD prefix refers to DIVIDER_SHELF_DATA
+(_FSET (_ 'DSD_curDivOrder (getnth 0 DIVIDER_SHELF_DATA)))
+(_FSET (_ 'DSD_shelvesInfo (getnth 1 DIVIDER_SHELF_DATA)))
+(_FSET (_ 'DSD_dividersInfo (getnth 2 DIVIDER_SHELF_DATA)))
+
+; DIVIDERS
+(_FSET (_ 'dividerCounter 1))
+(repeat (getnth 0 DSD_dividersInfo)
+	(_FSET (_ 'paramBody (_& (_ "DIVIDER_" DSD_curDivOrder "_" dividerCounter "_"))))
+	; Global variables of current divider
+	(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+	(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+	
+	(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+	(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+	(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+	
+	(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+	(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+	(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+	(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+
+	(_FSET (_ (read tempWID) (_= "__DEP - GROOVE_WID - GROOVE_DISTANCE - DIVIDER_FRONT_OFFSET")))
+
+	(_FSET (_ (read tempHEI) (_S2V (_& (_ "__DIV" DSD_curDivOrder "_INSIDEHEI")))))
+	
+	(_FSET (_ (read tempROT) (getnth 2 DSD_dividersInfo)))
+	(_FSET (_ (read tempMAT) (getnth 1 DSD_dividersInfo)))
+	(_FSET (_ (read tempTHICKNESS) DIVIDERS_THICKNESS))
+	
+	(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempWID) (_S2V tempHEI))))
+
+	(_FSET (_ (read tempLABEL) DIVIDERS_LABEL))
+	(_FSET (_ (read tempTAG) DIVIDERS_TAG))
+	(_FSET (_ (read tempEDGESTRIPS) (_ (_ DIVIDERS_LEFT_EDGESTRIP_MAT DIVIDERS_LEFT_EDGESTRIP_WID)
+									   (_ DIVIDERS_TOP_EDGESTRIP_MAT DIVIDERS_TOP_EDGESTRIP_WID)
+									   (_ DIVIDERS_RIGHT_EDGESTRIP_MAT DIVIDERS_RIGHT_EDGESTRIP_WID)
+									   (_ DIVIDERS_BOTTOM_EDGESTRIP_MAT DIVIDERS_BOTTOM_EDGESTRIP_WID))))
+	; Unique code of current divider
+	(_FSET (_ 'currentDividerCODE (_& (_ (XSTR "DIVIDER") "_" DSD_curDivOrder "_" dividerCounter))))
+	
+	(_PANELMAIN currentDividerCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+	
+	(_CREATEEDGESTRIPS currentDividerCODE (_S2V tempEDGESTRIPS))
+	
+	(_PUTLABEL currentDividerCODE currentDividerCODE (_S2V tempLABEL))
+	(_PUTTAG currentDividerCODE currentDividerCODE (_S2V tempTAG))
+	
+	(_FSET (_ 'dividerCounter (+ 1 dividerCounter)))
+)
+; SHELVES
+(if (> (getnth 0 DSD_shelvesInfo) 0)
+	(progn
+		(_FSET (_ 'dividerPosList (_S2V (_& (_ "__DIV" DSD_curDivOrder "_DIVIDERSOFFSETS")))))
+		; For last virtual division inside width of module is added
+		(_FSET (_ 'dividerPosList (append dividerPosList (_ (_S2V (_& (_ "__DIV" DSD_curDivOrder "_INSIDEWID")))))))
+		(_FSET (_ 'widthOfFormerDIVs 0))
+		
+		(_FSET (_ 'virtualDivisionCounter 0))
+		; Number of virtual divisions equal to number of dividers plus one
+		(repeat (+ (getnth 0 DSD_dividersInfo) 1)
+			(_FSET (_ 'curVDivPOS (getnth virtualDivisionCounter dividerPosList)))
+			; __AD_PANELTHICK means thickness of dividers in next line
+			(_FSET (_ 'shareOfDividers (* __AD_PANELTHICK virtualDivisionCounter)))
+			(_FSET (_ 'curVirtualDivWID (_= "curVDivPOS - shareOfDividers - widthOfFormerDIVs")))
+			; Total width of former virtual divisions are increased
+			(_FSET (_ 'widthOfFormerDIVs (+ curVirtualDivWID widthOfFormerDIVs)))
+			
+			(_FSET (_ 'shelfCounter 1))
+			(repeat (getnth 0 DSD_shelvesInfo)
+				(_FSET (_ 'paramBody (_& (_ "ADJUSTABLE_SHELF_" DSD_curDivOrder "_" virtualDivisionCounter "_" shelfCounter "_"))))
+				; Global variables of current adjustable shelf
+				(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+				(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+				
+				(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+				(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+				(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+				
+				(_FSET (_ 'tempEDGES (_& (_ paramBody "EDGES"))))
+				(_FSET (_ 'tempCONN (_& (_ paramBody "CONN"))))
+				(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+				
+				(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+				(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+				(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+				(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+				(_FSET (_ 'ASHELF_SIDE_OFFSET (* 0.5 (if (equal currentDivShelfType 1) GLASS_ASHELF_SIDES_TOTAL_OFFSET ASHELF_SIDES_TOTAL_OFFSET))))
+				(_FSET (_ (read tempWID) (- curVirtualDivWID ASHELF_SIDE_OFFSET ASHELF_SIDE_OFFSET)))
+				
+				(if (not (equal ASHELF_BACK_OFFSET 0))
+					(_FSET (_ (read tempHEI) (_= "__DEP - ASHELF_FRONT_OFFSET - ASHELF_BACK_OFFSET")))
+					(_FSET (_ (read tempHEI) (_= "__DEP - ASHELF_FRONT_OFFSET - GROOVE_WID - GROOVE_DISTANCE")))
+				)
+				
+				(_FSET (_ (read tempROT) (getnth 2 DSD_shelvesInfo)))
+				(_FSET (_ (read tempMAT) (getnth 1 DSD_shelvesInfo)))
+				
+				(if (equal (eval (read tempMAT)) "Glass")
+					(if GLASS_SHELF_THICKNESS
+						(_FSET (_ (read tempTHICKNESS) GLASS_SHELF_THICKNESS))
+						(_FSET (_ (read tempTHICKNESS) __AD_GLASSTHICK))
+					)
+					(_FSET (_ (read tempTHICKNESS) ASHELF_THICKNESS))
+				)
+				
+				(_FSET (_ (read tempEDGES) (getnth 3 DSD_shelvesInfo)))
+				(_FSET (_ (read tempCONN) virtualDivisionCounter))
+				(_FSET (_ (read tempELEV) (getnth (- shelfCounter 1) (_S2V (_& (_ "__DIV" DSD_curDivOrder "_SHELVESOFFSETS"))))))
+				
+				(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempHEI) (_S2V tempWID))))
+				(_FSET (_ (read tempLABEL) (XSTR SHELVES_LABEL)))
+				(_FSET (_ (read tempTAG) SHELVES_TAG))
+				(_FSET (_ (read tempEDGESTRIPS) (_ (_ SHELVES_BOTTOM_EDGESTRIP_MAT SHELVES_BOTTOM_EDGESTRIP_WID)
+												   (_ SHELVES_LEFT_EDGESTRIP_MAT SHELVES_LEFT_EDGESTRIP_WID)
+												   (_ SHELVES_TOP_EDGESTRIP_MAT SHELVES_TOP_EDGESTRIP_WID)
+												   (_ SHELVES_RIGHT_EDGESTRIP_MAT SHELVES_RIGHT_EDGESTRIP_WID))))
+				; Unique code of current adjustable shelf
+				(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "ADJUSTABLE_SHELF") "_" DSD_curDivOrder "_" virtualDivisionCounter "_" shelfCounter))))
+				
+				(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+				
+				; If current shelf is a glass-shelf then there is no need for edgestrips
+				(if (_NOTNULL (_S2V tempEDGES)) (_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS)))
+				
+				(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+				(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+				; Next shelf
+				(_FSET(_ 'shelfCounter (+ 1 shelfCounter)))
+			)
+			; Next virtual division
+			(_FSET (_ 'virtualDivisionCounter (+ 1 virtualDivisionCounter)))
+		)
+	)
+)
+; Notch operation warning
+(if (not (equal __NOTCHTYPE 0))
+	(progn
+		(alert (strcat (XSTR "MODULE CODE") " : " __MODULCODE "\t" (strcat (XSTR "DIVISION") " : " (itoa DSD_curDivOrder)) "\n\n" 
+			   (XSTR "Notch operations aren't performed on divisions contains dividers!") "\n\n" "ADJUSTABLE_SHELVES_AND_DIVIDERS -> " (itoa __NOTCHTYPE) ".p2chelper"))
+	)
+)
+(_NONOTCH)

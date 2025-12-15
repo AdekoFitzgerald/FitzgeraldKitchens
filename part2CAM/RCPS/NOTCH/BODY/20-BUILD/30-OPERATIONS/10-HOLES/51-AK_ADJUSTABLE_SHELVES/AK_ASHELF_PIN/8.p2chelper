@@ -1,0 +1,81 @@
+; Corner unit adjustable shelf pin recipe
+(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "CORNER_UNIT") "_" (XSTR "ADJUSTABLE_SHELF") "_" divisionCounter "_" shelfCounter))))
+
+(if (_EXISTPANEL currentShelfCODE)
+	(progn
+		(_FSET (_ 'paramBody (_& (_ "AK_ADJUSTABLE_SHELF_" divisionCounter "_" shelfCounter "_"))))
+		; Global parameters of current shelf
+		(_FSET (_ 'currentShelfHEI (_S2V (_& (_ paramBody "HEI")))))
+		(_FSET (_ 'currentShelfWID (_S2V (_& (_ paramBody "WID")))))
+		(_FSET (_ 'currentShelfDEP (_S2V (_& (_ paramBody "DEP")))))
+		(_FSET (_ 'currentShelfDEP2 (_S2V (_& (_ paramBody "DEP2")))))
+		(_FSET (_ 'currentShelfELEV (+ (_S2V (_& (_ paramBody "ELEV"))))))
+		(_FSET (_ 'currentShelfTHICKNESS (_S2V (_& (_ paramBody "THICKNESS")))))
+		
+		(if (or (and (>= currentShelfHEI LIMIT_FOR_MIDDLE_HOLE_GROUP) (>= currentShelfWID LIMIT_FOR_MIDDLE_HOLE_GROUP)) (_NOTNULL IS_MIDDLE_HOLE_GROUP_AVAILABLE))
+			(progn
+				(_FSET (_ 'thirdHoleGroup T))
+				(_FSET (_ 'thirdHoleGroupOffsetDEP (+ (/ currentShelfDEP 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+				(_FSET (_ 'thirdHoleGroupOffsetDEP2 (+ (/ currentShelfDEP2 2.0) MIDDLE_HOLE_GROUP_OFFSET_FROM_CENTER_OF_SIDE)))
+				
+				(_ITEMMAIN SHELF_PIN_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS 1.5) SHELF_PIN_UNIT))
+			)
+			(progn
+				(_FSET (_ 'thirdHoleGroup nil))
+				(_ITEMMAIN SHELF_PIN_CODE currentShelfCODE (_ (* QUANTITY_OF_ITEM QUANTITY_OF_SHELF_PINS) SHELF_PIN_UNIT))
+			)
+		)
+		(_FSET (_ 'currentDivisionELEV (_S2V (_& (_ currentDivision "_STARTFROMBOTTOM")))))
+		(_FSET (_ 'holePosOnAxisY (_= "currentDivisionELEV + currentShelfELEV - bottomSideStyleV1")))
+		; Center holes
+		(_FSET (_ 'holeCodeBody (_& (_ "AK_SHELF_HOLE_" divisionCounter "_" shelfCounter "_"))))
+
+		(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+			(progn
+				(_FSET (_ 'holePosition_RF (- AK_NOTCHED_RIGHT_PANEL_WID (+ ASHELF_FRONT_OFFSET AK_ASHELF_FRONT_HOLE_OFFSET))))
+				(_FSET (_ 'holePosition_RB (_= "AK_NOTCHED_RIGHT_PANEL_WID - currentShelfDEP - ASHELF_FRONT_OFFSET + AK_ASHELF_BACK_HOLE_OFFSET")))
+				
+				(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RF")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RF holePosOnAxisY 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))			
+				(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RB")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RB holePosOnAxisY 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+				(if (_NOTNULL thirdHoleGroup)
+					(progn
+						(_FSET (_ 'holePosition_LM (- AK_NOTCHED_RIGHT_PANEL_WID (+ ASHELF_FRONT_OFFSET thirdHoleGroupOffsetDEP))))
+						(_HOLE (_& (_ holeCodeBody centerGroupIndex "_RM")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_LM holePosOnAxisY 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					)
+				)
+			)
+		)
+		; Upper-than-center holes
+		(_FSET (_ 'stepCounter 1))
+		(repeat SHELF_HOLES_EXTRA_UP
+			(_FSET (_ 'currentStepHEI (+ holePosOnAxisY (* stepCounter HOLE_GROUP_DISTANCE))))
+			(_FSET (_ 'currentHoleIndex (+ centerGroupIndex stepCounter)))
+			(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+				(progn
+					(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RF currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RB currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					(if (_NOTNULL thirdHoleGroup)
+						(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RM")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_LM currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					)
+				)
+			)
+			(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+		)
+		; Lower-than-center holes
+		(_FSET (_ 'stepCounter 1))
+		(repeat SHELF_HOLES_EXTRA_DOWN
+			(_FSET (_ 'currentStepHEI (- holePosOnAxisY (* stepCounter HOLE_GROUP_DISTANCE))))
+			(_FSET (_ 'currentHoleIndex (- centerGroupIndex stepCounter)))
+			(if (_EXISTPANEL AK_NOTCHED_RIGHT_PANEL_CODE)
+				(progn
+					(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RF")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RF currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RB")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_RB currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					(if (_NOTNULL thirdHoleGroup)
+						(_HOLE (_& (_ holeCodeBody currentHoleIndex "_RM")) AK_NOTCHED_RIGHT_PANEL_CODE (_ (_ holePosition_LM currentStepHEI 0) ASHELF_HOLE_DIAMETER ASHELF_HOLE_DEPTH))
+					)
+				)
+			)
+			(_FSET (_ 'stepCounter (+ 1 stepCounter)))
+		)
+	)
+)

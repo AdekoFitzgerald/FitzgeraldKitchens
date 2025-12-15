@@ -1,0 +1,37 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+
+(createGPanel 
+
+(list 
+(list 0.0 0.0 0.0) 
+(list (cm 2.6) 0.0 0.0) 
+(list (cm 2.6) (cm 0.62) 0.0) 
+(list (cm 1.64) (cm 0.62) 0.0) 
+(list (cm 1.46) (cm 0.65) 0.0) 
+(list (cm 1.29) (cm 0.72) 0.0) 
+(list (cm 1.15) (cm 0.83) 0.0) 
+(list (cm 1.04) (cm 0.97) 0.0) 
+(list (cm 0.97) (cm 1.14) 0.0) 
+(list (cm 0.94) (cm 1.32) 0.0) 
+(list (cm 0.94) (cm 5.8) 0.0) 
+(list (cm 0.00) (cm 5.8) 0.0) 
+) 
+
+nil
+
+(+ gor_GEN (cm 11.45))
+0.0
+0.0
+(list 0.0 (+ (- unitD) (cm 2.6)) (- (+ dAltKot unitH) (cm 5.8)))
+
+"L_PRFL" 
+
+"" 
+
+nil 
+
+"SIDE" 
+
+(strcat kodBlock "_ALUMINIUM_FRAME")
+"ALUMINIUM_FRAME"
+)

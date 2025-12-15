@@ -1,0 +1,53 @@
+;(_RUNDEFAULTHELPERRCP "UNIFIXT_DEFAULT" nil "p2chelper")
+
+(setq WARDROBE_UNIFIXT_VER_HOLE_DEPTH (cu2mm UNIFIXT_MAIN_DEP))
+(setq WARDROBE_UNIFIXT_VER_HOLE_DIA (cu2mm UNIFIXT_MAIN_DIA))
+(setq WARDROBE_UNIFIXT_VER_HOLE_DIS (cu2mm UNIFIXT_MAIN_DIS))
+(setq WARDROBE_UNIFIXT_VER_HOLE_BODY_WID (cu2mm UNIFIXT_BODY_WID))
+(setq WARDROBE_UNIFIXT_VER_HOLE_GROOVE_WID (cu2mm UNIFIXT_GROOVE_WID))
+(setq WARDROBE_UNIFIXT_VER_HOLE_GROOVE_DEP_CHANGE (cu2mm UNIFIXT_GROOVE_DEP_CHANGE))
+(setq WARDROBE_UNIFIXT_APP_DIS (cu2mm UNIFIXT_APP_DIS))
+
+(setq WARDROBE_UNIFIXT_ADD_FLANGE				(equal UNIFIXT_W_ADD_FLANGE 1.0)			)
+(setq WARDROBE_UNIFIXT_FLANGE_OUTSIDE_OVERFLOW	(cu2mm UNIFIXT_W_FLANGE_OUTSIDE_OVERFLOW)	)
+(setq WARDROBE_UNIFIXT_FLANGE_DEPTH			(cu2mm UNIFIXT_W_FLANGE_DEPTH)				)
+
+(_RUNDEFAULTHELPERRCP "WARDROBE_DEFAULT" nil "p2chelper")
+
+(_FSET (_ 'connectorInfo (_GETTOUCHES)))
+(_FSET (_ 'targetPanels (getnth 2 connectorInfo)))
+(if (equal (length targetPanels) 2)
+	(progn
+		(_FSET (_ 'panelCounter 0))
+		(repeat (length targetPanels)
+			(_FSET (_ 'tPanelInfo (getnth panelCounter targetPanels)))
+			(_SETCURMODUL (getnth 0 tPanelInfo))
+			
+			(_FSET (_ 'connectedFaceCode WARDROBE_PANELS_GENERAL_CODE))
+			(_FSET (_ 'currentFaceNormal (getnth 1 tPanelInfo)))
+			
+			(_FSET (_ 'holePosition (mapcar '(lambda(x) (cu2mm x)) (getnth 7 tPanelInfo))))
+			(_FSET (_ 'holeOrient (_DETERMINEHOLEORIENT currentFaceNormal)))
+			(if (_ISHORIZONTALFACE currentFaceNormal)
+				(progn
+					(if (null (minusp (getnth 2 holePosition)))
+						(setq holePosition (replace (* (getnth 2 holePosition) -1) 2 holePosition))
+					)
+					(if (not (equal (* -1 (getnth 2 holePosition)) (- (cu2mm UNIFIXT_OPP_POS) (cu2mm UNIFIXT_H)) 0.01))
+						(_FSET (_ 'connectedFaceCode (_& (_ connectedFaceCode "!!SFACE"))))
+					)
+					(setq holePosition (replace 0 2 holePosition))
+					
+					; Type of current face is either 2, 3, 4 or 5 in this case
+					;(_FSET (_ 'holeCodeBody (_& (_ connectedFaceCode "_UNIFIXT_HOUSING_HOLE"))))
+					(_UNIFIXT "HOUSING_CONN" connectedFaceCode (list holePosition (list WARDROBE_UNIFIXT_VER_HOLE_DEPTH WARDROBE_UNIFIXT_VER_HOLE_DIA WARDROBE_UNIFIXT_VER_HOLE_DIS WARDROBE_UNIFIXT_VER_HOLE_BODY_WID WARDROBE_UNIFIXT_VER_HOLE_GROOVE_WID WARDROBE_UNIFIXT_VER_HOLE_GROOVE_DEP_CHANGE WARDROBE_UNIFIXT_ADD_FLANGE WARDROBE_UNIFIXT_FLANGE_OUTSIDE_OVERFLOW WARDROBE_UNIFIXT_FLANGE_DEPTH WARDROBE_UNIFIXT_APP_DIS nil nil nil nil WARDROBE_UNIFIXT_CODE WARDROBE_UNIFIXT_UNIT nil)) holeOrient)
+				)
+			)
+			(_RESETCURMODUL)
+			(_FSET (_ 'panelCounter (+ 1 panelCounter)))
+		)
+		(_SETCURMODUL __CONNECTORPARENT)
+		(_RESETCURMODUL)
+	)
+)
+(_NONOTCH)

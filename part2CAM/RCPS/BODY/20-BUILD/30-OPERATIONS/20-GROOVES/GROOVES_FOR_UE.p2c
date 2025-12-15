@@ -1,0 +1,173 @@
+(_RUNDEFAULTHELPERRCP "BACK_PANEL_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OBLIQUE_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "OPERATIONS_DEFAULT" nil "p2chelper")
+
+(if (and (_NOTNULL PERFORM_GROOVES) (_NOTNULL OBLIQUE_UNIT_CONTROL))
+	(progn
+		(_FSET (_ 'backUpFor_UPPR USE_PROJECT_PRICING_RECIPES))
+		(_FSET (_ 'USE_PROJECT_PRICING_RECIPES nil))
+		; Only if there is a wall oblique back panel
+		(if (_EXISTPANEL UE_BACK_PANEL_CODE)
+			(progn
+				(_FSET (_ 'grooveCenterDistance (+ (/ GROOVE_WID 2.0) GROOVE_DISTANCE)))
+				(_FSET (_ 'panelDepthAfterGroove (- __AD_PANELTHICK GROOVE_DEPTH)))
+				
+				(if (_EXISTPANEL UE_TOP_PANEL_CODE)
+					(progn
+						(_FSET (_ 'UE_BACK_PANEL_HEI (_= "UE_BACK_PANEL_HEI - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceTP grooveCenterDistance))
+								
+								(if (equal TOPSIDE_STYLE "TOP_ON_SIDES")
+									(_FSET (_ 'topSideOffset panelDepthAfterGroove))
+									(_FSET (_ 'topSideOffset 0))
+								)
+								(if (null GROOVE_STOP_DISTANCE_TOP_LEFT)
+									(_FSET (_ 'topPanelLeftDist topSideOffset))
+									(_FSET (_ 'topPanelLeftDist GROOVE_STOP_DISTANCE_TOP_LEFT))
+								)
+								(if (null GROOVE_STOP_DISTANCE_TOP_RIGHT)
+									(_FSET (_ 'topPanelRightDist (- UE_TOP_PANEL_WID topSideOffset)))
+									(_FSET (_ 'topPanelRightDist (- UE_TOP_PANEL_WID GROOVE_STOP_DISTANCE_TOP_RIGHT)))
+								)
+								
+								(_GROOVE (_& (_ OBLIQUE_PARAM_ROOT "_TOP_PANEL_GROOVE")) UE_TOP_PANEL_CODE (_ (_ (_ topPanelLeftDist grooveDistanceTP 0)
+																												 (_ topPanelRightDist grooveDistanceTP 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+						(_FSET (_ 'noTopPanel nil))
+					)
+					(_FSET (_ 'noTopPanel T))
+				)
+				(if (_EXISTPANEL UE_BOTTOM_PANEL_CODE)
+					(progn
+						(_FSET (_ 'UE_BACK_PANEL_HEI (_= "UE_BACK_PANEL_HEI - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(_FSET (_ 'grooveDistanceBP (- UE_BOTTOM_PANEL_HEI grooveCenterDistance)))
+								
+								(if (equal BOTTOMSIDE_STYLE "SIDES_ON_BOTTOM")
+									(_FSET (_ 'bottomSideOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomSideOffset 0))
+								)
+								(if (null GROOVE_STOP_DISTANCE_BOTTOM_LEFT)
+									(_FSET (_ 'bottomPanelLeftDist bottomSideOffset))
+									(_FSET (_ 'bottomPanelLeftDist GROOVE_STOP_DISTANCE_BOTTOM_LEFT))
+								)
+								(if (null GROOVE_STOP_DISTANCE_BOTTOM_RIGHT)
+									(_FSET (_ 'bottomPanelRightDist (- UE_BOTTOM_PANEL_WID bottomSideOffset)))
+									(_FSET (_ 'bottomPanelRightDist (- UE_BOTTOM_PANEL_WID GROOVE_STOP_DISTANCE_BOTTOM_RIGHT)))
+								)
+								
+								(_GROOVE (_& (_ OBLIQUE_PARAM_ROOT "_BOTTOM_PANEL_GROOVE")) UE_BOTTOM_PANEL_CODE (_ (_ (_ bottomPanelLeftDist grooveDistanceBP 0) 
+																													   (_ bottomPanelRightDist grooveDistanceBP 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+						(_FSET (_ 'noBottomPanel nil))
+					)
+					(_FSET (_ 'noBottomPanel T))
+				)
+				(if (_EXISTPANEL UE_LONG_SIDE_PANEL_CODE)
+					(progn
+						(_FSET (_ 'UE_BACK_PANEL_WID (_= "UE_BACK_PANEL_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(cond
+									((equal __MODULDIRECTION "L")
+										; Acts like RIGHT panel
+										(_FSET (_ 'stopDistanceTOP GROOVE_STOP_DISTANCE_RIGHT_TOP))
+										(_FSET (_ 'stopDistanceBOTTOM GROOVE_STOP_DISTANCE_RIGHT_BOTTOM))
+									)
+									((equal __MODULDIRECTION "R")
+										; Acts like LEFT panel
+										(_FSET (_ 'stopDistanceTOP GROOVE_STOP_DISTANCE_LEFT_TOP))
+										(_FSET (_ 'stopDistanceBOTTOM GROOVE_STOP_DISTANCE_LEFT_BOTTOM))
+									)
+								)
+								(_FSET (_ 'grooveDistanceLSP (- UE_LONG_SIDE_PANEL_WID grooveCenterDistance)))
+								
+								(if (or (_NOTNULL noTopPanel) (equal TOPSIDE_STYLE "TOP_ON_SIDES"))
+									(_FSET (_ 'topSideOffset 0))
+									(_FSET (_ 'topSideOffset panelDepthAfterGroove))
+								)
+								(if (and (equal BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES") (null noBottomPanel))
+									(_FSET (_ 'bottomSideOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomSideOffset 0))
+								)
+								(if (null stopDistanceTOP)
+									(_FSET (_ 'longSideTopDist (- UE_LONG_SIDE_PANEL_HEI topSideOffset)))
+									(_FSET (_ 'longSideTopDist (- UE_LONG_SIDE_PANEL_HEI stopDistanceTOP)))
+								)
+								(if (null stopDistanceBOTTOM)
+									(_FSET (_ 'longSideBottomDist bottomSideOffset))
+									(_FSET (_ 'longSideBottomDist stopDistanceBOTTOM))
+								)
+								
+								(_GROOVE (_& (_ OBLIQUE_PARAM_ROOT "_LONG_SIDE_PANEL_GROOVE")) UE_LONG_SIDE_PANEL_CODE (_ (_ (_ grooveDistanceLSP longSideTopDist 0)
+																															 (_ grooveDistanceLSP longSideBottomDist 0)) GROOVE_WID GROOVE_DISTANCE))
+							)
+						)
+					)
+				)
+				(if (_EXISTPANEL UE_SHORT_SIDE_PANEL_CODE)
+					(progn
+						(_FSET (_ 'UE_BACK_PANEL_WID (_= "UE_BACK_PANEL_WID - panelDepthAfterGroove - backpanelDimensionsReductionForGrooveAssembly")))
+						
+						(if (null USE_PROJECT_PRICING_RECIPES)
+							(progn
+								(cond
+									((equal __MODULDIRECTION "L")
+										; Acts like LEFT panel
+										(_FSET (_ 'stopDistanceTOP GROOVE_STOP_DISTANCE_LEFT_TOP))
+										(_FSET (_ 'stopDistanceBOTTOM GROOVE_STOP_DISTANCE_LEFT_BOTTOM))
+									)
+									((equal __MODULDIRECTION "R")
+										; Acts like RIGHT panel
+										(_FSET (_ 'stopDistanceTOP GROOVE_STOP_DISTANCE_RIGHT_TOP))
+										(_FSET (_ 'stopDistanceBOTTOM GROOVE_STOP_DISTANCE_RIGHT_BOTTOM))
+									)
+								)
+								(_FSET (_ 'grooveDistanceSSP (- UE_SHORT_SIDE_PANEL_WID grooveCenterDistance)))
+								
+								(if (or (_NOTNULL noTopPanel) (equal TOPSIDE_STYLE "TOP_ON_SIDES"))
+									(_FSET (_ 'topSideOffset 0))
+									(_FSET (_ 'topSideOffset panelDepthAfterGroove))
+								)
+								(if (and (equal BOTTOMSIDE_STYLE "BOTTOM_BETWEEN_SIDES") (null noBottomPanel))
+									(_FSET (_ 'bottomSideOffset panelDepthAfterGroove))
+									(_FSET (_ 'bottomSideOffset 0))
+								)
+								(if (null stopDistanceTOP)
+									(_FSET (_ 'shortSideTopDist (- UE_SHORT_SIDE_PANEL_HEI topSideOffset)))
+									(_FSET (_ 'shortSideTopDist (- UE_SHORT_SIDE_PANEL_HEI stopDistanceTOP)))
+								)
+								(if (null stopDistanceBOTTOM)
+									(_FSET (_ 'shortSideBottomDist bottomSideOffset))
+									(_FSET (_ 'shortSideBottomDist stopDistanceBOTTOM))
+								)
+								
+								(_GROOVE (_& (_ OBLIQUE_PARAM_ROOT "_SHORT_SIDE_PANEL_GROOVE")) UE_SHORT_SIDE_PANEL_CODE (_ (_ (_ grooveDistanceSSP shortSideTopDist 0)
+																															   (_ grooveDistanceSSP shortSideBottomDist 0)) GROOVE_WID GROOVE_DEPTH))
+							)
+						)
+					)
+				)
+				; (_DELPANEL UE_BACK_PANEL_CODE)
+				; (_FSET (_ 'UE_BACK_PANEL_PDATA (_GENERATEPDATA UE_BACK_PANEL_WID UE_BACK_PANEL_HEI)))
+				; (_PANELMAIN UE_BACK_PANEL_CODE (_ UE_BACK_PANEL_PDATA UE_BACK_PANEL_ROT UE_BACK_PANEL_MAT UE_BACK_PANEL_THICKNESS))
+				
+				; (_PUTLABEL UE_BACK_PANEL_CODE UE_BACK_PANEL_CODE UE_BACK_PANEL_LABEL)
+				; (_PUTTAG UE_BACK_PANEL_CODE UE_BACK_PANEL_CODE UE_BACK_PANEL_TAG)
+				
+				
+			)
+		)
+		(_FSET (_ 'USE_PROJECT_PRICING_RECIPES backUpFor_UPPR))
+	)
+)
+(_NONOTCH)

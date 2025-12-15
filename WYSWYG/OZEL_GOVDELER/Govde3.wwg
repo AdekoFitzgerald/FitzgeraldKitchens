@@ -1,0 +1,254 @@
+(setq atolerans 1.3) 													"Alt kutuyla raflý pano arasýndaki fark"
+(setq raftolerans 0.5)	 												"Raflarýn dikmeye göre çektirme ölçüsü"
+(setq tutucuH 2.5)	 													"Sað ve soldaki kalýnlaþtýrma geniþliði"
+(setq arafCW 7.0)	 													"Sað ve soldaki kalýnlaþtýrma geniþliði"
+(setq arafCH 12.0)	 													"Üst kalýnlaþtýrma yüksekliði"
+(setq arafPanelh (- unitH dAltKot))										"Bazasýz yükseklik"
+(setq arafPanelh2 (- arafPanelh arafCH))								"Bazasýz yükseklik iç"
+(setq arafPanelw  (- unitW atolerans atolerans))						"Tolerans sonrasý geniþlik"
+(setq arafPanelw2  (- arafPanelw arafCW))								"Tolerans sonrasý geniþlik iç"
+(setq arafPanelor  10.0)												"Orta raf geniþliði"
+(setq arafhq  5.0)														"Bölüm sayýsý"
+(setq arafq  (- arafhq 1.0))											"Raf sayýsý"
+(setq arafbh (/ (- arafPanelh2 (* arafhq ad_et)) arafhq))				"Bölüm yüksekliði"
+(setq arafw (/ (- arafPanelw2 arafCW arafPanelor ad_et ad_et) 2))		"Bölüm geniþliði"
+
+
+
+
+
+(setq indexH 0)
+(setq arafhq (atoi (rtos arafhq 2 0)))
+
+(repeat arafhq
+	
+	(setq arafh (* indexH (+ ad_et arafbh)))
+
+
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list arafPanelor 0.0 0.0) 
+			(list arafPanelor (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+			(list 0.0 (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		;(d2r 90.0)
+		0.0
+		(list (+ (- (- (- (/ unitW 2) (/ ad_et 2)) (/ arafPanelor 2)) (/ ad_et 2)) ad_et) (- ad_et) (+ arafh dAltKot))
+		"ORTA_RAFLAR"
+		""
+		nil
+		"SHELF"
+		(strcat kodBlock "_ORTA_RAFLAR")
+		"LACQUER"
+		"noedgedrawing"
+	)
+	
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list arafw 0.0 0.0) 
+			(list arafw (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+			(list 0.0 (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		;(d2r 90.0)
+		0.0
+		(list (+ arafCW atolerans) (- ad_et) (+ arafh dAltKot))
+		"SOL_RAFLAR"
+		""
+		nil
+		"SHELF"
+		(strcat kodBlock "_SOL_RAFLAR")
+		"LACQUER"
+		"noedgedrawing"
+	)
+
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list arafw 0.0 0.0) 
+			(list arafw (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+			(list 0.0 (- unitD atolerans ad_et raftolerans ad_et) 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		;(d2r 90.0)
+		0.0
+		(list (+ arafCW atolerans arafw arafPanelor ad_et ad_et) (- ad_et) (+ arafh dAltKot))
+		"SAG_RAFLAR"
+		""
+		nil
+		"SHELF"
+		(strcat kodBlock "_SOL_RAFLAR")
+		"LACQUER"
+		"noedgedrawing"
+	)
+
+	
+	(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+	(createGPanel 
+		(list 
+			(list 0.0 0.0 0.0) 
+			(list (- unitW arafCW arafCW atolerans atolerans) 0.0 0.0) 
+			(list (- unitW arafCW arafCW atolerans atolerans) tutucuH 0.0) 
+			(list 0.0 tutucuH 0.0) 
+		) 
+		nil
+		ad_et
+		0.0
+		(d2r 90.0) 
+		(list (+ arafCW atolerans) (+ (- unitD ) raftolerans atolerans) (+ arafh dAltKot))
+		"ORTA_RAFLAR_TUTUCU" 
+		"" 
+		nil 
+		"SIDE" 
+		(strcat kodBlock "_ORTA_RAFLAR_TUTUCU")
+		"LACQUER"
+		"noedgedrawing"
+	)
+	
+
+	(setq indexH (1+ indexH))
+
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list unitW 0.0 0.0) 
+		(list unitW unitD 0.0) 
+		(list 0.0 unitD 0.0) 
+	) 
+	nil
+	dAltKot
+	0.0
+	;(d2r 90.0)
+	0.0
+	(list 0.0 0.0 0.0)
+	"ALT_KUTU"
+	""
+	nil
+	"SHELF"
+	(strcat kodBlock "_ALT_KUTU")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 			0.0 		0.0) 
+		(list arafCW 		0.0 		0.0) 
+		(list arafCW 		arafPanelh2 0.0) 
+		(list arafPanelw2 	arafPanelh2 0.0) 
+		(list arafPanelw2 	0.0 		0.0) 
+		(list arafPanelw 	0.0 		0.0) 
+		(list arafPanelw 	arafPanelh 	0.0) 
+		(list 0.0 		    arafPanelh 	0.0) 
+		(list 0.0 			0.0 		0.0) 
+		(list arafCW 		0.0 		0.0) 
+	) 
+	nil
+	(- unitD atolerans)
+	0.0
+	(d2r 90.0) 
+	(list atolerans (+ (- unitD) atolerans) dAltKot)
+	"ON_PANEL" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_ON_PANEL")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitW arafCW arafCW atolerans atolerans) 0.0 0.0) 
+		(list (- unitW arafCW arafCW atolerans atolerans) (- unitH arafCH dAltKot) 0.0) 
+		(list 0.0 (- unitH arafCH dAltKot) 0.0) 
+	) 
+	nil
+	ad_et
+	0.0
+	(d2r 90.0) 
+	(list (+ arafCW atolerans) (- ad_et) dAltKot)
+	"ARKALIK" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_ARKALIK")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD atolerans ad_et) 0.0 0.0) 
+		(list (- unitD atolerans ad_et) (- unitH arafCH dAltKot) 0.0) 
+		(list 0.0 (- unitH arafCH dAltKot) 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0 
+	0.0 
+	
+	(list (- (- (- (/ unitW 2) (/ ad_et 2)) (/ arafPanelor 2)) (/ ad_et 2))  (- ad_et) dAltKot)
+	
+	"SOL_DIKME" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_SOL_DIKME")
+	"LACQUER"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list (- unitD atolerans ad_et) 0.0 0.0) 
+		(list (- unitD atolerans ad_et) (- unitH arafCH dAltKot) 0.0) 
+		(list 0.0 (- unitH arafCH dAltKot) 0.0) 
+	) 
+	nil
+	ad_et 
+	0.0 
+	0.0 
+	
+	(list (+ (+ (- (/ unitW 2) (/ ad_et 2)) (/ arafPanelor 2)) (/ ad_et 2))  (- ad_et) dAltKot)
+	
+	"SAG_DIKME" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_SAG_DIKME")
+	"LACQUER"
+	"noedgedrawing"
+
+)
+
+
+
+

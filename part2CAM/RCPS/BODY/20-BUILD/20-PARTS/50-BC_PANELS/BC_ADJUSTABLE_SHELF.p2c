@@ -1,0 +1,81 @@
+(_RUNDEFAULTHELPERRCP "BC_DEFAULT" nil "p2c")
+(_RUNDEFAULTHELPERRCP "ASHELF_AND_DIVIDER_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "EDGES_DEFAULT" nil "p2chelper")
+(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+
+(if (_NOTNULL FRIDGE_CABINET_CONTROL)
+	(progn
+		; Material controls for fridge cabinet adjustable shelves
+		(if (and (equal (length __CURDIVDOORSLIST) 0) (not (equal g_iUnitShelfLayer 1)))
+			(_FSET (_ 'currentShelfMAT (_GETLAYERMAT "SHELVES")))
+			(_FSET (_ 'currentShelfMAT __MODULBODYMAT))
+		)
+		; Edgestrip material controls
+		(if (null BC_ASHELF_LEFT_EDGESTRIP_MAT) (_FSET (_ 'BC_ASHELF_LEFT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+		(if (null BC_ASHELF_RIGHT_EDGESTRIP_MAT) (_FSET (_ 'BC_ASHELF_RIGHT_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+		(if (null BC_ASHELF_TOP_EDGESTRIP_MAT) (_FSET (_ 'BC_ASHELF_TOP_EDGESTRIP_MAT SHELF_HIDDEN_EDGES_MAT)))
+		(if (null BC_ASHELF_BOTTOM_EDGESTRIP_MAT) (_FSET (_ 'BC_ASHELF_BOTTOM_EDGESTRIP_MAT SHELF_FRONTSIDE_EDGES_MAT)))
+		
+		(_ADDPARTMAT2EDGESTRIPS (_ 'BC_ASHELF_LEFT_EDGESTRIP_MAT 'BC_ASHELF_RIGHT_EDGESTRIP_MAT 'BC_ASHELF_TOP_EDGESTRIP_MAT 'BC_ASHELF_BOTTOM_EDGESTRIP_MAT) currentShelfMAT ADD_PART_MATERIAL)
+		; Width of edgestrips are taken from database
+		(_FSET (_ 'LEFT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BC_ASHELF_LEFT_EDGESTRIP_MAT)))
+		(_FSET (_ 'RIGHT_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BC_ASHELF_RIGHT_EDGESTRIP_MAT)))
+		(_FSET (_ 'TOP_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BC_ASHELF_TOP_EDGESTRIP_MAT)))
+		(_FSET (_ 'BOTTOM_EDGESTRIP_WID (_GETEDGESTRIPWIDFROMDB BC_ASHELF_BOTTOM_EDGESTRIP_MAT)))
+		; Control for cutlist and dxf rotation
+		(if (null BC_ASHELF_PANEL_CUTLIST_ROTATION) (_FSET (_ 'BC_ASHELF_PANEL_CUTLIST_ROTATION __MODULBODYMATROT)))
+		(if (null BC_ASHELF_PANEL_DXF_ROTATION) (_FSET (_ 'BC_ASHELF_PANEL_DXF_ROTATION __MODULBODYMATROT)))
+		; Exact positions of shelves are not determined in fridge cabinet modules unlike GM1. Thats why positions of adjustable shelf will be calculated in here
+		(_FSET (_ 'shareOfPanels (* __AD_PANELTHICK (+ __SHELFNO 2.0))))
+		(_FSET (_ 'numberOfDivisions (+ __SHELFNO 1.0)))
+		(_FSET (_ 'heightOfEachDivision (/ (- __HEI2 shareOfPanels) numberOfDivisions)))
+		
+		(_FSET (_ 'currentShelfELEV (+ __AD_PANELTHICK heightOfEachDivision)))
+		(_FSET (_ 'shelfCounter 1))
+		(repeat __SHELFNO
+			(_FSET (_ 'paramBody (_& (_ "BC_ADJUSTABLE_SHELF_" shelfCounter "_"))))
+			
+			(_FSET (_ 'tempHEI (_& (_ paramBody "HEI"))))
+			(_FSET (_ 'tempWID (_& (_ paramBody "WID"))))
+			
+			(_FSET (_ 'tempROT (_& (_ paramBody "ROT"))))
+			(_FSET (_ 'tempMAT (_& (_ paramBody "MAT"))))
+			(_FSET (_ 'tempTHICKNESS (_& (_ paramBody "THICKNESS"))))
+			(_FSET (_ 'tempELEV (_& (_ paramBody "ELEV"))))
+			
+			(_FSET (_ 'tempPDATA (_& (_ paramBody "PDATA"))))
+			(_FSET (_ 'tempLABEL (_& (_ paramBody "LABEL"))))
+			(_FSET (_ 'tempTAG (_& (_ paramBody "TAG"))))
+			(_FSET (_ 'tempEDGESTRIPS (_& (_ paramBody "EDGESTRIPS"))))
+			
+			(_FSET (_ 'currentShelfCODE (_& (_ (XSTR "FRIDGE_CABINET") "_" (XSTR "ADJUSTABLE_SHELF") "_" shelfCounter))))
+			
+			(_FSET (_ (read tempHEI) (_= "__DEP2 - ASHELF_FRONT_OFFSET - GROOVE_WID - GROOVE_DISTANCE")))
+			(_FSET (_ (read tempWID) (_= "__WID - BC_LEFT_SIDE_SHARE - BC_RIGHT_SIDE_SHARE - ASHELF_SIDE_OFFSET - ASHELF_SIDE_OFFSET")))
+			
+			(_FSET (_ (read tempROT) (_ BC_ASHELF_PANEL_MAIN_ROTATION BC_ASHELF_PANEL_CUTLIST_ROTATION BC_ASHELF_PANEL_DXF_ROTATION BC_ASHELF_PANEL_MIRRORING_AXIS)))
+			(_FSET (_ (read tempMAT) currentShelfMAT))
+			(_FSET (_ (read tempTHICKNESS) BC_ASHELF_THICKNESS))
+			(_FSET (_ (read tempELEV) currentShelfELEV))
+			
+			(_FSET (_ (read tempPDATA) (_GENERATEPDATA (_S2V tempHEI) (_S2V tempWID))))
+			(_FSET (_ (read tempLABEL) (XSTR BC_ASHELF_PANEL_LABEL)))
+			(_FSET (_ (read tempTAG) BC_ASHELF_PANEL_TAG))
+			(_FSET (_ (read tempEDGESTRIPS) (_ (_ BC_ASHELF_BOTTOM_EDGESTRIP_MAT BOTTOM_EDGESTRIP_WID)
+											   (_ BC_ASHELF_LEFT_EDGESTRIP_MAT LEFT_EDGESTRIP_WID)
+											   (_ BC_ASHELF_TOP_EDGESTRIP_MAT TOP_EDGESTRIP_WID)
+											   (_ BC_ASHELF_RIGHT_EDGESTRIP_MAT RIGHT_EDGESTRIP_WID))))
+			
+			(_PANELMAIN currentShelfCODE (_ (_S2V tempPDATA) (_S2V tempROT) (_S2V tempMAT) (_S2V tempTHICKNESS)))
+			
+			(_CREATEEDGESTRIPS currentShelfCODE (_S2V tempEDGESTRIPS))
+			
+			(_PUTLABEL currentShelfCODE currentShelfCODE (_S2V tempLABEL))
+			(_PUTTAG currentShelfCODE currentShelfCODE (_S2V tempTAG))
+			
+			(_FSET (_ 'currentShelfELEV (_= "currentShelfELEV + __AD_PANELTHICK + heightOfEachDivision")))
+			(_FSET (_ 'shelfCounter (+ 1 shelfCounter)))
+		)
+	)
+)
+(_NONOTCH)

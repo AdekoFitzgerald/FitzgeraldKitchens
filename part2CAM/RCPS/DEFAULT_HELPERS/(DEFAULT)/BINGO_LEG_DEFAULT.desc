@@ -1,0 +1,5 @@
+BLEG_HOLES_SIDE -> "Which side has bingo legs; ''L'' for left, ''R'' for right", ''LR'' for both
+BLEG_HOLES_FRONT_OFFSET -> "Bingo hole front offset for side"
+BLEG_HOLES_BACK_OFFSET -> "Bingo hole back offset for side"
+BLEG_HOLE_DIAMETER -> "Bingo hole diameter for side"
+BLEG_HOLE_DEPTH -> "Bingo hole depth for side"

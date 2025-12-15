@@ -1,0 +1,86 @@
+(if (_NOTNULL USE_PROJECT_PRICING_RECIPES)
+	(progn
+		; If project pricing recipes will be used instead of operations then there is no need for notch operations also
+		(_NONOTCH)
+	)
+	(progn
+		(_FSET (_ 'codeBody (_& (_ (XSTR "DRAWER") "_" (getnth 0 CURRENT_DRAWER_DATA) "_" (getnth 1 CURRENT_DRAWER_DATA) "_"))))
+		(_FSET (_ 'paramRoot (_& (_ "DRAWER_" (getnth 0 CURRENT_DRAWER_DATA) "_" (getnth 1 CURRENT_DRAWER_DATA) "_"))))
+		; Unique code of drawer panels
+		(_FSET (_ 'DRAWER_LEFT_PANEL_CODE (_& (_ codeBody (XSTR "LEFT_PANEL") "!!SFACE"))))
+		(_FSET (_ 'DRAWER_RIGHT_PANEL_CODE (_& (_ codeBody (XSTR "RIGHT_PANEL") "!!SFACE"))))
+						
+		(_FSET (_ 'paramBody (_& (_ "CDOOR_" __CURDIVORDER "_1_"))))
+		
+		(_FSET (_ 'currentDoorTYPE (_S2V (_& (_ paramBody "TYPE")))))
+		(if (_NOTNULL currentDoorTYPE)
+			(progn
+				(if (and (_ISDOORDRAWER currentDoorTYPE) (_NOTNULL indexOfRail))
+					(progn
+						; HOLE OPERATIONS
+						; If our drawer depth is a valid one for any package then operations are performed
+						;(_FSET (_ 'activeRailPackage (getnth indexOfRail RAIL_HOLES_FOR_RAIL_PACKAGES)))
+						
+						(_FSET (_ 'currentPackageCode (getnth 1 activeRailPackage)))
+						; 0 and 1 indexes are occupied by upper limit of rail package and rail package code
+						(_FSET (_ 'railCounter 2))
+						(while (< railCounter (length activeRailPackage))
+							(_FSET (_ 'currentHole (getnth railCounter activeRailPackage)))
+							
+							(_FSET (_ 'currentHoleDiameter (getnth 0 currentHole)))
+							(_FSET (_ 'currentHoleDepth (getnth 1 currentHole)))
+							(_FSET (_ 'currentHolePosition (getnth 2 currentHole)))
+							
+							(_FSET (_ 'holePosX (getnth 0 currentHolePosition)))
+							(_FSET (_ 'holePosX_left (+ (getnth 0 currentHolePosition) LEFT_PANEL_FRONT_VARIANCE)))
+							(_FSET (_ 'holePosX_right (+ (getnth 0 currentHolePosition) RIGHT_PANEL_FRONT_VARIANCE)))
+							(_FSET (_ 'holePosY (getnth 1 currentHolePosition)))
+							(_FSET (_ 'holePosZ (getnth 2 currentHolePosition)))
+							; According to the position of drawer in module, hole position on Y-axis is updated
+							(_FSET (_ 'holePosY_Left (_= "holePosY + currentDoorElev - bottomSideStyleV1 + LEFT_PANEL_LOWER_VARIANCE")))
+							(_FSET (_ 'holePosY_Right (_= "holePosY + currentDoorElev - bottomSideStyleV1 + RIGHT_PANEL_LOWER_VARIANCE")))
+							; Validation controls for current hole
+							(_FSET (_ 'frontSideControl (< (/ currentHoleDiameter 2.0) holePosX)))
+							(_FSET (_ 'backSideControl (> maxDrawerDepthPossible (+ holePosX (/ currentHoleDiameter 2.0)))))
+							(if (and frontSideControl backSideControl)
+								(progn
+									(if (_EXISTPANEL LEFT_PANEL_CODE)
+										(_HOLE (_& (_ "LEFT_PANEL_DRAWER_RAIL_HOLE_" (- railCounter 1))) LEFT_PANEL_CODE (_ (_ holePosX_left holePosY_Left holePosZ) currentHoleDiameter currentHoleDepth))
+									)
+									(if (_EXISTPANEL RIGHT_PANEL_CODE)
+										(_HOLE (_& (_ "RIGHT_PANEL_DRAWER_RAIL_HOLE_" (- railCounter 1))) RIGHT_PANEL_CODE (_ (_ (- RIGHT_PANEL_WID holePosX_right) holePosY_Right holePosZ) currentHoleDiameter currentHoleDepth))
+									)
+								)
+							)
+							
+							; Drawer rail holes for drawer sides						
+							(if (_NOTNULL RAIL_HOLES_FOR_DRAWER_SIDES_AVAILABLE)
+								(progn
+									(if (_EXISTPANEL DRAWER_LEFT_PANEL_CODE)
+										(_HOLE (_& (_ DRAWER_LEFT_PANEL_CODE "_RAIL_HOLE_" (- railCounter 1))) DRAWER_LEFT_PANEL_CODE (_ (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST) RAIL_HOLES_FOR_DRAWER_SIDES_DIAMETER RAIL_HOLES_FOR_DRAWER_SIDES_DEPTH))
+									)
+									(if (_EXISTPANEL DRAWER_RIGHT_PANEL_CODE)
+										(progn
+											(_FSET (_ 'dRightPanelWID (_S2V (_& (_ paramRoot "RIGHT_PANEL_WID")))))
+											(_HOLE (_& (_ DRAWER_RIGHT_PANEL_CODE "_RAIL_HOLE_" (- railCounter 1))) DRAWER_RIGHT_PANEL_CODE (_ (_ (- dRightPanelWID (car (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST))) (cadr (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST)) (caddr (getnth (- railCounter 2) RAIL_HOLES_FOR_DRAWER_SIDES_LIST))) RAIL_HOLES_FOR_DRAWER_SIDES_DIAMETER RAIL_HOLES_FOR_DRAWER_SIDES_DEPTH))
+										)
+									)								
+								)
+							)							
+							
+							(_FSET (_ 'railCounter (+ 1 railCounter)))
+						)
+						; Item of rail package is added
+						(_ITEMMAIN currentPackageCode currentPackageCode (_ 1 "kit"))
+						
+						(if IS_RAIL_BACK_PANEL_HOLDER_AVAILABLE
+							(_ITEMMAIN RAIL_BACK_PANEL_HOLDER_CODE currentPackageCode (_ 1 "kit"))
+						)
+						; Variable which will be used in notch recipes is created in here
+						(if (not (equal __NOTCHTYPE 0)) (_FSET (_ 'SELECTED_RAIL_INDEX indexOfRail)))
+					)
+				)
+			)
+		)
+	)
+)

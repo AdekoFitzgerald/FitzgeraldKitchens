@@ -1,0 +1,34 @@
+(setq akkgolaprofileH (1GolaLZHei))
+(setq akkgolaprofileD (1GolaLZDep))
+(setq akkgolaprofileZ (1GolaCBtwn))
+
+(setq KAYITAKK 5)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+
+
+
+(list 
+(list (- unitD akkgolaprofileD KAYITAKK) (- unitD2 akkgolaprofileD KAYITAKK) 0)
+(list (- unitW2 ad_et) (- unitD2 akkgolaprofileD KAYITAKK) 0)
+(list (- unitW2 ad_et) (- unitD2 akkgolaprofileD) 0)
+(list (- unitD akkgolaprofileD) (- unitD2 akkgolaprofileD) 0)
+(list (- unitD akkgolaprofileD) (- unitW ad_et) 0)
+(list (- unitD akkgolaprofileD KAYITAKK) (- unitW ad_et) 0)
+)
+
+nil
+ad_et 
+0.0
+(d2r 270.00)
+(list (- unitW ad_et (- unitD2 akkgolaprofileD KAYITAKK)) 0.0 (- (+ dAltKot unitH) ad_et))
+"PANEL_TOP" 
+"" 
+nil 
+"SHELF" 
+(strcat kodBlock "_CAB_BODY_BASE")
+"CAB_BODY_BASE"
+"noedgedrawing"
+)
+

@@ -1,0 +1,8 @@
+Modul;Panel;En/Wid;Boy/Hei;Der/Dep(Tercihen/Optional);Malzeme/Material(Tercihen/Optional);SolKenarBandýMalzeme/LeftEdgeStripMaterial;SolKenarBandýKalýnlýk/LeftEdgeStripThick;SagKenarBandýMalzeme/RightEdgeStripMaterial;SagKenarBandýKalýnlýk/RightEdgeStripThick;UstKenarBandýMalzeme/TopEdgeStripMaterial;UstKenarBandýKalýnlýk/TopEdgeStripThick;AltKenarBandýMalzeme/BottomEdgeStripMaterial;AltKenarBandýKalýnlýk/BottomEdgeStripThick
+A1K 080;#KAYIT;11;22;5;;PVC1mm;1;;;;;;
+A2K 034;#SOL;11;22;18;;Pvc08mm;0.8;;;;;;
+B1K 024;#ARKA;11;22;3;;;;;;;;;
+MODUL KODU;#PANELKODU;112;232;;;;;;;;;PVC1mm;1
+MODUL KODU;panel kodu;112;232;;__MODULBODYMAT;;;;;;;;
+MODUL KODU;panel kodu;112;222;;__GENERALDOORMAT;PVC1mm;1;PVC1mm;1;PVC1mm;1;PVC1mm;1
+MODUL KODU;panel kodu;11.5;22.5;3;;PVC1mm;1;;;;;;

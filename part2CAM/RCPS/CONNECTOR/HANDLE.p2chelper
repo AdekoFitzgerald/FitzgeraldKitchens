@@ -1,0 +1,36 @@
+
+(_FSET (_ 'handleCoordInfo nil))
+(_FSET (_'handleCoordInfo (getHandlesIn g_CurrentModulEnt)))
+
+(setq ii 0)
+(repeat (length handleCoordInfo)
+	(if (setq handleCoorList (getnth 1 (getnth ii handleCoordInfo)))
+		(progn
+			(_FSET (_ 'handleName (getnth 0 (getnth ii handleCoordInfo))))
+			(_FSET (_ 'doorDir (get_Mdata g_CurrentModulEnt k:myon)))
+			(_FSET (_ 'doorWidth (cu2mm (get_Mdata g_CurrentModulEnt k:WID))))
+			
+			(_FSET (_ 'sayac 0))
+			(repeat (length handleCoorList)
+				(_FSET (_ 'handleCoordinateX (+ (/ doorWidth 2.0) (cu2mm (getnth 0 (getnth sayac handleCoorList))))))
+				(_FSET (_ 'handleCoordinateY (cu2mm (getnth 1 (getnth sayac handleCoorList)))))
+
+				(_FSET (_ 'handleHoleDia (iniread ad_WARDROBE-INI "handle_vars" "HANDLE_HOLES_DIA" "")))
+				(_FSET (_ 'handleHoleDepth (iniread ad_WARDROBE-INI "handle_vars" "HANDLES_HOLE_DEPTH" "")))
+
+				(if (and (not (equal handleHoleDia "")) (not (equal handleHoleDepth "")))
+					(progn
+						(_FSET (_ 'handleHoleDia (cu2mm (atof handleHoleDia))))
+						(_FSET (_ 'handleHoleDepth (cu2mm (atof handleHoleDepth))))
+					
+						(_HOLE "HANDLE_HOLE_0" currentDoorSecFaceCODE (_ (_ handleCoordinateX handleCoordinateY 0) handleHoleDia  handleHoleDepth))
+					)
+				)
+				(_FSET (_ 'sayac (+ sayac 1)))
+			)
+		)
+	)
+	(setq ii (+ ii 1))
+)
+
+(_NONOTCH)

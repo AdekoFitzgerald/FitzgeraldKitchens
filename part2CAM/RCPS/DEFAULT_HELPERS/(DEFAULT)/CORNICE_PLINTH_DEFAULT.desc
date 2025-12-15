@@ -1,0 +1,4 @@
+CORNICE_LENGTH_LIMIT -> "Length limit for one cornice part"
+PLINTH_LENGTH_LIMIT -> "Length limit for one plinth part"
+CORNICES_LOWER_LENGTH_LIMIT -> "Length limit for one cornices lower part"
+;PLINTH_LOWER_LENGTH_LIMIT -> "Length limit for one plinth part"

@@ -1,0 +1,4 @@
+(setq lmm-defaultUsrRcpName lmm-defaultRcpName)
+(_FSET (_ 'lmm-defaultRcpName lmm-defaultOrgRcpName))
+(_RUNHELPERRCP "BODY\\20-BUILD\\30-OPERATIONS\\10-HOLES\\95-BRACKET\\BRACKET_HOLES" T "p2c")
+(_NONOTCH)

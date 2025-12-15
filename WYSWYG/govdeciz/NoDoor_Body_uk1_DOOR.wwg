@@ -1,0 +1,7 @@
+(setq ptlst
+	(govde_ciz UDEN UDH UDDer 0.0 nil "CAB_BODY_WALL" nil nil 1) ;uk1
+)
+(if (equal how2put 5)
+	(grx_setmaterial (entlast) (GetUpKapakMat))
+	(grx_setmaterial (entlast) (GetKapakMat))
+)

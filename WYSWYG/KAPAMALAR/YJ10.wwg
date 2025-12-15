@@ -1,0 +1,154 @@
+(initget (strcat (Xstr "Top Bottom") " ~_Top ~_Bottom"))
+(setq kpmTB (getkword (Xstr "\nKapamanýn yönü nasýl yerleþsin? Top/Bottom: ")))
+(cond
+	((equal kpmTB "Bottom")		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD YJ10_T1 0.0) 
+				(list 0.0 YJ10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -90.0)
+			
+			(d2r -90.0)
+			
+			
+			(list 0.0 0.0 (+ (- unitH YJ10_T1) dAltKot))
+			
+			"YJ10_02" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YJ10_D1 0.0 0.0) 
+				(list YJ10_D1 YJ10_T1 0.0) 
+				(list 0.0 YJ10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -270.0)
+			
+			(d2r -90.0)
+			
+			
+			(list unitW (+ (- unitD) YJ10_D1) (+ YJ10_T1 dAltKot))
+			
+			"YJ10_03" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+	
+	(T		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list YJ10_D1 0.0 0.0) 
+				(list YJ10_D1 YJ10_T1 0.0) 
+				(list 0.0 YJ10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -90.0)
+			
+			(d2r -90.0)
+			
+			
+			(list 0.0 (+ (- unitD) YJ10_D1) (+ (- unitH YJ10_T1) dAltKot))
+			
+			"YJ10_03" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+		
+		(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+		(createGPanel 
+			(list 
+				(list 0.0 0.0 0.0) 
+				(list unitD 0.0 0.0) 
+				(list unitD YJ10_T1 0.0) 
+				(list 0.0 YJ10_T1 0.0) 
+			) 
+			nil
+			
+			unitW
+			
+			(d2r -270.0)
+			
+			(d2r -90.0)
+			
+			
+			(list unitW 0.0 (+ YJ10_T1 dAltKot))
+			
+			"YJ10_02" 
+			"" 
+			nil 
+			
+			"SHELF" 
+			(strcat kodBlock "_CAB_DOORS")
+			"CAB_DOORS"
+			"noedgedrawing"
+		)
+	)
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.0 (- unitH YJ10_T1 YJ10_T1) 0.0) 
+		(list YJ10_T1 (- unitH YJ10_T1 YJ10_T1) 0.0) 
+		(list YJ10_T1 0.0 0.0) 
+	) 
+	nil
+	
+	unitW
+	
+	(d2r 0.0)
+	(d2r 180.0)
+	
+	
+	(list unitW (- unitD) (+ dAltKot YJ10_T1))
+	
+	"YJ10_01" 
+	"" 
+	nil 
+	
+	"SIDE" 
+	;"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(reverseMatRot (entlast))
+

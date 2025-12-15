@@ -1,0 +1,23 @@
+(if (> __NOTCHDIM1 __AD_PANELTHICK)
+	(progn
+		(_FSET (_ 'lengthParametersForFrontNailerAndNotchedRight (_CALCULATEPANELSINTERSECTIONLENGTH FRONT_NAILER_HEI (_ 0 0 0 0))))
+		(_FSET (_ 'lengthForFrontNailerAndNotchedRight (car lengthParametersForFrontNailerAndNotchedRight)))
+		
+		(_FSET (_ 'index 0))
+		(foreach operationParams OPERATION_LIST
+			(mapcar '_SETA '(operationName connectorParams horizontalHolePos) operationParams)
+
+			(if (_EXISTPANEL NOTCHED_RIGHT_PANEL_CODE)
+				(progn
+					(_FSET (_ 'rightPanelPointListForFrontPanel (_GETHOLEPOINTLIST operationName 
+																	(_ lengthForFrontNailerAndNotchedRight (- NOTCHED_RIGHT_PANEL_WID RIGHT_PANEL_FRONT_VARIANCE FRONT_NAILER_FRONT_OFFSET OFFSET_FOR_OPPOSITE_OF_HOR_HOLES (cadr horizontalHolePos)) 0 "Y") 
+																	(_ (- NOTCHED_RIGHT_PANEL_HEI FRONT_NAILER_UP_OFFSET RIGHT_PANEL_UPPER_VARIANCE FRONT_NAILER_HEI FRONT_NAILER_TOP_OFFSET) (* -1 FRONT_NAILER_TOP_OFFSET) nil (- NOTCHED_RIGHT_PANEL_HEI FRONT_NAILER_UP_OFFSET)) 
+																	(_ FITTING_PARAMETERS nil))))
+					(_HOLEGROUP operationName NOTCHED_RIGHT_PANEL_CODE rightPanelPointListForFrontPanel (_ nil "X+") connectorParams)
+				)
+			)
+			
+			(_FSET (_ 'index (+ index 1)))
+		)
+	)
+)

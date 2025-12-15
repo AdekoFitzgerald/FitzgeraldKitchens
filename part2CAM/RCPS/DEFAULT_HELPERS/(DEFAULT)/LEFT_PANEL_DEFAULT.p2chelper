@@ -1,0 +1,105 @@
+;prefvars
+(_SETA 'VISIBLE_SIDE_BOTTOM_EXTENSION_LEFT_FLAG T)
+(_SETA 'VISIBLE_SIDE_BACK_EXTENSION_LEFT_FLAG T)
+
+
+
+(if (and (_NOTNULL __LSIDEHEI) (< 0 __LSIDEUPVAR) )
+	(set 'LEFT_PANEL_UPPER_VARIANCE (convertLengthToSpecifiedUnit __LSIDEUPVAR (getvar "INSUNITS") 4) )
+	(_SETA 'LEFT_PANEL_UPPER_VARIANCE 0)
+)
+
+(if (and (_NOTNULL __LSIDEHEI) (not (equal __LSIDEHEI 0)) (equal VISIBLE_SIDE_BOTTOM_EXTENSION_LEFT_FLAG T))
+	(set 'LEFT_PANEL_LOWER_VARIANCE (- (convertLengthToSpecifiedUnit __LSIDEHEI (getvar "INSUNITS") 4) (convertLengthToSpecifiedUnit __LSIDEUPVAR (getvar "INSUNITS") 4) __HEI ) )
+	(_SETA 'LEFT_PANEL_LOWER_VARIANCE 0)
+)
+
+(if (and (_NOTNULL __LSIDEWID) (not (equal __LSIDEWID 0)) (equal VISIBLE_SIDE_BACK_EXTENSION_LEFT_FLAG T))
+	(set 'LEFT_PANEL_BACK_VARIANCE (- (convertLengthToSpecifiedUnit __LSIDEWID (getvar "INSUNITS") 4) __DEP))
+	(_SETA 'LEFT_PANEL_BACK_VARIANCE 0)
+)
+
+(_SETA 'LEFT_PANEL_FRONT_VARIANCE 0)
+
+(_SETA 'CHANGE_SIDES_CODE nil)
+
+(_SETA 'PANEL_MAIN_ROTATION 90)
+(_SETA 'PANEL_CUTLIST_ROTATION nil)
+(_SETA 'PANEL_DXF_ROTATION nil)
+(_SETA 'PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'PANEL_LABEL "LEFT/RIGHT_PANEL")
+(_SETA 'PANEL_TAG nil)
+
+(_SETA 'VISIBLE_EDGESTRIP_MAT nil)
+(_SETA 'HIDDEN_EDGESTRIP_MAT nil)
+(_SETA 'TOP_EDGESTRIP_MAT nil)
+(_SETA 'BOTTOM_EDGESTRIP_MAT nil)
+
+(_SETA 'LEFT_PANEL_THICKNESS __AD_PANELTHICK)
+
+; If variances are different from 0, change joint types 
+(if (or (> LEFT_PANEL_UPPER_VARIANCE 0) (> LEFT_PANEL_LOWER_VARIANCE 0))
+	(progn
+		(_FSET (_ 'PANELS_JUNCTION_STYLES_DEFAULT_LOADED nil))
+		
+		(_RUNDEFAULTHELPERRCP "PANELS_JUNCTION_STYLES_DEFAULT" nil "p2chelper")
+	)
+)
+
+(_SETA 'AK_LEFT_PANEL_MAIN_ROTATION PANEL_MAIN_ROTATION)
+(_SETA 'AK_LEFT_PANEL_CUTLIST_ROTATION nil)
+(_SETA 'AK_LEFT_PANEL_DXF_ROTATION nil)
+(_SETA 'AK_LEFT_PANEL_MIRRORING_AXIS nil)
+
+(_SETA 'AK_LEFT_PANEL_LABEL "LEFT/RIGHT_PANEL")
+(_SETA 'AK_LEFT_PANEL_TAG nil)
+
+(_SETA 'AK_LEFT_VISIBLE_EDGESTRIP_MAT nil)
+(_SETA 'AK_LEFT_HIDDEN_EDGESTRIP_MAT nil)
+(_SETA 'AK_LEFT_TOP_EDGESTRIP_MAT nil)
+(_SETA 'AK_LEFT_BOTTOM_EDGESTRIP_MAT nil)
+(_SETA 'AK_LEFT_PANEL_THICKNESS __AD_PANELTHICK)
+
+;Fridge cabinet left panel parameters
+(_SETA 'BC_LEFT_SS_PANEL_MAIN_ROTATION PANEL_MAIN_ROTATION)
+(_SETA 'BC_LEFT_SS_PANEL_CUTLIST_ROTATION nil)
+(_SETA 'BC_LEFT_SS_PANEL_DXF_ROTATION nil)
+(_SETA 'BC_LEFT_SS_PANEL_MIRRORING_AXIS nil)
+                 
+(_SETA 'BC_LEFT_SHORT_SIDE_LABEL "LEFT/RIGHT_PANEL")
+(_SETA 'BC_LEFT_SHORT_SIDE_TAG nil)
+                 
+(_SETA 'BC_LEFT_SS_VISIBLE_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_SS_HIDDEN_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_SS_TOP_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_SS_BOTTOM_EDGESTRIP_MAT nil)
+                 
+(_SETA 'BC_LEFT_LS_PANEL_MAIN_ROTATION PANEL_MAIN_ROTATION)
+(_SETA 'BC_LEFT_LS_PANEL_CUTLIST_ROTATION nil)
+(_SETA 'BC_LEFT_LS_PANEL_DXF_ROTATION nil)
+(_SETA 'BC_LEFT_LS_PANEL_MIRRORING_AXIS nil)
+                 
+(_SETA 'BC_LEFT_LONG_SIDE_LABEL "LEFT/RIGHT_PANEL")
+(_SETA 'BC_LEFT_LONG_SIDE_TAG nil)
+                 
+(_SETA 'BC_LEFT_LS_VISIBLE_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_LS_HIDDEN_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_LS_TOP_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_LS_BOTTOM_EDGESTRIP_MAT nil)
+(_SETA 'BC_LEFT_PANEL_THICKNESS __AD_PANELTHICK)
+
+(if (and ad_verticalGolaLayers ad_golaTallModuleSidePanelFrontVariance (not (equal ad_golaTallModuleSidePanelFrontVariance 0.0)))
+	(if (getnth 0 (setq occupiedSideGolaInfo (isSidesOccupiedByVerticalGolaProfile g_currentModulEnt ad_verticalGolaLayers)))
+		(progn
+			(setq occupiedSideGolaInfo (getnth 1 (getnth 0 (read (get_mdata (getnth 0 (getnth 2 occupiedSideGolaInfo)) k:modulgolaprofiles))))) ;solda
+			(if (not (member occupiedSideGolaInfo (list "1gola_profileBoyR" "1gola_profileBoyiR" "2gola_profileBoyR" "2gola_profileBoyiR"))) ;golalar haric
+				(_FSET (_ 'LEFT_PANEL_FRONT_VARIANCE (convertLengthToSpecifiedUnit ad_golaTallModuleSidePanelFrontVariance (getvar "INSUNITS") 4)))
+			)
+			(setq occupiedSideGolaInfo nil)
+		)
+	)
+)
+
+; Standard Values
+(_NONOTCH)
