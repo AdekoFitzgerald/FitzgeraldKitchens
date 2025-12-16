@@ -1,0 +1,13 @@
+<material version="1">
+	<color>H1227_color.png</color>
+	<specular>H1227_specular.png</specular>
+	<normal>H1227_normal.png</normal>
+	<transform>
+		<rotation>1 0 0 0 1 0 0 0 1</rotation>
+		<translation>0 0 0</translation>
+		<scale>0.357143 0.819672 1</scale>
+	</transform>
+	<isTranslucent>false</isTranslucent>
+	<hint/>
+</material>
+

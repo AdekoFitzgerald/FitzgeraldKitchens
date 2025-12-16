@@ -1,0 +1,76 @@
+<filters>
+  <folder>
+	<text>FITZGERALD</text>
+<filter><text>FITZGERALD</text><value>FITZGERALD</value></filter>
+<filter><text>ST9</text><value>FITZGERALD ST9</value></filter>
+<filter><text>ST12</text><value>FITZGERALD ST12</value></filter>
+<filter><text>ST40</text><value>FITZGERALD ST40</value></filter>
+<filter><text>Finsa</text><value>FITZGERALD Finsa</value></filter>
+ </folder>
+  <folder>
+	<text>Panel</text>
+<filter><text>ADeko</text><value>ADeko</value></filter>
+<filter><text>Ral</text><value>Ral Kartela</value></filter>
+<filter><text><tr>Ahşap</tr><en>Wood</en></text><value>ahşap</value></filter>
+<filter><text><tr>AGT</tr><en>AGT</en></text><value>Agt</value></filter>
+<filter><text><tr>Bakış</tr><en>Bakış</en></text><value>Bakis</value></filter>
+<filter><text>DecoDoor Mat</text><value>DecoDoor Mat</value></filter>
+<filter><text><tr>DecoDoor Parlak</tr><en>DecoDoor Glossy</en></text><value>DecoDoor Parlak</value></filter>
+<filter><text><tr>Egepres</tr><en>Egepres</en></text><value>Egepres</value></filter>
+<filter><text>Göktaş Kapak</text><value>Göktaş Kapak</value></filter>
+<filter><text>Işık Ahşap</text><value>ISIK_AHSAP</value></filter>
+<filter><text>Kastamonu</text><value>KASTAMONU</value></filter>
+<filter><text>Egeer</text><value>EGGER_WOOD</value></filter>
+<filter><text>Gizir</text><value>GIZIR</value></filter>
+<filter><text>Orma</text><value>ORMA_AHSAP</value></filter>
+<filter><text><tr>Starwood</tr><en>Starwood</en></text><value>STARWOOD</value></filter>
+<filter><text>Venni</text><value>Venni</value></filter>
+<filter><text><tr>Yıldız Entegre Mat</tr><en>YILDIZ ENTEGRE MATTE</en></text><value>Yıldız Entegre Mat</value></filter>
+<filter><text><tr>Yıldız Entegre Parlak</tr><en>YILDIZ ENTEGRE GLOSSY</en></text><value>Yıldız Entegre Parlak</value></filter>
+<filter><text><tr>Ahşap</tr><en>Wood</en></text><value>ahşap</value></filter> 
+ </folder>
+
+  <folder>
+	<text><tr>Duvar</tr><en>Wall</en></text>
+		<filter><text><tr>Duvar Seramik</tr><en>Wall Ceramic</en></text><value>Duvar Seramik</value></filter>
+        <filter><text><tr>Sıva</tr><en>Plaster</en></text><value>Sıva</value></filter>
+        <filter><text><tr>Duvar Kağıdı</tr><en>Wallpaper</en></text><value>Duvar Kağıdı</value></filter>
+        <filter><text><tr>Jotun Duvar Renkleri</tr><en>Jotun interior colors</en></text><value>Jotun interior colors</value></filter>
+        <filter><text><tr>Taş Duvar</tr><en>Stonewall</en></text><value>Taş Duvar</value></filter>
+  </folder>	
+
+  <folder>
+	<text><tr>Zemin</tr><en>Floor</en></text>
+<filter><text>	<tr>Yer Karo</tr><en>Floor Tile</en></text><value>yer karo</value></filter>
+<filter><text>	<tr>Yer Ahşap</tr><en>Floor Wood</en></text><value>yer ahşap</value></filter>		
+  </folder>
+	
+  <folder>
+	<text><tr>Tezgah</tr><en>Worktop</en></text>
+	<filter><text>	<tr>LAMAR</tr><en>LAMAR</en></text><value>LAMAR Tezgah</value></filter>	
+	<filter><text>	<tr>Coante</tr><en>Coante</en></text><value>Coante</value></filter>	
+	<filter><text>	<tr>Abk Stone</tr><en>ABK_STONE</en></text><value>ABK_STONE</value></filter>
+	<filter><text>	<tr>Belenco</tr><en>Belenco Granit Worktop</en></text><value>Belenco Granit Tezgah</value></filter>
+	<filter><text>	<tr>Çimstone Tezgah</tr><en>Çimstone Worktop</en></text><value>Çimstone Tezgah</value></filter>
+	<filter><text>	<tr>Dekton</tr><en>DEKTON</en></text><value>DEKTON</value></filter>
+	<filter><text>	<tr>Egger Tezgah</tr><en>EGGER WORKTOP</en></text><value>EGGER_WORKTOP</value></filter>
+	<filter><text>	<tr>Gentaş Tezgah</tr><en>Gentaş Worktop</en></text><value>Gentaş Tezgah</value></filter>
+	<filter><text>	<tr>Granit Tezgah</tr><en>Granit Worktop</en></text><value>Granit Tezgah</value></filter>
+	<filter><text>	<tr>LG Tezgah</tr><en>LG Worktop</en></text><value>LG Tezgah</value></filter>
+	<filter><text>  <tr>Policor</tr><en>Policor</en></text><value>Policor</value></filter>
+	<filter><text>	<tr>Silestone</tr><en>Silestone</en></text><value>SILESTONE</value></filter>
+	<filter><text>	<tr>Neolith</tr><en>Neolith</en></text><value>NEOLITH</value></filter>
+  </folder>
+
+  <folder>
+	<text><tr>Diğer</tr><en>Other</en></text>
+<filter><text>	<tr>Cam</tr><en>Glass</en></text><value>Glass</value></filter>
+<filter><text>	<tr>Metal maden</tr><en>Metal mineral</en></text><value>Metal maden</value></filter>
+<filter><text>	<tr>Arkaplan</tr><en>Background</en></text><value>Arkaplan</value></filter>
+<filter><text>	<tr>Kumas</tr><en>Fabric</en></text><value>Tekstil</value></filter>
+<filter><text>	<tr>Halı</tr><en>Carpet</en></text><value>Halı</value></filter>
+<filter><text>	<tr>Smeg Renkler</tr><en>Smeg Color</en></text><value>ASmegcolor</value></filter>
+<filter><text>	<tr>Franke Renkler</tr><en>Franke Color</en></text><value>AFrankecolor</value></filter>
+<filter><text>	<tr>Teka Renkler</tr><en>Teka Color</en></text><value>ATekacolor</value></filter>
+  </folder>
+</filters>
