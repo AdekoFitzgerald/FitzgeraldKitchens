@@ -3,8 +3,8 @@
 
 ; General groove parameters
 (_SETA 'GROOVE_WID (+ GENERAL_GROOVE_COMPANSATION GENERAL_BACK_PANEL_THICKNESS))
-(_SETA 'GROOVE_DISTANCE (- 75 GROOVE_WID))
-(_SETA 'GROOVE_DEPTH 8)
+(_SETA 'GROOVE_DISTANCE (- 206 GROOVE_WID))
+(_SETA 'GROOVE_DEPTH 0)
 
 ; Stop distance parameters
 (_SETA 'GROOVE_STOP_DISTANCE_LEFT_TOP nil)
@@ -57,5 +57,5 @@
 
 ; Groove operations will be performed or not determined in here
 (_FSET (_ 'PERFORM_GROOVES (and (> GROOVE_WID 0) (> GROOVE_DEPTH 0))))
-
+		
 (_NONOTCH)

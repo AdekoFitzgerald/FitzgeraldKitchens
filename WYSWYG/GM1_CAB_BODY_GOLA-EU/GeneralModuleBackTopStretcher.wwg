@@ -1,11 +1,11 @@
 (_FSET (_ 'lmm-defaultRcpName "(DEFAULT)"))
-(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
+;(_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper") ;tresettede sorun oluyor. back panel default yuklenmiyor.
 
-(setq wwg_grooveWid (mm GROOVE_WID))
-(setq wwg_grooveDist (mm GROOVE_DISTANCE))
-(setq wwg_grooveDep (mm GROOVE_DEPTH))
+(setq wwg_grooveWid 1.8)		;(mm GROOVE_WID))
+(setq wwg_grooveDist 2.8)	;(mm GROOVE_DISTANCE))
+(setq wwg_grooveDep 0.0)		;(mm GROOVE_DEPTH))
 
-(setq wwg_kayitEni (cm 8.0))
+(setq wwg_kayitEni (cm 12.8))
 
 (setq kodBlock (nxtBnam (lmm_sfRead kod)))
 (createGPanel
