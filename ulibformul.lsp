@@ -802,6 +802,16 @@
 	(princ)
 )
 
+(defun autoLRAK1( / myflag )
+	(progn
+		(setq ss (ssadd))
+		(ssadd (entlast) ss)
+		(sssetfirst nil ss)
+		(LeftRightDoor)
+	)
+	(princ)
+)
+
 ;(autoMoveUnitOnce (bzdu_moveOnce))
 (defun bzdu_moveOnce ( / bzdu_moveOnceValue)
 	(setq bzdu_moveOnceValue nil)

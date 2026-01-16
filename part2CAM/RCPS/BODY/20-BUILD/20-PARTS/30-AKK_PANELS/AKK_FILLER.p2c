@@ -4,7 +4,7 @@
 (if (_NOTNULL BLIND_CORNER_CONTROL)
 	(progn
 		; Filler is created only if width of it is bigger then zero. Otherwise global variables that are created for filler becomes null and void.
-		(if (> AKK_FILLER_WID 0)
+		(if (> AKK_FILLER_WID 2)
 			(progn
 				; Global variables of blind corner filler
 				; AKK_FILLER_WID, AKK_FILLER_HEI, AKK_FILLER_GRAIN and AKK_FILLER_MAT are declared in AKK_DEFAULT helper

@@ -9,7 +9,7 @@
 (setq akk_AdjPosListOverFSH (mapcar '(lambda (x) (- x (ifnull ASHELF_HOLE_DIAMETER 0.0))) (mapcar '(lambda (x) (progn (+ x akk_FSHCalc __ad_panelthick))) (mapcar 'cu2mm (gm1_Ust_Raf_Kural (+ (mm2cu akk_SectionOverFSH) (* 2 ad_et)) ad_et)))))
 
 ;prefvars
-(_SETA 'IS_EXTRA_PART_AVAILABLE (if (equal akk_SelectedBlindPartLayer "CAB_DOORS") nil T))
+(_SETA 'IS_EXTRA_PART_AVAILABLE nil)
 (_SETA 'IS_INNER_EXTRA_PART_AVAILABLE nil)
 (_SETA 'IS_BLIND_DOOR_AVAILABLE T)
 (_SETA 'EXTRA_PART_WID 150)
