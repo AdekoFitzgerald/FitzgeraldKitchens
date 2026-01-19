@@ -189,8 +189,6 @@
 			)
 		)
 
-(watch2 '(IS_BLIND_DOOR_INSIDE_MODULE))
-
 		(_SETA 'BLIND_DOOR_LOSS_TOP 			0.0	)
 		(_SETA 'BLIND_DOOR_LOSS_BOTTOM 			(if (and IS_EXTRA_PART_AVAILABLE doorTrimBOTTOM) doorTrimBOTTOM 0.0)	)
 		(_SETA 'EXTRA_PART_LOSS_TOP 			(+ doorClearanceTOP (ifnull doorTrimTOP 0.0))			)
