@@ -202,8 +202,9 @@
 		; IMPORTANT INFORMATION
 		; According to state of blind corner blind door, subtype of current blind corner is determined
 		(cond
-			((and IS_BLIND_DOOR_INSIDE_MODULE IS_EXTRA_PART_AVAILABLE)
-				(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - EXTRA_PART_WID + OVERLAPPING_DISTANCE - __AD_PANELTHICK - widthLossForDoors + __DOORSSIDECLEAR")))
+			((and IS_BLIND_DOOR_INSIDE_MODULE )
+				;(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - EXTRA_PART_WID + OVERLAPPING_DISTANCE - __AD_PANELTHICK - widthLossForDoors + __DOORSSIDECLEAR")))
+				(_FSET (_ 'AKK_MANU_BLIND_DOOR_WID (_= "__WID - widthLossForDoors + DISTANCE_TO_WALL + __DOORSSIDECLEAR"))) ; fgk
 				(_FSET (_ 'AKK_MANU_BLIND_DOOR_HEI (_= "__HEI - __AD_PANELTHICK - __AD_PANELTHICK")))
 				; Subtype of current blind corner unit, INSM is the shortage of INSIDE OF MODULE
 				(_FSET (_ 'AKK_MODULE_SUBTYPE "INSM"))
