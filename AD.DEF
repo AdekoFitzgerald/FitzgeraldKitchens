@@ -20,4 +20,3 @@
 ("A2KC 90" GM1 90.0000 "{ad_ADH}" "{ad_ADDER}" (QUOTE (nil 2 "duz" "" nil nil nil nil ("BODY\\\\10-FIRMAM\\\\ALT_1") ("ALT 1" "DV\\\\10-FIRMAM\\\\SABIT_RAF" "DV\\\\10-FIRMAM\\\\KAPAK_MENTESE") 0 nil "" (nil nil nil))) (QUOTE (("CT" "{(bh_1bd)}" "K2" "{(kh_1bd)}" "B" nil "KD" "(gm1_Alt_Raf_Kural unith ad_glasset)" nil 1 nil nil "dwg\\Package\\AltAydinlatmaPaketi_Duz.accpackage" nil nil))) "Base Glass Showcase")
 ("" DIVIDER "")
 ("" DIVIDER "")
-("BE110" AK1 100.000 "{ad_ADH}" nil 45.1500 110.000 65.0000 "0" (QUOTE (35.1000)) (QUOTE (1 nil "duz" "CAB_BODY_BASE" "nil" 0 nil nil nil "" ("BODY\\\\10-FIRMAM\\\\ALT_KOR_KOSE") nil nil "0" ("(_LEMANS_AK1DOOR 0 120)") nil "0" nil "0" nil)) "A" "AKK08(Turkiye)" "Blank End Corner")
