@@ -1104,26 +1104,26 @@
 (setq izDer 1.0)
 
 ;;;;;;;;;;;;;;;;;;;;;;; KENARBANT
-(setq PvcKoduKAPAK "PVC1mm")		;Genel kapak bant ismi
+(setq PvcKoduKAPAK "PVC2")		;Genel kapak bant ismi
 (setq PvcKoduProfil nil)			;Kenarlarýna kulp gelen kapaklarýn kenarbandý
 (setq PvcKoduGENEL nil)				;Genel kenar bant ismi
-(setq PvcKoduUST "PVC04mm")			;Üst taraflar
-(setq PvcKoduALT "PVC04mm")			;Alt taraflar
-(setq PvcKoduYAN "PVC04mm")			;Yan taraflar
-(setq PvcKoduON "PVC04mm")			;Ön taraflar
-(setq PvcKoduARKA "PVC04mm")		;Arka tarafa bakan
-(setq PvcKoduSARKA "PVC04mm")		;Sabit Raf / Dikme için Arka tarafa bakan
-(setq PvcKoduHRafYan "PVC04mm")		;Hareketli raf yan taraflar
-(setq PvcKoduHRafArka "PVC04mm")	;Hareketli raf arka taraflar
+(setq PvcKoduUST "PVC1")			;Üst taraflar
+(setq PvcKoduALT "PVC1")			;Alt taraflar
+(setq PvcKoduYAN "PVC1")			;Yan taraflar
+(setq PvcKoduON "PVC1")			;Ön taraflar
+(setq PvcKoduARKA "PVC1")		;Arka tarafa bakan
+(setq PvcKoduSARKA "PVC1")		;Sabit Raf / Dikme için Arka tarafa bakan
+(setq PvcKoduHRafYan "PVC1")		;Hareketli raf yan taraflar
+(setq PvcKoduHRafArka "PVC1")	;Hareketli raf arka taraflar
 (setq PvcKoduCONN nil)				;Baðlayýcý gelen yere bant
 (setq PvcKodu45 nil)				;45 Birleþim gelen yere gelen bant
-(setq PvcKoduCekUst "PVC04mm")		;Cekmece üst taraflar
-(setq PvcKoduCekAlt "PVC04mm")		;Cekmece alt taraflar
+(setq PvcKoduCekUst "PVC1")		;Cekmece üst taraflar
+(setq PvcKoduCekAlt "PVC1")		;Cekmece alt taraflar
 (setq PvcKoduCekArka nil)			;Cekmece arka taraflar
 (setq PvcKoduCekOn nil)				;Cekmece on taraflar
 (setq PvcKoduCekYAN nil)			;Cekmece yan taraflar
-(setq PvcKoduBazaUst "PVC04mm")		;Baza üst taraflar
-(setq PvcKoduBazaAlt "PVC04mm")		;Baza alt taraflar
+(setq PvcKoduBazaUst "PVC1")		;Baza üst taraflar
+(setq PvcKoduBazaAlt "PVC1")		;Baza alt taraflar
 
 
 
