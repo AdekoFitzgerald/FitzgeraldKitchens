@@ -1100,30 +1100,30 @@
 (setq DXFROT4CAM nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;; iz delik
-(setq izCap 3.0)
+(setq izCap 4.0)
 (setq izDer 1.0)
 
 ;;;;;;;;;;;;;;;;;;;;;;; KENARBANT
 (setq PvcKoduKAPAK "PVC2")		;Genel kapak bant ismi
 (setq PvcKoduProfil nil)			;Kenarlarýna kulp gelen kapaklarýn kenarbandý
 (setq PvcKoduGENEL nil)				;Genel kenar bant ismi
-(setq PvcKoduUST "PVC1")			;Üst taraflar
-(setq PvcKoduALT "PVC1")			;Alt taraflar
+(setq PvcKoduUST nil)			;Üst taraflar
+(setq PvcKoduALT nil)			;Alt taraflar
 (setq PvcKoduYAN "PVC1")			;Yan taraflar
 (setq PvcKoduON "PVC1")			;Ön taraflar
-(setq PvcKoduARKA "PVC1")		;Arka tarafa bakan
-(setq PvcKoduSARKA "PVC1")		;Sabit Raf / Dikme için Arka tarafa bakan
-(setq PvcKoduHRafYan "PVC1")		;Hareketli raf yan taraflar
-(setq PvcKoduHRafArka "PVC1")	;Hareketli raf arka taraflar
+(setq PvcKoduARKA nil)		;Arka tarafa bakan
+(setq PvcKoduSARKA nil)		;Sabit Raf / Dikme için Arka tarafa bakan
+(setq PvcKoduHRafYan nil)		;Hareketli raf yan taraflar
+(setq PvcKoduHRafArka nil)	;Hareketli raf arka taraflar
 (setq PvcKoduCONN nil)				;Baðlayýcý gelen yere bant
 (setq PvcKodu45 nil)				;45 Birleþim gelen yere gelen bant
 (setq PvcKoduCekUst "PVC1")		;Cekmece üst taraflar
-(setq PvcKoduCekAlt "PVC1")		;Cekmece alt taraflar
+(setq PvcKoduCekAlt nil)		;Cekmece alt taraflar
 (setq PvcKoduCekArka nil)			;Cekmece arka taraflar
 (setq PvcKoduCekOn nil)				;Cekmece on taraflar
 (setq PvcKoduCekYAN nil)			;Cekmece yan taraflar
 (setq PvcKoduBazaUst "PVC1")		;Baza üst taraflar
-(setq PvcKoduBazaAlt "PVC1")		;Baza alt taraflar
+(setq PvcKoduBazaAlt nil)		;Baza alt taraflar
 
 
 
