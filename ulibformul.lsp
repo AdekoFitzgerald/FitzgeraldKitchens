@@ -680,9 +680,9 @@
 (setq applianceBackOffsetTOP applianceBackOffsetValue)			; üst havalandýrma
 (setq applianceBackOffsetBOT applianceBackOffsetValue)			; alt havalandýrma
 
-(setq bh_integratedOven (cm 58.5))								; fýrýn bölümü istenen iç boþluk
-(setq bh_integratedMikroValue (cm 38.5))						; mikro bölümü istenen iç boþluk
-(setq kh_integratedMikroDoor (cm 10.00000001))					; mikro bölümü klapa yüksekliði
+(setq bh_integratedOven (cm 59.5))								; fýrýn bölümü istenen iç boþluk
+(setq bh_integratedMikroValue (cm 36.5))						; mikro bölümü istenen iç boþluk
+(setq kh_integratedMikroDoor (cm 0.65))					; mikro bölümü klapa yüksekliði
 
 
 ; mikro ic bosluk hesapla
