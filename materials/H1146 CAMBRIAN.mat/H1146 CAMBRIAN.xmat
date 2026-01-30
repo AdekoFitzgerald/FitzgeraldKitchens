@@ -1,0 +1,13 @@
+<material version="1">
+	<color>H1146 CAMBRIAN_color.png</color>
+	<specular>H1146 CAMBRIAN_specular.png</specular>
+	<normal>H1146 CAMBRIAN_normal.png</normal>
+	<transform>
+		<rotation>1 0 0 0 1 0 0 0 1</rotation>
+		<translation>0 0 0</translation>
+		<scale>1 1 1</scale>
+	</transform>
+	<isTranslucent>false</isTranslucent>
+	<hint/>
+</material>
+

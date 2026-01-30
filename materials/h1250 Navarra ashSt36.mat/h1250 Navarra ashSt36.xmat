@@ -1,0 +1,13 @@
+<material version="1">
+	<color>h1250 Navarra ashSt36_color.png</color>
+	<specular>h1250 Navarra ashSt36_specular.png</specular>
+	<normal>h1250 Navarra ashSt36_normal.png</normal>
+	<transform>
+		<rotation>1 0 0 0 1 0 0 0 1</rotation>
+		<translation>0 0 0</translation>
+		<scale>1 1 1</scale>
+	</transform>
+	<isTranslucent>false</isTranslucent>
+	<hint/>
+</material>
+
