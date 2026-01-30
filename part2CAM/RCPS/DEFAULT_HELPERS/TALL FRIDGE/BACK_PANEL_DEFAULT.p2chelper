@@ -2,6 +2,7 @@
 (_RUNDEFAULTHELPERRCP "BACK_PANEL_BASE_DEFAULT" nil "p2chelper")
 (_RUNDEFAULTHELPERRCP "GROOVES_DEFAULT" nil "p2chelper")
 
+;fitzgerald
 (setq curunitdivlist (reverse (read (get_mdata  g_CurrentModulEnt k:CallDivisionList))))
 (setq curunitdivlist_1H (if curunitdivlist (cu2mm (getnth 3 (getnth 0 curunitdivlist))) 0.0))
 
