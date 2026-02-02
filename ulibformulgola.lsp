@@ -512,7 +512,7 @@
 (defun ke_2golaCdep () (cu2mm (2golaCZDep)) )																										; C Gola için panel derinlik çektirme
 
 (setq ke_2golaZDep 0)																																; Gola alt modül extra derinleþtirme istenen deðeri
-(setq ke_2golaZHvalue nil)																															; Gola alt/boy modül extra yükseltme istenen deðeri -> nil ise gola kapak ile normal kapak eþit olur
+(setq ke_2golaZHvalue 0)																															; Gola alt/boy modül extra yükseltme istenen deðeri -> nil ise gola kapak ile normal kapak eþit olur
 (defun ke_2golaZH () (if ke_2golaZHvalue ke_2golaZHvalue (- (- ad_ADH g_ClearBaseZTop g_ClearBaseZbot) (- ad_ADH g_ClearBaseZbot 2golaLZTop))))		; Gola alt/boy modül extra yükseltme hesaplamasý
 (defun 2gola_ADH () (+ ad_ADH (ke_2golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
 (defun 2gola_BDH () (+ ad_BDH2 (ke_2golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
