@@ -1769,7 +1769,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun KAPAK104_SETS ()
-	(setq doorFlags::p2cDoorSource "(list \"##\" 20.0)")
+	(setq doorFlags::p2cDoorSource "(list \"##\" 22.0)")
 	(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))
 	(setq doorFlags::p2cFrameThick 55)
 )     
+
+;__________________________________________________________________________________________________________________________________________________________
+
+(defun DUZKPK_AKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "INSOURCE")
+	(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "DUZKPK" "_" x "KANATSETS")) DUZKPK_AKANATSETS) ) _KSets_typeAList)
+
+(defun DUZKPK_BKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "INSOURCE")
+	(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "DUZKPK" "_" x "KANATSETS")) DUZKPK_BKANATSETS) ) _KSets_typeBList)
+
+;__________________________________________________________________________________________________________________________________________________________

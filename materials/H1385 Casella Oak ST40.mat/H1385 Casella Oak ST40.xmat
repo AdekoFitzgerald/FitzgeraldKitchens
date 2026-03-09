@@ -1,0 +1,13 @@
+<material version="1">
+	<color>H1385 Casella Oak ST40_color.png</color>
+	<specular>H1385 Casella Oak ST40_specular.png</specular>
+	<normal>H1385 Casella Oak ST40_normal.png</normal>
+	<transform>
+		<rotation>1 0 0 0 1 0 0 0 1</rotation>
+		<translation>0 0 0</translation>
+		<scale>3.33333 5 1</scale>
+	</transform>
+	<isTranslucent>false</isTranslucent>
+	<hint/>
+</material>
+
