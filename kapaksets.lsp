@@ -1,6 +1,6 @@
-(setq _KSets_AlternativeASufixList (list "D1" "D2" "D3" "D4") )
-(setq _KSets_AlternativeBSufixList (list "C1" "C2" "C3" "C4") )
-(setq _KSets_typeAList (list "A" "C" "D" "E" "H" "L" "M" "R" "S" "Z") )
+(setq _KSets_AlternativeASufixList (list "D1"))
+(setq _KSets_AlternativeBSufixList (list "C1" "C2"))
+(setq _KSets_typeAList (list "A" "C" "D" "E" "H" "L" "M" "R" "S" "Z"))
 (setq _KSets_typeBList (list "B" "K" "J" "F" "T"))
 (setq _KSets_VariableModelName nil)
 
@@ -1763,3 +1763,13 @@
 (defun VSTX02_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))        
 (defun CIT_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))           
 (defun GOMMEKPK_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))      
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; 																				FITZGERALD DOORS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun KAPAK104_SETS ()
+	(setq doorFlags::p2cDoorSource "(list \"##\" 20.0)")
+	(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))
+	(setq doorFlags::p2cFrameThick 55)
+)     
