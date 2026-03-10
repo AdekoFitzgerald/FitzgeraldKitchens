@@ -1,4 +1,5 @@
 <filters>
+
   <folder>
 	<text>FITZGERALD</text>
 <filter><text>FITZGERALD</text><value>FITZGERALD</value></filter>
@@ -11,7 +12,9 @@
 <filter><text>ST40</text><value>FITZGERALD ST40</value></filter>
 <filter><text>Robes</text><value>FITZGERALD Robes</value></filter>
 <filter><text>Egger</text><value>FITZGERALD Egger</value></filter>
+<filter><text>Misc.</text><value>FITZGERALD Misc</value></filter>
  </folder>
+
   <folder>
 	<text>Panel</text>
 <filter><text>ADeko</text><value>ADeko</value></filter>
