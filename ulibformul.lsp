@@ -821,8 +821,8 @@
 	)
 )
 
-(defun dfu_moveOnce ( / ) (- ad_UDDER unitD))
-(defun dfa_moveOnce ( / ) (- ad_ADDer unitD))
+(defun dfu_moveOnce ( / ) (if (< unitd ad_udDER) (- ad_udDER unitD) 0))
+(defun dfa_moveOnce ( / ) (if (< unitd ad_adDer) (- ad_adDer unitD) 0))
 
 ; rutin fonksiyonu. yerleþen modülü y kadar öne kaydýrýr. veya '(x y z) kadar kaydýr.
 ; (autoMoveUnitOnce y)
