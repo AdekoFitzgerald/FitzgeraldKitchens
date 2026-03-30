@@ -821,21 +821,8 @@
 	)
 )
 
-(defun dfu_moveOnce ( / bzdu_moveOnceValue)
-	(setq bzdu_moveOnceValue nil)
-	(if	bzdu_moveOnceValue 
-		bzdu_moveOnceValue
-		(- ad_UDDER unitD)
-	)
-)
-
-(defun dfa_moveOnce ( / bzdu_moveOnceValue)
-	(setq bzdu_moveOnceValue nil)
-	(if	bzdu_moveOnceValue 
-		bzdu_moveOnceValue
-		(- ad_UDDER unitD)
-	)
-)
+(defun dfu_moveOnce ( / ) (- ad_UDDER unitD))
+(defun dfa_moveOnce ( / ) (- ad_ADDer unitD))
 
 ; rutin fonksiyonu. yerleþen modülü y kadar öne kaydýrýr. veya '(x y z) kadar kaydýr.
 ; (autoMoveUnitOnce y)
