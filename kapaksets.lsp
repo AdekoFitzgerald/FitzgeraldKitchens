@@ -1763,6 +1763,8 @@
 (defun VSTX02_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))        
 (defun CIT_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))           
 (defun GOMMEKPK_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))      
+(defun KDALGA_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
+(defun BDALGA_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 																				FITZGERALD DOORS
@@ -1791,3 +1793,8 @@
 (mapcar '(lambda (x) (set (read (strcat "DUZKPK" "_" x "KANATSETS")) DUZKPK_BKANATSETS) ) _KSets_typeBList)
 
 ;__________________________________________________________________________________________________________________________________________________________
+
+; (defun DIMHOR_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
+; (defun DUZDIK_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
+; (defun KDALGA_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
+; (defun BDALGA_SETS()(setq doorFlags::p2cDoorSource "INSOURCE")(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK))(setq doorFlags::p2cFrameThick 55))       
