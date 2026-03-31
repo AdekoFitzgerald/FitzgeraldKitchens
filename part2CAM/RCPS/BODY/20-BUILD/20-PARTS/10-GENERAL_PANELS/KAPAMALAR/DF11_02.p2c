@@ -27,10 +27,50 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 ;OK
 (setq matinfo (get_visible_matInfo_PanelBlockinBlock g_currentModulEnt "DL11_02" "CAB_DOORS"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FITZGERALD
+
+(setq partDimList (list 100 150 200 250 300 2750))
+
+(setq partDimH nil)
+(setq partDimCount 0)
+(if (>= __HEI (last partDimList)) (setq partDimH (last partDimList)))
+(while
+	(and (not partDimH) (>= __HEI (getnth partDimCount partDimList)))
+	(progn
+		(if (equal __HEI (getnth partDimCount partDimList))
+			(setq partDimH (getnth partDimCount partDimList))
+		)
+		(setq partDimCount (+ 1 partDimCount))
+		(if (and (not partDimH) (<= __HEI (getnth partDimCount partDimList)))
+			(setq partDimH (getnth partDimCount partDimList))
+		)
+	)
+)
+
+(setq partDimW nil)
+(setq partDimCount 0)
+(if (>= __WID (last partDimList)) (setq partDimW (last partDimList)))
+(while 
+	(and (not partDimW) (>= __WID (getnth partDimCount partDimList)))
+	(progn
+		(if (equal __WID (getnth partDimCount partDimList))
+			(setq partDimW (getnth partDimCount partDimList))
+		)
+		(setq partDimCount (+ 1 partDimCount))
+		(if (and (not partDimW) (<= __WID (getnth partDimCount partDimList)))
+			(setq partDimW (getnth partDimCount partDimList))
+		)
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (_SETA 'SPECIAL_PANEL_COUNT 1)
 (_SETA 'SPECIAL_PANEL_CODE "DL11_02")
-(_SETA 'SPECIAL_PANEL_WID __HEI)
-(_SETA 'SPECIAL_PANEL_HEI __WID)
+;(_SETA 'SPECIAL_PANEL_WID __HEI)
+(_SETA 'SPECIAL_PANEL_WID partDimH)
+;(_SETA 'SPECIAL_PANEL_HEI __WID)
+(_SETA 'SPECIAL_PANEL_HEI partDimW)
 (_SETA 'SPECIAL_PANEL_MATERIAL (car matinfo))
 (_SETA 'SPECIAL_PANEL_THICKNESS (* DL11_T1 10))
 
