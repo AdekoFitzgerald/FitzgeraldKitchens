@@ -1,4 +1,4 @@
-(setq df11_d unitd)
+(setq df11_d 10.0)
 (setq df11_t 1.8)
 
 (initget (strcat (Xstr "Left Right") " ~_Left ~_Right"))
