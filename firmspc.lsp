@@ -101,3 +101,132 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq gm1_drawDoor nil)
+(defun gm1_drawDoor (Parameters elev divindx /  doorWidth leftMid rightMid doorId currentDoorName fixeddDoor hasDoor additional_door_side_clearance)
+	(gm1_setDivParams Parameters )
+	(setq fixeddDoor "")
+	(setq elev (if divDoorElevOffset divDoorElevOffset elev))	
+	(if (or (not (member divdoortype (list "C" "S" "M" "R" "I" "T" "N")))
+		(and handledivpos (wcmatch handledivpos "*D*"))
+		)
+		(setq isLRexist T)
+	)
+	(setq divH (ifnull divH ad_ET))
+	(if g_gm1_Preview 
+		(setq currentDoorName  "DUZKPK")
+		(setq currentDoorName  (ifnull divDoorName specialDoor))
+	)	
+	(if currentDoorName (setq fixeddDoor "!FIX!")) 
+	
+	(if (checkstrinstr "rutin_KapakDaralt" (ifnull gm1rutin ""))
+		(progn
+			(setq parsed-string (trim (parsergt (parselft gm1rutin ")") "(")))
+			(setq split-list (splitstr parsed-string " "))
+			(setq additional_door_side_clearance (atof (getnth 1 split-list))) 
+			(setq door_translateDirection (getnth 2 split-list))
+		)
+	)
+	
+	(cond ((member doorCount '("K"))
+			(setq doorWidth (- BDEN clearXSide clearXSide))	
+			(setq currDoorHorPos (/2 BDEN))
+			(if additional_door_side_clearance
+				(progn
+					(cond 
+						((or (equal door_translateDirection "SAG") (equal door_translateDirection "sag") (equal door_translateDirection 1)  (equal door_translateDirection "1"))
+							(setq doorWidth (- BDEN additional_door_side_clearance clearXSide))
+							(setq currDoorHorPos (+ (* doorWidth 0.5) clearXSide))
+						)
+						((or (equal door_translateDirection "SOL")(equal door_translateDirection "sol") (equal door_translateDirection 2) (equal door_translateDirection "2"))
+							(setq doorWidth (- BDEN additional_door_side_clearance clearXSide))
+							(setq currDoorHorPos (+ (* doorWidth 0.5) additional_door_side_clearance))
+						)
+						((or (equal door_translateDirection "SAGSOL")(equal door_translateDirection "sagsol") (equal door_translateDirection 3) (equal door_translateDirection "3"))
+							(setq doorWidth (- BDEN additional_door_side_clearance additional_door_side_clearance))
+							(setq currDoorHorPos (+ (* doorWidth 0.5) additional_door_side_clearance))
+						)
+						(T
+							(setq currDoorHorPos (/2 BDEN))
+						)
+					)
+					
+					
+				)
+			)
+
+			(setq doorId 
+				(if (member divdoortype '("C" "I"))
+					(progn				
+						(draw_door_drawer (list divdoortype currentDoorName) handledivpos (/2 BDEN) ADDer (- (+ drawCurrDoorElev eleV) divdoorH) doorWidth divdoorH simetri 0.0 (list (* 0.85 ADDer) (* 0.90 doorWidth) (* 0.45 divdoorH) gm1:layerName))
+					)		
+					(progn
+						(kapak_ciz (list divdoortype currentDoorName fixeddDoor (getNth 0 divDoorAnimateScript) nil T) handledivpos currDoorHorPos ADDer (- (+ drawCurrDoorElev eleV) divdoorH) doorWidth divdoorH simetri 0.0)
+					)
+				)			
+			)
+			(set_Mdata (entlast)  (list (cons k:animateScript (getNth 0 divDoorAnimateScript))))
+			(setq doorsPropList (cons (list ( - (- (+ drawCurrDoorElev eleV) divdoorH) dAltKot)  divdoorH doorWidth handledivpos divDoorType nil divindx doorId)  doorsPropList))
+			(setq hasDoor T)
+		)
+		((member doorCount '("K2"))
+			(setq doorWidth (/2 (- BDEN clearXSide clearXBtwn clearXSide))
+					leftMid	(+ clearXSide (/2 doorWidth))
+					rightMid (+ clearXSide doorWidth clearXBtwn (/2 doorWidth))
+			)
+			
+			(if additional_door_side_clearance
+				(if (> additional_door_side_clearance clearXSide)
+					(progn
+						(cond 
+							((or (equal door_translateDirection "SAG") (equal door_translateDirection "sag") (equal door_translateDirection "1") (equal door_translateDirection 1))
+								(setq doorWidth (/ (- BDEN clearXBtwn clearXBtwn clearXSide additional_door_side_clearance) 2.0)
+									  leftMid (+ (/ doorWidth 2) clearXSide)
+									  rightMid (+ clearXBtwn clearXSide (* 3 (/ doorWidth 2))))
+							)
+							((or (equal door_translateDirection "SOL")(equal door_translateDirection "sol") (equal door_translateDirection "2") (equal door_translateDirection 2))
+								(setq doorWidth (/ (- BDEN clearXBtwn clearXBtwn clearXSide additional_door_side_clearance) 2.0)
+									  leftMid (+ (/ doorWidth 2) additional_door_side_clearance clearXBtwn)
+									  rightMid (+ additional_door_side_clearance (* 3 (/ doorWidth 2)) clearXBtwn clearXBtwn) )
+							)
+							((or (equal door_translateDirection "SAGSOL")(equal door_translateDirection "sagsol") (equal door_translateDirection "3") (equal door_translateDirection 3))
+								(setq doorWidth (/ (- BDEN clearXBtwn additional_door_side_clearance additional_door_side_clearance) 2.0)
+									  leftMid (+ (/ doorWidth 2) additional_door_side_clearance)
+									  rightMid (+ additional_door_side_clearance (* 3 (/ doorWidth 2)) clearXBtwn))
+							)
+						)	
+					)
+				)
+			)
+			
+			(setq doorId (kapak_ciz (list divdoortype currentDoorName fixeddDoor (getNth 0 divDoorAnimateScript) nil T)  handledivpos leftMid ADDer (- (+ drawCurrDoorElev eleV) divdoorH) doorWidth divdoorH "soL" 0.0) )
+			(set_Mdata (entlast)  (list (cons k:animateScript (getNth 0 divDoorAnimateScript))))
+			
+			(setq doorsPropList (cons (list ( - (- (+ drawCurrDoorElev eleV) divdoorH) dAltKot) divdoorH doorWidth handledivpos divDoorType "L" divindx doorId ) doorsPropList))
+			(setq doorId (kapak_ciz (list divdoortype currentDoorName fixeddDoor (getNth 0 divDoorAnimateScript) nil T)  handledivpos rightMid ADDer (- (+ drawCurrDoorElev eleV) divdoorH) doorWidth divdoorH "saG" 0.0)
+			)
+			(set_Mdata (entlast)  (list (cons k:animateScript (getNth 1 divDoorAnimateScript))))
+			(setq doorsPropList (cons (list ( - (- (+ drawCurrDoorElev eleV) divdoorH) dAltKot) divdoorH doorWidth handledivpos divDoorType "R" divindx doorId ) doorsPropList))			
+			(setq hasDoor T)
+		)
+	)
+	(if (and g_gm1_Preview  (or (member doorCount '("K2")) (member doorCount '("K"))) )
+		(progn
+			(if (equal (getVar "VIEWDIR") (list -1.0 0.0 0.0))
+				(gm1_measureDivOrDoor (- (+ drawCurrDoorElev eleV) divdoorH) (cm -10.0) divdoorH (* -1 (+ ad_et ADDer)) (list -1.0 0.0 0.0) 10.0 10.0)
+				(gm1_measureDivOrDoor (- (+ drawCurrDoorElev eleV) divdoorH) 0.0 divdoorH (* -1 (+ ad_et ADDer)) (list 0.0 -1.0 0.0) 10.0 10.0)				
+			)
+		)
+	)
+	(setq drawCurrDoorElev ( - drawCurrDoorElev divH))
+	
+	(gm1_freeDivParams)
+	hasDoor
+)
+
+(defun rutin_KapakDaralt (additionalClearenceValue doorTransDirection / )
+	(princ)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
