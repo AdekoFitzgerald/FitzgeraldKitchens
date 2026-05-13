@@ -493,13 +493,13 @@
 (defun ke_2GolaiLdep () (cu2mm (2GolaiLZDep)) )																										; iL gola için panel derinlik çektirme -> eðer çektirme olmayacaksa set içindeki default reçeteyi sil.
 (defun ke_2GolaiL () (- (if 2GolaiLZBotValue (+ 2GolaiLZBotValue g_ClearWallZBot) 0.0)))															; iL gola uk1 uk2 kapak sarkýtma (/kýrpma)
 
-(setq 2golaCZBot (cm 1.3))																															; C gola kapak alta uzatma istenen deðeri
-(setq 2golaCZTop (+ 2golaCZBot 2golaVCZThick))																											; C gola kapak uste uzatma istenen deðeri
+(setq 2golaCZBot (cm 2.3 ))																															; C gola kapak alta uzatma istenen deðeri
+(setq 2golaCZTop (cm 3.0 ))																											; C gola kapak uste uzatma istenen deðeri
 (defun 2golaCBtwn () (- (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))) 2golaCZBot 2golaCZTop))					; C gola iki kapak arasý hesaplama -> Modul.ini içinden C1 profil yüksekliðini okuyor.
 (defun 2golaCZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil derinliði -> Modul.ini içinden C1 profil derinliðini okur
 (defun 2golaCZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil yüksekliði -> Modul.ini içinden C1 profil derinliðini okur
 
-(setq 2golaLZTop (2golaCBtwn))																														; L gola kapak üstten boþluðu istenen deðeri
+(setq 2golaLZTop 2.7)																														; L gola kapak üstten boþluðu istenen deðeri
 (defun 2golaLZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil derinliði -> Modul.ini içinden L1 profil derinliðini okur
 (defun 2golaLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil yüksekliði -> Modul.ini içinden L1 profil derinliðini okur
 
@@ -517,10 +517,10 @@
 (defun 2gola_ADH () (+ ad_ADH (ke_2golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
 (defun 2gola_BDH () (+ ad_BDH2 (ke_2golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
 
-(setq ke_2GolatDrw1DiffVal 0)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
+(setq ke_2GolatDrw1DiffVal -1.837)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
 (defun ke_2GolaDrw1Diff () ke_2GolatDrw1DiffVal)																									; Gola çekmece 4ün 1.si ölçü farký hesaplamasý
 
-(setq ke_2GolaDrw2DiffVal 0)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
+(setq ke_2GolaDrw2DiffVal -1.837)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
 (defun ke_2GolaDrw2Diff () ke_2GolaDrw2DiffVal)																										; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma hesaplamasý
 
 
@@ -606,16 +606,22 @@
 	(* 0.5 (- (2Gola_ADH) (* 0.5 (- (* 0.5 (- (2Gola_ADH) 2GolaLZTop (2GolaCBtwn) zbot)) zbtwn)) 2GolaLZTop zbtwn (2GolaCBtwn) zbot))
 )
 (defun bh_2GolaDrw3b2 ()
-	(- (+ (* 0.5 (- (gm1_curUnitH) (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 2GolaLZTop (2GolaCBtwn) zbot)) zbtwn)) 2GolaLZTop zbtwn (2GolaCBtwn) zbot)) 2GolaCZTop zbtwn) 2GolaCZTop)
+	(- (+ (* 0.5 (- (gm1_curUnitH) (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 2GolaLZTop (2GolaCBtwn) zbot)) zbtwn)) 2GolaLZTop zbtwn (2GolaCBtwn) zbot)) 2GolaCZTop zbtwn) 2GolaCZTop (* 0.5 ke_2GolatDrw1DiffVal))
 )
 (defun bh_2GolaDrw3b2_fix ()
-	(- (+ (* 0.5 (- (2Gola_ADH) (* 0.5 (- (* 0.5 (- (2Gola_ADH) 2GolaLZTop (2GolaCBtwn) zbot)) zbtwn)) 2GolaLZTop zbtwn (2GolaCBtwn) zbot)) 2GolaCZTop zbtwn) 2GolaCZTop)
+	(- (+ (* 0.5 (- (2Gola_ADH) (* 0.5 (- (* 0.5 (- (2Gola_ADH) 2GolaLZTop (2GolaCBtwn) zbot)) zbtwn)) 2GolaLZTop zbtwn (2GolaCBtwn) zbot)) 2GolaCZTop zbtwn) 2GolaCZTop (* 0.5 ke_2GolatDrw1DiffVal))
 )
 (defun bh_2GolaDrw3b3 ()
 		(* 0.5 (- (gm1_curUnitH) zbot ad_et (bh_2golaDrw4B1) (* 2 (2golaCBtwn)) (* -2.5 zbtwn)))
 )
 (defun bh_2GolaDrw3b3_fix ()
 		(* 0.5 (- (2gola_ADH) zbot ad_et (bh_2golaDrw4B1) (* 2 (2golaCBtwn)) (* -2.5 zbtwn)))
+)
+
+
+
+(defun bh_2GolaDrw3b3L ()
+		(* 0.5 (- (gm1_curUnitH) zbot ad_et (bh_2golaDrw4B1) (* 2 (2golaCBtwn)) (* -2.5 zbtwn)))
 )
 
 
