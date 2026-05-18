@@ -1,0 +1,2 @@
+(setq modulgolaOrderList (append modulgolaOrderList (list (_ (gm1_divHei 10 (+ 3golaCZBot (* ZBtwn 0.5))) "3gola_profileC" T))))
+															;(gm1_divHei bölümnumarasý yukarýkaldýrma) "profilismi")

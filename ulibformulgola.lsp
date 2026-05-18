@@ -499,7 +499,7 @@
 (defun 2golaCZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil derinliði -> Modul.ini içinden C1 profil derinliðini okur
 (defun 2golaCZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil yüksekliði -> Modul.ini içinden C1 profil derinliðini okur
 
-(setq 2golaLZTop 2.7)																														; L gola kapak üstten boþluðu istenen deðeri
+(setq 2golaLZTop 2.35)																														; L gola kapak üstten boþluðu istenen deðeri
 (defun 2golaLZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil derinliði -> Modul.ini içinden L1 profil derinliðini okur
 (defun 2golaLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil yüksekliði -> Modul.ini içinden L1 profil derinliðini okur
 
@@ -517,10 +517,10 @@
 (defun 2gola_ADH () (+ ad_ADH (ke_2golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
 (defun 2gola_BDH () (+ ad_BDH2 (ke_2golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
 
-(setq ke_2GolatDrw1DiffVal -1.837)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
+(setq ke_2GolatDrw1DiffVal -1.925)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
 (defun ke_2GolaDrw1Diff () ke_2GolatDrw1DiffVal)																									; Gola çekmece 4ün 1.si ölçü farký hesaplamasý
 
-(setq ke_2GolaDrw2DiffVal -1.837)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
+(setq ke_2GolaDrw2DiffVal -1.925)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
 (defun ke_2GolaDrw2Diff () ke_2GolaDrw2DiffVal)																										; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma hesaplamasý
 
 
@@ -677,5 +677,213 @@
 (defun ph_2golaCdrw4_fix () (+ (bh_2golaDrw4b2_fix) ad_et))		; C gola 4 çekmece profil yüksekliði -> fix (2gola_ADH)
 
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2
+(setq 3golaVLZDep (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                             ; Boy VL Gola Derinliði
+(setq 3golaVLZHei (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                             ; Boy VL Gola Yüksekliði
+(setq 3golaVLZThick (getnth 2 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                           ; Boy VL Gola Panel Kalinligi
+
+(setq 3golaVCZDep (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyC")))))                                             ; Boy VC Gola Derinliði
+(setq 3golaVCZHei (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyC")))))                                             ; Boy VC Gola Yüksekliði
+(setq 3golaVCZThick (getnth 2 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyC")))))                                           ; Boy VC Gola Panel Kalinligi
+
+(setq 3golaViLZDep (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyiL")))))                                           ; Boy ViL Gola Derinliði
+(setq 3golaViLZHei (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyiL")))))                                           ; Boy ViL Gola Yüksekliði
+
+(setq 3golaiLZBotValue (cm 2))																														; iL Gola (üst modül) kapak aþaðý sarkýtma deðeri -> nil ise yok.
+(defun 3golaiLZBot () (if 3golaiLZBotValue 3golaiLZbotValue (- 0 g_ClearWallZBot)))																	; iL Gola (üst modül) kapak aþaðý sarkýtma hesaplamasý
+(defun 3golaiLZ (tempCurDoorH) (+ (3golaiLZbot) g_ClearWallZBot tempCurDoorH))																		; iL Gola (üst modül) için  kapak ek toplam fonksiyonu -> modüldeki kapak formülüne 3golaiLZBotValue toplatmak için kullanýlýr.
+(defun 3golaiLZ/2 (tempCurDoorH) (+ (* 0.5 (3golaiLZbot)) g_ClearWallZBot tempCurDoorH) )															; iL Gola (üst modül) için kapak ek yarým toplam fonksiyonu -> modüldeki kapak formülüne 3golaiLZBotValue/2 toplattýrmak için kullanýlýr.
+(setq 3golaiLZDepValue (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileiL")))))											; iL Gola (üst modül) panel çektirme deðeri -> Modul.ini içinden iL1 profil derinliðini okur
+(defun 3golaiLZDep () (if 3golaiLZDepValue 3golaiLZDepValue 0))																						; iL Gola (üst modül) panel çektirme hesaplamasý
+(defun 3golaiLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileiL")))))											; iL Gola profil yüksekliði -> Modul.ini içinden iL profil derinliðini okur						; iL Gola (üst modül) alt panel çektirme hesaplamasý
+(defun ke_3golaiLdep () (cu2mm (3golaiLZDep)) )																										; iL gola için panel derinlik çektirme -> eðer çektirme olmayacaksa set içindeki default reçeteyi sil.
+(defun ke_3golaiL () (- (if 3golaiLZBotValue (+ 3golaiLZBotValue g_ClearWallZBot) 0.0)))															; iL gola uk1 uk2 kapak sarkýtma (/kýrpma)
+
+(setq 3golaCZBot (cm 0.0 ))																															; C gola kapak alta uzatma istenen deðeri
+(setq 3golaCZTop (cm 2.9 ))																											; C gola kapak uste uzatma istenen deðeri
+(defun 3golaCBtwn () (- (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))) 3golaCZBot 3golaCZTop))					; C gola iki kapak arasý hesaplama -> Modul.ini içinden C1 profil yüksekliðini okuyor.
+(defun 3golaCZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))))												; C gola profil derinliði -> Modul.ini içinden C1 profil derinliðini okur
+(defun 3golaCZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))))												; C gola profil yüksekliði -> Modul.ini içinden C1 profil derinliðini okur
+
+(setq 3golaLZTop 2.35)																														; L gola kapak üstten boþluðu istenen deðeri
+(defun 3golaLZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileL")))))												; L gola profil derinliði -> Modul.ini içinden L1 profil derinliðini okur
+(defun 3golaLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileL")))))												; L gola profil yüksekliði -> Modul.ini içinden L1 profil derinliðini okur
+
+(defun ke_3golaLAK () (- 3golaLZTop g_ClearBaseZTop))																								; L gola ak1 / ak2 kapak kýrpma
+(defun ke_3golaL () (- (- 3golaLZTop ad_et)))																										; L gola gm1 kapak indirme (/yükseltme)
+(defun ke_3golaL_Bot () (- (- 3golaLZTop (* ZBtwn 0.5))))																							; L Gola gm1 kapak alta indirme (/yükseltme)
+(defun ke_3golaC () (- (- (3golaCBtwn) (* ZBtwn 0.5))))																								; C Gola gm1 kapak alta indirme (/yükseltme)
+
+(defun ke_3golaLdep () (cu2mm (3golaLZDep)) )																										; L gola için panel derinlik çektirme -> kayýtlarý da etkiler.
+(defun ke_3golaCdep () (cu2mm (3golaCZDep)) )																										; C Gola için panel derinlik çektirme
+
+(setq ke_3golaZDep 0)																																; Gola alt modül extra derinleþtirme istenen deðeri
+(setq ke_3golaZHvalue 0)																															; Gola alt/boy modül extra yükseltme istenen deðeri -> nil ise gola kapak ile normal kapak eþit olur
+(defun ke_3golaZH () (if ke_3golaZHvalue ke_3golaZHvalue (- (- ad_ADH g_ClearBaseZTop g_ClearBaseZbot) (- ad_ADH g_ClearBaseZbot 3golaLZTop))))		; Gola alt/boy modül extra yükseltme hesaplamasý
+(defun 3gola_ADH () (+ ad_ADH (ke_3golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
+(defun 3gola_BDH () (+ ad_BDH2 (ke_3golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
+
+(setq ke_3golatDrw1DiffVal -2.45)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
+(defun ke_3golaDrw1Diff () ke_3golatDrw1DiffVal)																									; Gola çekmece 4ün 1.si ölçü farký hesaplamasý
+
+(setq ke_3golaDrw2DiffVal -2.45)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
+(defun ke_3golaDrw2Diff () ke_3golaDrw2DiffVal)																										; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma hesaplamasý
+
+
+
+;gola L, tek kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaL (divNo) 
+	 (+ (- (gm1_divNoHei divNo) 3golaLZTop ZBot) (* 2 ad_et))
+)
+;gola LC, tek kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaLC (divNo)
+	(- (+ (gm1_divNoHei divNo) ad_et) 3golaLZTop (* ZBtwn 0.5))
+)
+;gola C, üst kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaC_top (divNo)
+	(+ (- (gm1_divNoHei divNo) ZBtwn))
+)
+;gola C, alt kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaC (divNo)
+	(+ (- (gm1_divNoHei divNo) (- (3golaCBtwn) (* ZBtwn 0.5))) ZBtwn)
+)
+;gola C, alt-son kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaC_bot (divNo)
+	(+ (- (gm1_divNoHei divNo) (- (3golaCBtwn) (* ZBtwn 0.5))) (- ad_et ZBot))
+)
+;gola C, alt-son kapak yüksekliði -> bölüm ölçüsüne göre dinamik
+(defun kh_3golaL_bot (divNo)
+	(+ (- (gm1_divNoHei divNo) (- 3golaLZTop (* ZBtwn 0.5))) (- ad_et ZBot))
+)
+
+;gola çekmece /2 yükseklikleri
+(defun kh_3golaDrw2 ()
+	(+ (ke_3golaDrw1Diff) (ke_3golaDrw2Diff) (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)))
+)
+(defun kh_3golaDrw2_fix ()
+	(+ (ke_3golaDrw1Diff) (ke_3golaDrw2Diff) (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)))
+)
+(defun bh_3golaLB1 ()
+	(+ (* (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot) 0.5) (* 0.5 zbtwn) (- 3golaLZTop ad_et) (ke_3golaDrw1Diff) (ke_3golaDrw2Diff))
+)
+(defun bh_3golaLB1_fix ()
+	(+ (* (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot) 0.5) (* 0.5 zbtwn) (- 3golaLZTop ad_et) (ke_3golaDrw1Diff) (ke_3golaDrw2Diff))
+)
+(defun bh_3golaLB2 ()
+	(- (- (gm1_curUnitH) (* 2 ad_et)) (+ (* (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot) 0.5) (* 0.5 zbtwn) (- 3golaLZTop ad_et)) (ke_3golaDrw1Diff) (ke_3golaDrw2Diff))
+)
+(defun bh_3golaLB2_fix ()
+	(- (- (3gola_ADH) (* 2 ad_et)) (+ (* (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot) 0.5) (* 0.5 zbtwn) (- 3golaLZTop ad_et)) (ke_3golaDrw1Diff) (ke_3golaDrw2Diff))
+)
+
+
+;gola çekmece /4 yükseklikleri
+(defun kh_3golaDrw4 ()
+	(+ (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) (ke_3golaDrw1Diff))
+	;(+ (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) (ke_3golaDrw1Diff))
+)
+(defun kh_3golaDrw4_fix ()
+	(+ (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) (ke_3golaDrw1Diff))
+	;(+ (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) (ke_3golaDrw1Diff))
+)
+(defun bh_3golaDrw4B1 ()
+	(- (+ (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop (* ZBtwn 0.5) (ke_3golaDrw1Diff)) ad_et )
+	;(- (+ (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop (* ZBtwn 0.5) (ke_3golaDrw1Diff)) ad_et )
+)
+(defun bh_3golaDrw4B1_fix ()
+	(- (+ (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop (* ZBtwn 0.5) (ke_3golaDrw1Diff)) ad_et )
+	;(- (+ (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop (* ZBtwn 0.5) (ke_3golaDrw1Diff)) ad_et )
+)
+(defun bh_3golaDrw4b2 ()
+	(+ (ke_3golaDrw2Diff) (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) ZBtwn)
+)
+(defun bh_3golaDrw4b2_fix ()
+	(+ (ke_3golaDrw2Diff) (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) ZBtwn)
+)
+(defun bh_3golaDrw4b3_fix ()
+	(+ (ke_3golaDrw1Diff) (ke_3golaDrw2Diff) (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) ZBtwn)
+)
+
+;gola çekmece /3 yükseklikleri
+(defun kh_GolaDrw3 ()
+	(* 0.5 (- (gm1_curUnitH) (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop zbtwn (3golaCBtwn) zbot))
+)
+(defun kh_3golaDrw3_fix ()
+	(* 0.5 (- (3gola_ADH) (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop zbtwn (3golaCBtwn) zbot))
+)
+(defun bh_3golaDrw3b2 ()
+	(- (+ (* 0.5 (- (gm1_curUnitH) (* 0.5 (- (* 0.5 (- (gm1_curUnitH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop zbtwn (3golaCBtwn) zbot)) 3golaCZTop zbtwn) 3golaCZTop (* 0.5 ke_3golatDrw1DiffVal))
+)
+(defun bh_3golaDrw3b2_fix ()
+	(- (+ (* 0.5 (- (3gola_ADH) (* 0.5 (- (* 0.5 (- (3gola_ADH) 3golaLZTop (3golaCBtwn) zbot)) zbtwn)) 3golaLZTop zbtwn (3golaCBtwn) zbot)) 3golaCZTop zbtwn) 3golaCZTop (* 0.5 ke_3golatDrw1DiffVal))
+)
+(defun bh_3golaDrw3b3 ()
+		(* 0.5 (- (gm1_curUnitH) zbot ad_et (bh_3golaDrw4B1) (* 2 (3golaCBtwn)) (* -2.5 zbtwn)))
+)
+(defun bh_3golaDrw3b3_fix ()
+		(* 0.5 (- (3gola_ADH) zbot ad_et (bh_3golaDrw4B1) (* 2 (3golaCBtwn)) (* -2.5 zbtwn)))
+)
+
+
+
+(defun bh_3golaDrw3b3L ()
+		(* 0.5 (- (gm1_curUnitH) zbot ad_et (bh_3golaDrw4B1) (* 2 (3golaCBtwn)) (* -2.5 zbtwn)))
+)
+
+
+;boy gola için parametreleri
+(defun 3golaBoyDoorDiff () (- (- (3gola_ADH) 3golaLZTop) (- ad_ADH g_ClearBaseZTop)))
+(setq 3golaZFSValue nil)																; boy cihaz dolap sabit raf kapak boþluðu deðeri
+(defun 3golaZFS () (if 3golaZFSValue 3golaZFSValue (appDoorLiftValue)))					; boy cihaz dolap sabit raf kapak boþluðu hesaplama
+(defun ke_3golaZFS () (if (3golaZFS) (- ad_et (3golaZFS)) (* 0.5 (- ad_et zbtwn))))		; boy cihaz dolap sabit raf kapak kaldýrma
+
+(defun bh_3golaFSCBot () (+ (- (3golaCBtwn) (* 0.5 zbtwn)) kh_integratedMikroDoor))
+(defun bh_3golaCboyBot () (+ (3gola_ADH) (- ad_et) (- (3golaCBtwn) 3golaLZTop)))
+
+(defun kh_3golaBoy (divNo)
+	(+ (gm1_divNoHei divNo) (* 2 ad_et) (- 0 (3golaZFS) ztop))
+)
+
+(defun kh_3golaFSBoy (divNo)
+	(+ (gm1_divNoHei divNo) (* 2 ad_et) (- 0 ztop) 3golaCZBot)
+)
+
+(defun kh_3golaLS (divNo)
+	(+ (gm1_divNoHei divNo) (* 2 ad_et) (- 0 ztop))
+)
+
+(defun kh_3golaCFS_top (divNo)
+	(+ (+ (- (gm1_divNoHei divNo) ZBtwn)) (- ad_et (3golaZFS)) (* 0.5 zbtwn))
+)
+
+(defun bh_3golaFSDrw4b2_fix ()
+	(- (bh_3golaDrw4b2_fix) (- ad_et (3golaZFS)) (* 0.5 zbtwn))
+)
+
+(defun bh_3golaFSDrw4b3_fix ()
+	(- (bh_3golaDrw4b3_fix) (- ad_et (3golaZFS)) (* 0.5 zbtwn))
+)
+
+;alt dolap gola cihaz fýrýn hesaplarý
+(defun kh_3golaOven ()
+	(* 0.5 (- (gm1_curUnitH) (+ bh_integratedOven (* 0.5 zbtwn)) 3golaLZTop (appDoorLiftValue) g_clearbasezbot))
+)
+(defun bh_3golaOven ()
+	(+ (- 3golaLZTop ad_et) (* 0.5 zbtwn)  (kh_3golaOven) )
+)
+
+;gola profil parametrik fix yükseklik deðerleri -> Normalde profiller bölümlere baðlanabiliyor. Bu yükseklikler boy dolaplara özel olarak kullanýlabilir.
+(defun ph_3golaL () (gm1_curUnitH))								; L gola 1 kapaklý profil yüksekliði
+(defun ph_3golaL_fix () (3gola_ADH))							; L gola 1 kapaklý profil yüksekliði -> fix (3gola_ADH)
+(defun ph_3golaCdrw2 () (+ (bh_3golaLB2) ad_et))				; C gola 2 çekmece profil yüksekliði
+(defun ph_3golaCdrw2_fix () (+ (bh_3golaLB2_fix) ad_et))		; C gola 2 çekmece profil yüksekliði -> fix (3gola_ADH)
+(defun ph_3golaCdrw3 () (+ (bh_3golaDrw3b2) ad_et))				; C gola 3 çekmece profil yüksekliði
+(defun ph_3golaCdrw3_fix () (+ (bh_3golaDrw3b2_fix) ad_et))		; C gola 3 çekmece profil yüksekliði -> fix (3gola_ADH)
+(defun ph_3golaCdrw4 () (+ (bh_3golaDrw4b2) ad_et))				; C gola 4 çekmece profil yüksekliði
+(defun ph_3golaCdrw4_fix () (+ (bh_3golaDrw4b2_fix) ad_et))		; C gola 4 çekmece profil yüksekliði -> fix (3gola_ADH)
 
 
