@@ -25,7 +25,8 @@
 ("FLR {AD_UDH4}" GM1 10.0000 "{AD_UDH4}" "{AD_ADDER}" (QUOTE (nil 5 "yok" "L" nil nil nil nil ("BODY\\\\30-KAPAMALAR\\\\DF11") nil 0 ("WYSWYG\\KAPAMALAR\\DF11") "(autoMoveUnitOnce (dfU_moveOnce))" (nil nil nil) nil nil nil)) (QUOTE (("CT" "{(bh_1bd)}" "0" "{(kh_1bd)}" nil nil nil nil nil 0 nil nil nil nil nil))) "COMPLIMENTARY FILLER")
 ("GBL {AD_UDH4}" GM1 1.80000 "{AD_UDH4}" "{(+ 0 AD_UDDER)}" (QUOTE (nil 5 "yok" "L" nil nil nil nil ("BODY\\\\30-KAPAMALAR\\\\DF20") nil 0 ("WYSWYG\\KAPAMALAR\\DK20") "(autoMoveUnitOnce (dfU_moveOnce))" (nil nil nil) nil nil nil)) (QUOTE (("CT" "{(bh_1bd)}" "0" "{(kh_1bd)}" nil nil nil nil nil 0 nil nil nil nil nil))) "COMPLIMENTARY GABLE")
 ("" DIVIDER "")
-("" DIVIDER "")
+("FCROWN" GM1 200.000 12.00000 "{AD_ADDER}" (QUOTE (nil 5 "yok" "" nil nil nil nil ("BODY\\\\30-KAPAMALAR\\\\YL11") nil 0 ("WYSWYG\\KAPAMALAR\\YL11FK") "" (nil nil nil))) (QUOTE (("CT" "{(bh_1bd)}" "0" "{(kh_1bd)}" nil nil "0-" nil nil 0 nil nil nil nil nil))) "Horizontal L Thick 45")
+
 
 ("PLAINBACK" GM1 180.000 "{(AD_ADHBAZA)}" "{AD_ET}" (QUOTE (nil 1 "yok" "L" nil nil nil nil ("BODY\\\\10-FIRMAM\\\\PLAINBACK") ("ALT 1" "DV\\\\10-FIRMAM\\\\SABIT_RAF" "DV\\\\10-FIRMAM\\\\KAPAK_MENTESE") 0 nil "" (nil nil nil) nil nil nil)) (QUOTE nil) "PLAINBACK")
 ("PLAINPANEL" GM1 60.0000 "{AD_ET}" 60.0000 (QUOTE (nil 5 "yok" "L" nil nil nil nil ("BODY\\\\30-KAPAMALAR\\\\YK20") nil 0 ("WYSWYG\\KAPAMALAR\\YK20") "" (nil nil nil) nil nil nil)) (QUOTE nil) "PLAINPANEL")

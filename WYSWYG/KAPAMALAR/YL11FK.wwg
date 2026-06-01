@@ -1,0 +1,44 @@
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list YL11_D1 0.0 0.0) 
+		(list (- YL11_D1 YL11_T1) YL11_T1 0.0) 
+		(list 0.0 YL11_T1 0.0) 
+	) 
+	nil
+	unitW
+	(d2r -270.0)
+	(d2r -90.0)
+	(list unitW (+ (- unitD) YL11_D1) (+ dAltKot YL11_T1))
+	"YL11_01" 
+	"" 
+	nil 
+	"SHELF" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+
+(setq kodBlock (nxtBnam (lmm_sfRead kod)) )
+(createGPanel 
+	(list 
+		(list 0.0 0.0 0.0) 
+		(list 0.0 unitH 0.0) 
+		(list YL11_T1 unitH 0.0) 
+		(list YL11_T1 YL11_T1 0.0) 
+	) 
+	nil
+	unitW
+	(d2r 0.0)
+	(d2r 180.0)
+	(list unitW (- unitD) dAltKot)
+	"YL11_02" 
+	"" 
+	nil 
+	"SIDE" 
+	(strcat kodBlock "_CAB_DOORS")
+	"CAB_DOORS"
+	"noedgedrawing"
+)
+(reverseMatRot (entlast))
