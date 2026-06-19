@@ -493,13 +493,13 @@
 (defun ke_2GolaiLdep () (cu2mm (2GolaiLZDep)) )																										; iL gola için panel derinlik çektirme -> eðer çektirme olmayacaksa set içindeki default reçeteyi sil.
 (defun ke_2GolaiL () (- (if 2GolaiLZBotValue (+ 2GolaiLZBotValue g_ClearWallZBot) 0.0)))															; iL gola uk1 uk2 kapak sarkýtma (/kýrpma)
 
-(setq 2golaCZBot (cm 2.3 ))																															; C gola kapak alta uzatma istenen deðeri
+(setq 2golaCZBot (cm 2.5 ))																															; C gola kapak alta uzatma istenen deðeri
 (setq 2golaCZTop (cm 3.0 ))																											; C gola kapak uste uzatma istenen deðeri
 (defun 2golaCBtwn () (- (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))) 2golaCZBot 2golaCZTop))					; C gola iki kapak arasý hesaplama -> Modul.ini içinden C1 profil yüksekliðini okuyor.
 (defun 2golaCZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil derinliði -> Modul.ini içinden C1 profil derinliðini okur
 (defun 2golaCZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileC")))))												; C gola profil yüksekliði -> Modul.ini içinden C1 profil derinliðini okur
 
-(setq 2golaLZTop 2.35)																														; L gola kapak üstten boþluðu istenen deðeri
+(setq 2golaLZTop 2.5)																														; L gola kapak üstten boþluðu istenen deðeri
 (defun 2golaLZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil derinliði -> Modul.ini içinden L1 profil derinliðini okur
 (defun 2golaLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "2gola_profileL")))))												; L gola profil yüksekliði -> Modul.ini içinden L1 profil derinliðini okur
 
@@ -517,10 +517,10 @@
 (defun 2gola_ADH () (+ ad_ADH (ke_2golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
 (defun 2gola_BDH () (+ ad_BDH2 (ke_2golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
 
-(setq ke_2GolatDrw1DiffVal -1.925)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
+(setq ke_2GolatDrw1DiffVal -2.0)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
 (defun ke_2GolaDrw1Diff () ke_2GolatDrw1DiffVal)																									; Gola çekmece 4ün 1.si ölçü farký hesaplamasý
 
-(setq ke_2GolaDrw2DiffVal -1.925)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
+(setq ke_2GolaDrw2DiffVal -2.0)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
 (defun ke_2GolaDrw2Diff () ke_2GolaDrw2DiffVal)																										; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma hesaplamasý
 
 
@@ -681,7 +681,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2	;;;;;;;;;;;;;;;;;;;;;; GOLA 2
+;;;;;;;;;;;;;;;;;;;;;; GOLA 3	;;;;;;;;;;;;;;;;;;;;;; GOLA 3	;;;;;;;;;;;;;;;;;;;;;; GOLA 3	;;;;;;;;;;;;;;;;;;;;;; GOLA 3
 (setq 3golaVLZDep (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                             ; Boy VL Gola Derinliði
 (setq 3golaVLZHei (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                             ; Boy VL Gola Yüksekliði
 (setq 3golaVLZThick (getnth 2 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileBoyL")))))                                           ; Boy VL Gola Panel Kalinligi
@@ -704,12 +704,12 @@
 (defun ke_3golaiL () (- (if 3golaiLZBotValue (+ 3golaiLZBotValue g_ClearWallZBot) 0.0)))															; iL gola uk1 uk2 kapak sarkýtma (/kýrpma)
 
 (setq 3golaCZBot (cm 0.0 ))																															; C gola kapak alta uzatma istenen deðeri
-(setq 3golaCZTop (cm 2.9 ))																											; C gola kapak uste uzatma istenen deðeri
+(setq 3golaCZTop (cm 3.0 ))																											; C gola kapak uste uzatma istenen deðeri
 (defun 3golaCBtwn () (- (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))) 3golaCZBot 3golaCZTop))					; C gola iki kapak arasý hesaplama -> Modul.ini içinden C1 profil yüksekliðini okuyor.
 (defun 3golaCZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))))												; C gola profil derinliði -> Modul.ini içinden C1 profil derinliðini okur
 (defun 3golaCZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileC")))))												; C gola profil yüksekliði -> Modul.ini içinden C1 profil derinliðini okur
 
-(setq 3golaLZTop 2.35)																														; L gola kapak üstten boþluðu istenen deðeri
+(setq 3golaLZTop 2.5)																														; L gola kapak üstten boþluðu istenen deðeri
 (defun 3golaLZDep () (getnth 1 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileL")))))												; L gola profil derinliði -> Modul.ini içinden L1 profil derinliðini okur
 (defun 3golaLZHei () (getnth 0 (getnth 2 (read (iniread ad_MOD-INI "golaProfiles" "3gola_profileL")))))												; L gola profil yüksekliði -> Modul.ini içinden L1 profil derinliðini okur
 
@@ -727,10 +727,10 @@
 (defun 3gola_ADH () (+ ad_ADH (ke_3golaZH)))																										; Gola alt Modül yüksekliði hesaplamasý
 (defun 3gola_BDH () (+ ad_BDH2 (ke_3golaZH)))																										; Gola boy Modül yüksekliði hesaplamasý
 
-(setq ke_3golatDrw1DiffVal -2.45)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
+(setq ke_3golatDrw1DiffVal -2.5)																														; Gola çekmece 4ün 1.si ölçü farký deðeri
 (defun ke_3golaDrw1Diff () ke_3golatDrw1DiffVal)																									; Gola çekmece 4ün 1.si ölçü farký hesaplamasý
 
-(setq ke_3golaDrw2DiffVal -2.45)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
+(setq ke_3golaDrw2DiffVal -2.5)																														; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma deðeri
 (defun ke_3golaDrw2Diff () ke_3golaDrw2DiffVal)																										; Gola çekmece 4ün 2.si ölçü farký ve gola kaldýrma hesaplamasý
 
 
