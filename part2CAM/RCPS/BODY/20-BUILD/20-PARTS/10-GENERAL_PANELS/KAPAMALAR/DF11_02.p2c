@@ -29,12 +29,18 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FITZGERALD
 
-(setq partDimList (list 100 150 200 250 300 2750))
+(cond ;max length
+	(	(member (car matinfo) (list "U12204 MO Manhattan Grey"))
+		(setq partDimListLast 2655)
+	)
+	(	T 
+		(setq partDimListLast 2750)
+	)
+)
+(setq partDimList (list 100 150 200 250 300 partDimListLast))
 
-(setq partDimH nil)
-(setq partDimCount 0)
-
-(if (>= __HEI (last partDimList)) (setq partDimH (last partDimList)))
+(setq partDimH nil partDimCount 0)
+(if (>= __HEI partDimListLast) (setq partDimH partDimListLast))
 (if (<= __HEI (getnth 0 partDimList)) (setq partDimH (getnth 0 partDimList)))
 (while
 	(and (not partDimH) (>= __HEI (getnth partDimCount partDimList)))
@@ -48,11 +54,11 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 		)
 	)
 )
-(if (not partDimH) (setq partDimH 100.010101))
+(if (not partDimH) (setq partDimH 100))
 
-(setq partDimW nil)
-(setq partDimCount 0)
-(if (>= __WID (last partDimList)) (setq partDimW (last partDimList)))
+
+(setq partDimW nil partDimCount 0)
+(if (>= __WID partDimListLast) (setq partDimW partDimListLast))
 (if (<= __WID (getnth 0 partDimList)) (setq partDimW (getnth 0 partDimList)))
 (while 
 	(and (not partDimW) (>= __WID (getnth partDimCount partDimList)))
@@ -66,7 +72,8 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 		)
 	)
 )
-(if (not partDimW) (setq partDimW 100.010101))
+(if (not partDimW) (setq partDimW 100))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
