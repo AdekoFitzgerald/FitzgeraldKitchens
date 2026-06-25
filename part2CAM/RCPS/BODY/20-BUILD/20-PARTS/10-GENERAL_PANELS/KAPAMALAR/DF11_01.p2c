@@ -33,7 +33,9 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 
 (setq partDimH nil)
 (setq partDimCount 0)
+
 (if (>= __HEI (last partDimList)) (setq partDimH (last partDimList)))
+(if (<= __HEI (getnth 0 partDimList)) (setq partDimH (getnth 0 partDimList)))
 (while
 	(and (not partDimH) (>= __HEI (getnth partDimCount partDimList)))
 	(progn
@@ -46,10 +48,12 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 		)
 	)
 )
+(if (not partDimH) (setq partDimH 100.010101))
 
 (setq partDimW nil)
 (setq partDimCount 0)
 (if (>= __WID (last partDimList)) (setq partDimW (last partDimList)))
+(if (<= __WID (getnth 0 partDimList)) (setq partDimW (getnth 0 partDimList)))
 (while 
 	(and (not partDimW) (>= __WID (getnth partDimCount partDimList)))
 	(progn
@@ -62,6 +66,7 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 		)
 	)
 )
+(if (not partDimW) (setq partDimW 100.010101))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
