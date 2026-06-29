@@ -27,12 +27,23 @@ SPECIAL_PANEL_45_OPERATION_LAYER_NAME -> "Layer name of 45 degree junction opera
 ;OK
 (setq matinfo (get_visible_matInfo_PanelBlockinBlock g_currentModulEnt "DF20_01" "CAB_DOORS"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FITZGERALD
+
+(cond ;max length
+	(	(member (car matinfo) (list "U12204 MO Manhattan Grey"))
+		(setq partDimListLast 2655)
+	)
+	(	T 
+		(setq partDimListLast 2750)
+	)
+)
+
 (_SETA 'SPECIAL_PANEL_COUNT 1)
 (_SETA 'SPECIAL_PANEL_CODE "DF20_01")
-(_SETA 'SPECIAL_PANEL_WID (+ 30 __HEI)) ;fitzgerald floor + 30 
-(_SETA 'SPECIAL_PANEL_HEI (+ 30 __DEP))
+(_SETA 'SPECIAL_PANEL_WID (if (>= (+ 30 __HEI) partDimListLast) (+ 30 __HEI) partDimListLast))	;fitzgerald floor + 30 
+(_SETA 'SPECIAL_PANEL_HEI (if (>= (+ 30 __DEP) partDimListLast) (+ 30 __DEP) partDimListLast))	;fitzgerald floor + 30 
 (_SETA 'SPECIAL_PANEL_MATERIAL (car matinfo))
-(_SETA 'SPECIAL_PANEL_THICKNESS (* ad_et 10))
+(_SETA 'SPECIAL_PANEL_THICKNESS (cu2mm ad_et))
 
 (_SETA 'PANEL_MAIN_ROTATION (cadr matinfo))
 (_SETA 'PANEL_CUTLIST_ROTATION nil)
