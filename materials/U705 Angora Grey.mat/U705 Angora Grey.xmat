@@ -1,7 +1,7 @@
 <material version="1">
 	<color>U705 Angola Grey_color.jpg</color>
-	<specular>U705 Angola Grey_specular.png</specular>
-	<normal>U705 Angola Grey_normal.png</normal>
+	<specular>U705 Angora Grey_specular.png</specular>
+	<normal>U705 Angora Grey_normal.png</normal>
 	<transform>
 		<rotation>1 0 0 0 1 0 0 0 1</rotation>
 		<translation>0 0 0</translation>
