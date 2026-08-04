@@ -1,4 +1,4 @@
-(defun SHAKER50_Akanat (x z)
+(defun SHAKER25_Akanat (x z)
 (setq Ta 5.0 Sa 5.0 kpkTck 2.2)
 	(drawMeshKanat "SHAKER25" x z
 		(list
