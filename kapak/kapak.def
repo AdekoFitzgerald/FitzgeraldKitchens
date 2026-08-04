@@ -1,4 +1,10 @@
 (setq doorInsUnit 5) ;5 cm, 4 mm, 1 inc
+
+("PLAIN18"        	kapakX	"PLAIN18"        	(QUOTE (3.0	nil	nil	nil	"FITZGERALD"))		"Plain Door 18")
+("PLAIN22"        	kapakX	"PLAIN22"        	(QUOTE (3.0	nil	nil	nil	"FITZGERALD"))		"Plain Door 22")
+("SHAKER25"        	kapakX	"SHAKER25"        	(QUOTE (3.0	nil	nil	nil	"FITZGERALD"))		"SHAKER25 Door 22")
+("SHAKER50"        	kapakX	"SHAKER50"        	(QUOTE (3.0	nil	nil	nil	"FITZGERALD"))		"SHAKER50 Door 22")
+
 ("KAPAKR2AL"     	kapakX	"A17ALU"        	(QUOTE (3.0	nil	T	2	"Modern"))		"Rounded Corner &+ Aluminium Glass showcase")
 ("KAPAKR2"       	kapakX	"A17DUZ"        	(QUOTE (3.0	nil	nil	nil	"Modern"))		"Rounded Corners &+ Cavity Glass showcase ")
 ("DUZKPK"        	kapakX	"DUZKPK"        	(QUOTE (3.0	nil	nil	nil	"Modern"))		"Plain Door")

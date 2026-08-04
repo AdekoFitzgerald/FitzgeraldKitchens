@@ -6,6 +6,39 @@
 
 
 
+;FITZGERALD DOORS
+;__________________________________________________________________________________________________________________________________________________________
+;__________________________________________________________________________________________________________________________________________________________
+(defun PLAIN18_AKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "(list \"##\" 18)")
+	(setq doorFlags::p2cEdges (list PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK PvcKoduKAPAK)) 
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "PLAIN18" "_" x "KANATSETS")) DUZKPK_AKANATSETS) ) _KSets_typeAList)
+
+(defun PLAIN22_AKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "(list \"##\" 22)")
+	(setq doorFlags::p2cEdges (list nil nil nil nil)) 
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "PLAIN22" "_" x "KANATSETS")) DUZKPK_AKANATSETS) ) _KSets_typeAList)
+
+(defun SHAKER25_AKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "(list \"##\" 22)")
+	(setq doorFlags::p2cEdges (list nil nil nil nil)) 
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "SHAKER25" "_" x "KANATSETS")) DUZKPK_AKANATSETS) ) _KSets_typeAList)
+
+(defun SHAKER50_AKANATSETS(x z)
+	(setq doorFlags::p2cDoorSource "(list \"##\" 22)")
+	(setq doorFlags::p2cEdges (list nil nil nil nil)) 
+	(setq doorFlags::p2cFrameThick 55)
+)
+(mapcar '(lambda (x) (set (read (strcat "SHAKER50" "_" x "KANATSETS")) DUZKPK_AKANATSETS) ) _KSets_typeAList)
+
+
+
 ;ADEKO KAPAKLARI
 ;__________________________________________________________________________________________________________________________________________________________
 ;__________________________________________________________________________________________________________________________________________________________

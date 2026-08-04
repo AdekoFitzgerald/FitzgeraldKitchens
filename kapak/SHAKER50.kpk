@@ -1,0 +1,15 @@
+(defun SHAKER50_Akanat (x z)
+(setq Ta 1.5 Sa 1.5 kpkTck 2.2)
+	(drawMeshKanat "SHAKER50" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(12 11 10 9 8 7 6 5 )
+				'(16 15 14 13 4 3 2 1 )
+				'(14 13 12 10 6 5 3 1 )
+				'()
+				'()
+			)
+		)
+	)
+)

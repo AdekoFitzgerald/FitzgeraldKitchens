@@ -1,0 +1,14 @@
+(defun PLAIN18_Akanat (x z)
+(setq kpkTck 1.8)
+	(drawMeshKanat nil "PLAIN18" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(1 2 3 4 )
+				'(5 6 7 8 )
+				'(2 4 5 6 )
+				'()
+			)
+		)
+	)
+)
