@@ -1,5 +1,5 @@
 (defun SHAKER50_Akanat (x z)
-(setq Ta 1.5 Sa 1.5 kpkTck 2.2)
+(setq Ta 2.0 Sa 2.0 kpkTck 2.2)
 	(drawMeshKanat "SHAKER50" x z
 		(list
 			(list "CAB_DOORS"
