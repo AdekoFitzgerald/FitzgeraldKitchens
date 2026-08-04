@@ -1,0 +1,152 @@
+(defun KLASIK1_Akanat (x z / nokta_list dugum_list ax dt et rt)
+	(setq Ta (cm 2.0) Sa (cm 2.0))
+	(if (<= z (cm 24.0))
+		(progn
+			(if (null KLASIK2_Ckanat) (load (strcat ad_ADEKOPath "kapak\\KLASIK2.KPK")))
+			(KLASIK2_Ckanat x z)
+		)
+		(progn
+			(setq LRMode "M" DRMode "M" Ta (cm 3.5) Sa (cm 3.5))
+			(setq et (- ad_ET))
+			(setq ax (/2 x))
+			(setq dt ad_Clear)
+			(nokta+liste (- dt ax)		0.0				dt)
+			(nokta+liste (- dt ax)		0.0				(- z dt))
+			(nokta+liste (- dt ax)		(+ (cm 1.0) et)		dt)
+			(nokta+liste (- dt ax)		(+ (cm 1.0) et)		(- z dt))
+			(nokta+liste (- dt ax (cm -1.0))	et				(+ (cm 1.0) dt))
+			(nokta+liste (- dt ax (cm -1.0))	et				(- z (cm 1.0) dt))
+
+			(nokta+liste (- (cm 6.000) ax)	et			(cm 6.0))
+			(nokta+liste (- (cm 6.000) ax)	et			(- z (cm 6.0)))
+			(nokta+liste (- (cm 7.000) ax)	(cm -1.0)		(cm 7.00))
+			(nokta+liste (- (cm 7.000) ax)	(cm -1.0)		(- z (cm 7.00)))
+			(nokta+liste (- (cm 10.000) ax)	(cm -1.0)		(cm 10.0))
+			(nokta+liste (- (cm 10.000) ax)	(cm -1.0)		(- z (cm 10.0)))
+			(nokta+liste (- (cm 12.000) ax)	et  		(cm 12.0))
+			(nokta+liste (- (cm 12.000) ax)	et  		(- z (cm 12.0)))
+
+			(nokta+liste (-x 1 0.0) nil nil)
+			(nokta+liste (-x 2 0.0) nil nil)
+			(nokta+liste (-x 3 0.0) nil nil)
+			(nokta+liste (-x 4 0.0) nil nil)
+			(nokta+liste (-x 5 0.0) nil nil)
+			(nokta+liste (-x 6 0.0) nil nil)
+			(nokta+liste (-x 7 0.0) nil nil)
+			(nokta+liste (-x 8 0.0) nil nil)
+			(nokta+liste (-x 9 0.0) nil nil)
+			(nokta+liste (-x 10 0.0) nil nil)
+			(nokta+liste (-x 11 0.0) nil nil)
+			(nokta+liste (-x 12 0.0) nil nil)
+			(nokta+liste (-x 13 0.0) nil nil)
+			(nokta+liste (-x 14 0.0) nil nil)
+
+			(dugum+liste (list
+				1	2	16	15	""
+				1	2	4	3	""
+				2	16	18	4	""
+				16	18	17	15	""
+				17	15	1	3	""
+				3	4	6	5	""
+				4	6	20	18	""
+				18	20	19	17	""
+				19	17	3	5	""
+
+				6	-5	7	8	-22	20	""
+				19	-20	22	21	-7	5	""
+				7	8	10	9	""
+				8	10	24	22	""
+				22	24	23	21	""
+				21	23	9	7	""
+				9	10	24	23	""
+				11	12	26	25	""
+				12	14	28	26	""
+				26	28	27	25	""
+				25	27	13	11	""
+				13	14	28	27	""
+				)
+			)
+
+			(setlayer "CAB_DOORS" 7)
+			(meshciz)
+			(entlast)
+		)
+	)
+)
+
+(defun KLASIK1_Bkanat (x z / nokta_list dugum_list ax dt et rt sblklst)
+	(setq Ta (cm 2.0) Sa (cm 2.0))
+	(setq LRMode "M" DRMode "M" Ta (cm 3.5) Sa (cm 3.5))
+	(setq et (- ad_ET))
+	(setq ax (/2 x))
+	(setq dt ad_Clear)
+	(nokta+liste (- dt ax)		0.0				dt)
+	(nokta+liste (- dt ax)		0.0				(- z dt))
+	(nokta+liste (- dt ax)		(+ (cm 1.0) et)		dt)
+	(nokta+liste (- dt ax)		(+ (cm 1.0) et)		(- z dt))
+	(nokta+liste (- dt ax (cm -1.0))	et				(+ (cm 1.0) dt))
+	(nokta+liste (- dt ax (cm -1.0))	et				(- z (cm 1.0) dt))
+
+	(nokta+liste (- (cm 6.000) ax)	et			(cm 6.0))
+	(nokta+liste (- (cm 6.000) ax)	et			(- z (cm 6.0)))
+	(nokta+liste (- (cm 7.000) ax)	(cm -1.0)		(cm 7.00))
+	(nokta+liste (- (cm 7.000) ax)	(cm -1.0)		(- z (cm 7.00)))
+	(nokta+liste (- (cm 10.000) ax)	(cm -1.0)		(cm 10.0))
+	(nokta+liste (- (cm 10.000) ax)	(cm -1.0)		(- z (cm 10.0)))
+	(nokta+liste (- (cm 12.000) ax)	et  		(cm 12.0))
+	(nokta+liste (- (cm 12.000) ax)	et  		(- z (cm 12.0)))
+
+	(nokta+liste (-x 1 0.0) nil nil)
+	(nokta+liste (-x 2 0.0) nil nil)
+	(nokta+liste (-x 3 0.0) nil nil)
+	(nokta+liste (-x 4 0.0) nil nil)
+	(nokta+liste (-x 5 0.0) nil nil)
+	(nokta+liste (-x 6 0.0) nil nil)
+	(nokta+liste (-x 7 0.0) nil nil)
+	(nokta+liste (-x 8 0.0) nil nil)
+	(nokta+liste (-x 9 0.0) nil nil)
+	(nokta+liste (-x 10 0.0) nil nil)
+	(nokta+liste (-x 11 0.0) nil nil)
+	(nokta+liste (-x 12 0.0) nil nil)
+	(nokta+liste (-x 13 0.0) nil nil)
+	(nokta+liste (-x 14 0.0) nil nil)
+
+	(dugum+liste (list
+;		1	2	16	15	""
+		1	2	4	3	""
+		2	16	18	4	""
+		16	18	17	15	""
+		17	15	1	3	""
+		3	4	6	5	""
+		4	6	20	18	""
+		18	20	19	17	""
+		19	17	3	5	""
+
+		6	-5	7	8	-22	20	""
+		19	-20	22	21	-7	5	""
+		7	8	10	9	""
+		8	10	24	22	""
+		22	24	23	21	""
+		21	23	9	7	""
+
+;		9	10	24	23	""
+;		11	12	26	25	""
+;		12	14	28	26	""
+;		26	28	27	25	""
+;		25	27	13	11	""
+;		13	14	28	27	""
+	))
+	(setlayer "CAB_DOORS" 7)
+	(meshciz)
+	(setq sblklst (ssadd (entlast)))
+
+	(setlayer "CAB_DOOR_GLASS" 4)
+
+	(command cmdINSERT "CAM" (list (- (cm 7.0) ax)  (cm -1.0)  (cm 7.0)) 
+		"_XYZ" (- x (cm 14.0)) 1 (- z (cm 14.0))
+		0
+	)
+	(setlayer "CAB_DOORS" 7)
+	(ssadd (entlast) sblklst)
+)
+

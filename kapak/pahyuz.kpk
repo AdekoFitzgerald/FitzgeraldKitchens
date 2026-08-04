@@ -1,0 +1,100 @@
+(defun PAHYUZ_Akanat (x z / nokta_list dugum_list ax dt et rt)
+	(if (< z (cm 5.0))
+		(DUZKPK_Akanat x z)
+		(progn
+		  (setq et (- ad_ET))
+		  (setq ax (/2 x))
+		  (setq dt ad_Clear)
+		  (nokta+liste (- dt ax)	  0.0			  dt)
+		  (nokta+liste (- dt ax)	  0.0			  (- z dt))
+		  (nokta+liste (- dt ax)	  (cm -1.0)			  dt)
+		  (nokta+liste (- dt ax)	  (cm -1.0)			  (- z dt))
+		  (nokta+liste (- (cm 3.0) ax)	  et			  (cm 3.0))
+		  (nokta+liste (- (cm 3.0) ax)	  et			  (- z (cm 3.0)))
+
+		  (nokta+liste (-x 1 0.0) nil nil)
+		  (nokta+liste (-x 2 0.0) nil nil)
+		  (nokta+liste (-x 3 0.0) nil nil)
+		  (nokta+liste (-x 4 0.0) nil nil)
+		  (nokta+liste (-x 5 0.0) nil nil)
+		  (nokta+liste (-x 6 0.0) nil nil)
+
+		  (dugum+liste (list
+			  1   2   8   7   ""
+			  1   2   4   3   ""
+			  2   8   10  4   ""
+			  8   7   9   10  ""
+			  7   1   3   9   ""
+			  3   4   6   5   ""
+			  4   10  12  6   ""
+			  10  9   11  12  ""
+			  9   3   5   11  ""
+			  5   6   12  11  ""
+		  ))
+		  (setlayer "CAB_DOORS" 7)
+		  (meshciz)
+		  (entlast)
+		)
+	)
+)
+
+(defun PAHYUZ_Bkanat (x z / nokta_list dugum_list ax dt et rt sblklst p1 p2 p4 i)
+	(setq et (- ad_ET))
+	(setq ax (/2 x))
+	(setq dt ad_Clear)
+	(nokta+liste (- dt ax)		0.0 			dt)
+	(nokta+liste (- dt ax)		0.0 			(- z dt))
+	(nokta+liste (- dt ax)		(cm -1.0)			dt)
+	(nokta+liste (- dt ax)		(cm -1.0)			(- z dt))
+	(nokta+liste (- (cm 3.0) ax) 	et				(cm 3.0))
+	(nokta+liste (- (cm 3.0) ax) 	et				(- z (cm 3.0)))
+	(nokta+liste (- (cm 3.0) ax) 	0.0 			(cm 3.0))
+	(nokta+liste (- (cm 3.0) ax) 	0.0 			(- z (cm 3.0)))
+
+	(setq i 1)
+	(while (<= i 8)
+		(nokta+liste (-x i 0.0) nil nil)
+		(i++)
+	)
+
+	(dugum+liste (list
+		8	-16 10	2	-1	7	""
+		15	-16 10	9	-1	7	""
+		1	2	4	3	""
+		2	10	12	4	""
+		10	9	11	12	""
+		9	1	3	11	""
+		3	4	6	5	""
+		4	12	14	6	""
+		12	11	13	14	""
+		11	3	5	13	""
+		5	6	8	7	""
+		6	14	16	8	""
+		14	13	15	16	""
+		13	5	7	15	""
+	))
+
+	(setlayer "CAB_DOORS" 7)
+	(meshciz)
+	(setq sblklst (ssadd (entlast)))
+
+	(setlayer "CAB_DOOR_GLASS" 4)
+	(setq p1 (list (- (cm 3.0) ax)  (cm -1.0)  (cm 3.0))
+		  p2 (list (- (cm 3.0) ax)  (cm -1.0)  (- z (cm 3.0)))
+		  p4 (list (- ax (cm 3.0))  (cm -1.0)  (cm 3.0))
+	)
+	(command cmdINSERT "CAM" (list (- (cm 3.0) ax)  (cm -1.0)  (cm 3.0))
+		"_XYZ" (distance p1 p4) 1 (distance p1 p2)
+		0
+	)
+
+	(ssadd (entlast) sblklst)
+)
+
+(defun PAHYUZ_Ckanat (x z)
+	(PAHYUZ_Akanat x z)
+)
+
+(defun PAHYUZ_Dkanat (x z)
+	(Dkanat '(PAHYUZ_Akanat) x z)
+)

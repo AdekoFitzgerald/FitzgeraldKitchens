@@ -1,0 +1,89 @@
+(defun SM343_Akanat (x z)
+	(cond
+		
+		(	(< z (cm 12))
+			(drawMeshKanat nil "SM343FAK" x z
+				(list
+					(list "CAB_DOORS"
+						nil
+						'(15 13 12 11 8 7 6 5 )
+						'(16 14 10 9 4 3 2 1 )
+						'(16 15 11 10 8 7 4 3 )
+						'()
+						'()
+					)
+				)
+			)
+		)
+
+		(	(< z (cm 20))
+			(drawMeshKanat nil "SM343CKMC" x z
+				(list
+					(list "CAB_DOORS"
+						nil
+						'(15 13 12 11 8 7 6 5 )
+						'(16 14 10 9 4 3 2 1 )
+						'(16 15 11 10 8 7 4 3 )
+						'()
+						'()
+					)
+				)
+			)
+		)
+
+		(	(< x (cm 20))
+			(drawMeshKanat nil "SM343DK" x z
+				(list
+					(list "CAB_DOORS"
+						nil
+						'(16 15 12 11 4 3 2 1 )
+						'(14 13 10 9 8 7 6 5 )
+						'(16 15 14 13 6 5 2 1 )
+						'()
+						'()
+					)
+				)
+			)
+		)
+	
+		(	T
+			(drawMeshKanat nil "SM343" x z
+				(list
+					(list "CAB_DOORS"
+						nil
+						'(16 15 12 11 4 3 2 1 )
+						'(14 13 10 9 8 7 6 5 )
+						'(16 15 14 13 6 5 2 1 )
+						'()
+						'()
+					)
+				)
+			)
+		)
+		
+	)
+)
+
+(defun SM343_Bkanat (x z)
+
+	(drawMeshKanat nil "SM343CK" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(24 23 20 19 16 14 8 7 6 5 4 3 )
+				'(22 21 18 17 15 13 12 11 10 9 2 1 )
+				'(20 19 18 17 14 13 9 7 4 3 2 1 )
+				'()
+				'()
+			)
+			(list "CAB_DOOR_GLASS"
+				nil
+				'(8 6 4 2 )
+				'(7 5 3 1 )
+				'(8 7 2 1 )
+				'()
+				'()
+			)
+		)	
+	)
+)

@@ -1,0 +1,35 @@
+(defun PAHFUGA_Akanat (x z)
+	(drawMeshKanat nil "PAHFUGA" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(2 14 20 21 15 5 1 8 9 19 22 6 )
+				'(13 23 12 18 11 24 10 17 3 4 7 16 )
+				'(13 23 12 18 2 14 20 21 15 5 4 16 )
+				'()
+			)
+)))
+
+(defun PAHFUGA_Bkanat (x z)
+	(drawMeshKanat nil "22C" x z
+		(list
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(16 12 6 7 14 11 9 10 )
+				'(4 15 2 5 3 13 1 8 )
+				'(4 15 2 5 16 12 6 7 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				(list (cm 0.3) 15 16 28 41)
+				'(4 8 47 11 16 26 2 9 24 35 5 13 42 44 48 12 15 45 10 31 32 36 14 30 )
+				'(1 7 17 25 28 40 3 20 23 37 6 27 19 22 43 39 41 46 18 33 34 38 21 29 )
+				'(1 7 17 25 28 40 3 20 23 37 6 27 4 8 47 11 16 26 2 9 24 35 5 13 )
+				'()
+			)
+)))
+
+(defun PAHFUGA_Ckanat (x z)
+	(PAHFUGA_Akanat x z)
+)
+

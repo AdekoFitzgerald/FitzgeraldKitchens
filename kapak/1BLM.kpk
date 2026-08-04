@@ -1,0 +1,36 @@
+(defun 1BLM_Akanat (x z)
+	(drawMeshKanat nil "1BLM" x z 
+		(list 
+			(list "ALUMINIUM_FRAME" 
+				nil 
+				'( 37 36 35 33 32 31 30 29 28 27 26 25 24 23 20 19 18 17 15 13 ) 
+				'( 40 39 38 34 22 21 16 14 12 11 10 9 8 7 6 5 4 3 2 1 ) 
+				'( 32 31 30 29 22 21 20 19 18 17 16 15 14 13 10 9 8 7 6 5 ) 
+				'( ) 
+			) 
+			(list "CAB_DOORS" 
+				nil 
+				'( 4 3 2 1 ) 
+				'( 8 7 6 5 ) 
+				'( 6 5 4 2 ) 
+				'( ) 
+			) 
+		)
+	)
+)
+(defun 1BLM_Bkanat (x z)
+	(drawMeshKanat nil "1BLMC" x z 
+		(list 
+			(list "ALUMINIUM_FRAME" 
+				(list (cm -0.5) 1 2 3 4) 
+				'( 37 36 35 33 32 31 30 29 28 27 26 25 24 23 20 19 18 17 15 13 ) 
+				'( 40 39 38 34 22 21 16 14 12 11 10 9 8 7 6 5 4 3 2 1 ) 
+				'( 32 31 30 29 22 21 20 19 18 17 16 15 14 13 10 9 8 7 6 5 ) 
+				'( ) 
+			) 
+		)
+	)
+)
+(defun 1BLM_Ckanat (x z)
+      (1BLM_Akanat  x z)
+) 

@@ -1,0 +1,56 @@
+(defun SERIT_Akanat (x z)
+	(drawMeshKanat nil "SERIT" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(1 2 5 6 1 2 5 6 )
+				'(3 4 7 8 3 4 7 8 )
+				'(5 6 7 8 5 6 7 8 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				nil
+				'(1 2 3 4 5 6 7 8 )
+				'(9 10 11 12 13 14 15 16 )
+				'(2 4 6 8 10 12 14 16 )
+				'()
+			)
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(1 2 3 4 5 6 7 8 )
+				'(9 10 11 12 13 14 15 16 )
+				'(2 4 6 8 10 12 14 16 )
+				'()
+			)
+)))
+
+
+(defun SERIT_Bkanat (x z)
+	(drawMeshKanat nil "SERITC" x z
+		(list
+			(list "CAB_DOORS"
+				(list (cm 0.9) 8 16 15 7)
+				'(2 4 6 8 10 12 14 16 )
+				'(1 3 5 7 9 11 13 15 )
+				'(9 10 11 12 13 14 15 16 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				nil
+				'(1 2 3 4 5 6 7 8 )
+				'(9 10 11 12 13 14 15 16 )
+				'(2 4 6 8 10 12 14 16 )
+				'()
+			)
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(1 2 3 4 5 6 7 8 )
+				'(9 10 11 12 13 14 15 16 )
+				'(2 4 6 8 10 12 14 16 )
+				'()
+			)
+)))
+
+(defun SERIT_Ckanat (x z)
+	(SERIT_Akanat x z)
+)

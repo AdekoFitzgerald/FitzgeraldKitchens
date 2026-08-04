@@ -1,0 +1,76 @@
+(defun NPRF_Akanat (x z)
+	(cond 	((member kulp '("0-"))
+				(drawMeshKanat nil "KKULPDUZ" x z
+					(list
+						(list "CAB_DOORS"
+							nil
+							'(8 6 4 2 )
+							'(7 5 3 1 )
+							'(4 3 2 1 )
+							'()
+						)
+					)
+				)
+			)
+			(T
+				(drawMeshKanat nil "NPRF" x z
+					(list
+						(list "CAB_DOORS"
+							nil
+							'(4 3 2 1 )
+							'(8 7 6 5 )
+							'(6 5 4 2 )
+							'()
+						)
+						(list "HANDLES_AND_KNOBS"
+							nil
+							'(19 16 14 12 9 8 7 6 3 1 )
+							'(20 18 17 15 13 11 10 5 4 2 )
+							'(20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+							'()
+						)
+					)
+				)
+			)
+	)
+)	
+
+(defun NPRF_Bkanat (x z)
+	(cond 	((member kulp '("0-"))
+				(drawMeshKanat nil "NPRFDUZC" x z
+					(list
+						(list "CAB_DOORS"
+							(list (cm -0.5) 4 3 6 8)
+							'(12 11 10 9 4 3 2 1 )
+							'(16 15 14 13 8 7 6 5 )
+							'(14 13 6 5 12 10 3 1 )
+							'()
+						)
+					)
+				)
+			)
+			(T
+				(drawMeshKanat nil "NPRFC" x z
+					(list
+						(list "CAB_DOORS"
+							(list (cm -0.5) 4 6 3 8)
+							'(12 11 10 9 4 3 2 1 )
+							'(16 15 14 13 8 7 6 5 )
+							'(14 13 12 10 6 5 3 1 )
+							'()
+						)
+						(list "HANDLES_AND_KNOBS"
+							nil
+							'(19 16 14 12 9 8 7 6 3 1 )
+							'(20 18 17 15 13 11 10 5 4 2 )
+							'(20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+							'()
+						)
+					)
+				)
+			)
+	)
+)			
+(defun NPRF_Ckanat (x z)
+       (NPRF_Akanat x z)
+)

@@ -1,0 +1,47 @@
+(defun DISCITA_Akanat (x z)
+	(drawMeshKanat nil "DISCITA" x z
+		(list
+			(list "CAB_DOORS"	;Layername
+				 nil
+				'(2 7 4 6 )
+				'(1 5 3 8 )
+				'(1 5 2 7 )
+				nil   ;Scale
+			)
+			(list "CAB_DOOR_FRAMES"	;Layername
+				 nil
+				'(12 16 6 7 11 14 9 10 )
+				'(4 15 2 5 3 13 1 8 )
+				'(4 15 2 5 12 16 6 7 )
+				 nil   ;Scale
+			)
+		)
+	)
+)
+
+(defun DISCITA_Bkanat (x z)
+	(drawMeshKanat nil "DISCITAC" x z
+		(list
+			(list "CAB_DOORS"	;Layername
+				(list (cm 0.6) 5 7 1 2 ) ;(offset p1 p2 p3 p4). Also serves as a flag that this is a Bkanat
+				'(7 8 15 16 5 6 13 14 )
+				'(3 1 9 11 4 2 10 12 )
+				'(3 1 9 11 7 8 15 16 )
+				  nil	;Scale
+			)
+			(list "CAB_DOOR_FRAMES"	;Layername
+				  nil
+				'(12 16 6 7 11 14 9 10 )
+				'(4 15 2 5 3 13 1 8 )
+				'(4 15 2 5 12 16 6 7 )
+				 nil
+			)
+
+		)
+	)
+)
+
+(defun DISCITA_Ckanat (x z)
+	(DISCITA_Akanat x z)
+)
+

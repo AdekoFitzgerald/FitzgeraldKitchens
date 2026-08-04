@@ -1,0 +1,38 @@
+(defun FUGA2_Akanat (x z)
+	(drawMeshKanat nil "FUGA2" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(6 8 5 7 )
+				'(2 4 1 3 )
+				'(2 4 10 12 15 16 17 18 11 13 14 21 22 23 9 19 20 6 8 )
+				'()
+			)
+		)
+	)
+)
+
+(defun FUGA2_Bkanat (x z)
+	(drawMeshKanat nil "22C" x z
+		(list
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(16 12 6 7 14 11 9 10 )
+				'(4 15 2 5 3 13 1 8 )
+				'(4 15 2 5 16 12 6 7 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				(list (cm 0.3) 15 16 28 41)
+				'(4 8 47 11 16 26 2 9 24 35 5 13 42 44 48 12 15 45 10 31 32 36 14 30 )
+				'(1 7 17 25 28 40 3 20 23 37 6 27 19 22 43 39 41 46 18 33 34 38 21 29 )
+				'(1 7 17 25 28 40 3 20 23 37 6 27 4 8 47 11 16 26 2 9 24 35 5 13 )
+				'()
+			)
+		)
+	)
+)
+
+(defun FUGA2_Ckanat (x z)
+	(FUGA2_Akanat x z)
+)

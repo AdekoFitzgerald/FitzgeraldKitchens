@@ -1,0 +1,16 @@
+(defun SP_Akanat (x z)
+       (if (or (< z 30.00)
+               (< x 40.00)
+           )
+        (drawMeshKanat nilF x z 0.00 0.00 0.00 0.00 0.18 0.01 0.82 0.09 "SP (_KAPAK_)" "SP.jpg")
+        (drawMeshKanat nilF x z 8.00 12.00 8.00 8.00 0.16 0.18 0.83 0.88 "SP (_KAPAK_)" "SP.jpg")
+       )
+)
+
+(defun SP_Bkanat (x z)
+        (drawMeshKanat nilF x z 5.00 5.00 5.00 5.00 0.12 0.09 0.88 0.91 "SP (_KAPAK_)" "Cam.jpg")
+)
+
+(defun SP_Ckanat (x z)
+      (SP_Akanat x z)
+)

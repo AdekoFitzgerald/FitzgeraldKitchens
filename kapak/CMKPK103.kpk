@@ -1,0 +1,95 @@
+(defun CMKPK103_Bkanat (x z / profile fromEnt xL xR ft)
+	(setq ft (cm 6.8))  ;Frame Thickness: çerçeve kalýnlðý
+	(setq LRMode "M" Ta 2.77 Sa 2.77 Ka 1.8)
+
+	(setq profile 
+		'(	(1 1.5)(0.9933 1.525 -0.000001)(0.975 1.5433 -0.000001)(0.95 1.55)
+			(0 1.55 -0.000001)
+			(-0.95 1.55)(-0.975 1.5433 -0.000001)(-0.9933 1.525 -0.000001)(-1 1.5)(-1 0.95)
+			(0 0.95 -0.000001) (1 0.95)
+		)
+	)
+	(drawMeshKanat nil "KK002C" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 45 43 42 30 29 28 27 26 25 24 23 22 21 10 9 8 7 6 5 4 3 2 1 )
+				'(84 83 82 81 80 79 78 77 76 75 74 73 72 71 70 69 68 67 47 46 44 41 40 39 38 37 36 35 34 33 32 31 20 19 18 17 16 15 14 13 12 11 )
+				'(75 74 73 72 71 70 69 68 67 66 65 62 60 58 56 54 52 50 48 47 42 41 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 )
+				'()
+				'()
+			)
+			(list "CAB_DOOR_GLASS"
+				nil
+				'(8 7 2 1 )
+				'(6 5 4 3 )
+				'(8 7 6 5 )
+				'()
+				'()
+			)
+		)
+	)
+	
+	(if (>= z 20.0)
+		(progn
+			(setq fromEnt (entlast))
+			
+			(setq xL (- ft (/2 x)))
+			(setq xR (* -1 xL))
+			
+			(cond 
+				((< z 40.0) 	(CMKPK103_B_X))
+				((< z 80.0) 	(CMKPK103_B_XX))
+				((< z 120.0) 	(CMKPK103_B_XXX))
+				(T 				(CMKPK103_B_XXX))
+			)
+			(command "_.ROTATE3D" (collectMents fromEnt) "" "_X" '(0 0) 90)
+			
+		)
+	)
+)
+
+(defun CMKPK103_B_X ()
+	(CMKPK103_B_CAPRAZ ft 		(- z ft))
+)
+
+(defun CMKPK103_B_XX (/ z1 h1 h2)
+	(setq z1 (+ ft (/2 (- z (cm 15.9)))))
+
+	;orta tek yatay
+	(setq h1 (list xL z1))
+	(setq h2 (list xR z1))
+	(sweep "CAB_DOORS" profile (list h1 h2)  T T)
+	
+	(CMKPK103_B_CAPRAZ ft 		(- z1 (cm 1.0)))
+	(CMKPK103_B_CAPRAZ (+ z1 (cm 1.0)) (- z ft))
+)
+
+(defun CMKPK103_B_XXX (/ z1 z2 h1 h2)
+	(setq z1 (+ ft (/ (- z (cm 15.9)) 3.0)))
+	(setq z2 (+ ft (/ (- z (cm 15.9)) (/ 3.0 2.0))))
+
+	;alt yatay
+	(setq h1 (list xL z1))
+	(setq h2 (list xR z1))
+	(sweep "CAB_DOORS" profile (list h1 h2)  T T)
+	
+	;üst yatay
+	(setq h1 (list xL z2))
+	(setq h2 (list xR z2))
+	(sweep "CAB_DOORS" profile (list h1 h2)  T T)
+	
+	(CMKPK103_B_CAPRAZ ft 		(- z1 (cm 1.0)))
+	(CMKPK103_B_CAPRAZ (+ z1 (cm 1.0)) (- z2 (cm 1.0)))
+	(CMKPK103_B_CAPRAZ (+ z2 (cm 1.0)) (- z ft))
+)
+
+(defun CMKPK103_B_CAPRAZ (zB zT / c1 c2 c3 c4)
+	(setq c1 (list xL zB))
+	(setq c3 (list xR zT))
+	(setq c2 (list (car c3) (cadr c1)))
+	(setq c4 (list (car c1) (cadr c3)))
+
+	(sweep "CAB_DOORS" profile (list c1	c3)	T T)
+	(sweep "CAB_DOORS" profile (list c2	c4)	T T)
+)

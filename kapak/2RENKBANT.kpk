@@ -1,0 +1,58 @@
+(defun 2RENKBANT_Akanat (x z)
+	(drawMeshKanat nil "2RENKBANT" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(4 3 2 1 )
+				'(8 7 6 5 )
+				'(6 5 4 2 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				nil
+				'(16 12 10 9 8 7 6 5 )
+				'(15 14 13 11 4 3 2 1 )
+				'(15 13 12 9 8 7 3 2 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS_2"
+				nil
+				'(16 13 12 11 8 7 6 5 )
+				'(15 14 10 9 4 3 2 1 )
+				'(14 13 12 10 8 7 4 2 )
+				'()
+			)
+		)
+	)
+)
+(defun 2RENKBANT_Bkanat (x z)
+	(drawMeshKanat nil "2RENKBANTC" x z
+		(list
+			(list "CAB_DOORS"
+				(list (cm -0.5) 6 8 4 3)
+				'(12 11 10 9 8 7 6 5 )
+				'(16 15 14 13 4 3 2 1 )
+				'(14 13 12 10 8 7 4 2 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS"
+				nil
+				'(16 12 10 9 8 7 6 5 )
+				'(15 14 13 11 4 3 2 1 )
+				'(15 13 12 9 8 7 3 2 )
+				'()
+			)
+			(list "CAB_DOOR_EDGE_BANDS_2"
+				nil
+				'(16 13 12 11 8 7 6 5 )
+				'(15 14 10 9 4 3 2 1 )
+				'(14 13 12 10 8 7 2 1 )
+				'()
+			)
+		)
+	)
+)
+
+(defun 2RENKBANT_Ckanat (x z)
+      (2RENKBANT_Akanat x z)
+)

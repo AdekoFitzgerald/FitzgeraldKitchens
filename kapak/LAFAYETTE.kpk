@@ -1,0 +1,16 @@
+(defun LAFAYETTE_Akanat (x z)
+       (if (or (< z (cm 30.00))
+               (< x (cm 30.00))
+           )
+        (drawMeshKanat nilF x z 1.00 1.00 1.00 1.00 0.04 0.05 0.95 0.94 "LAFAYETTE (_KAPAK_)" "lafayetteS.jpg")
+        (drawMeshKanat nilF x z 7.00 7.00 7.00 7.00 0.17 0.14 0.82 0.86 "LAFAYETTE (_KAPAK_)" "lafayette.jpg")
+       )
+)
+
+(defun LAFAYETTE_Bkanat (x z)
+        (drawMeshKanat nilF x z 7.00 7.00 7.00 7.00 0.16 0.13 0.84 0.88 "LAFAYETTE (_KAPAK_)" "lafayetteC.jpg")
+)
+
+(defun LAFAYETTE_Ckanat (x z)
+      (LAFAYETTE_Akanat x z)
+)

@@ -1,0 +1,59 @@
+(defun ORCUND_Akanat (x z)
+	(drawMeshKanat nil "ORCUND" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(48 47 46 45 44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 )
+				'(24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+				'(42 41 40 39 38 37 36 35 34 33 32 31 24 22 10 9 8 7 6 5 4 3 2 1 )
+				'()
+				'()
+			)
+		)
+	)
+)
+(defun ORCUNS_Akanat (x z)
+	(drawMeshKanat nil "ORCUNS" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(52 51 50 49 48 47 46 45 44 43 42 38 37 36 35 26 12 11 10 9 8 7 6 5 4 3 2 1 )
+				'(56 55 54 53 41 40 39 34 33 32 31 30 29 28 27 25 24 23 22 21 20 19 18 17 16 15 14 13 )
+				'(56 55 54 53 52 51 50 49 48 47 46 44 43 41 40 39 38 36 35 33 32 31 28 27 )
+				'()
+				'()
+			)
+		)
+	)
+)
+
+(defun ORCUNA_Akanat (x z)
+	(drawMeshKanat nil "ORCUNA" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(56 55 54 53 41 40 39 34 33 32 31 30 29 28 27 25 24 23 22 21 20 19 18 17 16 15 14 13 )
+				'(52 51 50 49 48 47 46 45 44 43 42 38 37 36 35 26 12 11 10 9 8 7 6 5 4 3 2 1 )
+				'(45 42 37 34 30 29 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+				'()
+				'()
+			)
+		)
+	)
+)
+
+
+(setq ORCUN_Akanat_DONOTOPTIMIZE T)
+(defun ORCUN_Akanat (x z)
+	(cond 
+		((and (equal kulp "0-") (< z 100)) (ORCUND_Akanat x z))
+		((equal kulp "GD") (ORCUNS_Akanat x z))
+		((equal kulp "G-") (ORCUNS_Akanat x z))
+		((equal kulp "KD") (ORCUNA_Akanat x z))
+		((equal kulp "K-") (ORCUNA_Akanat x z))
+		(T (ORCUNA_Akanat x z))
+	)
+)
+
+
+

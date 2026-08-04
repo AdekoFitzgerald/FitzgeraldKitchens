@@ -1,0 +1,26 @@
+(defun CTL66X15_Akanat (x z)
+    (if (and (> x (cm 15.0)) (> z (cm 28.0)))
+		(CTL_Akanat	x z "CTL66X15" nil)
+		(CTL_Akanat	x z "CTL6615x" nil)
+    )
+)
+
+(defun CTL66X15_Bkanat (x z / isBkanat)
+    (setq isBkanat T)
+    (if (and (> x (cm 15.0)) (> z (cm 36.0)))
+		(CTL_Akanat	x z "CTL66X15" nil)
+		(CTL_Akanat	x z "CTL66-66" nil)
+    )
+)
+
+(defun CTL66X15_Ckanat (EN BOY)
+    (CTL66X15_Akanat EN BOY)
+)
+
+(defun CTL66X15_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+
+(defun CTL66X15_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)

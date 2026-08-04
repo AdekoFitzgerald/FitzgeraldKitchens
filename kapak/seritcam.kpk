@@ -1,0 +1,10 @@
+(defun SERITCAM_Akanat (x z)
+    (DUZKPK_Akanat x z)
+)
+
+(setq ;SERITCAM_Akanat DUZKPK_Akanat  ;DLL içindeki fonksiyonlar setq olmuyor
+      SERITCAM_Bkanat DUZKPK_Fkanat
+      SERITCAM_Ckanat DUZKPK_Ckanat
+      SERITCAM_Ekanat DUZKPK_Ekanat
+      SERITCAM_Fkanat DUZKPK_Fkanat
+)

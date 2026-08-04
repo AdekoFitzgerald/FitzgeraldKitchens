@@ -1,0 +1,25 @@
+(defun AZURE_Akanat (x z)
+	(drawMeshKanat nil "AZURE" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'( 28 27 23 22 20 19 18 17 16 10 9 8 3 1 )
+				'( 26 25 24 21 15 14 13 12 11 7 6 5 4 2 )
+				'( 28 25 22 21 20 17 16 13 12 11 10 9 7 6 )
+				'( )
+			)
+)))
+ (defun AZURE_Bkanat (x z)
+	(drawMeshKanat nil "AZUREC" x z
+		(list
+			(list "CAB_DOORS"
+				(list (cm -0.5) 14 16 13 12)
+				'( 24 23 19 18 16 15 14 10 9 8 3 1 )
+				'( 22 21 20 17 13 12 11 7 6 5 4 2 ) 
+				'( 24 21 18 17 16 15 13 11 10 9 7 6 ) 
+				'( ) 
+			) 
+)))
+(defun AZURE_Ckanat (x z)
+       (AZURE_Akanat x z)
+)

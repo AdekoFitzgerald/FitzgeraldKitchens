@@ -1,0 +1,24 @@
+;5-5 3-3 CM CITALI
+(defun CTL55X33_Akanat (x z)
+    (CTL_Akanat x z "CTL55X33" nil)
+)
+
+(defun CTL55X33_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (CTL55X33_Akanat EN BOY)
+)
+
+(defun CTL55X33_Ckanat (EN BOY)
+    (if (> BOY (cm 10.0))
+		(CTL55X33_Akanat EN	BOY)
+		(DUZKPK_Ckanat EN BOY)
+    )
+)
+
+(defun CTL55X33_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+
+(defun CTL55X33_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)

@@ -1,0 +1,3 @@
+(defun KANKEN5C_Bkanat (x z)
+	(if KANKEN5C_DIRECT (KANKEN5C_DIRECT x z) (progn (if (null KANKENC_Akanat) (load (strcat _kapaklsp-getAllDoorDIRPath "KANKENC.KPK"))) (KANKENC_Akanat x z)))
+)

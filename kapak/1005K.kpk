@@ -1,0 +1,7 @@
+(defun 1005K_Akanat(x z)
+	   (drawProfileKanat "1005K" x z "DUZ")
+)
+
+(defun 1005K_Bkanat(x z)
+	   (drawProfileKanat "1005K" x z "CAM")
+)

@@ -1,0 +1,30 @@
+(setq ICKULP_Akanat_DONOTOPTIMIZE T)
+(defun ICKULP_Akanat (x z)
+    (drawMeshKanat nil "ICKULP" x z
+        (list
+            (list "CAB_DOORS"
+                nil
+                '( 24 23 22 21 20 19 18 11 10 9 8 5 )
+                '( 17 16 15 14 13 12 7 6 4 3 2 1 )
+                '( 24 23 22 21 16 15 14 13 12 11 10 9 8 6 4 2 )
+                '( )
+            )
+)))
+
+(setq ICKULP_Bkanat_DONOTOPTIMIZE T)
+(defun ICKULP_Bkanat (x z)
+    (drawMeshKanat nil "ICKULPC" x z
+        (list
+            (list "CAB_DOORS"
+               	(list (cm -0.5) 10 11 6 8)
+                '( 30 29 28 27 26 25 24 23 15 14 13 12 11 10 9 )
+                '( 22 21 20 19 18 17 16 8 7 6 5 4 3 2 1 )
+                '( 29 28 27 26 22 21 19 18 16 15 14 13 12 11 7 6 4 2 )
+                '( )
+            )
+)))
+
+(defun ICKULP_Ckanat (x z)
+    (ICKULP_Akanat x z)
+)
+

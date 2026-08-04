@@ -1,0 +1,42 @@
+(defun OVAL_Akanat (x z)
+	(drawMeshKanat nil "ALU" x z
+		(list
+			(list "ALUMINIUM_FRAME"
+				nil
+				'(5 6 12 16 9 10 11 13 )
+				'(2 7 4 15 1 8 3 14 )
+				'(2 7 4 15 5 6 12 16 )
+				'()
+			)
+			(list "CAB_DOORS"
+				nil
+				'(4 3 )
+				'(1 2 )
+				'(1 4 )
+				'()
+			)
+)))
+(defun OVAL_Bkanat (x z)
+	(drawMeshKanat nil "OK60" x z
+		(list
+			(list "ALUMINIUM_FRAME"
+				nil
+				'( 59 57 55 53 51 50 47 45 43 41 39 37 36 35 34 29 28 27 26 25 12 11 10 9 8 7 6 5 3 1 )
+				'( 60 58 56 54 52 49 48 46 44 42 40 38 33 32 31 30 24 23 22 21 20 19 18 17 16 15 14 13 4 2 )
+				'( 60 59 58 57 56 55 54 53 52 51 50 49 34 33 14 13 12 11 )
+				'( )
+			)
+			(list "CAB_DOOR_GLASS"
+				nil 
+				'( 23 21 19 17 15 13 11 9 7 5 2 1 ) 
+				'( 24 22 20 18 16 14 12 10 8 6 4 3 ) 
+				'( 24 23 3 1 )
+				'( ) 
+			) 
+             )
+        )
+)
+(defun OVAL_Ckanat (x z)
+	(OVAL_Akanat x z)
+)
+

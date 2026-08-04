@@ -1,0 +1,23 @@
+(defun CTL33X33_Akanat (x z)
+    (if (> z (cm 12.0))
+		(CTL_Akanat	x z "CTL33X33" nil)
+		(DUZKPK_Ckanat x z)
+    )
+)
+
+(defun CTL33X33_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (CTL33X33_Akanat EN BOY)
+)
+
+(defun CTL33X33_Ckanat (EN BOY)
+    (CTL33X33_Akanat EN BOY)
+)
+
+(defun CTL33X33_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+
+(defun CTL33X33_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)

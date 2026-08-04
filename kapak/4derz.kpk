@@ -1,0 +1,21 @@
+(setq 4DERZ_Akanat_DONOTOPTIMIZE T)
+(defun 4DERZ_Akanat (x z)
+	(drawMeshKanat nil "4DERZ" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(21 13 29 32 33 35 19 24 25 28 9 10 11 12 3 5 7 1 )
+				'(20 18 27 31 34 36 22 23 26 30 14 15 16 17 4 6 8 2 )
+				'(20 18 27 31 34 36 22 23 26 30 14 15 16 17 4 21 13 29 32 33 35 19 24 25 28 9 10 11 12 3 )
+				'()
+			)
+)))
+
+(setq 4DERZ_Bkanat_DONOTOPTIMIZE T)
+(defun 4DERZ_Bkanat (x z)
+	(DUZKPK_Bkanat x z)
+)
+
+(defun 4DERZ_Ckanat (x z)
+	(DUZKPK_Ckanat x z)
+)

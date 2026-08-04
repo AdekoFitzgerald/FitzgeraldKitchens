@@ -1,0 +1,87 @@
+(defun 4radyus_Bkanat (x z / isBkanat)
+    (setq isBkanat T)
+    (4radyus_Akanat x z)
+)
+
+(defun 4radyus_Ckanat (x z)
+    (4radyus_Akanat x z)
+)
+
+(defun 4radyus_Akanat (x z / mesh LFT RGT UP SCL vnxt vgot i vpt p1 p2 p3 p4) ; blok_list
+    ;Ýnce Çerçeve
+    (setq LFT '(6 7 12 17 19 15 28 1 20 2 16 18 22 25)
+          RGT '(5 8 11 13 14 26 27 3 21 4 9 10 23 24)
+          UP  '(5 8 11 6 7 12 17 19 15 28 13 14 26 27)
+;         DWN '(3 21 4 9 1 20 2 16 18 22 25 10 23 24)
+    )
+;   (setq blok_list (ssadd))
+;   (setlayer "CAB_DOOR_FRAMES" 7
+    (command cmdINSERT (strcat "*" ad_AdekoPath "KAPAK\\4radyus" (if ad_isFelix ".flx" ".dwg")) '(0 0 0) "" 0)
+    (setq mesh (entlast))
+    (setq vnxt (entnext mesh))
+    (setq i 1)
+    (while (equal 192 (cdr (assoc 70 (setq vgot (entget vnxt)))))
+        (setq vpt (cdr (assoc 10 vgot)))
+        (setq vpt 
+            (list 
+                (cond ((member i LFT) (+ (car vpt)  (cm 22.5) (* -0.5 x)))
+                      ((member i RGT) (+ (car vpt) (cm -22.5) (* 0.5 x)))
+                      ((member i SCL) (* (car vpt) (/ x (cm 45.0))))
+                      (T (car vpt))
+                )
+                (cadr vpt) 
+                (if (member i UP) 
+                    (+ (caddr vpt) (cm -70.0) z)
+                    (caddr vpt)
+                )
+            )
+        )
+        (entmod (subst (cons 10 vpt) (assoc 10 vgot) vgot))
+        (if isBkanat
+            (cond ((equal "9001C" meshnam)
+                    (if (equal i 6 ) (setq p1 (-pt vpt (list 0 (cm 0.5)))))
+                    (if (equal i 15) (setq p2 (-pt vpt (list 0 (cm 0.5)))))
+                    (if (equal i 14) (setq p3 (-pt vpt (list 0 (cm 0.5)))))
+                    (if (equal i 12) (setq p4 (-pt vpt (list 0 (cm 0.5)))))
+                  )
+                  ((equal "9003C" meshnam)
+                    (if (equal  3 i) (setq p3 (list (car vpt) (- (cadr vpt) (cm 0.5)) nil) p4 p3))
+                    (if (equal  5 i) (setq p1 (list (car vpt) (- (cadr vpt) (cm 0.5)) nil) p2 p1))
+                    (if (equal  9 i) (setq p2 (xyofz p2 (caddr vpt)) p3 (xyofz p3 (caddr vpt))))
+                    (if (equal 17 i) (setq p1 (xyofz p1 (caddr vpt)) p4 (xyofz p4 (caddr vpt))))
+                  )
+                  ((equal "9004C" meshnam)
+                    (if (equal  7 i) (setq p2 (list nil (- (cadr vpt) (cm 0.5)) (caddr vpt)) p3 p2))
+                    (if (equal 14 i) (setq p4 (list (car vpt) (- (cadr vpt) (cm 0.5)) (caddr vpt)) p3 (list (car p4) (cadr p4) (caddr p3))))
+                    (if (equal 23 i) (setq p1 (list (car vpt) (- (cadr vpt) (cm 0.5)) (caddr vpt)) p2 (list (car p1) (cadr p1) (caddr p2))))
+                  )
+        ))
+        (setq vnxt (entnext vnxt))
+        (i++)
+    )
+    ;(ekle "CAB_DOOR_FRAMES")
+
+;Akabinde Göbek
+    (if isBkanat 
+        (progn
+            (setlayer "CAB_DOORS" 7)
+            (cerceve_ciz (cm 1.5) (- x (cm 3)) z 0.0 (cm 4.0) (cm 2.0) '("p1" "p2" "p3" "p4"))
+            ;(ekle "CAB_DOORS")
+            (setlayer "CAB_DOOR_GLASS" 4)
+            (command cmdINSERT "CAM" p1 
+                "_XYZ" (distance p1 p4) 1 (distance p1 p2)
+                0
+            )
+            ;(ekle "CAB_DOOR_GLASS")
+        )   
+        (progn
+            (setlayer "CAB_DOORS" 7)
+            (box_ciz (list (+ (cm 1.5) (* -0.5 x)) (cm -2.0) (cm 1.5)) (- x (cm 3)) (cm 2.0) (- z (cm 3)))
+            ;(ekle "CAB_DOORS")
+        )
+    )
+
+    (setlayer "CAB_DOORS" 7)
+;   blok_list
+)
+

@@ -1,0 +1,86 @@
+;5-5  CM CITALI KEMERLI
+(defun KMR55_Akanat (x z / LFT RGT UP SCL mesh vnxt vgot i vpt p1 p2 p3 p4); blok_list
+	(if (or (< x (cm 30.0)) (< z (cm 37.0)))
+		(progn 
+			(if (null CTL55X33_Akanat) (load (strcat ad_ADEKOPath "kapak\\CTL55X33.KPK")))
+			(if isBkanat
+				(CTL55X33_Bkanat x z)
+				(CTL55X33_Akanat x z)
+			)
+		)
+		(progn
+			;(setq blok_list (ssadd))
+			(setq LFT '(10 38 46 32 3 44 43 15 8 40 14 45 34 33 23 29 39 26)
+				  RGT '(7 30 50 48 4 22 47 36 21 41 37 42 49 35 24 27 28 25)
+				  UP  '(10 38 46 32 3 4 48 50 30 7 8 15 43 44 17 6 18 1 2 20 5 22 47 36 21 13 12 11 9 19 16 31)
+				  SCL '(31 16 19 18 6 17 21 13 12 11 2 20 5 22) ;SCALE EDILCEK
+;				  DWN '(4 26 24 23 22 21 28 25 14 1 3 7 12 31 27 11 16 2)
+			)
+			(command cmdINSERT (strcat "*" ad_AdekoPath "KAPAK\\KMR55" (if ad_isFelix ".flx" ".dwg")) '(0 0 0) "" 0)
+			(setq mesh (entlast))
+			(setq vnxt (entnext mesh))
+			(setq i 1)
+			(while (equal 192 (cdr (assoc 70 (setq vgot (entget vnxt)))))
+				(setq vpt (cdr (assoc 10 vgot)))
+				(setq vpt 
+					(list 
+						(cond ((member i LFT) (+ (car vpt) (cm 25.0) (* -0.5 x)))
+							  ((member i RGT) (+ (car vpt) (cm -25.0) (* 0.5 x)))
+							  ((member i SCL) (* (car vpt) (/ x (cm 50.0))))
+							  (T (car vpt))
+						)
+						(cadr vpt) 
+						(if (member i UP) 
+							(+ (caddr vpt) (cm -50.0) z)
+							(caddr vpt)
+						)
+					)
+				)
+				(entmod (subst (cons 10 vpt) (assoc 10 vgot) vgot))
+				(if (equal i 40) (setq p1 (list (car vpt) (- (cadr vpt) (cm 0.5)) (caddr vpt))))
+				(if (equal i 8)  (setq p2 (list (car vpt) (- (cadr vpt) (cm 0.5)) (- z (cm 3.0)))))
+				(if (equal i 21) (setq p3 (list (car vpt) (- (cadr vpt) (cm 0.5)) (- z (cm 3.0)))))
+				(if (equal i 41) (setq p4 (list (car vpt) (- (cadr vpt) (cm 0.5)) (caddr vpt))))
+				(setq vnxt (entnext vnxt))
+				(setq i (1+ i))
+			)
+;			(entupd mesh)
+
+			;(ekle "CAB_DOOR_FRAMES")
+			(if isBkanat 
+				(progn
+					(setlayer "CAB_DOOR_GLASS" 4)
+					(command cmdINSERT "CAM" p1 
+						"_XYZ" (distance p1 p4) 1 (distance p1 p2)
+						0
+					)
+					;(ekle "CAB_DOOR_GLASS")
+				)
+				(progn
+					(setlayer "CAB_DOORS" 7)
+					(command "_.FACE" p1 "_i" p2 p3 p4 "")
+					;(ekle "CAB_DOORS")
+				)
+			)
+			(setlayer "CAB_DOORS" 7)
+			;blok_list
+		) ;EOF PROGN X>=30
+	) ;EOF IF X<30
+)
+
+(defun KMR55_Bkanat (EN BOY / isBkanat)
+	(setq isBkanat T)
+	(KMR55_Akanat EN BOY)
+)
+(defun KMR55_Ckanat (EN BOY)
+	(if (> BOY (cm 10.0))
+		(progn
+			(if (null CTL55X33_Akanat) (load (strcat ad_ADEKOPath "kapak\\CTL55X33.KPK")))
+			(CTL55X33_Akanat EN BOY)
+		)
+		(DUZKPK_Ckanat EN BOY)
+	)
+)
+
+(setq KMR55_Ekanat DUZKPK_Ekanat)
+(setq KMR55_Fkanat DUZKPK_Fkanat)

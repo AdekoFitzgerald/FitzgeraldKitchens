@@ -1,0 +1,62 @@
+(setq FONK_Akanat_DONOTOPTIMIZE T)
+(defun FONK_Akanat (x z)
+(setq LRMode "M" Ta (cm 2.5) Sa (cm 2.5))
+	(cond 	((member kulp '("0-"))
+				(drawMeshKanat nil "FONKT" x z
+					(list
+						(list "CAB_DOORS"
+							nil
+							'(10 9 8 5 3 1 )
+							'(12 11 7 6 4 2 )
+							'(12 10 8 7 6 5 )
+							'()
+						)
+						(list "CAB_DOOR_FRAMES"
+							nil
+							'(10 9 4 3 2 1 )
+							'(12 11 8 7 6 5 )
+							'()
+							'()
+						)
+					)
+				)
+			)
+			(T
+				(setq LRMode "M" DRMode "M" Ta 2.5)
+				(drawMeshKanat nil "FONK" x z
+					(list
+						(list "CAB_DOORS"
+							nil
+							'( 12   11   7   6   4   2   )
+							'( 10   9   8   5   3   1   )
+							'( 11   9   4   3   2   1   )
+							'( )
+						)
+						(list "CAB_DOOR_FRAMES"
+							nil
+							'( 12   11   8   7   6   5   )
+							'( 10   9   4   3   2   1   )
+							'( 12   11   10   9   8   7   6   5   4   3   2   1   )
+							'( )
+						)
+					)
+				)
+			)
+	)
+)
+
+(setq FONK_Bkanat_DONOTOPTIMIZE T)
+(defun FONK_Bkanat (x z)
+	(setq LRMode "M" Ta (cm 2.5) Sa (cm 2.5))
+	(drawMeshKanat nil "FONKC" x z
+		(list
+			(list "CAB_DOOR_FRAMES"
+				(list (cm -0.5) 17 18 16 15)
+				'( 18   17   14   13   12   11   10   9   6   5   )
+				'( 20   19   16   15   8   7   4   3   2   1   )
+				'( 19   18   16   14   12   11   10   7   4   3   )
+				'( ) 
+			) 
+		)
+	)
+)

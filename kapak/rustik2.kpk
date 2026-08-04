@@ -1,0 +1,513 @@
+(defun RUSTIK2_Akanat (x z / nokta_list dugum_list ax dt et rt i)
+	(setq Ta (cm 2.5) Sa (cm 2.5))
+	(if (<= z (cm 25.0))
+		(RUSTIK2_Ckanat x z)
+		(progn
+	(setq et (- ad_ET))
+	(setq ax (/2 x))
+	(setq dt ad_Clear)
+	(nokta+liste (- dt ax)		0.0				dt)
+	(nokta+liste (- dt ax)		0.0				(- z dt))
+	(nokta+liste (- dt ax)		(+ (cm 0.5) et)		dt)
+	(nokta+liste (- dt ax)		(+ (cm 0.5) et)		(- z dt))
+	(nokta+liste (- dt ax (cm -0.5))	et				(+ (cm 0.5) dt))
+	(nokta+liste (- dt ax (cm -0.5))	et				(- z (cm 0.5) dt))
+
+	(nokta+liste (- (cm 5.599) ax)	et				(cm 4.1))
+	(nokta+liste (- (cm 4.849) ax)	et				(cm 4.301))
+	(nokta+liste (- (cm 4.301) ax)	et				(cm 4.849))
+	(nokta+liste (- (cm 4.100) ax)	et				(cm 5.599))
+
+	(nokta+liste (-  (cm 4.100) ax)	et				(- z (cm 12.888)))
+	(nokta+liste (-  (cm 4.229) ax)	et				(- z (cm 12.280)))
+	(nokta+liste (-  (cm 4.594) ax)	et				(- z (cm 11.776)))
+	(nokta+liste (-  (cm 5.133) ax)	et				(- z (cm 11.464)))
+	(nokta+liste (-  (cm 6.221) ax)	et				(- z (cm 10.953)))
+	(nokta+liste (-  (cm 7.154) ax)	et				(- z (cm 10.195)))
+	(nokta+liste (-  (cm 7.878) ax)	et				(- z  (cm 9.234)))
+	(nokta+liste (-  (cm 8.347) ax)	et				(- z  (cm 8.126)))
+	(nokta+liste (-  (cm 8.544) ax)	et				(- z  (cm 7.705)))
+	(nokta+liste (-  (cm 8.860) ax)	et				(- z  (cm 7.363)))
+	(nokta+liste (-  (cm 9.265) ax)	et				(- z  (cm 7.135)))
+
+	(setq rt (/ (- ax (cm 9.265)) 20.735))  ;60/2 - 9.265 = 20.735
+	(nokta+liste (- (+ (cm 9.265) (* rt 4.471)) ax)	et	(- z  (cm 5.669)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 9.045)) ax)	et	(- z  (cm 4.561)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 13.70)) ax)	et	(- z  (cm 3.819)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 18.382)) ax)	et	(- z  (cm 3.447)))
+
+	(nokta+liste (- (cm 5.599) ax)	(cm -1.0)				(cm 5.1))
+	(nokta+liste (- (cm 5.246) ax)	(cm -1.0)				(cm 5.246))
+	(nokta+liste (- (cm 5.100) ax)	(cm -1.0)				(cm 5.999))
+
+	(nokta+liste (-  (cm 5.100) ax)	(cm -1.0)				(- z (cm 12.516)))
+	(nokta+liste (-  (cm 6.575) ax)	(cm -1.0)				(- z (cm 11.907)))
+	(nokta+liste (-  (cm 7.836) ax)	(cm -1.0)				(- z (cm 10.928)))
+	(nokta+liste (-  (cm 8.791) ax)	(cm -1.0)				(- z  (cm 9.650)))
+	(nokta+liste (-  (cm 9.372) ax)	(cm -1.0)				(- z  (cm 8.163)))
+
+	(setq rt (/ (- ax (cm 9.372)) 20.628))  ;60/2 - 9.372 = 20.628
+	(nokta+liste (- (+ (cm 9.372) (* rt 4.471)) ax)	(cm -1.0)	(- z  (cm 6.694)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 8.937)) ax)	(cm -1.0)	(- z  (cm 5.582)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 13.532)) ax)	(cm -1.0)	(- z  (cm 4.833)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 18.171)) ax)	(cm -1.0)	(- z  (cm 4.452)))
+
+	(nokta+liste (- (cm 9.600) ax)	(cm -1.0)				(cm 9.600))
+	(nokta+liste (- (cm 9.600) ax)	(cm -1.0)				(- z (cm 15.309)))
+	(nokta+liste (- (cm 10.844) ax)	(cm -1.0)				(- z (cm 14.283)))
+	(nokta+liste (- (cm 11.914) ax)	(cm -1.0)				(- z (cm 13.077)))
+	(nokta+liste (- (cm 12.787) ax)	(cm -1.0)				(- z (cm 11.721)))
+
+	(setq rt (/ (- ax (cm 12.787)) 17.213))  ;60/2 - 12.787 = 17.213
+	(nokta+liste (- (+ (cm 12.787) (* rt 3.731)) ax)	(cm -1.0)	(- z (cm 10.613)))
+	(nokta+liste (- (+ (cm 12.787) (* rt 7.533)) ax)	(cm -1.0)	(- z  (cm 9.776)))
+	(nokta+liste (- (+ (cm 12.787) (* rt 11.385)) ax)	(cm -1.0)	(- z  (cm 9.216)))
+	(nokta+liste (- (+ (cm 12.787) (* rt 15.267)) ax)	(cm -1.0)	(- z  (cm 8.935)))
+
+	(nokta+liste (- (cm 10.60) ax)	et				(cm 10.60))
+	(nokta+liste (- (cm 10.600) ax)	et				(- z (cm 15.814)))
+	(nokta+liste (- (cm 11.693) ax)	et				(- z (cm 14.850)))
+	(nokta+liste (- (cm 12.654) ax)	et				(- z (cm 13.736)))
+	(nokta+liste (- (cm 13.469) ax)	et				(- z (cm 12.548)))
+
+	(setq rt (/ (- ax (cm 13.469)) 16.531))  ;60/2 - 13.469 = 16.531
+	(nokta+liste (- (+ (cm 13.469) (* rt 3.587)) ax)	et	(- z (cm 11.507)))
+	(nokta+liste (- (+ (cm 13.469) (* rt 7.239)) ax)	et	(- z (cm 10.722)))
+	(nokta+liste (- (+ (cm 13.469) (* rt 10.937)) ax)	et	(- z (cm 10.196)))
+	(nokta+liste (- (+ (cm 13.469) (* rt 14.663)) ax)	et	(- z  (cm 9.933)))
+
+	(setq i 0)
+	(repeat 55
+		(nokta+liste (-x (i++) 0) nil nil)
+	)
+
+;;;	(nokta+liste	(-x 1 0) nil nil)
+;;;	(nokta+liste	(-x 2 0) nil nil)
+;;;	(nokta+liste	(-x 3 0) nil nil)
+;;;	(nokta+liste	(-x 4 0) nil nil)
+;;;	(nokta+liste	(-x 5 0) nil nil)
+;;;	(nokta+liste	(-x 6 0) nil nil)
+;;;	(nokta+liste	(-x 7 0) nil nil)
+;;;	(nokta+liste	(-x 8 0) nil nil)
+;;;	(nokta+liste	(-x 9 0) nil nil)
+;;;	(nokta+liste	(-x 10 0) nil nil)
+;;;	(nokta+liste	(-x 11 0) nil nil)
+;;;	(nokta+liste	(-x 12 0) nil nil)
+;;;	(nokta+liste	(-x 13 0) nil nil)
+;;;	(nokta+liste	(-x 14 0) nil nil)
+;;;	(nokta+liste	(-x 15 0) nil nil)
+;;;	(nokta+liste	(-x 16 0) nil nil)
+;;;	(nokta+liste	(-x 17 0) nil nil)
+;;;	(nokta+liste	(-x 18 0) nil nil)
+;;;	(nokta+liste	(-x 19 0) nil nil)
+;;;	(nokta+liste	(-x 20 0) nil nil)
+;;;	(nokta+liste	(-x 21 0) nil nil)
+;;;	(nokta+liste	(-x 22 0) nil nil)
+;;;	(nokta+liste	(-x 23 0) nil nil)
+;;;	(nokta+liste	(-x 24 0) nil nil)
+;;;	(nokta+liste	(-x 25 0) nil nil)
+;;;	(nokta+liste	(-x 26 0) nil nil)
+;;;	(nokta+liste	(-x 27 0) nil nil)
+;;;	(nokta+liste	(-x 28 0) nil nil)
+;;;	(nokta+liste	(-x 29 0) nil nil)
+;;;	(nokta+liste	(-x 30 0) nil nil)
+;;;	(nokta+liste	(-x 31 0) nil nil)
+;;;	(nokta+liste	(-x 32 0) nil nil)
+;;;	(nokta+liste	(-x 33 0) nil nil)
+;;;	(nokta+liste	(-x 34 0) nil nil)
+;;;	(nokta+liste	(-x 35 0) nil nil)
+;;;	(nokta+liste	(-x 36 0) nil nil)
+;;;	(nokta+liste	(-x 37 0) nil nil)
+;;;	(nokta+liste	(-x 38 0) nil nil)
+;;;	(nokta+liste	(-x 39 0) nil nil)
+;;;	(nokta+liste	(-x 40 0) nil nil)
+;;;	(nokta+liste	(-x 41 0) nil nil)
+;;;	(nokta+liste	(-x 42 0) nil nil)
+;;;	(nokta+liste	(-x 43 0) nil nil)
+;;;	(nokta+liste	(-x 44 0) nil nil)
+;;;	(nokta+liste	(-x 45 0) nil nil)
+;;;	(nokta+liste	(-x 46 0) nil nil)
+;;;	(nokta+liste	(-x 47 0) nil nil)
+;;;	(nokta+liste	(-x 48 0) nil nil)
+;;;	(nokta+liste	(-x 49 0) nil nil)
+;;;	(nokta+liste	(-x 50 0) nil nil)
+;;;	(nokta+liste	(-x 51 0) nil nil)
+;;;	(nokta+liste	(-x 52 0) nil nil)
+;;;	(nokta+liste	(-x 53 0) nil nil)
+;;;	(nokta+liste	(-x 54 0) nil nil)
+;;;	(nokta+liste	(-x 55 0) nil nil)
+
+
+	(dugum+liste (list
+		1	2	57	56	""
+		1	2	4	3	""
+		2	57	59	4	""
+		57	59	58	56	""
+		56	58	3	1	""
+		3	4	6	5	""
+		4	6	61	59	""
+		59	61	60	58	""
+		58	60	5	3	""
+		
+		5	-60	62	7	8	9	10	-11	6	""
+		-6	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25	-80	61	""
+		-61	66	67	68	69	70	71	72	73	74	75	76	77	78	79	-80	""
+		-60	62	63	64	65	-66	61	""	
+		
+		27	-28	10	9	8	-7	26	""
+		-29	15	14	13	12	11	-10	28	""
+		16	-15	29	30	31	32	-33	17	""
+		33	-34	22	21	20	19	18	-17	""
+		34	-35	23	-22	""
+		35	-36	24	-23	""
+		36	-37	25	-24	""
+		37	-92	80	-25	""
+		92	-91	79	-80	""
+		91	-90	78	-79	""
+		90	-89	77	-78	""
+		89	-88	76	-77	""
+		-88	76	75	74	73	-72	""
+		71	-70	84	85	86	87	-88	72	""
+		-84	70	69	68	67	66	-65	83	""
+		82	-83	65	64	63	-62	81	""
+		7	-62	81	-26	""
+		
+		38	-39	29	28	27	-26	""
+		41	-42	33	32	31	30	-29	39	40	""
+		35	34	-33	42	43	44	45	-46	37	36	""
+		37	-92	101	-46	""
+		90	89	-88	97	98	99	100	-101	92	91	""
+		96	-97	88	87	86	85	-84	94	95	""
+		93	-94	84	83	82	-81	""
+		38	-93	81	-26	""
+		
+		47	48	39	38	""
+		47	38	93	102	""
+		50	51	42	41	40	39	48	49	""
+		51	-52	43	42	""
+		52	-53	44	-43	""
+		53	-54	45	-44	""
+		54	-55	46	-45	""
+		55	-110	101	-100	""
+		110	-109	100	-101	""
+		109	-108	99	-100	""
+		108	-107	98	-99	""
+		107	106	97	-98	""
+		105	106	97	96	95	94	103	104	""
+		102	103	94	93	""
+		
+		47	102	103	104	105	106	107	108	109	110	55	54	53	52	51	50	49	48	""
+	))
+	(setlayer "CAB_DOORS" 7)
+	(meshciz)
+	(entlast)
+	))
+)
+
+(defun RUSTIK2_Bkanat (x z / nokta_list dugum_list ax dt et rt subblk_list i)
+	(setq Ta (cm 2.5) Sa (cm 2.5))
+	(setq et (- ad_ET))
+	(setq ax (/2 x))
+	(setq dt ad_Clear)
+	(nokta+liste (- dt ax)		0.0				dt)
+	(nokta+liste (- dt ax)		0.0				(- z dt))
+	(nokta+liste (- dt ax)		(+ (cm 0.5) et)		dt)
+	(nokta+liste (- dt ax)		(+ (cm 0.5) et)		(- z dt))
+	(nokta+liste (- dt ax (cm -0.5))	et				(+ (cm 0.5) dt))
+	(nokta+liste (- dt ax (cm -0.5))	et				(- z (cm 0.5) dt))
+
+	(nokta+liste (- (cm 5.599) ax)	et				(cm 4.1))
+	(nokta+liste (- (cm 4.849) ax)	et				(cm 4.301))
+	(nokta+liste (- (cm 4.301) ax)	et				(cm 4.849))
+	(nokta+liste (- (cm 4.100) ax)	et				(cm 5.599))
+
+	(nokta+liste (-  (cm 4.100) ax)	et				(- z (cm 12.888)))
+	(nokta+liste (-  (cm 4.229) ax)	et				(- z (cm 12.280)))
+	(nokta+liste (-  (cm 4.594) ax)	et				(- z (cm 11.776)))
+	(nokta+liste (-  (cm 5.133) ax)	et				(- z (cm 11.464)))
+	(nokta+liste (-  (cm 6.221) ax)	et				(- z (cm 10.953)))
+	(nokta+liste (-  (cm 7.154) ax)	et				(- z (cm 10.195)))
+	(nokta+liste (-  (cm 7.878) ax)	et				(- z  (cm 9.234)))
+	(nokta+liste (-  (cm 8.347) ax)	et				(- z  (cm 8.126)))
+	(nokta+liste (-  (cm 8.544) ax)	et				(- z  (cm 7.705)))
+	(nokta+liste (-  (cm 8.860) ax)	et				(- z  (cm 7.363)))
+	(nokta+liste (-  (cm 9.265) ax)	et				(- z  (cm 7.135)))
+
+	(setq rt (/ (- ax (cm 9.265)) 20.735))  ;60/2 - 9.265 = 20.735
+	(nokta+liste (- (+ (cm 9.265) (* rt 4.471)) ax)	et	(- z  (cm 5.669)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 9.045)) ax)	et	(- z  (cm 4.561)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 13.70)) ax)	et	(- z  (cm 3.819)))
+	(nokta+liste (- (+ (cm 9.265) (* rt 18.382)) ax)	et	(- z  (cm 3.447)))
+
+	(nokta+liste (- (cm 5.599) ax)	(cm -1.0)				(cm 5.1))
+	(nokta+liste (- (cm 5.246) ax)	(cm -1.0)					(cm 5.246))
+	(nokta+liste (- (cm 5.100) ax)	(cm -1.0)					(cm 5.999))
+
+	(nokta+liste (-  (cm 5.100) ax)	(cm -1.0)					(- z (cm 12.516)))
+	(nokta+liste (-  (cm 6.575) ax)	(cm -1.0)					(- z (cm 11.907)))
+	(nokta+liste (-  (cm 7.836) ax)	(cm -1.0)					(- z (cm 10.928)))
+	(nokta+liste (-  (cm 8.791) ax)	(cm -1.0)					(- z (cm 9.650)))
+	(nokta+liste (-  (cm 9.372) ax)	(cm -1.0)					(- z (cm 8.163)))
+
+	(setq rt (/ (- ax (cm 9.372)) 20.628))  ;60/2 - 9.372 = 20.628
+	(nokta+liste (- (+ (cm 9.372) (* rt 4.471)) ax)	(cm -1.0)	(- z  (cm 6.694)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 8.937)) ax)	(cm -1.0)	(- z  (cm 5.582)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 13.532)) ax)	(cm -1.0)	(- z  (cm 4.833)))
+	(nokta+liste (- (+ (cm 9.372) (* rt 18.171)) ax)	(cm -1.0)	(- z  (cm 4.452)))
+
+	(setq i 0)
+	(repeat 37
+		(nokta+liste (-x (i++) 0) nil nil)
+	)
+
+;;;	(nokta+liste	(-x 1 0) nil nil)
+;;;	(nokta+liste	(-x 2 0) nil nil)
+;;;	(nokta+liste	(-x 3 0) nil nil)
+;;;	(nokta+liste	(-x 4 0) nil nil)
+;;;	(nokta+liste	(-x 5 0) nil nil)
+;;;	(nokta+liste	(-x 6 0) nil nil)
+;;;	(nokta+liste	(-x 7 0) nil nil)
+;;;	(nokta+liste	(-x 8 0) nil nil)
+;;;	(nokta+liste	(-x 9 0) nil nil)
+;;;	(nokta+liste	(-x 10 0) nil nil)
+;;;	(nokta+liste	(-x 11 0) nil nil)
+;;;	(nokta+liste	(-x 12 0) nil nil)
+;;;	(nokta+liste	(-x 13 0) nil nil)
+;;;	(nokta+liste	(-x 14 0) nil nil)
+;;;	(nokta+liste	(-x 15 0) nil nil)
+;;;	(nokta+liste	(-x 16 0) nil nil)
+;;;	(nokta+liste	(-x 17 0) nil nil)
+;;;	(nokta+liste	(-x 18 0) nil nil)
+;;;	(nokta+liste	(-x 19 0) nil nil)
+;;;	(nokta+liste	(-x 20 0) nil nil)
+;;;	(nokta+liste	(-x 21 0) nil nil)
+;;;	(nokta+liste	(-x 22 0) nil nil)
+;;;	(nokta+liste	(-x 23 0) nil nil)
+;;;	(nokta+liste	(-x 24 0) nil nil)
+;;;	(nokta+liste	(-x 25 0) nil nil)
+;;;	(nokta+liste	(-x 26 0) nil nil)
+;;;	(nokta+liste	(-x 27 0) nil nil)
+;;;	(nokta+liste	(-x 28 0) nil nil)
+;;;	(nokta+liste	(-x 29 0) nil nil)
+;;;	(nokta+liste	(-x 30 0) nil nil)
+;;;	(nokta+liste	(-x 31 0) nil nil)
+;;;	(nokta+liste	(-x 32 0) nil nil)
+;;;	(nokta+liste	(-x 33 0) nil nil)
+;;;	(nokta+liste	(-x 34 0) nil nil)
+;;;	(nokta+liste	(-x 35 0) nil nil)
+;;;	(nokta+liste	(-x 36 0) nil nil)
+;;;	(nokta+liste	(-x 37 0) nil nil)
+
+	(dugum+liste (list
+;		1	2	39	38	""
+		1	2	4	3	""
+		2	39	41	4	""
+		39	41	40	38	""
+		38	40	3	1	""
+		3	4	6	5	""
+		4	6	43	41	""
+		41	43	42	40	""
+		40	42	5	3	""
+		
+		5	-42	44	7	8	9	10	-11	6	""
+		-6	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25	-62	43	""
+		-43	48	49	50	51	52	53	54	55	56	57	58	59	60	61	-62	""
+		-42	44	45	46	47	-48	43	""	
+		
+		27	-28	10	9	8	-7	26	""
+		-29	15	14	13	12	11	-10	28	""
+		16	-15	29	30	31	32	-33	17	""
+		33	-34	22	21	20	19	18	-17	""
+		34	-35	23	-22	""
+		35	-36	24	-23	""
+		36	-37	25	-24	""
+		37	-74	62	-25	""
+		74	-73	61	-62	""
+		73	-72	60	-61	""
+		72	-71	59	-60	""
+		71	-70	58	-59	""
+		-70	58	57	56	55	-54	""
+		53	-52	66	67	68	69	-70	54	""
+		-66	52	51	50	49	48	-47	65	""
+		64	-65	47	46	45	-44	63	""
+		7	-44	63	-26	""
+	))
+	(setlayer "CAB_DOORS" 7)
+	(meshciz)
+	(setq subblk_list (ssadd (entlast)))
+	
+	(setlayer "CAB_DOOR_GLASS" 4)
+;	(command ".3DFACE" (list (- (cm 4.1) ax)  0.0  (cm 4.1))
+;						(list (- (cm 4.1) ax)  0.0  (- z (cm 3.4)))
+;						(list (- ax (cm 4.1))  0.0  (- z (cm 3.4)))
+;						(list (- ax (cm 4.1))  0.0  (cm 4.1))
+;						""
+;	)
+	(command cmdINSERT "CAM" (list (- (cm 4.1) ax)  0.0  (cm 4.1)) 
+		"_XYZ" (- x (cm 8.2)) 1 (- z (cm 7.5))
+		0
+	)
+	(setlayer "CAB_DOORS" 7)
+	(ssadd (entlast) subblk_list)
+)
+
+(defun RUSTIK2_Ckanat (x z / nokta_list dugum_list ax dt et az)
+	(if (> z (cm 25.0))
+		(RUSTIK2_Akanat x z)
+		(progn		
+	(setq et (- ad_ET))
+	(setq ax (/2 x) az (/2 z))
+	(setq dt ad_Clear)
+	(nokta+liste (- dt ax)		0.0				dt)
+	(nokta+liste (- dt ax)		et				dt)
+	(nokta+liste (- dt ax (cm -0.5))	et				(+ (cm 0.5) dt))
+	(nokta+liste (- (cm 7.166) ax)	et				(- az (cm 4.450)))
+	(nokta+liste (- (cm 6.273) ax)	et				(- az (cm 4.177)))
+	(nokta+liste (- (cm 5.575) ax)	et				(- az (cm 3.556)))
+	(nokta+liste (- (cm 5.200) ax)	et				(- az (cm 2.700)))
+	(nokta+liste (- (cm 4.449) ax)	et				(- az (cm 1.750)))
+	(nokta+liste (- (cm 4.051) ax)	et				(- az (cm 0.606)))
+	(nokta+liste (- (cm 7.188) ax)	-1.0			(- az (cm 3.950)))
+	(nokta+liste (- (cm 6.460) ax)	-1.0			(- az (cm 3.707)))
+	(nokta+liste (- (cm 5.915) ax)	-1.0			(- az (cm 3.167)))
+	(nokta+liste (- (cm 5.666) ax)	-1.0			(- az (cm 2.441)))
+	(nokta+liste (- (cm 4.938) ax)	-1.0			(- az (cm 1.599)))
+	(nokta+liste (- (cm 4.550) ax)	-1.0			(- az (cm 0.556)))
+	(nokta+liste (- (cm 7.213) ax)	et				(- az (cm 3.450)))
+	(nokta+liste (- (cm 6.653) ax)	et				(- az (cm 3.236)))
+	(nokta+liste (- (cm 6.270) ax)	et				(- az (cm 2.775)))
+	(nokta+liste (- (cm 6.161) ax)	et				(- az (cm 2.185)))
+	(nokta+liste (- (cm 5.440) ax)	et				(- az (cm 1.458)))
+	(nokta+liste (- (cm 5.050) ax)	et				(- az (cm 0.512)))
+
+	(setq i 0)
+	(repeat 21
+		(nokta+liste (-z (i++) az) nil nil)
+	)
+	
+;	(nokta+liste (-z 1 az) nil nil)
+;	(nokta+liste (-z 2 az) nil nil)
+;	(nokta+liste (-z 3 az) nil nil)
+;	(nokta+liste (-z 4 az) nil nil)
+;	(nokta+liste (-z 5 az) nil nil)
+;	(nokta+liste (-z 6 az) nil nil)
+;	(nokta+liste (-z 7 az) nil nil)
+;	(nokta+liste (-z 8 az) nil nil)
+;	(nokta+liste (-z 9 az) nil nil)
+;	(nokta+liste (-z 10 az) nil nil)
+;	(nokta+liste (-z 11 az) nil nil)
+;	(nokta+liste (-z 12 az) nil nil)
+;	(nokta+liste (-z 13 az) nil nil)
+;	(nokta+liste (-z 14 az) nil nil)
+;	(nokta+liste (-z 15 az) nil nil)
+;	(nokta+liste (-z 16 az) nil nil)
+;	(nokta+liste (-z 17 az) nil nil)
+;	(nokta+liste (-z 18 az) nil nil)
+;	(nokta+liste (-z 19 az) nil nil)
+;	(nokta+liste (-z 20 az) nil nil)
+;	(nokta+liste (-z 21 az) nil nil)
+
+	(setq i 0)
+	(repeat 42
+		(nokta+liste (-x (i++) 0.0) nil nil)
+	)
+
+;;;	(nokta+liste (-x 1 0.0) nil nil)
+;;;	(nokta+liste (-x 2 0.0) nil nil)
+;;;	(nokta+liste (-x 3 0.0) nil nil)
+;;;	(nokta+liste (-x 4 0.0) nil nil)
+;;;	(nokta+liste (-x 5 0.0) nil nil)
+;;;	(nokta+liste (-x 6 0.0) nil nil)
+;;;	(nokta+liste (-x 7 0.0) nil nil)
+;;;	(nokta+liste (-x 8 0.0) nil nil)
+;;;	(nokta+liste (-x 9 0.0) nil nil)
+;;;	(nokta+liste (-x 10 0.0) nil nil)
+;;;	(nokta+liste (-x 11 0.0) nil nil)
+;;;	(nokta+liste (-x 12 0.0) nil nil)
+;;;	(nokta+liste (-x 13 0.0) nil nil)
+;;;	(nokta+liste (-x 14 0.0) nil nil)
+;;;	(nokta+liste (-x 15 0.0) nil nil)
+;;;	(nokta+liste (-x 16 0.0) nil nil)
+;;;	(nokta+liste (-x 17 0.0) nil nil)
+;;;	(nokta+liste (-x 18 0.0) nil nil)
+;;;	(nokta+liste (-x 19 0.0) nil nil)
+;;;	(nokta+liste (-x 20 0.0) nil nil)
+;;;	(nokta+liste (-x 21 0.0) nil nil)
+;;;	(nokta+liste (-x 22 0.0) nil nil)
+;;;	(nokta+liste (-x 23 0.0) nil nil)
+;;;	(nokta+liste (-x 24 0.0) nil nil)
+;;;	(nokta+liste (-x 25 0.0) nil nil)
+;;;	(nokta+liste (-x 26 0.0) nil nil)
+;;;	(nokta+liste (-x 27 0.0) nil nil)
+;;;	(nokta+liste (-x 28 0.0) nil nil)
+;;;	(nokta+liste (-x 29 0.0) nil nil)
+;;;	(nokta+liste (-x 30 0.0) nil nil)
+;;;	(nokta+liste (-x 31 0.0) nil nil)
+;;;	(nokta+liste (-x 32 0.0) nil nil)
+;;;	(nokta+liste (-x 33 0.0) nil nil)
+;;;	(nokta+liste (-x 34 0.0) nil nil)
+;;;	(nokta+liste (-x 35 0.0) nil nil)
+;;;	(nokta+liste (-x 36 0.0) nil nil)
+;;;	(nokta+liste (-x 37 0.0) nil nil)
+;;;	(nokta+liste (-x 38 0.0) nil nil)
+;;;	(nokta+liste (-x 39 0.0) nil nil)
+;;;	(nokta+liste (-x 40 0.0) nil nil)
+;;;	(nokta+liste (-x 41 0.0) nil nil)
+;;;	(nokta+liste (-x 42 0.0) nil nil)
+
+	(dugum+liste (list
+		1	22	64	43	""
+		1	2	23	22	""
+		22	23	65	64	""
+		64	65	44	43	""
+		43	44	2	1	""
+		2	3	24	23	""
+		23	24	66	65	""
+		65	66	45	44	""
+		44	45	3	2	""
+		
+		3	-45	46	4	5	6	7	8	9	-30	24	""
+		-24	30	29	28	27	26	25	-67	66	""
+		-66	67	68	69	70	71	72	-51	45	""
+		-45	46	47	48	49	50	-51	""
+		
+		-10	16	-17	-11	5	-4	""
+		-11	17	-18	-12	6	-5	""
+		-12	18	-19	-13	7	-6	""
+		-13	19	-20	-14	8	-7	""
+		-14	20	-21	-15	9	-8	""
+		-15	21	-42	-36	30	-9	""
+		-36	42	-41	-35	29	-30	""
+		-35	41	-40	-34	28	-29	""
+		-34	40	-39	-33	27	-28	""
+		-33	39	-38	-32	26	-27	""
+		-32	38	-37	-31	25	-26	""
+		-31	37	-79	-73	67	-25	""
+		-73	79	-80	-74	68	-67	""
+		-74	80	-81	-75	69	-68	""
+		-75	81	-82	-76	70	-69	""
+		-76	82	-83	-77	71	-70	""
+		-77	83	-84	-78	72	-71	""
+		-78	84	-63	-57	51	-72	""
+		-57	63	-62	-56	50	-51	""
+		-56	62	-61	-55	49	-50	""
+		-55	61	-60	-54	48	-49	""
+		-54	60	-59	-53	47	-48	""
+		-53	59	-58	-52	46	-47	""
+		-52	58	-16	-10	4	-46	""
+		
+		19	18	17	16	58	59	60	61	62	63	84	83	82	81	80	79	37	38	39	40	41	42	21	20	""
+	))
+	(setlayer "CAB_DOORS" 7)
+	(meshciz)
+	(entlast)
+			) ;eof progn if z< 25
+		);eof if
+)
+
+(defun RUSTIK2_Ekanat (EN BOY) ;dis kivrik
+	(DUZKPK_Ekanat EN BOY)
+)
+(defun RUSTIK2_Fkanat (EN BOY) ;serit camli
+	(RUSTIK2_Bkanat EN BOY)
+)

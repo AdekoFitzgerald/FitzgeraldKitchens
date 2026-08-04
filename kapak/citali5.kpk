@@ -1,0 +1,43 @@
+;5CM CITALI
+(defun CITALI5_Akanat (x z / nokta_list dugum_list p1 p2 p3 p4 blst)
+    (if (<= z (cm 11.0))
+        (DUZKPK_Akanat x z)
+        (progn
+          (setlayer "CAB_DOOR_FRAMES" 7)
+          (cerceve_ciz 0.0 x z ad_Clear (cm 5.0) ad_ET '("p1" "p2" "p3" "p4"))
+          (setq blst (ssadd (entlast)))
+          (if isBkanat
+              (progn
+                  (setlayer "CAB_DOOR_GLASS" 4)
+                  (command cmdINSERT "CAM" p1
+                      "_XYZ" (distance p1 p4) 1 (distance p1 p2)
+                      0
+                  )
+              )
+              (progn
+                  (setlayer "CAB_DOORS" 7)
+                  (command "_.FACE" p1 p2 p3 p4 "")
+              )
+          )
+          (setlayer "CAB_DOORS" 7)
+          (ssadd (entlast) blst)
+        )
+    )
+)
+
+(defun CITALI5_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (CITALI5_Akanat EN BOY)
+)
+(defun CITALI5_Ckanat (EN BOY)
+    (if (> BOY (cm 11.0))
+        (CITALI5_Akanat EN BOY)
+        (DUZKPK_Ckanat EN BOY)
+    )
+)
+(defun CITALI5_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+(defun CITALI5_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)

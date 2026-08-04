@@ -1,0 +1,12 @@
+(defun KLSFUGS30_Akanat (x z)
+	(drawMeshKanat nil "KLSFUGS30" x z 
+		(list 
+			(list "CAB_DOORS" 
+				nil 
+				'( 40 38 35 34 ) 
+				'( 39 37 36 33 ) 
+				'( 40 39 36 35 28 27 26 25 24 23 22 21 12 11 10 9 6 5 3 1 ) 
+				'( ) 
+			) 
+)))
+ 

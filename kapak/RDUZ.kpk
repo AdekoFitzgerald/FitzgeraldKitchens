@@ -1,0 +1,21 @@
+(defun RDUZ_Akanat (x z)
+	(drawMeshKanat nil "CIT" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(1 2 3 4 )
+				'(5 6 7 8 )
+				'(2 4 5 6 )
+				'()
+			)
+		)
+	)
+)
+
+(defun RDUZ_Ckanat (x z)
+       (RDUZ_Akanat x z)
+)
+
+(defun RDUZ_Ckanat (x z)
+       (RDUZ_Akanat x z)
+)

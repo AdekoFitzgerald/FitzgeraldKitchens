@@ -1,0 +1,32 @@
+(defun CTLJAL_Akanat (x z / VTXlist)
+    (setq VTXlist (list
+		'(1	11 10 13 19 36 47 32 21 24 2 15 5 28 30 48 33 23 25 26 44 34 8 17)  ;LFT
+		'(4	16 3 9 12 14 35 45 40 20 22 38 7 18 6 31 46 37 27 39 42 29 43 41)   ;RGT
+		'(4	16 3 9 12 14 35 45 40 20 22 38 1 11 10 13 19 36 47 32 21 24 2 15)   ;UP
+;		'(7	18 6 31 46 37 27 39 42 29 43 41 5 28 30 48 33 23 25 26 44 34 8 17)  ;DWN
+		5 1	3 6																	;p1	p2 p3 p4
+    ))
+    (if (> z (cm 17.0))
+		(progn
+			(CTL_Akanat	x z "CTLJAL" VTXlist)
+		)
+		(DUZKPK_Ckanat x z)
+    )
+)
+
+(defun CTLJAL_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (CTLJAL_Akanat EN BOY)
+)
+
+(defun CTLJAL_Ckanat (EN BOY)
+    (CTLJAL_Akanat EN BOY)
+)
+
+(defun CTLJAL_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+
+(defun CTLJAL_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)

@@ -1,0 +1,25 @@
+(defun CIT2_Akanat (x z)
+	(drawMeshKanat nil "CIT" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(1 2 3 4 )
+				'(5 6 7 8 )
+				'(2 4 5 6 )
+				'()
+			)
+)))
+(defun CIT2_Bkanat (x z)
+	(drawMeshKanat nil "KALC" x z
+		(list
+			(list "CAB_DOORS"
+				(list (cm -0.5) 9 18 14 11)
+				'(1 2 5 6 9 10 13 14 15 16 17 18 )
+				'(3 4 7 8 11 12 19 20 21 22 23 24 )
+				'(13 14 15 16 17 18 19 20 21 22 23 24 )
+				'()
+			)
+)))
+(defun CIT2_Ckanat (x z)
+       (CIT2_Akanat x z)
+)

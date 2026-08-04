@@ -1,0 +1,41 @@
+(setq PRAMIT2_Akanat_DONOTOPTIMIZE T)
+(defun PRAMIT2_Akanat (x z)
+    (if (or (< z (cm 40))
+            (< x (cm 30))
+        )
+        (DUZKPK_Akanat x z)
+		(progn
+			(drawMeshKanat nil "PRAMIT2" x z
+				(list
+					(list "CAB_DOORS"
+						nil
+						'( 24 23 22 21 20 19 18 17 16 15 5 3 )
+						'( 25 14 13 12 11 10 9 8 7 6 4 2 1 )
+						'( 25 24 23 22 18 16 14 13 12 11 3 2 1 )
+						'( )
+					)
+				)
+			)
+		)
+	)
+)
+
+(setq PRAMIT2_Bkanat_DONOTOPTIMIZE T)
+(defun PRAMIT2_Bkanat (x z)
+	(drawMeshKanat nil "MEMBRAN1C" x z
+		(list
+			(list "CAB_DOORS"
+				(list (cm -0.5) 2 4 6 8)
+				'(1 2 3 4 9 10 11 12 )
+				'(5 6 7 8 13 14 15 16 )
+				'(3 4 5 6 9 10 13 14 )
+				'()
+			)
+		)
+	)
+)
+
+(defun PRAMIT2_Ckanat (x z)
+       (PRAMIT2_Akanat x z)
+)
+ 

@@ -1,0 +1,144 @@
+(defun KARYA_Akanat (x z)
+	(setq Ta (cm 3.0) Sa (cm 3.0))
+	(if (< z (cm 20))
+		(drawMeshKanat nil "KARYAS" x z
+			(list
+				(list 2
+					nil
+					'(44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+					'(88 87 86 85 84 83 82 81 80 79 78 77 76 75 74 73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 )
+					'(66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 42 41 38 37 34 32 30 28 26 24 23 20 19 16 14 12 10 8 7 4 3 )
+					'()
+				)
+				(list 1
+					nil
+					'(90 89 88 87 86 83 82 79 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 18 17 12 11 6 5 )
+					'(92 91 85 84 81 80 78 77 76 75 74 73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 22 21 20 19 16 15 14 13 10 9 8 7 4 3 2 1 )
+					'(91 90 86 85 82 80 79 77 65 64 63 62 61 60 59 58 57 56 55 54 50 48 46 45 42 41 38 36 34 30 29 28 24 23 21 19 18 17 15 13 8 7 6 5 3 1 )
+					'()
+				)
+			)
+		)
+		(drawMeshKanat nil "KARYA" x z
+			(list
+				(list 2
+					nil
+					'(44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 )
+					'(88 87 86 85 84 83 82 81 80 79 78 77 76 75 74 73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 )
+					'(66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 42 41 38 37 34 32 30 28 26 24 23 20 19 16 14 12 10 8 7 4 3 )
+					'()
+				)
+				(list 1
+					nil
+					'(90 89 88 87 86 83 82 79 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 18 17 12 11 6 5 )
+					'(92 91 85 84 81 80 78 77 76 75 74 73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 22 21 20 19 16 15 14 13 10 9 8 7 4 3 2 1 )
+					'(91 90 86 85 82 80 79 77 65 64 63 62 61 60 59 58 57 56 55 54 50 48 46 45 42 41 38 36 34 30 29 28 24 23 21 19 18 17 15 13 8 7 6 5 3 1 )
+					'()
+				)
+			)
+		)
+	)
+)			
+;	(command "_.LINE" "0,0" "5,5" "")
+;	(princ "\nKARYA_Akanat")
+;)
+
+;(defun KARYA_Ckanat (x z)
+;	(command "_.LINE" "0,0" "5,5" "")
+;	(princ "\nKARYA_Ckanat")
+;)
+;(kapakX "KARYA" "KARYA" (QUOTE (3.0 nil)) "KARYA")
+
+(defun KARYA_Bkanat (x z / nokta_list dugum_list ax dt et rt
+	(setq Ta (cm 3.0) Sa (cm 3.0))
+                        raf# dik#   ;Yatay ve dikey kayýt adetleri
+                        kayitboy    ;Dik kayýtlarin boylarý
+                        dikdist     ;Dik Kayýt ara mesafeleri
+                        i j
+						elast cw
+					)
+					
+	(drawMeshKanat nil "KARYAC" x z
+	
+		(list
+			(list "CAB_DOORS"
+				(list (cm -0.5) 7 5 1 2)
+				'(52 51 48 47 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 8 7 6 5 )
+				'(50 49 46 45 44 43 42 41 40 39 38 37 36 35 34 33 32 31 12 11 10 9 4 3 2 1 )
+				'(51 50 47 45 37 36 35 34 33 32 31 30 26 24 22 21 18 17 14 13 11 9 6 5 3 1 )
+				'()
+			)
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 14 11 8 7 6 5 )
+				'(52 51 50 49 48 47 46 45 44 43 42 41 40 39 18 17 16 15 13 12 10 9 4 3 2 1 )
+				'(45 44 43 42 41 40 39 38 36 35 32 30 28 26 23 22 21 18 16 14 12 10 8 7 3 2 )
+				'()
+			)
+		)
+	)	
+	(setlayer "CAB_DOORS" 7)
+	(setq elast (entlast))
+    (setq raf# (fix (/ z 35.0))
+          dik# (fix (/ x 30.0)))
+		  
+	(setq cw 1.5) ;citawidth
+
+    (setq kayitboy (/ (- z 11.0 (* raf# cw)) (1+ raf#))
+          dikDist  (/ (- x 11.0 (* dik# cw)) (1+ dik#))
+    )
+
+    (setq i 1)
+    (while (<= i raf#)
+        (KARYA:kayit (/2 x) (+ 5.5 (* i kayitboy) (* (1- (* 2 i)) 0.75)) (- x 11.0) 0)
+        (i++)
+    )
+
+    (setq j 0)
+    (while (<= j raf#)
+        (setq i 1)
+        (while (<= i dik#)
+            (KARYA:kayit (+ 5.5 (* i dikDist) (* (1- (* 2 i)) 0.75)) (+ 5.5 (/2 kayitboy) (* j (+ cw kayitboy))) kayitboy 90)
+            (i++)
+        )
+        (setq j (1+ j))
+    )
+    (MOVED (collectMents elast) (list (* -0.5 x) 0 0))
+)
+
+(defun KARYA:kayit (x z len rot)    ;x ve z kayýt ortasýnýn koords
+	(if (equal rot 0.0)
+		(progn
+			(nokta+liste (- x (/2 len))     -2  (+ z 0.75))
+			(nokta+liste (- x (/2 len) -1)  -1  (+ z 1.25))
+			(nokta+liste (-z 2 z) nil nil)
+			(nokta+liste (-z 1 z) nil nil)
+
+			(nokta+liste (-x 1 x) nil nil)
+			(nokta+liste (-x 2 x) nil nil)
+			(nokta+liste (-x 3 x) nil nil)
+			(nokta+liste (-x 4 x) nil nil)
+		)
+		(progn
+			(nokta+liste (+ x 0.75)     -2  (+ z (/2 len)))
+			(nokta+liste (+ x 1.25)     -1  (+ z (/2 len) -1))
+			(nokta+liste (-x 2 x) nil nil)
+			(nokta+liste (-x 1 x) nil nil)
+
+			(nokta+liste (-z 1 z) nil nil)
+			(nokta+liste (-z 2 z) nil nil)
+			(nokta+liste (-z 3 z) nil nil)
+			(nokta+liste (-z 4 z) nil nil)
+		)
+	)
+	(dugum+liste '(
+		1 4 8 5 ""
+		1 2 6 5 ""
+		4 3 7 8 ""
+	))
+	(meshciz)
+	;(ssadd (entlast) sblklst)
+)
+(defun KARYA_Ckanat (x z)
+       (KARYA_Akanat x z)
+)

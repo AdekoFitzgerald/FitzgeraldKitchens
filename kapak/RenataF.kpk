@@ -1,0 +1,14 @@
+(defun RenataF_Akanat (x z)
+	(if (or (< z 30.00)(< x 30.00))
+		(drawMeshKanat nilF x z 3.00 3.00 3.00 3.00 0.09 0.17 0.94 0.86 "Renata (_KAPAK_)" "RenataS.jpg")
+		(drawMeshKanat nilF x z 10.00 10.00 10.00 10.00 0.21 0.14 0.78 0.88 "Renata (_KAPAK_)" "Renata.jpg")
+	)
+)
+
+(defun RenataF_Bkanat (x z)
+        (drawMeshKanat nilF x z 3.00 3.00 3.00 3.00 0.06 0.04 0.95 0.96 "Renata (_KAPAK_)" "Cam.jpg")
+)
+
+(defun RenataF_Ckanat (x z)
+      (RenataF_Akanat x z)
+)

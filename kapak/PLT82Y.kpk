@@ -1,0 +1,31 @@
+(defun PLT82Y_Akanat (x z)
+	(drawMeshKanat nil "PLT82Y" x z 
+		(list 
+			(list "CAB_DOORS" 
+				nil 
+				'( 23 21 19 17 15 13 11 9 7 5 2 1 ) 
+				'( 24 22 20 18 16 14 12 10 8 6 4 3 )
+				'( 24 23 22 21 20 19 18 17 4 3 2 1 ) 
+				'( ) 
+			) 
+        )
+   )
+)
+
+(defun PLT82Y_Bkanat (x z)
+	(drawMeshKanat nil "2208C" x z
+		(list
+			(list "CAB_DOOR_FRAMES"
+				(list (cm -0.5) 11 24 34 13)
+				'( 27   26   25   24   23   22   21   20   19   16   15   12   11   9   7   5   2   1   )
+				'( 36   35   34   33   32   31   30   29   28   18   17   14   13   10   8   6   4   3   )
+				'( 36   35   34   33   32   31   30   29   28   27   26   25   24   23   22   21   20   19   )
+				'( )
+			)
+		)
+	)
+)
+
+(defun PLT82Y_Ckanat (x z)
+      (PLT82Y_Akanat  x z)
+)

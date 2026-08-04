@@ -1,0 +1,41 @@
+(defun DUZKBANT_Akanat (x z / blok_list kbantT kapakET toplamDar)
+    (setq kbantT (cm 0.2)
+          kapakET (cm 1.8)
+          toplamDar (+ ad_Clear kbantT)
+    )
+
+    (setlayer "CAB_DOORS" 7)
+    (box_ciz (list (+ (* -0.5 x) toplamDar) 0.0 toplamDar) (- x toplamDar toplamDar) (- kapakET) (- z toplamDar toplamDar))
+    ;(ekle "CAB_DOORS")
+    (setlayer "CAB_DOOR_EDGE_BANDS" 7)
+    (cerceve_ciz 0.0 x z ad_Clear (+ ad_Clear kbantT) kapakET)
+    ;(ekle "CAB_DOOR_EDGE_BANDS")
+    ;blok_list
+)
+
+(defun DUZKBANT_Bkanat (x z / blok_list kbantT kapakET toplamDar p1 p2 p3 p4)
+    (setq kbantT (cm 0.2)
+          kapakET (cm 1.8)
+          toplamDar (+ ad_Clear kbantT)
+    )
+
+    (setlayer "CAB_DOORS" 7)
+    (cerceve_ciz 0.0 x z toplamDar (+ 6.0 ad_Clear) kapakET '("p1" "p2" "p3" "p4"))
+    ;(ekle "CAB_DOORS")
+    
+    (setlayer "CAB_DOOR_GLASS" 4)
+    (command cmdINSERT "CAM" p1 
+        "_XYZ" (distance p1 p4) 1 (distance p1 p2)
+        0
+    )
+    ;(ekle "CAB_DOOR_GLASS")
+    (setlayer "CAB_DOOR_EDGE_BANDS" 7)
+    (cerceve_ciz 0.0 x z ad_Clear toplamDar kapakET)
+    ;(ekle "CAB_DOOR_EDGE_BANDS")
+    ;blok_list
+)
+
+(defun DUZKBANT_Ckanat (x z)
+    (DUZKBANT_Akanat x z)
+)
+

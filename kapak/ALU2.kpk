@@ -1,0 +1,47 @@
+(defun ALU2_Akanat (x z)
+	(drawMeshKanat nil "ALU2" x z 
+		(list 
+			(list "ALUMINIUM_FRAME" 
+				nil 
+				'( 17 16 15 14 12 11 9 8 7 6 ) 
+				'( 20 19 18 13 10 5 4 3 2 1 ) 
+				'( 20 18 16 15 11 7 6 5 4 3 ) 
+				'( ) 
+			) 
+		)
+		(list 
+			(list "CAB_DOORS" 
+				nil 
+				'( 8 6 4 2 ) 
+				'( 7 5 3 1 ) 
+				'( 4 3 2 1 ) 
+				'( ) 
+			) 
+		)
+	)
+)
+(defun ALU2_Bkanat (x z)
+	(drawMeshKanat nil "ALU2C" x z 
+		(list 
+			(list "ALUMINIUM_FRAME" 
+				nil 
+				'( 17 16 15 14 12 11 9 8 7 6 ) 
+				'( 20 19 18 13 10 5 4 3 2 1 ) 
+				'( 20 18 16 15 11 7 6 5 4 3 ) 
+				'( ) 
+			) 
+		)
+		(list 
+			(list "CAB_DOORS" 
+				(list (cm -0.5) 4 3 6 8) 
+				'( 12 11 10 9 4 3 2 1 ) 
+				'( 16 15 14 13 8 7 6 5 ) 
+				'( 14 13 12 10 6 5 3 1 ) 
+				'( ) 
+			) 
+		)
+	)
+)
+(defun ALU2_Ckanat (x z)
+	(ALU2_Akanat x z)
+)

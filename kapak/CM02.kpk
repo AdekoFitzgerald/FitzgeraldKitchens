@@ -1,0 +1,73 @@
+(defun CM02_Bkanat (x z)
+	(drawMeshKanat nil "CAMKASA" x z
+		(list
+			(list "CAB_DOORS"
+				(list (convertLength 0.0 5) 32 68 51 34)
+				'(68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 32 31 29 28 26 23 21 20 18 15 13 12 10 6 5 3 1 )
+				'(51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 36 35 34 33 30 27 25 24 22 19 17 16 14 11 9 8 7 4 2 )
+				'(68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 36 35 )
+				'()
+			)
+		)
+	)
+		(setlayer "CAB_DOORS" 7)
+	(setq elast (entlast))
+    (setq raf# (fix (/ z 35.0))
+          dik# (fix (/ x 30.0)))
+	(setq ara 5.8250)	  
+	(setq cw 0.4) ;citawidth
+
+    (setq kayitboy (/ (- z (* ara 2) (* raf# cw)) (1+ raf#))
+          dikDist  (/ (- x (* ara 2) (* dik# cw)) (1+ dik#))
+    )
+
+    (setq i 1)
+    (while (<= i raf#)
+        (KARYA:kayit (/2 x) (+ ara (* i kayitboy) (* (1- (* 2 i)) 0.2)) (- x (* ara 2)) 0)
+        (i++)
+    )
+
+    (setq j 0)
+    (while (<= j raf#)
+        (setq i 1)
+        (while (<= i dik#)
+            (KARYA:kayit (+ ara (* i dikDist) (* (1- (* 2 i)) 0.2)) (+ ara (/2 kayitboy) (* j (+ cw kayitboy))) kayitboy 90)
+            (i++)
+        )
+        (setq j (1+ j))
+    )
+    (MOVED (collectMents elast) (list (* -0.5 x) 0 0))
+)
+
+(defun KARYA:kayit (x z len rot)    ;x ve z kayıt ortasının koords
+	(if (equal rot 0.0)
+		(progn
+			(nokta+liste (- x (/2 len))     -1.62638  (+ z 0.2))
+			(nokta+liste (- x (/2 len) -0.6)  -1.02638  (+ z 0.8))
+			(nokta+liste (-z 2 z) nil nil)
+			(nokta+liste (-z 1 z) nil nil)
+			(nokta+liste (-x 1 x) nil nil)
+			(nokta+liste (-x 2 x) nil nil)
+			(nokta+liste (-x 3 x) nil nil)
+			(nokta+liste (-x 4 x) nil nil)
+		)
+		(progn
+			(nokta+liste (+ x 0.2)     -1.62638   (+ z (/2 len)))
+			(nokta+liste (+ x 0.8)     -1.02638  (+ z (/2 len) -0.6))
+			(nokta+liste (-x 2 x) nil nil)
+			(nokta+liste (-x 1 x) nil nil)
+
+			(nokta+liste (-z 1 z) nil nil)
+			(nokta+liste (-z 2 z) nil nil)
+			(nokta+liste (-z 3 z) nil nil)
+			(nokta+liste (-z 4 z) nil nil)
+		)
+	)
+	(dugum+liste '(
+		1 4 8 5 ""
+		1 2 6 5 ""
+		4 3 7 8 ""
+	))
+	(meshciz)
+	;(ssadd (entlast) sblklst)
+)

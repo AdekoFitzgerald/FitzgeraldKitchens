@@ -1,0 +1,55 @@
+(defun CTL6K_Akanat (x z)
+    (drawMeshKanat nil "CTL6K" x z
+        (list
+            (list "CAB_DOOR_FRAMES"
+                nil
+                '(6 12 5 24 16 19 9 22 14 17 10 11 )
+                '(2 4 15 20 7 23 13 18 8 21 1 3 )
+                '(2 4 15 20 7 23 6 12 5 24 16 19 )
+                '()
+            )
+            (list "CAB_DOORS"
+                nil
+                '(12 14 19 4 8 3 5 9 16 18 )
+                '(11 15 20 2 7 1 6 10 13 17 )
+                '(11 15 20 2 7 12 14 19 4 8 )
+                '()
+            )
+)))
+
+(defun CTL6K_Bkanat (x z)
+    (drawMeshKanat nil "CTL6PC" x z
+        (list
+            (list "CAB_DOOR_FRAMES"
+                (list (cm 0.2) 22 24 23 21)
+                '(6 12 5 24 16 19 9 22 14 17 10 11 )
+                '(2 4 15 20 7 23 8 21 13 18 1 3 )
+                '(2 4 15 20 7 23 6 12 5 24 16 19 )
+                '()
+            )
+)))
+
+(defun CTL6K_Ckanat (x z)
+    (if (<= z (cm 15.0))
+        (progn
+            (drawMeshKanat nil "CTL6PKS" x z
+                    (list
+                        (list "CAB_DOOR_FRAMES"
+                            nil
+                            '(6 12 5 24 16 19 9 22 14 17 10 11 )
+                            '(2 4 15 20 7 23 8 21 13 18 1 3 )
+                            '(2 4 15 20 7 23 6 12 5 24 16 19 )
+                            '()
+                        )
+                        (list "CAB_DOORS"
+                            nil
+                            '(1 3 )
+                            '(4 2 )
+                            '(4 1 )
+                            '()
+                        )
+            ))
+        )
+        (CTL6K_Akanat x z)
+    )
+)

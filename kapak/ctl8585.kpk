@@ -1,0 +1,44 @@
+(defun CTL8585_Akanat (x z)
+    (drawMeshKanat nil "CTL8585" x z
+        (list
+            (list "CAB_DOOR_FRAMES"
+                nil
+                '(13 15 18 29 19 6 8 10 30 17 36 20 33 5 9 32 34 35 )
+                '(14 21 25 28 1 22 24 26 23 4 16 27 11 2 7 31 12 3 )
+                '(14 21 25 28 1 16 27 11 2 13 15 18 29 19 6 8 10 30 )
+                '()
+            )
+            (list "CAB_DOORS"
+                nil
+                '(7 8 5 6 )
+                '(4 3 1 2 )
+                '(4 3 7 8 )
+                '()
+            )
+)))
+
+(defun CTL8585_Bkanat (x z)
+    (drawMeshKanat nil "22C" x z
+        (list
+            (list "CAB_DOOR_FRAMES"
+                nil
+                '(16 12 6 7 14 11 9 10 )
+                '(4 15 2 5 3 13 1 8 )
+                '(4 15 2 5 16 12 6 7 )
+                nil ;'()
+            )
+            (list "CAB_DOOR_EDGE_BANDS"
+                (list (cm 0.3) 15 16 28 41)
+                '(4 8 47 11 16 26 2 9 24 35 5 13 42 44 48 12 15 45 10 31 32 36 14 30 )
+                '(1 7 17 25 28 40 3 20 23 37 6 27 19 22 43 39 41 46 18 33 34 38 21 29 )
+                '(1 7 17 25 28 40 3 20 23 37 6 27 4 8 47 11 16 26 2 9 24 35 5 13 )
+                nil ;'()
+            )
+)))
+
+(defun CTL8585_Ckanat (x z)
+    (if (< z  (cm 20))
+        (DUZKPK_Akanat x z)
+        (CTL8585_Akanat x z)
+    )
+)

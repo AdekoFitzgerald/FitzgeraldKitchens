@@ -1,0 +1,51 @@
+(defun SOFT5_Akanat (x z)
+	(drawMeshKanat nil "SOFT5" x z
+		(list
+			(list "CAB_DOORS"	;Layername
+				  nil
+				'(6 7 15 16 10 14 5 8 17 20 19 18 );Left
+				'(2 4 12 13 9 11 1 3 24 23 21 22 );Right
+				'(2 4 12 13 9 11 6 7 15 16 10 14 );Up
+				  ;     DWN '(1 3 24 23 21 22 5 8 17 20 19 18 );Down
+				  nil	;Scale
+			)
+			(list "CAB_DOOR_EDGE_BANDS"  ;Alt üst kenar bant
+				  nil
+				'(7 8 14 15 16 17 18 10 19 20 5 6 31 32 38 40 41 34 39 42 43 44 29 30 )
+				'(3 4 9 11 12 13 22 21 23 24 1 2 27 28 35 46 33 36 37 45 47 48 25 26 )
+				'(3 4 9 11 12 13 22 21 23 24 1 2 7 8 14 15 16 17 18 10 19 20 5 6 )
+				;     DWN '(27 28 35 46 33 36 37 45 47 48 25 26 31 32 38 40 41 34 39 42 43 44 29 30 )
+				nil
+			)
+		)
+	)
+)
+
+(defun SOFT5_Bkanat (x z)
+	(drawMeshKanat nil "SOFT5C" x z
+		(list
+			(list "CAB_DOORS"	;Layername
+				(list (cm 0.5) 27 25 26 28)	;(offset p1 p2 p3 p4). Also serves as a flag that this is a Bkanat
+				'(25 11 18 19 20 14 8 9 27 12 21 22 23 24 6 7 )
+				'(4 15 16 17 26 13 2 10 3 30 31 28 29 32 1 5 )
+				'(4 15 16 17 26 13 2 10 25 11 18 19 20 14 8 9 )
+				;     DWN '(3 30 31 28 29 32 1 5 27 12 21 22 23 24 6 7 )
+				  nil	;Scale
+			)
+			(list "CAB_DOOR_EDGE_BANDS"  ;Alt üst kenar bant
+				  nil
+				'(7 8 14 15 16 17 18 10 19 20 5 6 31 32 38 40 41 34 39 42 43 44 29 30 )
+				'(3 4 9 11 12 13 22 21 23 24 1 2 27 28 35 46 33 36 37 45 47 48 25 26 )
+				'(3 4 9 11 12 13 22 21 23 24 1 2 7 8 14 15 16 17 18 10 19 20 5 6 )
+				;     DWN '(27 28 35 46 33 36 37 45 47 48 25 26 31 32 38 40 41 34 39 42 43 44 29 30 )
+				nil
+			)
+		)
+	)
+)
+
+(defun SOFT5_Ckanat (x z)
+	(SOFT5_Akanat x z)
+)
+
+

@@ -1,0 +1,42 @@
+(defun CTL88_Akanat (x z)
+	(drawMeshKanat nil "CTL88" x z
+		(list
+			(list "CAB_DOORS"
+				nil
+				'(5 6 1 2 )
+				'(8 7 4 3 )
+				'(8 7 5 6 )
+				'()
+			)
+			(list "CAB_DOOR_FRAMES"
+				nil
+				'(17 36 20 32 35 33 34 5 9 7 31 22 24 26 12 23 3 4 )
+				'(13 15 18 8 30 10 29 6 19 16 27 14 21 25 11 28 1 2 )
+				'(13 15 18 8 30 10 29 6 19 17 36 20 32 35 33 34 5 9 )
+				'()
+			)
+)))
+
+(defun CTL88_Bkanat (x z)
+	(drawMeshKanat nil "CTL88C" x z
+		(list
+			(list "CAB_DOOR_FRAMES"
+				(list (cm -1.4) 3 9 6 2)
+				'(17 36 20 32 35 33 34 5 9 7 31 22 24 26 12 23 3 4 )
+				'(13 15 18 8 30 10 29 6 19 16 27 14 21 25 11 28 1 2 )
+				'(13 15 18 8 30 10 29 6 19 17 36 20 32 35 33 34 5 9 )
+				'()
+			)
+)))
+
+
+(defun CTL88_Ckanat (x z)
+	(if (<= z (cm 17.0))
+		(progn
+			(setlayer "CAB_DOOR_FRAMES" 7)
+			(box_ciz (list (+ (* -0.5 x) ad_Clear) 0.0 ad_Clear) (- x ad_Clear ad_Clear) (- ad_ET) (- z ad_Clear ad_Clear))
+			(entlast)
+		)
+		(CTL88_Akanat x z)
+	)
+)

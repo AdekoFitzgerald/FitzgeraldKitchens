@@ -1,0 +1,16 @@
+(defun GriMese_Akanat (x z)
+       (if (or (< z 35.00)
+               (< x 30.00)
+           )
+        (drawMeshKanat nilF x z 0.00 0.00 0.00 0.00 0.01 0.01 0.99 0.99 "GriMese (_KAPAK_)" "Gri Mese.jpg")
+        (drawMeshKanat nilF x z 0.00 0.00 0.00 0.00 0.01 0.01 0.99 0.99 "GriMese (_KAPAK_)" "Gri Mese.jpg")
+       )
+)
+
+(defun GriMese_Bkanat (x z)
+        (drawMeshKanat nilF x z 3.00 3.00 3.00 3.00 0.06 0.04 0.95 0.96 "GriMese (_KAPAK_)" "Cam.jpg")
+)
+
+(defun GriMese_Ckanat (x z)
+      (GriMese_Akanat x z)
+)

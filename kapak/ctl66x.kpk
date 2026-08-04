@@ -1,0 +1,46 @@
+;ÇITA GÖBEK AYNI RENK
+;iÇÇITALIDAN DÖNÜÞTÜRÜLDÜ
+(defun CTL66X_Akanat (x z / nokta_list dugum_list simax dt p1 p2 p3 p4 blst)
+    (setlayer "CAB_DOORS" 7)
+    (cerceve_ciz 0.0 x z ad_Clear (cm 6.0) ad_ET '("p1" "p2" "p3" "p4"))
+    (setq blst (ssadd (entlast)))
+
+;    (setlayer "CAB_DOOR_FRAMES" 7)
+;    (cerceve_ciz 0.0 (- x (cm 6.5) (cm 6.5)) (- z (cm 6.5) (cm 6.5)) 0.0 (cm 1.4) (cm 0.5) nil)
+;    (MOVEd (entlast) (list 0.0 (cm -1.0) (cm 6.5)))
+;    (ssadd (entlast) blst)
+
+    (if isBkanat
+        (progn
+            (setlayer "CAB_DOOR_GLASS" 4)
+            (command cmdINSERT "CAM" p1 
+                "_XYZ" (distance p1 p4) 1 (distance p1 p2)
+                0
+            )
+        )
+        (progn
+            (setlayer "CAB_DOORS" 7)
+            (command "_.FACE" p1 p2 p3 p4 "")
+        )
+    )
+    (setlayer "CAB_DOORS" 7)
+    (ssadd (entlast) blst)
+)
+
+(defun CTL66X_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (CTL66X_Akanat EN BOY)
+)
+(defun CTL66X_Ckanat (EN BOY)
+    (if (> BOY (cm 16.0))
+        (CTL66X_Akanat EN BOY)
+        (DUZKPK_Ckanat EN BOY)
+    )
+)
+(defun CTL66X_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+(defun CTL66X_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)
+

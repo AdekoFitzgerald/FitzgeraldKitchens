@@ -1,0 +1,84 @@
+(defun 2RADYUS_Akanat (x z / nokta_list dugum_list simax simZ dt p1 p2 p3 p4 blst i)
+    (setq simax (/2 x)
+          simZ  (/2 z)
+    )
+    (setq dt ad_Clear)
+    (nokta+liste (- dt simax)            0.0        dt)
+    (nokta+liste (- dt simax)           (cm -0.661)      dt)
+    (nokta+liste (+ dt (cm 0.191) (- simax)) (cm -1.25)       dt)
+    (nokta+liste (+ dt (cm 0.658) (- simax)) (cm -1.658)      dt)
+    (nokta+liste (+ dt (cm 1.269) (- simax)) (cm -1.769)      dt)
+    (nokta+liste (+ dt (cm 1.519) (- simax)) (cm -1.82)       dt)
+    (nokta+liste (+ dt (cm 1.7)   (- simax)) (cm -2.0)        dt)
+    (nokta+liste (+ dt (cm 1.7)   (- simax))  0.0        dt)
+
+    (setq i 1)
+    (while (<= i 8) (nokta+liste (-z i simZ) nil nil) (i++))
+
+    (setq i 1)
+    (while (<= i 16) (nokta+liste (-x i 0) nil nil) (i++))
+
+    (dugum+liste (list
+        1   -2  10  9   ""
+        2   -3  11  -10 ""
+        3   -4  12  -11 ""
+        4   -5  13  -12 ""
+        5   -6  14  -13 ""
+        6   7   15  -14 ""
+        7   8   16  15  ""
+        8   1   9   16  ""
+
+        8   1   2   3   4   5   6   7   ""
+        16  9   10  11  12  13  14  15  ""
+
+        17  -18 26  25  ""
+        18  -19 27  -26 ""
+        19  -20 28  -27 ""
+        20  -21 29  -28 ""
+        21  -22 30  -29 ""
+        22  23  31  -30 ""
+        23  24  32  31  ""
+        24  17  25  32  ""
+
+        24  17  18  19  20  21  22  23  ""
+        32  25  26  27  28  29  30  31  ""
+    ))
+    (setlayer "CAB_DOOR_FRAMES" 4)
+    (meshciz)
+    (setq blst (ssadd (entlast)))
+
+    (if isBkanat
+        (progn
+            (setlayer "CAB_DOORS" 7)
+            (cerceve_ciz dt (- x dt dt (cm 3.4)) z 0.0 (cm 4.0) (cm 2.0) '("p1" "p2" "p3" "p4"))
+            (ssadd (entlast) blst)
+            (setlayer "CAB_DOOR_GLASS" 4)
+            (command cmdINSERT "CAM" p1
+                "_XYZ" (distance p1 p4) 1 (distance p1 p2)
+                0
+            )
+            (setlayer "CAB_DOORS" 7)
+            (ssadd (entlast) blst)
+        )
+        (progn
+            (setlayer "KAPAK" 7)
+            (DUZKPK_Akanat (- x (cm 3.4)) z)
+            (ssadd (entlast) blst)
+        )
+    )
+)
+
+(defun 2RADYUS_Bkanat (EN BOY / isBkanat)
+    (setq isBkanat T)
+    (2RADYUS_Akanat EN BOY)
+)
+(defun 2RADYUS_Ckanat (EN BOY)
+    (2RADYUS_Akanat EN BOY)
+)
+(defun 2RADYUS_Ekanat (EN BOY)
+    (DUZKPK_Ekanat EN BOY)
+)
+(defun 2RADYUS_Fkanat (EN BOY)
+    (DUZKPK_Fkanat EN BOY)
+)
+

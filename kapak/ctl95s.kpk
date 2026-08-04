@@ -1,0 +1,12 @@
+(defun CTL95S_Akanat (x z)
+	(drawMeshKanat nil "CTL95S" x z 
+		(list 
+			(list "CAB_DOORS" 
+				nil 
+				'( 20 19 18 12 11 9 4 3 2 1 ) 
+				'( 17 16 15 14 13 10 8 7 6 5 ) 
+				'( 20 19 18 17 16 15 14 13 12 11 ) 
+				'( ) 
+			) 
+)))
+ 
